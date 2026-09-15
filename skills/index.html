@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Карта навыков</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #101218;
+            --panel: #191d26;
+            --panel2: #202530;
+            --border: #303746;
+            --text: #ffffff;
+            --muted: #aeb4c0;
+            --accent: #ffffff;
+            --dark: #101218;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1200px, 94%);
+            margin: 0 auto;
+            padding: 30px 0 60px;
+        }
+
+        header {
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 36px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 17px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 220px;
+            gap: 12px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--panel2);
+            color: white;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #737b8b;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .category-btn {
+            border: 1px solid var(--border);
+            background: var(--panel2);
+            color: var(--muted);
+            border-radius: 20px;
+            padding: 9px 14px;
+        }
+
+        .category-btn.active {
+            background: white;
+            color: var(--dark);
+            border-color: white;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .skill-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .skill-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .skill-category {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .skill-description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.45;
+            margin: 12px 0 18px;
+        }
+
+        .score-row {
+            display: grid;
+            grid-template-columns: 1fr 55px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .score-row label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .score-value {
+            text-align: center;
+            background: var(--panel2);
+            border-radius: 10px;
+            padding: 8px;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            accent-color: white;
+        }
+
+        .desired {
+            margin-top: 15px;
+        }
+
+        .skill-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .gap {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .importance {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .importance input {
+            width: auto;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .danger-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            background: white;
+            color: var(--dark);
+        }
+
+        .secondary-btn {
+            background: var(--panel2);
+            color: white;
+            border: 1px solid var(--border);
+        }
+
+        .danger-btn {
+            background: #2a2023;
+            color: #ffb5bd;
+            border: 1px solid #52333a;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat {
+            background: var(--panel2);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+        }
+
+        .stat-title {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .result-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+        }
+
+        .result-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .result-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-list li:last-child {
+            border-bottom: none;
+        }
+
+        .result-name {
+            font-weight: bold;
+        }
+
+        .result-meta {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .chart-wrap {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            width: min(700px, 100%);
+            height: auto;
+            background: var(--panel);
+            border-radius: 20px;
+        }
+
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: var(--muted);
+            border: 1px dashed var(--border);
+            border-radius: 18px;
+        }
+
+        .counter {
+            color: var(--muted);
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            margin-top: 35px;
+            color: #737b8b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 850px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .container {
+                width: 94%;
+                padding-top: 20px;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .panel {
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>🧭 Карта навыков</h1>
+
+        <div class="subtitle">
+            Универсальная карта человеческих навыков —
+            профессиональных, цифровых, бытовых, творческих,
+            социальных и практических.
+        </div>
+    </header>
+
+
+    <!-- ФИЛЬТРЫ -->
+
+    <section class="panel">
+
+        <div class="controls">
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Поиск навыка..."
+            >
+
+            <select id="sortSelect">
+                <option value="default">Порядок по категориям</option>
+                <option value="current">По текущему уровню</option>
+                <option value="gap">По потенциалу развития</option>
+                <option value="name">По названию</option>
+            </select>
+
+        </div>
+
+        <div class="categories" id="categories"></div>
+
+        <div class="counter" id="counter"></div>
+
+    </section>
+
+
+    <!-- НАВЫКИ -->
+
+    <section id="skillsContainer" class="skills-grid"></section>
+
+
+    <!-- ДЕЙСТВИЯ -->
+
+    <section class="panel">
+
+        <div class="actions">
+
+            <button
+                class="primary-btn"
+                id="resultsBtn">
+                Построить карту
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="saveBtn">
+                Сохранить
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="exportBtn">
+                Экспорт JSON
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="importBtn">
+                Импорт JSON
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="printBtn">
+                Печать
+            </button>
+
+            <button
+                class="danger-btn"
+                id="resetBtn">
+                Сбросить
+            </button>
+
+        </div>
+
+        <input
+            type="file"
+            id="importFile"
+            accept=".json"
+            class="hidden"
+        >
+
+    </section>
+
+
+    <!-- РЕЗУЛЬТАТ -->
+
+    <section
+        class="results"
+        id="results">
+
+        <div class="panel">
+
+            <h2>📊 Результаты</h2>
+
+            <div class="summary-grid">
+
+                <div class="stat">
+                    <div class="stat-title">
+                        Оценено навыков
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="statCount">
+                        0
+                    </div>
+                </div>
+
+
+                <div class="stat">
+                    <div class="stat-title">
+                        Средний уровень
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="statAverage">
+                        0
+                    </div>
+                </div>
+
+
+                <div class="stat">
+                    <div class="stat-title">
+                        Сильных навыков
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="statStrong">
+                        0
+                    </div>
+                </div>
+
+
+                <div class="stat">
+                    <div class="stat-title">
+                        Потенциал развития
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="statPotential">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="result-columns">
+
+            <div class="result-box">
+
+                <h3>💪 Сильные стороны</h3>
+
+                <ul
+                    class="result-list"
+                    id="strongList">
+                </ul>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <h3>🌱 Зоны развития</h3>
+
+                <ul
+                    class="result-list"
+                    id="developmentList">
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <div class="result-box" style="margin-top:20px;">
+
+            <h3>🎯 Приоритеты развития</h3>
+
+            <ul
+                class="result-list"
+                id="priorityList">
+            </ul>
+
+        </div>
+
+
+        <div class="panel" style="margin-top:20px;">
+
+            <h3>🗺 Профиль навыков</h3>
+
+            <div class="chart-wrap">
+
+                <canvas
+                    id="skillsChart"
+                    width="760"
+                    height="760">
+                </canvas>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+
+        Инструмент предназначен для саморефлексии,
+        профессионального развития и оценки собственных навыков.
+        Результаты являются субъективной самооценкой и
+        не являются клинической или профессиональной диагностикой.
+
+    </div>
+
+</div>
+
+
+<script>
+
+const STORAGE_KEY = "psyToolsSkillsV1";
+
+
+// ======================================================
+// БАЗА НАВЫКОВ
+// ======================================================
+
+const skills = [
+
+    // --------------------------------------------------
+    // ИНТЕЛЛЕКТ
+    // --------------------------------------------------
+
+    {
+        id: "critical-thinking",
+        name: "Критическое мышление",
+        category: "Интеллект",
+        description: "Анализ информации, аргументов и источников."
+    },
+
+    {
+        id: "analytical-thinking",
+        name: "Аналитическое мышление",
+        category: "Интеллект",
+        description: "Разложение сложной задачи на элементы и поиск закономерностей."
+    },
+
+    {
+        id: "problem-solving",
+        name: "Решение проблем",
+        category: "Интеллект",
+        description: "Поиск практических решений сложных задач."
+    },
+
+    {
+        id: "systems-thinking",
+        name: "Системное мышление",
+        category: "Интеллект",
+        description: "Понимание взаимосвязей между элементами системы."
+    },
+
+    {
+        id: "planning",
+        name: "Планирование",
+        category: "Интеллект",
+        description: "Формирование последовательности действий для достижения цели."
+    },
+
+
+    // --------------------------------------------------
+    // КОММУНИКАЦИЯ
+    // --------------------------------------------------
+
+    {
+        id: "verbal",
+        name: "Устная коммуникация",
+        category: "Коммуникация",
+        description: "Умение ясно выражать мысли в разговоре."
+    },
+
+    {
+        id: "writing",
+        name: "Письменная коммуникация",
+        category: "Коммуникация",
+        description: "Умение понятно формулировать мысли в тексте."
+    },
+
+    {
+        id: "negotiation",
+        name: "Переговоры",
+        category: "Коммуникация",
+        description: "Поиск решений и договорённостей с другими людьми."
+    },
+
+    {
+        id: "public-speaking",
+        name: "Публичные выступления",
+        category: "Коммуникация",
+        description: "Выступление перед аудиторией."
+    },
+
+    {
+        id: "listening",
+        name: "Активное слушание",
+        category: "Коммуникация",
+        description: "Умение понимать позицию и состояние собеседника."
+    },
+
+
+    // --------------------------------------------------
+    // СОЦИАЛЬНЫЕ
+    // --------------------------------------------------
+
+    {
+        id: "teamwork",
+        name: "Работа в команде",
+        category: "Социальные",
+        description: "Совместная работа ради общей цели."
+    },
+
+    {
+        id: "leadership",
+        name: "Лидерство",
+        category: "Социальные",
+        description: "Организация людей и направление совместной деятельности."
+    },
+
+    {
+        id: "conflict",
+        name: "Разрешение конфликтов",
+        category: "Социальные",
+        description: "Конструктивная работа с разногласиями."
+    },
+
+    {
+        id: "empathy",
+        name: "Эмпатия",
+        category: "Социальные",
+        description: "Способность понимать переживания другого человека."
+    },
+
+
+    // --------------------------------------------------
+    // ЦИФРОВЫЕ
+    // --------------------------------------------------
+
+    {
+        id: "computer",
+        name: "Работа с компьютером",
+        category: "Цифровые",
+        description: "Уверенная работа с операционной системой и программами."
+    },
+
+    {
+        id: "office",
+        name: "Офисные программы",
+        category: "Цифровые",
+        description: "Работа с текстами, таблицами и презентациями."
+    },
+
+    {
+        id: "python",
+        name: "Python",
+        category: "Цифровые",
+        description: "Программирование на Python."
+    },
+
+    {
+        id: "html-css",
+        name: "HTML / CSS",
+        category: "Цифровые",
+        description: "Создание и оформление веб-страниц."
+    },
+
+    {
+        id: "javascript",
+        name: "JavaScript",
+        category: "Цифровые",
+        description: "Программирование интерактивных веб-приложений."
+    },
+
+    {
+        id: "ai",
+        name: "Работа с ИИ",
+        category: "Цифровые",
+        description: "Использование нейросетей для решения задач."
+    },
+
+    {
+        id: "graphic-design",
+        name: "Графический дизайн",
+        category: "Цифровые",
+        description: "Создание визуальных материалов."
+    },
+
+    {
+        id: "video",
+        name: "Видеомонтаж",
+        category: "Цифровые",
+        description: "Монтаж и обработка видеоматериалов."
+    },
+
+
+    // --------------------------------------------------
+    // ТВОРЧЕСТВО
+    // --------------------------------------------------
+
+    {
+        id: "drawing",
+        name: "Рисование",
+        category: "Творчество",
+        description: "Создание изображений традиционными или цифровыми средствами."
+    },
+
+    {
+        id: "painting",
+        name: "Живопись",
+        category: "Творчество",
+        description: "Работа с цветом, формой и композицией."
+    },
+
+    {
+        id: "music",
+        name: "Музыка",
+        category: "Творчество",
+        description: "Создание или исполнение музыки."
+    },
+
+    {
+        id: "writing-creative",
+        name: "Литературное творчество",
+        category: "Творчество",
+        description: "Создание художественных и публицистических текстов."
+    },
+
+    {
+        id: "photography",
+        name: "Фотография",
+        category: "Творчество",
+        description: "Создание фотографических изображений."
+    },
+
+
+    // --------------------------------------------------
+    // РУЧНОЙ ТРУД
+    // --------------------------------------------------
+
+    {
+        id: "woodworking",
+        name: "Столярное ремесло",
+        category: "Ручной труд",
+        description: "Работа с древесиной, инструментами и деревянными конструкциями."
+    },
+
+    {
+        id: "carpentry",
+        name: "Плотницкие работы",
+        category: "Ручной труд",
+        description: "Монтаж и строительство деревянных конструкций."
+    },
+
+    {
+        id: "plumbing",
+        name: "Сантехнические работы",
+        category: "Ручной труд",
+        description: "Монтаж и ремонт водопроводных и сантехнических систем."
+    },
+
+    {
+        id: "electrical",
+        name: "Электромонтаж",
+        category: "Ручной труд",
+        description: "Работа с электрическими системами и проводкой."
+    },
+
+    {
+        id: "repair",
+        name: "Бытовой ремонт",
+        category: "Ручной труд",
+        description: "Ремонт мебели, техники и элементов жилья."
+    },
+
+    {
+        id: "painting-walls",
+        name: "Малярные работы",
+        category: "Ручной труд",
+        description: "Подготовка поверхностей, окрашивание и отделка."
+    },
+
+    {
+        id: "construction",
+        name: "Строительные работы",
+        category: "Ручной труд",
+        description: "Базовые строительные и монтажные работы."
+    },
+
+    {
+        id: "metalwork",
+        name: "Работа с металлом",
+        category: "Ручной труд",
+        description: "Обработка металла и изготовление простых конструкций."
+    },
+
+
+    // --------------------------------------------------
+    // ТЕХНИКА
+    // --------------------------------------------------
+
+    {
+        id: "mechanics",
+        name: "Механика",
+        category: "Техника",
+        description: "Понимание механических систем и принципов их работы."
+    },
+
+    {
+        id: "car-repair",
+        name: "Ремонт автомобиля",
+        category: "Техника",
+        description: "Диагностика и ремонт автомобиля."
+    },
+
+    {
+        id: "tools",
+        name: "Работа с инструментами",
+        category: "Техника",
+        description: "Безопасное и эффективное использование ручного инструмента."
+    },
+
+    {
+        id: "electronics",
+        name: "Электроника",
+        category: "Техника",
+        description: "Работа с электронными компонентами и устройствами."
+    },
+
+
+    // --------------------------------------------------
+    // ТРАНСПОРТ
+    // --------------------------------------------------
+
+    {
+        id: "driving",
+        name: "Вождение автомобиля",
+        category: "Транспорт",
+        description: "Управление автомобилем в различных дорожных условиях."
+    },
+
+    {
+        id: "motorcycle",
+        name: "Вождение мотоцикла",
+        category: "Транспорт",
+        description: "Управление мотоциклом."
+    },
+
+    {
+        id: "bicycle",
+        name: "Велосипед",
+        category: "Транспорт",
+        description: "Уверенное управление и обслуживание велосипеда."
+    },
+
+    {
+        id: "navigation",
+        name: "Навигация",
+        category: "Транспорт",
+        description: "Ориентирование на местности и использование навигационных систем."
+    },
+
+
+    // --------------------------------------------------
+    // БЫТОВЫЕ
+    // --------------------------------------------------
+
+    {
+        id: "cooking",
+        name: "Приготовление пищи",
+        category: "Бытовые",
+        description: "Приготовление повседневных и сложных блюд."
+    },
+
+    {
+        id: "cleaning",
+        name: "Организация быта",
+        category: "Бытовые",
+        description: "Поддержание порядка и эффективная организация домашнего пространства."
+    },
+
+    {
+        id: "sewing",
+        name: "Шитьё",
+        category: "Бытовые",
+        description: "Ручное и машинное шитьё."
+    },
+
+    {
+        id: "first-aid",
+        name: "Первая помощь",
+        category: "Бытовые",
+        description: "Базовые навыки оказания первой помощи."
+    },
+
+    {
+        id: "budget",
+        name: "Бытовое финансовое планирование",
+        category: "Бытовые",
+        description: "Планирование личных и домашних расходов."
+    },
+
+
+    // --------------------------------------------------
+    // ОРГАНИЗАЦИЯ
+    // --------------------------------------------------
+
+    {
+        id: "project-management",
+        name: "Управление проектами",
+        category: "Организация",
+        description: "Планирование, организация и контроль проектов."
+    },
+
+    {
+        id: "time-management",
+        name: "Управление временем",
+        category: "Организация",
+        description: "Распределение времени между задачами и целями."
+    },
+
+    {
+        id: "documentation",
+        name: "Работа с документацией",
+        category: "Организация",
+        description: "Создание, структурирование и обработка документов."
+    },
+
+    {
+        id: "research",
+        name: "Исследовательская работа",
+        category: "Организация",
+        description: "Поиск, анализ и систематизация информации."
+    },
+
+
+    // --------------------------------------------------
+    // САМОРАЗВИТИЕ
+    // --------------------------------------------------
+
+    {
+        id: "self-learning",
+        name: "Самостоятельное обучение",
+        category: "Саморазвитие",
+        description: "Способность самостоятельно осваивать новые знания и навыки."
+    },
+
+    {
+        id: "discipline",
+        name: "Самодисциплина",
+        category: "Саморазвитие",
+        description: "Способность поддерживать выбранный курс действий."
+    },
+
+    {
+        id: "adaptability",
+        name: "Адаптивность",
+        category: "Саморазвитие",
+        description: "Способность приспосабливаться к новым условиям."
+    },
+
+    {
+        id: "creativity",
+        name: "Креативность",
+        category: "Саморазвитие",
+        description: "Создание новых идей и нестандартных решений."
+    }
+
+];
+
+
+// ======================================================
+// СОСТОЯНИЕ
+// ======================================================
+
+let state = loadState();
+
+let activeCategory = "Все";
+
+
+// ======================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ======================================================
+
+renderCategories();
+renderSkills();
+
+
+// ======================================================
+// СОХРАНЕНИЕ
+// ======================================================
+
+function defaultState() {
+
+    const values = {};
+    const desired = {};
+    const importance = {};
+
+    skills.forEach(skill => {
+
+        values[skill.id] = 0;
+        desired[skill.id] = 5;
+        importance[skill.id] = false;
+
+    });
+
+    return {
+        values,
+        desired,
+        importance
+    };
+}
+
+
+function loadState() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            return defaultState();
+        }
+
+        const parsed = JSON.parse(saved);
+
+        const base = defaultState();
+
+        return {
+            values: {
+                ...base.values,
+                ...(parsed.values || {})
+            },
+
+            desired: {
+                ...base.desired,
+                ...(parsed.desired || {})
+            },
+
+            importance: {
+                ...base.importance,
+                ...(parsed.importance || {})
+            }
+        };
+
+    } catch {
+
+        return defaultState();
+
+    }
+}
+
+
+function saveState() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(state)
+    );
+
+}
+
+
+// ======================================================
+// КАТЕГОРИИ
+// ======================================================
+
+function renderCategories() {
+
+    const container =
+        document.getElementById("categories");
+
+    const categories = [
+        "Все",
+        ...new Set(
+            skills.map(skill => skill.category)
+        )
+    ];
+
+    container.innerHTML = "";
+
+    categories.forEach(category => {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "category-btn" +
+            (category === activeCategory
+                ? " active"
+                : "");
+
+        button.textContent = category;
+
+        button.onclick = () => {
+
+            activeCategory = category;
+
+            renderCategories();
+            renderSkills();
+
+        };
+
+        container.appendChild(button);
+
+    });
+
+}
+
+
+// ======================================================
+// ФИЛЬТРАЦИЯ
+// ======================================================
+
+function getFilteredSkills() {
+
+    const search =
+        document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const sort =
+        document
+            .getElementById("sortSelect")
+            .value;
+
+    let result =
+        skills.filter(skill => {
+
+            const categoryMatch =
+                activeCategory === "Все" ||
+                skill.category === activeCategory;
+
+            const searchMatch =
+                !search ||
+                skill.name.toLowerCase().includes(search) ||
+                skill.category.toLowerCase().includes(search) ||
+                skill.description.toLowerCase().includes(search);
+
+            return categoryMatch && searchMatch;
+
+        });
+
+
+    if (sort === "current") {
+
+        result.sort(
+            (a, b) =>
+                state.values[b.id] -
+                state.values[a.id]
+        );
+
+    }
+
+    if (sort === "gap") {
+
+        result.sort(
+            (a, b) =>
+                (state.desired[b.id] - state.values[b.id]) -
+                (state.desired[a.id] - state.values[a.id])
+        );
+
+    }
+
+    if (sort === "name") {
+
+        result.sort(
+            (a, b) =>
+                a.name.localeCompare(
+                    b.name,
+                    "ru"
+                )
+        );
+
+    }
+
+    return result;
+
+}
+
+
+// ======================================================
+// ОТРИСОВКА НАВЫКОВ
+// ======================================================
+
+function renderSkills() {
+
+    const container =
+        document.getElementById("skillsContainer");
+
+    const filtered =
+        getFilteredSkills();
+
+    container.innerHTML = "";
+
+    document.getElementById("counter").textContent =
+        `Показано навыков: ${filtered.length} из ${skills.length}`;
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Навыки не найдены.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    filtered.forEach(skill => {
+
+        const current =
+            state.values[skill.id];
+
+        const desired =
+            state.desired[skill.id];
+
+        const gap =
+            Math.max(0, desired - current);
+
+
+        const card =
+            document.createElement("div");
+
+        card.className = "skill-card";
+
+
+        card.innerHTML = `
+
+            <div class="skill-header">
+
+                <div>
+
+                    <div class="skill-name">
+                        ${skill.name}
+                    </div>
+
+                    <div class="skill-category">
+                        ${skill.category}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="skill-description">
+                ${skill.description}
+            </div>
+
+
+            <div class="score-row">
+
+                <div>
+
+                    <label>
+                        Текущий уровень
+                    </label>
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        value="${current}"
+                        data-current="${skill.id}"
+                    >
+
+                </div>
+
+                <div
+                    class="score-value"
+                    id="current-${skill.id}">
+                    ${current}
+                </div>
+
+            </div>
+
+
+            <div class="score-row desired">
+
+                <div>
+
+                    <label>
+                        Желаемый уровень
+                    </label>
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        value="${desired}"
+                        data-desired="${skill.id}"
+                    >
+
+                </div>
+
+                <div
+                    class="score-value"
+                    id="desired-${skill.id}">
+                    ${desired}
+                </div>
+
+            </div>
+
+
+            <div class="skill-footer">
+
+                <div class="gap">
+                    Потенциал: ${gap}
+                </div>
+
+                <label class="importance">
+
+                    <input
+                        type="checkbox"
+                        data-importance="${skill.id}"
+                        ${state.importance[skill.id] ? "checked" : ""}
+                    >
+
+                    Приоритет
+
+                </label>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    bindSkillEvents();
+
+}
+
+
+// ======================================================
+// СОБЫТИЯ
+// ======================================================
+
+function bindSkillEvents() {
+
+    document
+        .querySelectorAll("[data-current]")
+        .forEach(input => {
+
+            input.addEventListener(
+                "input",
+                event => {
+
+                    const id =
+                        event.target.dataset.current;
+
+                    state.values[id] =
+                        Number(event.target.value);
+
+                    document
+                        .getElementById(`current-${id}`)
+                        .textContent =
+                        event.target.value;
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll("[data-desired]")
+        .forEach(input => {
+
+            input.addEventListener(
+                "input",
+                event => {
+
+                    const id =
+                        event.target.dataset.desired;
+
+                    state.desired[id] =
+                        Number(event.target.value);
+
+                    document
+                        .getElementById(`desired-${id}`)
+                        .textContent =
+                        event.target.value;
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll("[data-importance]")
+        .forEach(input => {
+
+            input.addEventListener(
+                "change",
+                event => {
+
+                    const id =
+                        event.target.dataset.importance;
+
+                    state.importance[id] =
+                        event.target.checked;
+
+                }
+            );
+
+        });
+
+}
+
+
+// ======================================================
+// РЕЗУЛЬТАТЫ
+// ======================================================
+
+function buildResults() {
+
+    const evaluated =
+        skills.filter(
+            skill =>
+                state.values[skill.id] > 0
+        );
+
+
+    const count =
+        evaluated.length;
+
+
+    const average =
+        count
+            ? evaluated.reduce(
+                (sum, skill) =>
+                    sum + state.values[skill.id],
+                0
+            ) / count
+            : 0;
+
+
+    const strong =
+        evaluated.filter(
+            skill =>
+                state.values[skill.id] >= 8
+        );
+
+
+    const totalPotential =
+        evaluated.length
+            ? evaluated.reduce(
+                (sum, skill) =>
+                    sum +
+                    Math.max(
+                        0,
+                        state.desired[skill.id] -
+                        state.values[skill.id]
+                    ),
+                0
+            ) / evaluated.length
+            : 0;
+
+
+    document.getElementById("statCount")
+        .textContent = count;
+
+    document.getElementById("statAverage")
+        .textContent = average.toFixed(1);
+
+    document.getElementById("statStrong")
+        .textContent = strong.length;
+
+    document.getElementById("statPotential")
+        .textContent = totalPotential.toFixed(1);
+
+
+    renderResultList(
+        "strongList",
+        evaluated
+            .sort(
+                (a, b) =>
+                    state.values[b.id] -
+                    state.values[a.id]
+            )
+            .slice(0, 7)
+    );
+
+
+    renderResultList(
+        "developmentList",
+        [...evaluated]
+            .sort(
+                (a, b) =>
+                    (state.desired[b.id] - state.values[b.id]) -
+                    (state.desired[a.id] - state.values[a.id])
+            )
+            .slice(0, 7)
+    );
+
+
+    const priorities =
+        skills.filter(
+            skill =>
+                state.importance[skill.id]
+        );
+
+
+    renderResultList(
+        "priorityList",
+        priorities.length
+            ? priorities
+            : [...evaluated]
+                .sort(
+                    (a, b) =>
+                        (state.desired[b.id] - state.values[b.id]) -
+                        (state.desired[a.id] - state.values[a.id])
+                )
+                .slice(0, 5)
+    );
+
+
+    document
+        .getElementById("results")
+        .classList.add("visible");
+
+
+    drawChart();
+
+    document
+        .getElementById("results")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+function renderResultList(
+    elementId,
+    list
+) {
+
+    const container =
+        document.getElementById(elementId);
+
+    container.innerHTML = "";
+
+
+    if (!list.length) {
+
+        container.innerHTML = `
+            <li>
+                Недостаточно данных для анализа.
+            </li>
+        `;
+
+        return;
+
+    }
+
+
+    list.forEach(skill => {
+
+        const current =
+            state.values[skill.id];
+
+        const desired =
+            state.desired[skill.id];
+
+        const gap =
+            Math.max(
+                0,
+                desired - current
+            );
+
+
+        const li =
+            document.createElement("li");
+
+        li.innerHTML = `
+
+            <div class="result-name">
+                ${skill.name}
+            </div>
+
+            <div class="result-meta">
+                ${skill.category}
+                · текущий уровень ${current}/10
+                · желаемый ${desired}/10
+                · потенциал ${gap}
+            </div>
+
+        `;
+
+        container.appendChild(li);
+
+    });
+
+}
+
+
+// ======================================================
+// ДИАГРАММА
+// ======================================================
+
+function drawChart() {
+
+    const canvas =
+        document.getElementById("skillsChart");
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const centerX =
+        width / 2;
+
+    const centerY =
+        height / 2;
+
+    const radius =
+        Math.min(width, height) * 0.36;
+
+
+    const categories = [
+        ...new Set(
+            skills.map(
+                skill =>
+                    skill.category
+            )
+        )
+    ];
+
+
+    const categoryValues =
+        categories.map(category => {
+
+            const list =
+                skills.filter(
+                    skill =>
+                        skill.category === category &&
+                        state.values[skill.id] > 0
+                );
+
+
+            if (!list.length) {
+                return 0;
+            }
+
+
+            return list.reduce(
+                (sum, skill) =>
+                    sum + state.values[skill.id],
+                0
+            ) / list.length;
+
+        });
+
+
+    // Сетка
+
+    ctx.strokeStyle = "#343b49";
+    ctx.lineWidth = 1;
+
+
+    for (
+        let level = 2;
+        level <= 10;
+        level += 2
+    ) {
+
+        const r =
+            radius * level / 10;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            centerX,
+            centerY,
+            r,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    // Радиальные линии
+
+    categories.forEach(
+        (_, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                index *
+                (Math.PI * 2 / categories.length);
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                centerX,
+                centerY
+            );
+
+            ctx.lineTo(
+                centerX +
+                Math.cos(angle) * radius,
+
+                centerY +
+                Math.sin(angle) * radius
+            );
+
+            ctx.stroke();
+
+        }
+    );
+
+
+    // Профиль
+
+    ctx.beginPath();
+
+
+    categoryValues.forEach(
+        (value, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                index *
+                (Math.PI * 2 / categories.length);
+
+            const r =
+                radius * value / 10;
+
+
+            const x =
+                centerX +
+                Math.cos(angle) * r;
+
+            const y =
+                centerY +
+                Math.sin(angle) * r;
+
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+
+        }
+    );
+
+
+    ctx.closePath();
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.10)";
+
+    ctx.fill();
+
+
+    // Подписи
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+
+
+    categories.forEach(
+        (category, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                index *
+                (Math.PI * 2 / categories.length);
+
+            const labelRadius =
+                radius + 55;
+
+
+            const x =
+                centerX +
+                Math.cos(angle) *
+                labelRadius;
+
+            const y =
+                centerY +
+                Math.sin(angle) *
+                labelRadius;
+
+
+            ctx.fillText(
+                category,
+                x,
+                y
+            );
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// ПОИСК
+// ======================================================
+
+document
+    .getElementById("searchInput")
+    .addEventListener(
+        "input",
+        renderSkills
+    );
+
+
+document
+    .getElementById("sortSelect")
+    .addEventListener(
+        "change",
+        renderSkills
+    );
+
+
+// ======================================================
+// КНОПКИ
+// ======================================================
+
+document
+    .getElementById("resultsBtn")
+    .addEventListener(
+        "click",
+        buildResults
+    );
+
+
+document
+    .getElementById("saveBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            saveState();
+
+            alert(
+                "Карта навыков сохранена на этом устройстве."
+            );
+
+        }
+    );
+
+
+document
+    .getElementById("resetBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            if (
+                !confirm(
+                    "Сбросить все оценки?"
+                )
+            ) {
+                return;
+            }
+
+            state =
+                defaultState();
+
+            saveState();
+
+            renderSkills();
+
+            document
+                .getElementById("results")
+                .classList.remove("visible");
+
+        }
+    );
+
+
+// ======================================================
+// ЭКСПОРТ
+// ======================================================
+
+document
+    .getElementById("exportBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            const data = {
+
+                version: 1,
+
+                createdAt:
+                    new Date().toISOString(),
+
+                skills: state
+
+            };
+
+
+            const blob =
+                new Blob(
+                    [
+                        JSON.stringify(
+                            data,
+                            null,
+                            2
+                        )
+                    ],
+                    {
+                        type:
+                            "application/json"
+                    }
+                );
+
+
+            const url =
+                URL.createObjectURL(blob);
+
+
+            const a =
+                document.createElement("a");
+
+            a.href = url;
+
+            a.download =
+                "skills-map.json";
+
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+        }
+    );
+
+
+// ======================================================
+// ИМПОРТ
+// ======================================================
+
+document
+    .getElementById("importBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            document
+                .getElementById("importFile")
+                .click();
+
+        }
+    );
+
+
+document
+    .getElementById("importFile")
+    .addEventListener(
+        "change",
+        event => {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                e => {
+
+                    try {
+
+                        const data =
+                            JSON.parse(
+                                e.target.result
+                            );
+
+
+                        if (!data.skills) {
+                            throw new Error();
+                        }
+
+
+                        const base =
+                            defaultState();
+
+
+                        state = {
+
+                            values: {
+                                ...base.values,
+                                ...(data.skills.values || {})
+                            },
+
+                            desired: {
+                                ...base.desired,
+                                ...(data.skills.desired || {})
+                            },
+
+                            importance: {
+                                ...base.importance,
+                                ...(data.skills.importance || {})
+                            }
+
+                        };
+
+
+                        saveState();
+
+                        renderSkills();
+
+                        alert(
+                            "Карта навыков импортирована."
+                        );
+
+
+                    } catch {
+
+                        alert(
+                            "Не удалось прочитать файл."
+                        );
+
+                    }
+
+                };
+
+
+            reader.readAsText(file);
+
+        }
+    );
+
+
+// ======================================================
+// ПЕЧАТЬ
+// ======================================================
+
+document
+    .getElementById("printBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            buildResults();
+
+            setTimeout(
+                () => window.print(),
+                500
+            );
+
+        }
+    );
+
+
+// ======================================================
+// TELEGRAM WEB APP
+// ======================================================
+
+if (
+    window.Telegram &&
+    window.Telegram.WebApp
+) {
+
+    try {
+
+        window.Telegram.WebApp.ready();
+
+        window.Telegram.WebApp.expand();
+
+    } catch (error) {
+
+        console.log(
+            "Telegram WebApp:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// АВТОСОХРАНЕНИЕ
+// ======================================================
+
+setInterval(
+    saveState,
+    5000
+);
+
+</script>
+
+</body>
+</html>
