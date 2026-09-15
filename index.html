@@ -131,6 +131,87 @@ h1 {
     transition: width .3s ease;
 }
 
+/* ===== ЧЕК-ЛИСТ КАТЕГОРИЙ ===== */
+
+.checklist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+
+.checklist-summary {
+    width: 100%;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.checklist-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    background: #10131a;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s ease;
+    font-family: inherit;
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.checklist-item:active {
+    transform: scale(.97);
+}
+
+.checklist-item .checklist-check {
+    font-size: 12px;
+    line-height: 1;
+    opacity: .35;
+    transition: opacity .15s ease, color .15s ease;
+}
+
+.checklist-item.done {
+    color: var(--good);
+    border-color: rgba(85,214,138,.35);
+    background: rgba(85,214,138,.07);
+}
+
+.checklist-item.done .checklist-check {
+    opacity: 1;
+    color: var(--good);
+}
+
+.checklist-item.partial {
+    color: var(--accent);
+    border-color: rgba(124,140,255,.30);
+    background: rgba(124,140,255,.05);
+}
+
+.checklist-item.partial .checklist-check {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.checklist-item.active {
+    color: var(--text);
+    border-color: var(--accent);
+    background: rgba(124,140,255,.12);
+    box-shadow: 0 0 0 1px rgba(124,140,255,.35) inset;
+}
+
+.checklist-item.active .checklist-check {
+    opacity: 1;
+}
+
 /* Category */
 
 .category-box {
@@ -332,10 +413,9 @@ button:active {
 }
 
 #skillsRadar {
-    width: 100%;
-    max-width: 620px;
-    height: auto;
     display: block;
+    max-width: 100%;
+    height: auto;
 }
 
 /* Category circles */
@@ -355,26 +435,26 @@ button:active {
 }
 
 .circle {
-    width: 105px;
-    height: 105px;
+    width: 118px;
+    height: 118px;
     margin: 0 auto 12px;
     border-radius: 50%;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        conic-gradient(
-            var(--accent) var(--percent),
-            #303642 var(--percent)
-        );
+    background: conic-gradient(
+        var(--ring-color, var(--accent)) var(--percent),
+        #303642 var(--percent)
+    );
+    transition: transform .25s ease;
 }
 
 .circle::before {
     content: "";
     position: absolute;
-    width: 77px;
-    height: 77px;
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
     background: var(--card2);
 }
@@ -382,8 +462,20 @@ button:active {
 .circle-value {
     position: relative;
     z-index: 2;
-    font-size: 23px;
+    font-size: 25px;
     font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+}
+
+.circle-level {
+    position: relative;
+    z-index: 2;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
 }
 
 .category-result-name {
@@ -506,17 +598,21 @@ footer {
     }
 
     .circle {
-        width: 88px;
-        height: 88px;
+        width: 100px;
+        height: 100px;
     }
 
     .circle::before {
-        width: 65px;
-        height: 65px;
+        width: 73px;
+        height: 73px;
     }
 
     .circle-value {
-        font-size: 19px;
+        font-size: 21px;
+    }
+
+    .circle-level {
+        font-size: 9px;
     }
 
     .stats {
@@ -559,6 +655,9 @@ footer {
                 <div class="progress-bar" id="progressBar"></div>
             </div>
         </div>
+
+        <!-- Чек-лист категорий -->
+        <div class="checklist" id="checklist"></div>
 
 
         <div class="section-title">
@@ -711,7 +810,7 @@ footer {
         </div>
 
         <div class="radar-container">
-            <canvas id="skillsRadar" width="620" height="620"></canvas>
+            <canvas id="skillsRadar"></canvas>
         </div>
 
     </div>
@@ -1066,11 +1165,25 @@ const categories = {
 
 let results = {};
 
+/* Отдельно храним, какие категории пользователь подтвердил
+   кнопкой «Сохранить категорию» — чтобы отличать «в процессе»
+   от «завершено». */
+let completedCategories = {};
+
 let currentCategoryIndex = 0;
 
 let currentCategory = null;
 
-let fullAssessment = false;
+/* Кэш для перерисовки радара при resize */
+let lastCategoryData = null;
+
+
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
+
+const STORAGE_KEY = "psyToolsSkills";
+const STORAGE_COMPLETED_KEY = "psyToolsSkillsCompleted";
 
 
 /* =========================================================
@@ -1094,6 +1207,35 @@ const nextScreen =
 
 const resultsScreen =
     document.getElementById("resultsScreen");
+
+
+/* =========================================================
+   SAFE CONFIRM / ALERT
+   В Telegram WebView нативные диалоги иногда блокируются,
+   поэтому используем SDK, если он доступен.
+========================================================= */
+
+function safeConfirm(message) {
+    return new Promise(resolve => {
+        if (tg && typeof tg.showConfirm === "function") {
+            try {
+                tg.showConfirm(message, ok => resolve(!!ok));
+                return;
+            } catch (e) {}
+        }
+        resolve(window.confirm(message));
+    });
+}
+
+function safeAlert(message) {
+    if (tg && typeof tg.showAlert === "function") {
+        try {
+            tg.showAlert(message);
+            return;
+        } catch (e) {}
+    }
+    window.alert(message);
+}
 
 
 /* =========================================================
@@ -1133,6 +1275,22 @@ function init() {
     );
 
     loadCategory(0);
+}
+
+
+/* =========================================================
+   STATE HELPERS
+========================================================= */
+
+function isCategoryTouched(name) {
+    return !!(
+        results[name] &&
+        Object.keys(results[name]).length > 0
+    );
+}
+
+function isCategoryCompleted(name) {
+    return completedCategories[name] === true;
 }
 
 
@@ -1179,7 +1337,7 @@ function loadCategory(index) {
             <div class="skill-top">
 
                 <div class="skill-name">
-                    ${skill}
+                    ${escapeHtml(skill)}
                 </div>
 
                 <div
@@ -1214,40 +1372,53 @@ function loadCategory(index) {
     });
 
     updateProgress();
+    updateChecklist();
+    refreshCategorySelect();
 }
 
 
 /* =========================================================
-   RANGE UPDATE
+   RANGE UPDATE — с автосохранением
 ========================================================= */
 
-function updateSkillValue(
-    input,
-    index
-) {
+function updateSkillValue(input, index) {
 
-    const value =
-        Number(input.value);
+    const value = Number(input.value);
 
+    /* Обновляем цифру рядом с навыком */
     const output =
-        document.getElementById(
-            `value-${index}`
-        );
+        document.getElementById(`value-${index}`);
 
-    output.textContent = value;
+    if (output) output.textContent = value;
 
-    if (tg) {
+    /* Автосохранение в results */
+    if (!results[currentCategory]) {
+        results[currentCategory] = {};
+    }
+
+    const skill = input.dataset.skill;
+
+    if (skill) {
+        results[currentCategory][skill] = value;
+        saveResults();
+    }
+
+    /* Обновляем индикаторы прогресса */
+    updateChecklist();
+    updateProgress();
+    refreshCategorySelect();
+
+    /* Haptic */
+    if (tg && tg.HapticFeedback) {
         try {
-            tg.HapticFeedback.impactOccurred(
-                "light"
-            );
+            tg.HapticFeedback.impactOccurred("light");
         } catch (e) {}
     }
 }
 
 
 /* =========================================================
-   SAVE CATEGORY
+   SAVE CATEGORY (подтверждение)
 ========================================================= */
 
 function saveCategory() {
@@ -1274,7 +1445,13 @@ function saveCategory() {
 
     });
 
+    /* Помечаем категорию как подтверждённую */
+    completedCategories[currentCategory] = true;
+
     saveResults();
+    updateChecklist();
+    updateProgress();
+    refreshCategorySelect();
 
     showDecisionScreen();
 }
@@ -1292,96 +1469,72 @@ function showDecisionScreen() {
 
     const values =
         Object.values(
-            results[currentCategory]
+            results[currentCategory] || {}
         );
 
     const average =
         values.length
-            ? values.reduce((a,b) => a+b, 0) /
-              values.length
+            ? values.reduce((a, b) => a + b, 0) / values.length
             : 0;
 
     document.getElementById(
         "decisionText"
     ).textContent =
-        `Вы оценили ${values.length} навыков. Средний уровень категории — ${average.toFixed(1)} из 5.`;
+        `Вы оценили ${values.length} навыков. ` +
+        `Средний уровень категории — ${average.toFixed(1)} из 5.`;
 }
 
 
 /* =========================================================
-   FULL ASSESSMENT
+   FIND NEXT UNCOMPLETED CATEGORY
+   Идёт последовательно после текущей, затем wrap-around.
+========================================================= */
+
+function findNextUncompletedCategory() {
+
+    const names = Object.keys(categories);
+    const start = currentCategoryIndex;
+
+    for (let i = start + 1; i < names.length; i++) {
+        if (!isCategoryCompleted(names[i])) return i;
+    }
+
+    for (let i = 0; i <= start; i++) {
+        if (!isCategoryCompleted(names[i])) return i;
+    }
+
+    return -1;
+}
+
+
+/* =========================================================
+   CONTINUE FULL ASSESSMENT
 ========================================================= */
 
 function continueFullAssessment() {
 
-    fullAssessment = true;
-
     decisionScreen.classList.add("hidden");
-    nextScreen.classList.remove("hidden");
 
-    const names =
-        Object.keys(categories);
-
-    const nextIndex =
-        findNextUncompletedCategory();
+    const nextIndex = findNextUncompletedCategory();
 
     if (nextIndex === -1) {
-
-        document.getElementById(
-            "nextCategoryText"
-        ).textContent =
-            "Все категории уже оценены. Можно перейти к результатам.";
-
-        const button =
-            nextScreen.querySelector(
-                "button"
-            );
-
-        button.textContent =
-            "Показать результаты";
-
-        button.onclick =
-            finishAssessment;
-
+        /* Всё уже оценено → сразу к результатам */
+        finishAssessment();
         return;
     }
+
+    const names = Object.keys(categories);
+
+    nextScreen.classList.remove("hidden");
 
     document.getElementById(
         "nextCategoryText"
     ).textContent =
         `Следующая категория: ${names[nextIndex]}`;
 
-}
-
-
-/* =========================================================
-   FIND NEXT CATEGORY
-========================================================= */
-
-function findNextUncompletedCategory() {
-
-    const names =
-        Object.keys(categories);
-
-    for (
-        let i = 0;
-        i < names.length;
-        i++
-    ) {
-
-        const name =
-            names[i];
-
-        if (
-            !results[name] ||
-            Object.keys(results[name]).length === 0
-        ) {
-            return i;
-        }
-
-    }
-
-    return -1;
+    const btn = nextScreen.querySelector("button");
+    btn.textContent = "Далее";
+    btn.onclick = goNextCategory;
 }
 
 
@@ -1391,8 +1544,7 @@ function findNextUncompletedCategory() {
 
 function goNextCategory() {
 
-    const nextIndex =
-        findNextUncompletedCategory();
+    const nextIndex = findNextUncompletedCategory();
 
     if (nextIndex === -1) {
         finishAssessment();
@@ -1429,6 +1581,26 @@ function finishAssessment() {
 
 
 /* =========================================================
+   RING COLOR / LEVEL
+========================================================= */
+
+function getRingColor(avg) {
+    if (avg >= 4) return "var(--good)";
+    if (avg >= 3) return "var(--accent)";
+    if (avg >= 2) return "var(--warning)";
+    return "var(--danger)";
+}
+
+function getLevelLabel(avg) {
+    if (avg >= 4.5) return "профи";
+    if (avg >= 3.5) return "продвинутый";
+    if (avg >= 2.5) return "уверенный";
+    if (avg >= 1.5) return "начальный";
+    return "нет опыта";
+}
+
+
+/* =========================================================
    RESULTS
 ========================================================= */
 
@@ -1440,19 +1612,14 @@ function renderResults() {
 
     Object.keys(results).forEach(category => {
 
-        const skillValues =
-            results[category];
+        const skillValues = results[category];
 
-        const values =
-            Object.values(skillValues);
+        const values = Object.values(skillValues);
 
         if (!values.length) return;
 
         const average =
-            values.reduce(
-                (a,b) => a+b,
-                0
-            ) / values.length;
+            values.reduce((a, b) => a + b, 0) / values.length;
 
         categoryData.push({
             name: category,
@@ -1460,16 +1627,12 @@ function renderResults() {
             count: values.length
         });
 
-        Object.entries(
-            skillValues
-        ).forEach(([name, value]) => {
-
+        Object.entries(skillValues).forEach(([name, value]) => {
             allSkills.push({
                 category,
                 name,
                 value
             });
-
         });
 
     });
@@ -1477,12 +1640,8 @@ function renderResults() {
 
     if (!allSkills.length) {
 
-        alert(
-            "Сначала оцените хотя бы одну категорию."
-        );
-
+        safeAlert("Сначала оцените хотя бы одну категорию.");
         backToAssessment();
-
         return;
     }
 
@@ -1490,82 +1649,47 @@ function renderResults() {
     /* Overall */
 
     const average =
-        allSkills.reduce(
-            (sum, item) =>
-                sum + item.value,
-            0
-        ) / allSkills.length;
+        allSkills.reduce((sum, item) => sum + item.value, 0) /
+        allSkills.length;
 
-    const max =
-        Math.max(
-            ...allSkills.map(
-                item => item.value
-            )
-        );
-
-    const min =
-        Math.min(
-            ...allSkills.map(
-                item => item.value
-            )
-        );
+    const max = Math.max(...allSkills.map(item => item.value));
+    const min = Math.min(...allSkills.map(item => item.value));
 
 
-    document.getElementById(
-        "overallScore"
-    ).textContent =
+    document.getElementById("overallScore").textContent =
         average.toFixed(1);
 
-
-    document.getElementById(
-        "statAverage"
-    ).textContent =
+    document.getElementById("statAverage").textContent =
         average.toFixed(1);
 
-
-    document.getElementById(
-        "statMax"
-    ).textContent =
-        max;
-
-
-    document.getElementById(
-        "statMin"
-    ).textContent =
-        min;
+    document.getElementById("statMax").textContent = max;
+    document.getElementById("statMin").textContent = min;
 
 
     /* Category cards */
 
     const categoryResults =
-        document.getElementById(
-            "categoryResults"
-        );
+        document.getElementById("categoryResults");
 
     categoryResults.innerHTML = "";
 
 
     categoryData.forEach(item => {
 
-        const percent =
-            (item.average / 5) * 100;
+        const percent = (item.average / 5) * 100;
+        const ringColor = getRingColor(item.average);
+        const level = getLevelLabel(item.average);
 
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "category-result";
+        const card = document.createElement("div");
+        card.className = "category-result";
 
         card.innerHTML = `
-
-            <div
-                class="circle"
-                style="--percent:${percent}%">
-
-                <div class="circle-value">
-                    ${item.average.toFixed(1)}
+            <div class="circle"
+                 style="--percent:${percent}%; --ring-color:${ringColor};">
+                <div>
+                    <div class="circle-value">${item.average.toFixed(1)}</div>
+                    <div class="circle-level">${level}</div>
                 </div>
-
             </div>
 
             <div class="category-result-name">
@@ -1586,43 +1710,29 @@ function renderResults() {
 
     const strengths =
         [...allSkills]
-        .sort(
-            (a,b) =>
-                b.value - a.value
-        )
+        .sort((a, b) => b.value - a.value)
         .slice(0, 7);
 
-
     const strengthsList =
-        document.getElementById(
-            "strengthsList"
-        );
+        document.getElementById("strengthsList");
 
     strengthsList.innerHTML = "";
 
-
     strengths.forEach(item => {
 
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "result-skill";
+        const row = document.createElement("div");
+        row.className = "result-skill";
 
         row.innerHTML = `
-
             <div class="result-skill-name">
                 ${escapeHtml(item.name)}
             </div>
-
             <div class="result-skill-value good">
                 ${item.value}/5
             </div>
-
         `;
 
         strengthsList.appendChild(row);
-
     });
 
 
@@ -1630,64 +1740,44 @@ function renderResults() {
 
     const development =
         [...allSkills]
-        .sort(
-            (a,b) =>
-                a.value - b.value
-        )
+        .sort((a, b) => a.value - b.value)
         .slice(0, 7);
 
-
     const developmentList =
-        document.getElementById(
-            "developmentList"
-        );
+        document.getElementById("developmentList");
 
     developmentList.innerHTML = "";
 
-
     development.forEach(item => {
 
-        const row =
-            document.createElement("div");
+        const row = document.createElement("div");
+        row.className = "result-skill";
 
-        row.className =
-            "result-skill";
-
-        let className =
-            item.value <= 2
-                ? "danger"
-                : "warning";
+        const className =
+            item.value <= 2 ? "danger" : "warning";
 
         row.innerHTML = `
-
             <div class="result-skill-name">
                 ${escapeHtml(item.name)}
             </div>
-
-            <div
-                class="result-skill-value ${className}">
+            <div class="result-skill-value ${className}">
                 ${item.value}/5
             </div>
-
         `;
 
         developmentList.appendChild(row);
-
     });
 
 
     /* Interpretation */
 
-    renderInterpretation(
-        average,
-        categoryData
-    );
+    renderInterpretation(average, categoryData);
 
 
     /* Radar */
 
+    lastCategoryData = categoryData;
     drawRadar(categoryData);
-
 }
 
 
@@ -1695,403 +1785,229 @@ function renderResults() {
    INTERPRETATION
 ========================================================= */
 
-function renderInterpretation(
-    average,
-    categoryData
-) {
+function renderInterpretation(average, categoryData) {
 
     let text = "";
 
     if (average < 2) {
-
         text =
-            "Большинство оценённых навыков находятся на начальном уровне. Это не означает отсутствие потенциала — скорее, карта показывает направления, в которых ещё предстоит накопить опыт.";
-
+            "Большинство оценённых навыков находятся на начальном уровне. " +
+            "Это не означает отсутствие потенциала — скорее, карта показывает " +
+            "направления, в которых ещё предстоит накопить опыт.";
     } else if (average < 3) {
-
         text =
-            "У вас формируется набор практических навыков, однако многие из них пока находятся на начальном или переходном уровне. Наиболее полезно сосредоточиться на нескольких направлениях и переводить знания в регулярную практику.";
-
+            "У вас формируется набор практических навыков, однако многие " +
+            "из них пока находятся на начальном или переходном уровне. " +
+            "Наиболее полезно сосредоточиться на нескольких направлениях " +
+            "и переводить знания в регулярную практику.";
     } else if (average < 4) {
-
         text =
-            "У вас достаточно широкий набор навыков с преимущественно уверенным уровнем владения. На этом этапе особенно полезно определить несколько сильных направлений и углублять их до продвинутого уровня.";
-
+            "У вас достаточно широкий набор навыков с преимущественно " +
+            "уверенным уровнем владения. На этом этапе особенно полезно " +
+            "определить несколько сильных направлений и углублять их " +
+            "до продвинутого уровня.";
     } else {
-
         text =
-            "Карта показывает высокий средний уровень по оценённым навыкам. Вероятно, у вас уже сформирован значительный практический опыт. Следующий шаг — специализация, интеграция навыков и создание проектов на их основе.";
-
+            "Карта показывает высокий средний уровень по оценённым навыкам. " +
+            "Вероятно, у вас уже сформирован значительный практический опыт. " +
+            "Следующий шаг — специализация, интеграция навыков и создание " +
+            "проектов на их основе.";
     }
 
 
     if (categoryData.length === 1) {
-
         text +=
-            " Сейчас оценена только одна категория. Для более полноценной карты можно пройти остальные категории.";
-
+            " Сейчас оценена только одна категория. Для более полноценной " +
+            "карты можно пройти остальные категории.";
     } else {
-
-        text +=
-            ` Оценено категорий: ${categoryData.length}.`;
-
+        text += ` Оценено категорий: ${categoryData.length}.`;
     }
 
 
-    document.getElementById(
-        "interpretation"
-    ).textContent = text;
+    document.getElementById("interpretation").textContent = text;
 }
 
 
 /* =========================================================
-   RADAR CHART
+   RADAR CHART (Hi-DPI)
 ========================================================= */
 
-function drawRadar(
-    categoryData
-) {
+function drawRadar(categoryData) {
 
-    const canvas =
-        document.getElementById(
-            "skillsRadar"
-        );
+    const canvas = document.getElementById("skillsRadar");
+    if (!canvas) return;
 
-    const ctx =
-        canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
 
-    const width =
-        canvas.width;
+    /* --- Hi-DPI --- */
+    const dpr = window.devicePixelRatio || 1;
 
-    const height =
-        canvas.height;
+    const containerWidth =
+        (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
 
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
+    const cssSize = Math.max(
+        240,
+        Math.min(containerWidth || 620, 620)
     );
 
+    canvas.style.width  = cssSize + "px";
+    canvas.style.height = cssSize + "px";
+    canvas.width  = Math.round(cssSize * dpr);
+    canvas.height = Math.round(cssSize * dpr);
 
-    if (!categoryData.length) {
-        return;
-    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
+    const width  = cssSize;
+    const height = cssSize;
 
-    const cx =
-        width / 2;
+    ctx.clearRect(0, 0, width, height);
 
-    const cy =
-        height / 2;
+    if (!categoryData.length) return;
 
-    const radius =
-        Math.min(
-            width,
-            height
-        ) * 0.32;
-
-
-    const count =
-        categoryData.length;
-
-
-    /*
-       На очень большом количестве категорий
-       подписи уменьшаются.
-    */
-
-    const labelRadius =
-        radius + 58;
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) * 0.32;
+    const count = categoryData.length;
+    const labelRadius = radius + 58;
 
 
     /* Grid */
+    for (let level = 1; level <= 5; level++) {
 
-    for (
-        let level = 1;
-        level <= 5;
-        level++
-    ) {
-
-        const r =
-            radius * level / 5;
+        const r = radius * level / 5;
 
         ctx.beginPath();
 
-        for (
-            let i = 0;
-            i < count;
-            i++
-        ) {
+        for (let i = 0; i < count; i++) {
 
             const angle =
-                -Math.PI / 2 +
-                i * 2 * Math.PI / count;
+                -Math.PI / 2 + i * 2 * Math.PI / count;
 
-            const x =
-                cx +
-                Math.cos(angle) * r;
+            const x = cx + Math.cos(angle) * r;
+            const y = cy + Math.sin(angle) * r;
 
-            const y =
-                cy +
-                Math.sin(angle) * r;
-
-            if (i === 0) {
-                ctx.moveTo(x,y);
-            } else {
-                ctx.lineTo(x,y);
-            }
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
         }
 
         ctx.closePath();
-
-        ctx.strokeStyle =
-            "rgba(255,255,255,.10)";
-
+        ctx.strokeStyle = "rgba(255,255,255,.10)";
         ctx.lineWidth = 1;
-
         ctx.stroke();
     }
 
 
     /* Axes */
-
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
+    for (let i = 0; i < count; i++) {
 
         const angle =
-            -Math.PI / 2 +
-            i * 2 * Math.PI / count;
+            -Math.PI / 2 + i * 2 * Math.PI / count;
 
-        const x =
-            cx +
-            Math.cos(angle) * radius;
-
-        const y =
-            cy +
-            Math.sin(angle) * radius;
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
 
         ctx.beginPath();
-
-        ctx.moveTo(cx,cy);
-        ctx.lineTo(x,y);
-
-        ctx.strokeStyle =
-            "rgba(255,255,255,.10)";
-
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = "rgba(255,255,255,.10)";
         ctx.stroke();
     }
 
 
     /* Data */
-
     ctx.beginPath();
 
-    categoryData.forEach(
-        (item,index) => {
+    categoryData.forEach((item, index) => {
 
-            const angle =
-                -Math.PI / 2 +
-                index *
-                2 * Math.PI / count;
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
 
-            const r =
-                radius *
-                item.average / 5;
+        const r = radius * item.average / 5;
 
-            const x =
-                cx +
-                Math.cos(angle) * r;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
 
-            const y =
-                cy +
-                Math.sin(angle) * r;
-
-            if (index === 0) {
-                ctx.moveTo(x,y);
-            } else {
-                ctx.lineTo(x,y);
-            }
-
-        }
-    );
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
 
     ctx.closePath();
 
-    ctx.fillStyle =
-        "rgba(124,140,255,.22)";
-
+    ctx.fillStyle = "rgba(124,140,255,.22)";
     ctx.fill();
 
-    ctx.strokeStyle =
-        "#7c8cff";
-
+    ctx.strokeStyle = "#7c8cff";
     ctx.lineWidth = 3;
-
     ctx.stroke();
 
 
     /* Points */
+    categoryData.forEach((item, index) => {
 
-    categoryData.forEach(
-        (item,index) => {
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
 
-            const angle =
-                -Math.PI / 2 +
-                index *
-                2 * Math.PI / count;
+        const r = radius * item.average / 5;
 
-            const r =
-                radius *
-                item.average / 5;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
 
-            const x =
-                cx +
-                Math.cos(angle) * r;
-
-            const y =
-                cy +
-                Math.sin(angle) * r;
-
-            ctx.beginPath();
-
-            ctx.arc(
-                x,
-                y,
-                5,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fillStyle =
-                "#9ca7ff";
-
-            ctx.fill();
-
-        }
-    );
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#9ca7ff";
+        ctx.fill();
+    });
 
 
     /* Labels */
+    categoryData.forEach((item, index) => {
 
-    categoryData.forEach(
-        (item,index) => {
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
 
-            const angle =
-                -Math.PI / 2 +
-                index *
-                2 * Math.PI / count;
+        const x = cx + Math.cos(angle) * labelRadius;
+        const y = cy + Math.sin(angle) * labelRadius;
 
-            const x =
-                cx +
-                Math.cos(angle) *
-                labelRadius;
+        ctx.fillStyle = "#d7dbe3";
+        ctx.font =
+            "12px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-            const y =
-                cy +
-                Math.sin(angle) *
-                labelRadius;
+        const words = item.name.split(" ");
+        const lines = [];
+        let current = "";
 
-            ctx.fillStyle =
-                "#d7dbe3";
+        words.forEach(word => {
 
-            ctx.font =
-                "12px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+            const test = current ? current + " " + word : word;
 
-            ctx.textAlign =
-                "center";
-
-            ctx.textBaseline =
-                "middle";
-
-
-            let label =
-                item.name;
-
-            /*
-              Для длинных названий
-              переносим текст.
-            */
-
-            const words =
-                label.split(" ");
-
-            const lines = [];
-
-            let current = "";
-
-            words.forEach(word => {
-
-                const test =
-                    current
-                        ? current + " " + word
-                        : word;
-
-                if (
-                    ctx.measureText(test)
-                        .width > 110
-                ) {
-
-                    if (current) {
-                        lines.push(current);
-                    }
-
-                    current = word;
-
-                } else {
-
-                    current = test;
-
-                }
-
-            });
-
-            if (current) {
-                lines.push(current);
+            if (ctx.measureText(test).width > 110) {
+                if (current) lines.push(current);
+                current = word;
+            } else {
+                current = test;
             }
+        });
 
+        if (current) lines.push(current);
 
-            lines.slice(0,3)
-                .forEach(
-                    (line,lineIndex) => {
-
-                        ctx.fillText(
-                            line,
-                            x,
-                            y +
-                            (
-                                lineIndex -
-                                (Math.min(lines.length,3)-1)/2
-                            ) * 15
-                        );
-
-                    }
-                );
-
-        }
-    );
+        lines.slice(0, 3).forEach((line, lineIndex) => {
+            ctx.fillText(
+                line,
+                x,
+                y + (lineIndex - (Math.min(lines.length, 3) - 1) / 2) * 15
+            );
+        });
+    });
 
 
     /* Center */
-
     ctx.beginPath();
-
-    ctx.arc(
-        cx,
-        cy,
-        4,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle =
-        "#ffffff";
-
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
-
 }
 
 
@@ -2101,46 +2017,100 @@ function drawRadar(
 
 function updateProgress() {
 
-    const names =
-        Object.keys(categories);
+    const names = Object.keys(categories);
 
     const completed =
-        names.filter(
-            name =>
-                results[name] &&
-                Object.keys(
-                    results[name]
-                ).length > 0
-        ).length;
+        names.filter(isCategoryCompleted).length;
 
-
-    const current =
-        currentCategoryIndex + 1;
+    const current = currentCategoryIndex + 1;
 
     const percent =
-        Math.round(
-            completed /
-            names.length *
-            100
-        );
+        Math.round(completed / names.length * 100);
 
-
-    document.getElementById(
-        "progressText"
-    ).textContent =
+    document.getElementById("progressText").textContent =
         `Категория ${current} из ${names.length}`;
 
-
-    document.getElementById(
-        "progressPercent"
-    ).textContent =
+    document.getElementById("progressPercent").textContent =
         `${percent}%`;
 
-
-    document.getElementById(
-        "progressBar"
-    ).style.width =
+    document.getElementById("progressBar").style.width =
         `${percent}%`;
+}
+
+
+/* =========================================================
+   CHECKLIST
+========================================================= */
+
+function updateChecklist() {
+
+    const container = document.getElementById("checklist");
+    if (!container) return;
+
+    const names = Object.keys(categories);
+    const completedCount = names.filter(isCategoryCompleted).length;
+
+    container.innerHTML = "";
+
+    /* Сводка */
+    const summary = document.createElement("div");
+    summary.className = "checklist-summary";
+    summary.textContent =
+        `Пройдено: ${completedCount} из ${names.length}`;
+    container.appendChild(summary);
+
+
+    /* Пункты */
+    names.forEach((name, index) => {
+
+        const done = isCategoryCompleted(name);
+        const touched = isCategoryTouched(name);
+        const active = index === currentCategoryIndex;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "checklist-item";
+
+        if (done) btn.classList.add("done");
+        else if (touched) btn.classList.add("partial");
+
+        if (active) btn.classList.add("active");
+
+        const mark = done ? "✓" : (touched ? "◐" : "○");
+
+        btn.innerHTML =
+            '<span class="checklist-check">' + mark + "</span>" +
+            '<span>' + escapeHtml(name) + "</span>";
+
+        btn.addEventListener("click", () => {
+            loadCategory(index);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        container.appendChild(btn);
+    });
+}
+
+
+/* =========================================================
+   REFRESH SELECT (статус в опциях)
+========================================================= */
+
+function refreshCategorySelect() {
+
+    const names = Object.keys(categories);
+    const opts = categorySelect.options;
+
+    for (let i = 0; i < opts.length; i++) {
+
+        const name = names[i];
+
+        let prefix = "";
+        if (isCategoryCompleted(name)) prefix = "✓ ";
+        else if (isCategoryTouched(name)) prefix = "◐ ";
+
+        opts[i].textContent = prefix + name;
+    }
 }
 
 
@@ -2155,9 +2125,7 @@ function backToAssessment() {
     nextScreen.classList.add("hidden");
     testScreen.classList.remove("hidden");
 
-    loadCategory(
-        currentCategoryIndex
-    );
+    loadCategory(currentCategoryIndex);
 
     window.scrollTo({
         top: 0,
@@ -2170,20 +2138,22 @@ function backToAssessment() {
    RESET
 ========================================================= */
 
-function resetTest() {
+async function resetTest() {
 
-    const confirmed =
-        confirm(
-            "Удалить все оценки и начать заново?"
-        );
+    const confirmed = await safeConfirm(
+        "Удалить все оценки и начать заново?"
+    );
 
     if (!confirmed) return;
 
     results = {};
+    completedCategories = {};
+    lastCategoryData = null;
 
-    localStorage.removeItem(
-        "psyToolsSkills"
-    );
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_COMPLETED_KEY);
+    } catch (e) {}
 
     currentCategoryIndex = 0;
 
@@ -2195,6 +2165,8 @@ function resetTest() {
     loadCategory(0);
 
     updateProgress();
+    updateChecklist();
+    refreshCategorySelect();
 
     window.scrollTo({
         top: 0,
@@ -2208,43 +2180,35 @@ function resetTest() {
 ========================================================= */
 
 function saveResults() {
-
     try {
-
         localStorage.setItem(
-            "psyToolsSkills",
+            STORAGE_KEY,
             JSON.stringify(results)
         );
-
-    } catch (e) {
-
-        console.log(
-            "Не удалось сохранить результаты",
-            e
+        localStorage.setItem(
+            STORAGE_COMPLETED_KEY,
+            JSON.stringify(completedCategories)
         );
-
+    } catch (e) {
+        console.log("Не удалось сохранить результаты", e);
     }
 }
 
 
 function loadResults() {
-
     try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) results = JSON.parse(saved) || {};
 
-        const saved =
-            localStorage.getItem(
-                "psyToolsSkills"
-            );
+        const savedCompleted =
+            localStorage.getItem(STORAGE_COMPLETED_KEY);
 
-        if (saved) {
-            results =
-                JSON.parse(saved);
+        if (savedCompleted) {
+            completedCategories = JSON.parse(savedCompleted) || {};
         }
-
     } catch (e) {
-
         results = {};
-
+        completedCategories = {};
     }
 }
 
@@ -2256,52 +2220,23 @@ function loadResults() {
 function exportResults() {
 
     const data = {
-
         title: "Карта навыков",
-
-        date:
-            new Date()
-                .toLocaleString(
-                    "ru-RU"
-                ),
-
-        results: results
-
+        date: new Date().toLocaleString("ru-RU"),
+        results: results,
+        completed: Object.keys(completedCategories)
     };
 
+    const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" }
+    );
 
-    const blob =
-        new Blob(
-            [
-                JSON.stringify(
-                    data,
-                    null,
-                    2
-                )
-            ],
-            {
-                type:
-                    "application/json"
-            }
-        );
+    const url = URL.createObjectURL(blob);
 
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const a =
-        document.createElement("a");
-
+    const a = document.createElement("a");
     a.href = url;
-
-    a.download =
-        "karta-navykov.json";
-
+    a.download = "karta-navykov.json";
     a.click();
-
 
     URL.revokeObjectURL(url);
 }
@@ -2312,30 +2247,27 @@ function exportResults() {
 ========================================================= */
 
 function escapeHtml(text) {
-
     return String(text)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
+
+
+/* =========================================================
+   RESIZE — перерисовка радара
+========================================================= */
+
+window.addEventListener("resize", () => {
+    if (
+        !resultsScreen.classList.contains("hidden") &&
+        lastCategoryData
+    ) {
+        drawRadar(lastCategoryData);
+    }
+});
 
 
 /* =========================================================
