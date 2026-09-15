@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Психологические инструменты</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #101218;
+            color: #ffffff;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+
+        .subtitle {
+            color: #aeb4c0;
+            font-size: 18px;
+            margin-bottom: 35px;
+        }
+
+        .tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #191d26;
+            border: 1px solid #2c3240;
+            border-radius: 20px;
+            padding: 25px;
+            min-height: 180px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #596274;
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 22px;
+        }
+
+        .card p {
+            color: #aeb4c0;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            background: #ffffff;
+            color: #101218;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #2c3240;
+            color: #737b8b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 0;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🧠 Психологические инструменты</h1>
+
+    <div class="subtitle">
+        Саморефлексия, исследование навыков и личное развитие
+    </div>
+
+    <div class="tools">
+
+        <div class="card">
+            <div class="icon">🌀</div>
+
+            <h2>Колесо баланса</h2>
+
+            <p>
+                Оценка удовлетворённости различными сферами жизни
+                и определение направлений для изменений.
+            </p>
+
+            <button onclick="openTool('wheel')">
+                Открыть
+            </button>
+        </div>
+
+
+        <div class="card">
+            <div class="icon">🧭</div>
+
+            <h2>Карта навыков</h2>
+
+            <p>
+                Исследование профессиональных, творческих,
+                технических и практических навыков.
+            </p>
+
+            <button onclick="openTool('skills')">
+                Скоро
+            </button>
+        </div>
+
+
+        <div class="card">
+            <div class="icon">🎨</div>
+
+            <h2>Тест Люшера</h2>
+
+            <p>
+                Цветовой тест с последующей интерпретацией
+                результатов.
+            </p>
+
+            <button onclick="openTool('luscher')">
+                Скоро
+            </button>
+        </div>
+
+
+        <div class="card">
+            <div class="icon">💼</div>
+
+            <h2>Профориентация</h2>
+
+            <p>
+                Исследование интересов, способностей и
+                возможных профессиональных направлений.
+            </p>
+
+            <button onclick="openTool('career')">
+                Скоро
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Инструменты предназначены для саморефлексии и
+        не являются медицинской или клинической диагностикой.
+    </div>
+
+</div>
+
+
+<script>
+
+function openTool(tool) {
+
+    if (tool === 'wheel') {
+        alert('Здесь скоро откроется «Колесо баланса».');
+    }
+
+    if (tool === 'skills') {
+        alert('Здесь будет «Карта навыков».');
+    }
+
+    if (tool === 'luscher') {
+        alert('Здесь будет тест Люшера.');
+    }
+
+    if (tool === 'career') {
+        alert('Здесь будет профориентация.');
+    }
+
+}
+
+</script>
+
+</body>
+</html>
