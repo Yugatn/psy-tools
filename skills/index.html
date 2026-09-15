@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <title>Карта навыков</title>
 
 <style>
@@ -53,13 +52,11 @@ h1 { margin: 0; font-size: 30px; font-weight: 750; }
 .section-title { font-size: 21px; font-weight: 700; margin-bottom: 6px; }
 .section-description { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 18px; }
 
-/* Progress */
 .progress-wrap { margin-bottom: 20px; }
 .progress-info { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin-bottom: 7px; }
 .progress { width: 100%; height: 8px; background: #272c37; border-radius: 20px; overflow: hidden; }
 .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 20px; transition: width .3s ease; }
 
-/* Checklist */
 .checklist { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
 .checklist-summary { width: 100%; color: var(--muted); font-size: 12px; margin-bottom: 2px; }
 
@@ -81,7 +78,6 @@ h1 { margin: 0; font-size: 30px; font-weight: 750; }
 .checklist-item.active { color: var(--text); border-color: var(--accent); background: rgba(124,140,255,.12); box-shadow: 0 0 0 1px rgba(124,140,255,.35) inset; }
 .checklist-item.active .checklist-check { opacity: 1; }
 
-/* Category */
 .category-box { background: var(--card2); border: 1px solid var(--border); border-radius: 17px; padding: 13px 15px; margin-bottom: 18px; }
 .category-label { color: var(--muted); font-size: 11px; margin-bottom: 6px; letter-spacing: .4px; }
 
@@ -94,7 +90,6 @@ select {
 }
 select:focus { border-color: var(--accent); }
 
-/* ===== Layout ===== */
 .category-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 460px;
@@ -124,7 +119,6 @@ select:focus { border-color: var(--accent); }
 .live-radar-container { display: flex; justify-content: center; align-items: center; width: 100%; }
 #liveSkillRadar { display: block; max-width: 100%; height: auto; }
 
-/* Skill card — компактнее */
 .skill {
     background: #10131a; border: 1px solid var(--border);
     border-radius: 14px; padding: 11px 13px 10px;
@@ -134,7 +128,6 @@ select:focus { border-color: var(--accent); }
 
 .skill-name { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; color: var(--text); }
 
-/* ===== Сегментированный контрол — компактный ===== */
 .segmented {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -180,7 +173,6 @@ select:focus { border-color: var(--accent); }
 .skill-level-hint.lv-4 { color: var(--good); }
 .skill-level-hint.lv-5 { color: #4be08a; }
 
-/* ===== Кнопки-модули ===== */
 .helper-box {
     background: linear-gradient(135deg, rgba(110,168,254,.08), rgba(156,124,255,.08));
     border: 1px solid rgba(124,140,255,.22);
@@ -189,19 +181,9 @@ select:focus { border-color: var(--accent); }
     margin-top: 14px;
 }
 
-.helper-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 9px;
-    letter-spacing: .2px;
-}
+.helper-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 9px; letter-spacing: .2px; }
 
-.helper-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
+.helper-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 .helper-btn {
     display: flex; align-items: center; gap: 8px;
@@ -210,8 +192,7 @@ select:focus { border-color: var(--accent); }
     border: 1px solid var(--border);
     border-radius: 11px;
     color: var(--text);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 12px; font-weight: 600;
     font-family: inherit;
     text-align: left;
     cursor: pointer;
@@ -226,7 +207,6 @@ select:focus { border-color: var(--accent); }
 .helper-btn-label { color: var(--text); font-size: 12px; font-weight: 700; }
 .helper-btn-sub { color: var(--muted); font-size: 10px; font-weight: 500; }
 
-/* ===== Buttons ===== */
 .buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
 
 button {
@@ -241,7 +221,6 @@ button:active { transform: scale(.97); }
 .btn-success { flex: 1; min-width: 180px; background: var(--good); color: #08130d; }
 .btn-danger { background: rgba(255,107,107,.12); color: var(--danger); }
 
-/* Decision screen */
 .decision-top { text-align: center; margin-bottom: 6px; }
 .decision-icon {
     font-size: 42px; margin-bottom: 6px; line-height: 1;
@@ -261,37 +240,21 @@ button:active { transform: scale(.97); }
     border: 1px solid rgba(124,140,255,.28);
     border-radius: 18px;
 }
-.decision-badge-value {
-    font-size: 32px; font-weight: 800; color: var(--text);
-    line-height: 1; letter-spacing: -.02em;
-}
-.decision-badge-label {
-    font-size: 11px; color: var(--muted); margin-top: 5px;
-    text-transform: uppercase; letter-spacing: .6px; font-weight: 600;
-}
+.decision-badge-value { font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -.02em; }
+.decision-badge-label { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
 
-.skill-radar-container {
-    display: flex; justify-content: center; align-items: center;
-    width: 100%; padding: 6px 0; margin-top: 10px;
-}
+.skill-radar-container { display: flex; justify-content: center; align-items: center; width: 100%; padding: 6px 0; margin-top: 10px; }
 #skillRadar { display: block; max-width: 100%; height: auto; }
 
-.skill-radar-legend {
-    display: flex; justify-content: center; gap: 14px;
-    margin: 4px 0 18px; font-size: 11px; color: var(--muted);
-}
+.skill-radar-legend { display: flex; justify-content: center; gap: 14px; margin: 4px 0 18px; font-size: 11px; color: var(--muted); }
 .skill-radar-legend-item { display: inline-flex; align-items: center; gap: 5px; }
 .skill-radar-legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
-.decision-category-name {
-    text-align: center; font-size: 14px; font-weight: 700;
-    color: var(--muted); margin-bottom: 18px; letter-spacing: .3px;
-}
+.decision-category-name { text-align: center; font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 18px; letter-spacing: .3px; }
 
 .choice-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
 .choice-buttons button { width: 100%; }
 
-/* Results */
 .result-header { text-align: center; }
 
 .overall-gauge { display: flex; justify-content: center; margin: 22px 0 14px; }
@@ -363,10 +326,6 @@ button:active { transform: scale(.97); }
 
 footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; }
 
-/* ============================================================
-   МОДАЛКИ
-============================================================ */
-
 .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.75);
@@ -394,12 +353,7 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 }
 .modal-overlay.open .modal-sheet { transform: translateY(0); }
 
-.modal-grabber {
-    width: 40px; height: 4px; border-radius: 2px;
-    background: rgba(255,255,255,.18);
-    margin: 10px auto 4px;
-    flex-shrink: 0;
-}
+.modal-grabber { width: 40px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); margin: 10px auto 4px; flex-shrink: 0; }
 
 .modal-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -430,14 +384,8 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 }
 .modal-close:hover { background: rgba(255,255,255,.12); color: var(--text); }
 
-.modal-body {
-    padding: 16px 20px 24px;
-    overflow-y: auto;
-    flex: 1;
-    -webkit-overflow-scrolling: touch;
-}
+.modal-body { padding: 16px 20px 24px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
 
-/* Программы */
 .programs-list { display: flex; flex-direction: column; gap: 12px; }
 
 .program-card {
@@ -453,20 +401,13 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 }
 .program-card:active { transform: scale(.99); }
 
-.program-head {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    gap: 10px; margin-bottom: 8px;
-}
+.program-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
 .program-partner {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 11px; font-weight: 700;
     color: var(--partner); letter-spacing: .3px; text-transform: uppercase;
 }
-.program-partner-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--partner);
-    box-shadow: 0 0 8px rgba(110,168,254,.7);
-}
+.program-partner-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--partner); box-shadow: 0 0 8px rgba(110,168,254,.7); }
 .program-badge {
     background: rgba(85,214,138,.15);
     border: 1px solid rgba(85,214,138,.35);
@@ -499,7 +440,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .programs-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 .programs-empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .6; }
 
-/* Форма консультации */
 .consult-intro {
     font-size: 13px; color: var(--muted);
     line-height: 1.55; margin-bottom: 18px;
@@ -543,7 +483,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     margin-top: 4px;
 }
 .consult-submit:active { transform: scale(.98); }
-.consult-submit:disabled { opacity: .5; cursor: not-allowed; }
 
 .consult-success { text-align: center; padding: 30px 20px; }
 .consult-success-icon {
@@ -557,72 +496,52 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .consult-success h3 { margin: 0 0 8px; font-size: 19px; }
 .consult-success p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
 
-/* ============================================================
-   АДАПТАЦИЯ
-============================================================ */
+/* ============ JS-ERROR БАННЕР ============ */
+#jsErrorBanner {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #ff5566; color: #fff;
+    padding: 14px 18px; z-index: 999999;
+    font: 13px/1.5 monospace;
+    white-space: pre-wrap;
+    max-height: 50vh; overflow: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    display: none;
+}
+#jsErrorBanner.visible { display: block; }
 
 @media (max-width: 960px) {
-
-    .category-layout {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
-    .radar-column {
-        position: static;
-        order: -1;
-        padding: 14px;
-    }
-
+    .category-layout { grid-template-columns: 1fr; gap: 14px; }
+    .radar-column { position: static; order: -1; padding: 14px; }
     .live-radar-container { padding: 0; }
-
-    #liveSkillRadar {
-        max-width: 100%;
-        width: 100%;
-        max-height: 480px;
-    }
-
+    #liveSkillRadar { max-width: 100%; width: 100%; max-height: 480px; }
     .live-radar-header { padding: 0 2px; }
     .live-radar-title { font-size: 11px; }
     .live-radar-percent { font-size: 16px; }
-
     .helper-box { margin-top: 12px; }
 }
 
 @media (max-width: 560px) {
-
     body { padding: 14px 10px 35px; }
-
     h1 { font-size: 26px; }
     .logo { font-size: 40px; }
-
     .card { padding: 16px; border-radius: 19px; }
-
     .category-results { grid-template-columns: 1fr 1fr; }
-
     .circle { width: 100px; height: 100px; }
     .circle::before { width: 73px; height: 73px; }
     .circle-value { font-size: 20px; }
     .circle-level { font-size: 10px; }
-
     .overall-gauge-ring { width: 165px; height: 165px; }
     .overall-gauge-inner { width: 135px; height: 135px; }
     .overall-gauge-value { font-size: 40px; }
-
     .stats { grid-template-columns: 1fr 1fr 1fr; }
     .stat-value { font-size: 20px; }
-
     .decision-badge-value { font-size: 28px; }
     .decision-icon { width: 56px; height: 56px; font-size: 38px; }
-
     .segmented { max-width: 100%; }
-
     #liveSkillRadar { max-height: 420px; }
-
     .modal-sheet { border-radius: 22px 22px 0 0; }
     .modal-body { padding: 14px 16px 20px; }
     .modal-header { padding: 8px 16px 12px; }
-
     .helper-actions { grid-template-columns: 1fr 1fr; }
     .helper-btn { padding: 9px 10px; }
     .helper-btn-icon { font-size: 18px; }
@@ -634,6 +553,9 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 
 <body>
 
+<!-- Баннер для показа JS-ошибок -->
+<div id="jsErrorBanner"></div>
+
 <div class="app">
 
 <header>
@@ -644,13 +566,8 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     </div>
 </header>
 
-
-<!-- ================= TEST ================= -->
-
 <div id="testScreen">
-
     <div class="card">
-
         <div class="progress-wrap">
             <div class="progress-info">
                 <span id="progressText">Категория 1</span>
@@ -664,7 +581,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
         <div class="checklist" id="checklist"></div>
 
         <div class="section-title">Оценка навыков</div>
-
         <div class="section-description">
             Выберите категорию и оцените каждый навык от 1 до 5.
             Оценивайте именно текущий уровень, а не желаемый.
@@ -676,7 +592,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
         </div>
 
         <div class="category-layout">
-
             <div class="skills-column">
                 <div id="skillsContainer"></div>
             </div>
@@ -710,39 +625,24 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
                     </div>
                 </div>
             </aside>
-
         </div>
 
         <div class="buttons">
-            <button class="btn-primary" id="saveCategoryBtn" onclick="saveCategory()">
-                Готово
-            </button>
+            <button class="btn-primary" id="saveCategoryBtn" onclick="saveCategory()">Готово</button>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ================= DECISION ================= -->
-
 <div id="decisionScreen" class="hidden">
-
     <div class="card">
-
         <div class="decision-top">
-
             <div class="decision-icon">✓</div>
-
             <h2>Категория завершена</h2>
-
             <p id="decisionText">Вы оценили навыки этой категории.</p>
-
             <div class="decision-badge">
                 <div class="decision-badge-value" id="decisionPercent">0%</div>
                 <div class="decision-badge-label">средний уровень</div>
             </div>
-
         </div>
 
         <div class="skill-radar-container">
@@ -750,18 +650,10 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
         </div>
 
         <div class="skill-radar-legend">
-            <span class="skill-radar-legend-item">
-                <span class="skill-radar-legend-dot" style="background:var(--danger);"></span>1
-            </span>
-            <span class="skill-radar-legend-item">
-                <span class="skill-radar-legend-dot" style="background:var(--warning);"></span>2
-            </span>
-            <span class="skill-radar-legend-item">
-                <span class="skill-radar-legend-dot" style="background:var(--accent);"></span>3
-            </span>
-            <span class="skill-radar-legend-item">
-                <span class="skill-radar-legend-dot" style="background:var(--good);"></span>4–5
-            </span>
+            <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--danger);"></span>1</span>
+            <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--warning);"></span>2</span>
+            <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--accent);"></span>3</span>
+            <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--good);"></span>4–5</span>
         </div>
 
         <div class="decision-category-name" id="decisionCategoryName">Категория</div>
@@ -787,24 +679,15 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
         </div>
 
         <div class="choice-buttons">
-            <button class="btn-primary" onclick="continueFullAssessment()">
-                Пройти полную оценку
-            </button>
-            <button class="btn-success" onclick="finishAssessment()">
-                Завершить
-            </button>
+            <button class="btn-primary" onclick="continueFullAssessment()">Пройти полную оценку</button>
+            <button class="btn-success" onclick="finishAssessment()">Завершить</button>
         </div>
-
     </div>
-
 </div>
-
-
-<!-- ================= NEXT CATEGORY ================= -->
 
 <div id="nextScreen" class="hidden">
     <div class="card">
-        <div class="decision-center" style="text-align:center;padding:22px 10px 5px;">
+        <div style="text-align:center;padding:22px 10px 5px;">
             <div class="decision-icon" style="background:rgba(124,140,255,.12);border-color:rgba(124,140,255,.35);color:var(--accent);">→</div>
             <h2>Следующая категория</h2>
             <p id="nextCategoryText" style="color:var(--muted);"></p>
@@ -815,11 +698,7 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     </div>
 </div>
 
-
-<!-- ================= RESULTS ================= -->
-
 <div id="resultsScreen" class="hidden">
-
     <div class="card result-header">
         <div class="section-title">Ваша карта навыков</div>
         <div class="overall-gauge">
@@ -881,20 +760,13 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
             <button class="btn-danger" onclick="resetTest()">Начать заново</button>
         </div>
     </div>
-
 </div>
-
 
 <footer>
     Карта навыков • персональная оценка компетенций
 </footer>
 
 </div>
-
-
-<!-- ============================================================
-     МОДАЛКА: ПРОГРАММЫ ОБУЧЕНИЯ
-============================================================ -->
 
 <div class="modal-overlay" id="programsModal">
     <div class="modal-sheet">
@@ -912,11 +784,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
         <div class="modal-body" id="programsBody"></div>
     </div>
 </div>
-
-
-<!-- ============================================================
-     МОДАЛКА: КОНСУЛЬТАЦИЯ
-============================================================ -->
 
 <div class="modal-overlay" id="consultationModal">
     <div class="modal-sheet">
@@ -936,13 +803,44 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 </div>
 
 
+<!-- ============================================================
+     ДИАГНОСТИКА: показываем JS-ошибки визуально
+============================================================ -->
 <script>
+(function() {
+    var banner = document.getElementById('jsErrorBanner');
 
+    function showBanner(text) {
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'jsErrorBanner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;max-height:50vh;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,.5);';
+            document.body.appendChild(banner);
+        }
+        banner.textContent = text;
+        banner.classList.add('visible');
+    }
+
+    window.addEventListener('error', function(e) {
+        showBanner('❌ JS error: ' + (e.message || 'unknown') + '\n📄 ' + (e.filename || '') + '\n📍 Строка: ' + e.lineno + ':' + e.colno);
+    });
+
+    window.addEventListener('unhandledrejection', function(e) {
+        showBanner('❌ Promise error: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)));
+    });
+
+    // Экспортируем наружу для использования в основном скрипте
+    window.__showJsError = showBanner;
+})();
+</script>
+
+
+<script>
 /* =========================================================
    TELEGRAM
 ========================================================= */
 
-let tg = null;
+var tg = null;
 
 try {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -959,8 +857,7 @@ try {
    ДАННЫЕ: КАТЕГОРИИ
 ========================================================= */
 
-const categories = {
-
+var categories = {
     "Цифровые навыки": [
         "Программирование на ПК",
         "Программирование на смартфоне",
@@ -978,7 +875,6 @@ const categories = {
         "SMM и ведение соцсетей",
         "Работа с текстами и редактура"
     ],
-
     "Аналитические навыки": [
         "Анализ информации и источников",
         "Критическое мышление",
@@ -989,7 +885,6 @@ const categories = {
         "Стратегическое планирование",
         "Принятие решений в неопределённости"
     ],
-
     "Коммуникация": [
         "Устная речь и дикция",
         "Письменная речь и переписка",
@@ -1000,7 +895,6 @@ const categories = {
         "Презентация идей и проектов",
         "Нетворкинг и знакомства"
     ],
-
     "Управленческие": [
         "Организация процессов и задач",
         "Постановка задач команде",
@@ -1011,7 +905,6 @@ const categories = {
         "Делегирование полномочий",
         "Управление проектами"
     ],
-
     "Творческие": [
         "Рисование на бумаге",
         "Рисование на планшете (digital art)",
@@ -1024,7 +917,6 @@ const categories = {
         "Создание концепций и идей",
         "Креативное мышление"
     ],
-
     "Ручной труд": [
         "Столярное дело",
         "Плотницкое дело",
@@ -1035,7 +927,6 @@ const categories = {
         "Реставрация и восстановление",
         "Изготовление вещей своими руками"
     ],
-
     "Строительство и ремонт": [
         "Сантехнические работы",
         "Электромонтажные работы",
@@ -1046,7 +937,6 @@ const categories = {
         "Монтаж конструкций",
         "Работа с измерительными инструментами"
     ],
-
     "Техника и механика": [
         "Ремонт автомобиля",
         "Общая механика",
@@ -1057,7 +947,6 @@ const categories = {
         "Работа с электроинструментом",
         "Диагностика неисправностей"
     ],
-
     "Транспорт": [
         "Вождение автомобиля",
         "Вождение мотоцикла",
@@ -1066,7 +955,6 @@ const categories = {
         "Ориентирование на местности",
         "Техническое обслуживание транспорта"
     ],
-
     "Бытовые": [
         "Приготовление пищи",
         "Уборка и поддержание порядка",
@@ -1076,7 +964,6 @@ const categories = {
         "Уход за растениями",
         "Личное финансовое планирование"
     ],
-
     "Социальные": [
         "Помощь людям",
         "Обучение и преподавание",
@@ -1086,7 +973,6 @@ const categories = {
         "Работа с группами",
         "Организация мероприятий"
     ],
-
     "Языки": [
         "Русский язык — владение",
         "Английский язык",
@@ -1095,7 +981,6 @@ const categories = {
         "Письменный перевод",
         "Разговорная практика"
     ],
-
     "Предпринимательство": [
         "Поиск и генерация идей",
         "Создание продукта",
@@ -1106,7 +991,6 @@ const categories = {
         "Переговоры и партнёрства",
         "Запуск проектов и стартапов"
     ],
-
     "Саморазвитие": [
         "Самоорганизация",
         "Управление временем",
@@ -1124,177 +1008,70 @@ const categories = {
    ПРОГРАММЫ ПАРТНЁРОВ
 ========================================================= */
 
-const partners = {
-
+var partners = {
     "Цифровые навыки": [
-        { partner: "Skillbox", program: "Веб-разработчик с нуля",
-          desc: "HTML, CSS, JavaScript, React, Node.js. Полный стек с проектами в портфолио.",
-          format: "Онлайн", duration: "12 мес", price: "5 500 ₽/мес",
-          skills: ["Программирование на ПК", "Веб-разработка (frontend)", "Веб-разработка (backend)"] },
-        { partner: "GeekBrains", program: "Python-разработчик",
-          desc: "Основы Python, Django, REST API, работа с базами данных.",
-          format: "Онлайн", duration: "9 мес", price: "4 900 ₽/мес",
-          skills: ["Программирование на ПК", "Аналитика данных и таблицы"] },
-        { partner: "Нетология", program: "Видеомонтаж в Premiere Pro",
-          desc: "Профессиональный монтаж, цветокоррекция, звук, экспорт под платформы.",
-          format: "Онлайн", duration: "4 мес", price: "3 900 ₽/мес",
-          skills: ["Монтаж видео на ПК", "Съёмка видео на камеру"] },
-        { partner: "Bang Bang Education", program: "Графический дизайн",
-          desc: "Композиция, типографика, Figma, Photoshop, Illustrator.",
-          format: "Онлайн", duration: "8 мес", price: "5 200 ₽/мес",
-          skills: ["Графический дизайн на ПК", "Графический дизайн на смартфоне"] },
-        { partner: "Skillbox", program: "SMM-менеджер",
-          desc: "Стратегия, контент, таргет, аналитика, работа с блогерами.",
-          format: "Онлайн", duration: "6 мес", price: "4 400 ₽/мес",
-          skills: ["SMM и ведение соцсетей", "Работа с текстами и редактура"] }
+        { partner: "Skillbox", program: "Веб-разработчик с нуля", desc: "HTML, CSS, JavaScript, React, Node.js. Полный стек с проектами в портфолио.", format: "Онлайн", duration: "12 мес", price: "5 500 ₽/мес", skills: ["Программирование на ПК", "Веб-разработка (frontend)", "Веб-разработка (backend)"] },
+        { partner: "GeekBrains", program: "Python-разработчик", desc: "Основы Python, Django, REST API, работа с базами данных.", format: "Онлайн", duration: "9 мес", price: "4 900 ₽/мес", skills: ["Программирование на ПК", "Аналитика данных и таблицы"] },
+        { partner: "Нетология", program: "Видеомонтаж в Premiere Pro", desc: "Профессиональный монтаж, цветокоррекция, звук, экспорт под платформы.", format: "Онлайн", duration: "4 мес", price: "3 900 ₽/мес", skills: ["Монтаж видео на ПК", "Съёмка видео на камеру"] },
+        { partner: "Bang Bang Education", program: "Графический дизайн", desc: "Композиция, типографика, Figma, Photoshop, Illustrator.", format: "Онлайн", duration: "8 мес", price: "5 200 ₽/мес", skills: ["Графический дизайн на ПК", "Графический дизайн на смартфоне"] },
+        { partner: "Skillbox", program: "SMM-менеджер", desc: "Стратегия, контент, таргет, аналитика, работа с блогерами.", format: "Онлайн", duration: "6 мес", price: "4 400 ₽/мес", skills: ["SMM и ведение соцсетей", "Работа с текстами и редактура"] }
     ],
-
     "Аналитические навыки": [
-        { partner: "Яндекс Практикум", program: "Аналитик данных",
-          desc: "SQL, Python, визуализация, A/B-тесты, дашборды.",
-          format: "Онлайн", duration: "8 мес", price: "6 000 ₽/мес",
-          skills: ["Анализ информации и источников", "Работа с данными и таблицами", "Поиск закономерностей"] },
-        { partner: "Skillbox", program: "Системное мышление",
-          desc: "Инструменты для решения сложных задач и принятия решений.",
-          format: "Онлайн", duration: "2 мес", price: "3 500 ₽/мес",
-          skills: ["Системное мышление", "Решение сложных проблем"] }
+        { partner: "Яндекс Практикум", program: "Аналитик данных", desc: "SQL, Python, визуализация, A/B-тесты, дашборды.", format: "Онлайн", duration: "8 мес", price: "6 000 ₽/мес", skills: ["Анализ информации и источников", "Работа с данными и таблицами", "Поиск закономерностей"] },
+        { partner: "Skillbox", program: "Системное мышление", desc: "Инструменты для решения сложных задач и принятия решений.", format: "Онлайн", duration: "2 мес", price: "3 500 ₽/мес", skills: ["Системное мышление", "Решение сложных проблем"] }
     ],
-
     "Коммуникация": [
-        { partner: "Школа ораторского мастерства", program: "Публичные выступления",
-          desc: "Голос, подача, работа с залом, структура речи, борьба со страхом.",
-          format: "Онлайн", duration: "3 мес", price: "4 200 ₽/мес",
-          skills: ["Устная речь и дикция", "Публичные выступления", "Презентация идей и проектов"] },
-        { partner: "Radical Agreement", program: "Переговоры и работа с конфликтами",
-          desc: "Гарвардская модель, тактики влияния, разрешение сложных ситуаций.",
-          format: "Онлайн", duration: "2 мес", price: "5 800 ₽/мес",
-          skills: ["Переговоры и торг", "Работа с конфликтами", "Активное слушание"] }
+        { partner: "Школа ораторского мастерства", program: "Публичные выступления", desc: "Голос, подача, работа с залом, структура речи, борьба со страхом.", format: "Онлайн", duration: "3 мес", price: "4 200 ₽/мес", skills: ["Устная речь и дикция", "Публичные выступления", "Презентация идей и проектов"] },
+        { partner: "Radical Agreement", program: "Переговоры и работа с конфликтами", desc: "Гарвардская модель, тактики влияния, разрешение сложных ситуаций.", format: "Онлайн", duration: "2 мес", price: "5 800 ₽/мес", skills: ["Переговоры и торг", "Работа с конфликтами", "Активное слушание"] }
     ],
-
     "Управленческие": [
-        { partner: "Академия Eduson", program: "Управление проектами",
-          desc: "Agile, Scrum, Kanban, планирование, ресурсы, риски.",
-          format: "Онлайн", duration: "5 мес", price: "5 400 ₽/мес",
-          skills: ["Управление проектами", "Организация процессов и задач", "Постановка задач команде"] },
-        { partner: "Business Speech", program: "Лидерство и управление командой",
-          desc: "Мотивация, делегирование, обратная связь, командные сессии.",
-          format: "Онлайн", duration: "3 мес", price: "6 200 ₽/мес",
-          skills: ["Лидерство и мотивация", "Делегирование полномочий", "Работа в команде"] }
+        { partner: "Академия Eduson", program: "Управление проектами", desc: "Agile, Scrum, Kanban, планирование, ресурсы, риски.", format: "Онлайн", duration: "5 мес", price: "5 400 ₽/мес", skills: ["Управление проектами", "Организация процессов и задач", "Постановка задач команде"] },
+        { partner: "Business Speech", program: "Лидерство и управление командой", desc: "Мотивация, делегирование, обратная связь, командные сессии.", format: "Онлайн", duration: "3 мес", price: "6 200 ₽/мес", skills: ["Лидерство и мотивация", "Делегирование полномочий", "Работа в команде"] }
     ],
-
     "Творческие": [
-        { partner: "Bang Bang Education", program: "Иллюстрация и digital art",
-          desc: "Работа в Procreate и Photoshop, композиция, свет, персонажи.",
-          format: "Онлайн", duration: "6 мес", price: "4 900 ₽/мес",
-          skills: ["Рисование на планшете (digital art)", "Рисование на бумаге", "Дизайн и композиция"] },
-        { partner: "Music Academy", program: "Создание музыки на ПК",
-          desc: "Ableton, FL Studio, сведение, мастеринг, продюсирование.",
-          format: "Онлайн", duration: "5 мес", price: "5 500 ₽/мес",
-          skills: ["Создание музыки на ПК", "Игра на музыкальном инструменте"] },
-        { partner: "Creative Writing School", program: "Писательское мастерство",
-          desc: "Структура текста, персонажи, сюжет, редактура.",
-          format: "Онлайн", duration: "4 мес", price: "4 300 ₽/мес",
-          skills: ["Писательство и проза", "Создание концепций и идей", "Креативное мышление"] }
+        { partner: "Bang Bang Education", program: "Иллюстрация и digital art", desc: "Работа в Procreate и Photoshop, композиция, свет, персонажи.", format: "Онлайн", duration: "6 мес", price: "4 900 ₽/мес", skills: ["Рисование на планшете (digital art)", "Рисование на бумаге", "Дизайн и композиция"] },
+        { partner: "Music Academy", program: "Создание музыки на ПК", desc: "Ableton, FL Studio, сведение, мастеринг, продюсирование.", format: "Онлайн", duration: "5 мес", price: "5 500 ₽/мес", skills: ["Создание музыки на ПК", "Игра на музыкальном инструменте"] },
+        { partner: "Creative Writing School", program: "Писательское мастерство", desc: "Структура текста, персонажи, сюжет, редактура.", format: "Онлайн", duration: "4 мес", price: "4 300 ₽/мес", skills: ["Писательство и проза", "Создание концепций и идей", "Креативное мышление"] }
     ],
-
     "Ручной труд": [
-        { partner: "Школа ремёсел", program: "Столярное мастерство",
-          desc: "Работа с деревом, ручной инструмент, соединения, финишная отделка.",
-          format: "Оффлайн", duration: "6 мес", price: "7 000 ₽/мес",
-          skills: ["Столярное дело", "Плотницкое дело", "Работа с ручным инструментом"] },
-        { partner: "Швейная академия", program: "Шитьё и конструирование",
-          desc: "Основы кроя, работа с тканью, пошив одежды с нуля.",
-          format: "Онлайн", duration: "5 мес", price: "4 100 ₽/мес",
-          skills: ["Шитьё и работа с тканью", "Изготовление вещей своими руками"] }
+        { partner: "Школа ремёсел", program: "Столярное мастерство", desc: "Работа с деревом, ручной инструмент, соединения, финишная отделка.", format: "Оффлайн", duration: "6 мес", price: "7 000 ₽/мес", skills: ["Столярное дело", "Плотницкое дело", "Работа с ручным инструментом"] },
+        { partner: "Швейная академия", program: "Шитьё и конструирование", desc: "Основы кроя, работа с тканью, пошив одежды с нуля.", format: "Онлайн", duration: "5 мес", price: "4 100 ₽/мес", skills: ["Шитьё и работа с тканью", "Изготовление вещей своими руками"] }
     ],
-
     "Строительство и ремонт": [
-        { partner: "ПрофШкола", program: "Электромонтаж с нуля",
-          desc: "Схемы, монтаж щитов, проводка, техника безопасности.",
-          format: "Оффлайн", duration: "4 мес", price: "6 500 ₽/мес",
-          skills: ["Электромонтажные работы", "Монтаж конструкций"] },
-        { partner: "Мастер-класс", program: "Сантехника и отопление",
-          desc: "Разводка, пайка труб, монтаж оборудования.",
-          format: "Оффлайн", duration: "3 мес", price: "5 900 ₽/мес",
-          skills: ["Сантехнические работы", "Бытовой ремонт"] }
+        { partner: "ПрофШкола", program: "Электромонтаж с нуля", desc: "Схемы, монтаж щитов, проводка, техника безопасности.", format: "Оффлайн", duration: "4 мес", price: "6 500 ₽/мес", skills: ["Электромонтажные работы", "Монтаж конструкций"] },
+        { partner: "Мастер-класс", program: "Сантехника и отопление", desc: "Разводка, пайка труб, монтаж оборудования.", format: "Оффлайн", duration: "3 мес", price: "5 900 ₽/мес", skills: ["Сантехнические работы", "Бытовой ремонт"] }
     ],
-
     "Техника и механика": [
-        { partner: "АвтоШкола Pro", program: "Ремонт автомобиля",
-          desc: "Двигатель, подвеска, тормоза, электрика, диагностика.",
-          format: "Оффлайн", duration: "6 мес", price: "8 000 ₽/мес",
-          skills: ["Ремонт автомобиля", "Общая механика", "Диагностика неисправностей"] },
-        { partner: "RoboSkill", program: "Электроника и пайка",
-          desc: "Основы электроники, схемотехника, пайка, микроконтроллеры.",
-          format: "Онлайн", duration: "4 мес", price: "5 600 ₽/мес",
-          skills: ["Электроника и пайка", "Ремонт бытовой техники"] }
+        { partner: "АвтоШкола Pro", program: "Ремонт автомобиля", desc: "Двигатель, подвеска, тормоза, электрика, диагностика.", format: "Оффлайн", duration: "6 мес", price: "8 000 ₽/мес", skills: ["Ремонт автомобиля", "Общая механика", "Диагностика неисправностей"] },
+        { partner: "RoboSkill", program: "Электроника и пайка", desc: "Основы электроники, схемотехника, пайка, микроконтроллеры.", format: "Онлайн", duration: "4 мес", price: "5 600 ₽/мес", skills: ["Электроника и пайка", "Ремонт бытовой техники"] }
     ],
-
     "Транспорт": [
-        { partner: "Автошкола №1", program: "Вождение категории B",
-          desc: "Полный курс вождения с инструктором и подготовка к экзамену.",
-          format: "Оффлайн", duration: "3 мес", price: "по запросу",
-          skills: ["Вождение автомобиля", "Техническое обслуживание транспорта"] }
+        { partner: "Автошкола №1", program: "Вождение категории B", desc: "Полный курс вождения с инструктором и подготовка к экзамену.", format: "Оффлайн", duration: "3 мес", price: "по запросу", skills: ["Вождение автомобиля", "Техническое обслуживание транспорта"] }
     ],
-
     "Бытовые": [
-        { partner: "Кулинарная школа", program: "Домашняя кухня",
-          desc: "Основы, техники, супы, вторые блюда, выпечка, планирование меню.",
-          format: "Онлайн", duration: "3 мес", price: "3 400 ₽/мес",
-          skills: ["Приготовление пищи", "Планирование быта и расписания"] },
-        { partner: "ФинГрамотность", program: "Личные финансы",
-          desc: "Бюджет, накопления, инвестиции, финансовая подушка.",
-          format: "Онлайн", duration: "2 мес", price: "3 900 ₽/мес",
-          skills: ["Личное финансовое планирование", "Организация пространства"] }
+        { partner: "Кулинарная школа", program: "Домашняя кухня", desc: "Основы, техники, супы, вторые блюда, выпечка, планирование меню.", format: "Онлайн", duration: "3 мес", price: "3 400 ₽/мес", skills: ["Приготовление пищи", "Планирование быта и расписания"] },
+        { partner: "ФинГрамотность", program: "Личные финансы", desc: "Бюджет, накопления, инвестиции, финансовая подушка.", format: "Онлайн", duration: "2 мес", price: "3 900 ₽/мес", skills: ["Личное финансовое планирование", "Организация пространства"] }
     ],
-
     "Социальные": [
-        { partner: "Школа наставников", program: "Наставничество и преподавание",
-          desc: "Методики обучения взрослых, обратная связь, групповая работа.",
-          format: "Онлайн", duration: "3 мес", price: "4 700 ₽/мес",
-          skills: ["Обучение и преподавание", "Наставничество", "Работа с группами"] },
-        { partner: "Медиатор Про", program: "Медиация и разрешение споров",
-          desc: "Техники медиации, работа с конфликтами в группах.",
-          format: "Онлайн", duration: "2 мес", price: "5 100 ₽/мес",
-          skills: ["Медиация и разрешение споров", "Эмпатия и понимание людей"] }
+        { partner: "Школа наставников", program: "Наставничество и преподавание", desc: "Методики обучения взрослых, обратная связь, групповая работа.", format: "Онлайн", duration: "3 мес", price: "4 700 ₽/мес", skills: ["Обучение и преподавание", "Наставничество", "Работа с группами"] },
+        { partner: "Медиатор Про", program: "Медиация и разрешение споров", desc: "Техники медиации, работа с конфликтами в группах.", format: "Онлайн", duration: "2 мес", price: "5 100 ₽/мес", skills: ["Медиация и разрешение споров", "Эмпатия и понимание людей"] }
     ],
-
     "Языки": [
-        { partner: "Skyeng", program: "Английский язык — с нуля до C1",
-          desc: "Индивидуальные занятия с преподавателем, разговорный клуб.",
-          format: "Онлайн", duration: "гибко", price: "от 1 200 ₽/занятие",
-          skills: ["Английский язык", "Разговорная практика"] },
-        { partner: "Deutsch Online", program: "Немецкий язык A1–B2",
-          desc: "Курс с носителем, подготовка к Goethe-Zertifikat.",
-          format: "Онлайн", duration: "8 мес", price: "4 800 ₽/мес",
-          skills: ["Немецкий язык", "Письменный перевод"] }
+        { partner: "Skyeng", program: "Английский язык — с нуля до C1", desc: "Индивидуальные занятия с преподавателем, разговорный клуб.", format: "Онлайн", duration: "гибко", price: "от 1 200 ₽/занятие", skills: ["Английский язык", "Разговорная практика"] },
+        { partner: "Deutsch Online", program: "Немецкий язык A1–B2", desc: "Курс с носителем, подготовка к Goethe-Zertifikat.", format: "Онлайн", duration: "8 мес", price: "4 800 ₽/мес", skills: ["Немецкий язык", "Письменный перевод"] }
     ],
-
     "Предпринимательство": [
-        { partner: "Акселератор ФРИИ", program: "Запуск стартапа",
-          desc: "Идея, продукт, метрики, привлечение инвестиций, питч.",
-          format: "Онлайн + оффлайн", duration: "3 мес", price: "по запросу",
-          skills: ["Поиск и генерация идей", "Создание продукта", "Запуск проектов и стартапов"] },
-        { partner: "Sales Academy", program: "Продажи B2B",
-          desc: "Скрипты, работа с возражениями, воронка, CRM.",
-          format: "Онлайн", duration: "3 мес", price: "5 200 ₽/мес",
-          skills: ["Продажи", "Работа с клиентами", "Переговоры и партнёрства"] }
+        { partner: "Акселератор ФРИИ", program: "Запуск стартапа", desc: "Идея, продукт, метрики, привлечение инвестиций, питч.", format: "Онлайн + оффлайн", duration: "3 мес", price: "по запросу", skills: ["Поиск и генерация идей", "Создание продукта", "Запуск проектов и стартапов"] },
+        { partner: "Sales Academy", program: "Продажи B2B", desc: "Скрипты, работа с возражениями, воронка, CRM.", format: "Онлайн", duration: "3 мес", price: "5 200 ₽/мес", skills: ["Продажи", "Работа с клиентами", "Переговоры и партнёрства"] }
     ],
-
     "Саморазвитие": [
-        { partner: "Лайфхакер Академия", program: "Управление временем",
-          desc: "GTD, Pomodoro, приоритизация, борьба с прокрастинацией.",
-          format: "Онлайн", duration: "1 мес", price: "2 900 ₽",
-          skills: ["Управление временем", "Самоорганизация", "Концентрация и внимание"] },
-        { partner: "Нетология", program: "Обучение новым навыкам",
-          desc: "Методики быстрого обучения, метапознание, практика.",
-          format: "Онлайн", duration: "2 мес", price: "3 400 ₽/мес",
-          skills: ["Обучение новым навыкам", "Работа с информацией", "Адаптивность к изменениям"] }
+        { partner: "Лайфхакер Академия", program: "Управление временем", desc: "GTD, Pomodoro, приоритизация, борьба с прокрастинацией.", format: "Онлайн", duration: "1 мес", price: "2 900 ₽", skills: ["Управление временем", "Самоорганизация", "Концентрация и внимание"] },
+        { partner: "Нетология", program: "Обучение новым навыкам", desc: "Методики быстрого обучения, метапознание, практика.", format: "Онлайн", duration: "2 мес", price: "3 400 ₽/мес", skills: ["Обучение новым навыкам", "Работа с информацией", "Адаптивность к изменениям"] }
     ]
 };
 
 
-const LEVEL_WORDS = {
+var LEVEL_WORDS = {
     1: "Нет опыта",
     2: "Начальный",
     3: "Уверенный",
@@ -1307,29 +1084,28 @@ const LEVEL_WORDS = {
    STATE
 ========================================================= */
 
-let results = {};
-let completedCategories = {};
-let currentCategoryIndex = 0;
-let currentCategory = null;
-let lastCategoryData = null;
-let lastSkillRadarData = null;
+var results = {};
+var completedCategories = {};
+var currentCategoryIndex = 0;
+var currentCategory = null;
+var lastCategoryData = null;
+var lastSkillRadarData = null;
 
-
-const STORAGE_KEY = "psyToolsSkillsV3";
-const STORAGE_COMPLETED_KEY = "psyToolsSkillsV3Completed";
-const STORAGE_APPLICATIONS_KEY = "psyToolsSkillsV3Applications";
+var STORAGE_KEY = "psyToolsSkillsV3";
+var STORAGE_COMPLETED_KEY = "psyToolsSkillsV3Completed";
+var STORAGE_APPLICATIONS_KEY = "psyToolsSkillsV3Applications";
 
 
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
-const categorySelect = document.getElementById("categorySelect");
-const skillsContainer = document.getElementById("skillsContainer");
-const testScreen = document.getElementById("testScreen");
-const decisionScreen = document.getElementById("decisionScreen");
-const nextScreen = document.getElementById("nextScreen");
-const resultsScreen = document.getElementById("resultsScreen");
+var categorySelect = document.getElementById("categorySelect");
+var skillsContainer = document.getElementById("skillsContainer");
+var testScreen = document.getElementById("testScreen");
+var decisionScreen = document.getElementById("decisionScreen");
+var nextScreen = document.getElementById("nextScreen");
+var resultsScreen = document.getElementById("resultsScreen");
 
 
 /* =========================================================
@@ -1337,9 +1113,9 @@ const resultsScreen = document.getElementById("resultsScreen");
 ========================================================= */
 
 function safeConfirm(message) {
-    return new Promise(resolve => {
+    return new Promise(function(resolve) {
         if (tg && typeof tg.showConfirm === "function") {
-            try { tg.showConfirm(message, ok => resolve(!!ok)); return; } catch (e) {}
+            try { tg.showConfirm(message, function(ok) { resolve(!!ok); }); return; } catch (e) {}
         }
         resolve(window.confirm(message));
     });
@@ -1359,31 +1135,43 @@ function safeAlert(message) {
 
 function init() {
 
+    console.log('🚀 init() запущен');
+    console.log('📚 Категорий в базе:', Object.keys(categories).length);
+
     loadResults();
 
-    const names = Object.keys(categories);
+    var names = Object.keys(categories);
+    console.log('📋 Имена категорий:', names);
 
-    names.forEach((name, index) => {
-        const option = document.createElement("option");
+    if (!categorySelect) {
+        console.error('❌ #categorySelect не найден в DOM');
+        if (window.__showJsError) window.__showJsError('❌ Не найден элемент #categorySelect');
+        return;
+    }
+
+    names.forEach(function(name, index) {
+        var option = document.createElement("option");
         option.value = index;
         option.textContent = name;
         categorySelect.appendChild(option);
     });
 
-    categorySelect.addEventListener("change", () => {
+    console.log('✅ Опций добавлено:', categorySelect.options.length);
+
+    categorySelect.addEventListener("change", function() {
         currentCategoryIndex = Number(categorySelect.value);
         loadCategory(currentCategoryIndex);
     });
 
-    document.querySelectorAll(".modal-overlay").forEach(overlay => {
-        overlay.addEventListener("click", e => {
+    document.querySelectorAll(".modal-overlay").forEach(function(overlay) {
+        overlay.addEventListener("click", function(e) {
             if (e.target === overlay) closeModal(overlay.id);
         });
     });
 
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", function(e) {
         if (e.key === "Escape") {
-            document.querySelectorAll(".modal-overlay.open").forEach(o => closeModal(o.id));
+            document.querySelectorAll(".modal-overlay.open").forEach(function(o) { closeModal(o.id); });
         }
     });
 
@@ -1407,1352 +1195,3 @@ function isCategoryCompleted(name) {
 /* =========================================================
    LOAD CATEGORY
 ========================================================= */
-
-function loadCategory(index) {
-
-    const names = Object.keys(categories);
-    if (index < 0 || index >= names.length) return;
-
-    currentCategoryIndex = index;
-    currentCategory = names[index];
-    categorySelect.value = index;
-
-    skillsContainer.innerHTML = "";
-
-    const skills = categories[currentCategory];
-
-    skills.forEach((skill, skillIndex) => {
-
-        const savedValue = results[currentCategory]?.[skill] || 3;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "skill";
-
-        wrapper.innerHTML = `
-            <div class="skill-name">${escapeHtml(skill)}</div>
-            <div class="segmented" data-idx="${skillIndex}">
-                ${[1,2,3,4,5].map(v => `
-                    <button type="button" data-value="${v}">${v}</button>
-                `).join("")}
-            </div>
-            <div class="skill-level-hint lv-${savedValue}" id="level-hint-${skillIndex}">
-                ${LEVEL_WORDS[savedValue]}
-            </div>
-        `;
-
-        const segmented = wrapper.querySelector(".segmented");
-        segmented.querySelectorAll("button").forEach(btn => {
-            if (Number(btn.dataset.value) === savedValue) {
-                btn.classList.add("active");
-            }
-            btn.addEventListener("click", () => {
-                setSkillValue(skillIndex, Number(btn.dataset.value));
-            });
-        });
-
-        skillsContainer.appendChild(wrapper);
-    });
-
-    updateProgress();
-    updateChecklist();
-    refreshCategorySelect();
-
-    requestAnimationFrame(() => updateLiveRadar());
-}
-
-
-/* =========================================================
-   SET SKILL VALUE
-========================================================= */
-
-function setSkillValue(skillIndex, value) {
-
-    const skills = categories[currentCategory] || [];
-    const skill = skills[skillIndex];
-    if (!skill) return;
-
-    if (!results[currentCategory]) results[currentCategory] = {};
-    results[currentCategory][skill] = value;
-    saveResults();
-
-    const segmented = document.querySelector(
-        `.segmented[data-idx="${skillIndex}"]`
-    );
-    if (segmented) {
-        segmented.querySelectorAll("button").forEach(btn => {
-            btn.classList.toggle("active", Number(btn.dataset.value) === value);
-        });
-    }
-
-    const hint = document.getElementById(`level-hint-${skillIndex}`);
-    if (hint) {
-        hint.textContent = LEVEL_WORDS[value] || "";
-        hint.className = "skill-level-hint lv-" + value;
-    }
-
-    updateChecklist();
-    updateProgress();
-    refreshCategorySelect();
-    updateLiveRadar();
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.impactOccurred("light"); } catch (e) {}
-    }
-}
-
-
-/* =========================================================
-   LIVE RADAR
-========================================================= */
-
-function updateLiveRadar() {
-
-    const skills = categories[currentCategory] || [];
-    const skillValues = results[currentCategory] || {};
-    const values = skills.map(s => Number(skillValues[s]) || 3);
-
-    const avg = values.length
-        ? values.reduce((a, b) => a + b, 0) / values.length
-        : 0;
-
-    const percent = Math.round((avg / 5) * 100);
-
-    const pctEl = document.getElementById("liveRadarPercent");
-    if (pctEl) {
-        pctEl.textContent = percent + "%";
-        pctEl.style.color = getRingColorHex(avg);
-    }
-
-    drawSkillRadar("liveSkillRadar", skills, values, avg, true);
-}
-
-
-/* =========================================================
-   SAVE CATEGORY («Готово»)
-========================================================= */
-
-function saveCategory() {
-
-    if (!results[currentCategory]) results[currentCategory] = {};
-    completedCategories[currentCategory] = true;
-
-    saveResults();
-    updateChecklist();
-    updateProgress();
-    refreshCategorySelect();
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
-    }
-
-    showDecisionScreen();
-}
-
-
-/* =========================================================
-   DECISION SCREEN
-========================================================= */
-
-function showDecisionScreen() {
-
-    testScreen.classList.add("hidden");
-    decisionScreen.classList.remove("hidden");
-    nextScreen.classList.add("hidden");
-
-    const skills = categories[currentCategory] || [];
-    const skillValues = results[currentCategory] || {};
-    const values = skills.map(s => Number(skillValues[s]) || 3);
-
-    const average = values.length
-        ? values.reduce((a, b) => a + b, 0) / values.length
-        : 0;
-
-    const percent = Math.round((average / 5) * 100);
-
-    document.getElementById("decisionText").textContent =
-        `Вы оценили ${values.length} навыков`;
-
-    document.getElementById("decisionCategoryName").textContent =
-        currentCategory;
-
-    const percentEl = document.getElementById("decisionPercent");
-    percentEl.textContent = "0%";
-    animateNumber(percentEl, 0, percent, 700, v => Math.round(v) + "%");
-
-    /* Хинт про программы с учётом слабых навыков */
-    const weak = getWeakSkills(currentCategory);
-    const hint = document.getElementById("programsHint");
-    if (hint) {
-        if (weak.length) {
-            const word = pluralize(weak.length, ["навык", "навыка", "навыков"]);
-            hint.textContent = `${weak.length} ${word} ниже нормы`;
-        } else {
-            hint.textContent = "Подобрать курс под ваши цели";
-        }
-    }
-
-    lastSkillRadarData = { skills, values, average };
-
-    requestAnimationFrame(() => {
-        drawSkillRadar("skillRadar", skills, values, average, false);
-    });
-}
-
-
-/* =========================================================
-   РАДАР ПО НАВЫКАМ
-========================================================= */
-
-function drawSkillRadar(canvasId, skills, values, average, compact) {
-
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-
-    const containerWidth =
-        (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
-
-    /* Увеличили лимиты: компактный до 440, обычный до 620 */
-    const maxSize = compact ? 440 : 620;
-    const cssSize = Math.max(260, Math.min(containerWidth || maxSize, maxSize));
-
-    canvas.style.width  = cssSize + "px";
-    canvas.style.height = cssSize + "px";
-    canvas.width  = Math.round(cssSize * dpr);
-    canvas.height = Math.round(cssSize * dpr);
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-
-    const width = cssSize;
-    const height = cssSize;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const count = skills.length;
-    if (!count) return;
-
-    const cx = width / 2;
-    const cy = height / 2;
-
-    const isCompact = compact || cssSize < 400;
-    const radius = Math.min(width, height) * (isCompact ? 0.34 : 0.30);
-
-    const labelOffset =
-        isCompact ? 42 :
-        count > 12 ? 54 :
-        count > 9  ? 62 : 72;
-
-    const labelRadius = radius + labelOffset;
-
-    const fontSize =
-        isCompact ? 9 :
-        count > 12 ? 10 :
-        count > 9  ? 11 : 12;
-
-    const maxLabelWidth =
-        isCompact ? 70 :
-        count > 12 ? 76 :
-        count > 9  ? 92 : 110;
-
-    const angleStep = (Math.PI * 2) / count;
-
-    /* Сетка */
-    for (let level = 1; level <= 5; level++) {
-        const r = radius * level / 5;
-        ctx.beginPath();
-        for (let i = 0; i < count; i++) {
-            const angle = -Math.PI / 2 + i * angleStep;
-            const x = cx + Math.cos(angle) * r;
-            const y = cy + Math.sin(angle) * r;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = level === 5 ? "rgba(255,255,255,.20)" : "rgba(255,255,255,.08)";
-        ctx.lineWidth = level === 5 ? 1.5 : 1;
-        ctx.stroke();
-    }
-
-    /* Оси */
-    for (let i = 0; i < count; i++) {
-        const angle = -Math.PI / 2 + i * angleStep;
-        const x = cx + Math.cos(angle) * radius;
-        const y = cy + Math.sin(angle) * radius;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "rgba(255,255,255,.07)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
-
-    /* Точки */
-    const points = values.map((v, i) => {
-        const angle = -Math.PI / 2 + i * angleStep;
-        const r = radius * v / 5;
-        return {
-            x: cx + Math.cos(angle) * r,
-            y: cy + Math.sin(angle) * r,
-            value: v
-        };
-    });
-
-    /* Свечение */
-    ctx.save();
-    ctx.shadowColor = "rgba(124,140,255,.45)";
-    ctx.shadowBlur = isCompact ? 16 : 24;
-
-    ctx.beginPath();
-    points.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-    });
-    ctx.closePath();
-
-    ctx.fillStyle = "rgba(124,140,255,.20)";
-    ctx.fill();
-    ctx.restore();
-
-    /* Градиент */
-    const fillGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    fillGradient.addColorStop(0, "rgba(156,124,255,.40)");
-    fillGradient.addColorStop(1, "rgba(124,140,255,.12)");
-
-    ctx.beginPath();
-    points.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-    });
-    ctx.closePath();
-
-    ctx.fillStyle = fillGradient;
-    ctx.fill();
-
-    /* Контур */
-    ctx.strokeStyle = "#9ca7ff";
-    ctx.lineWidth = isCompact ? 2.2 : 2.5;
-    ctx.lineJoin = "round";
-    ctx.stroke();
-
-    /* Точки по уровню */
-    points.forEach(p => {
-        const color = getRingColorHex(p.value);
-        const outerR = isCompact ? 7 : 8;
-        const innerR = isCompact ? 4.5 : 5.5;
-        const whiteR = isCompact ? 1.8 : 2.2;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.25;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, whiteR, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fill();
-    });
-
-    /* Подписи */
-    ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    skills.forEach((skill, i) => {
-
-        const angle = -Math.PI / 2 + i * angleStep;
-        const x = cx + Math.cos(angle) * labelRadius;
-        const y = cy + Math.sin(angle) * labelRadius;
-
-        const words = skill.split(" ");
-        const lines = [];
-        let current = "";
-
-        words.forEach(word => {
-            const test = current ? current + " " + word : word;
-            if (ctx.measureText(test).width > maxLabelWidth) {
-                if (current) lines.push(current);
-                current = word;
-            } else {
-                current = test;
-            }
-        });
-        if (current) lines.push(current);
-
-        const displayLines = lines.slice(0, isCompact ? 2 : 3);
-        const lineHeight = fontSize + 2;
-        const totalHeight = displayLines.length * lineHeight;
-
-        ctx.fillStyle = "#d7dbe3";
-
-        displayLines.forEach((line, li) => {
-            ctx.fillText(
-                line,
-                x,
-                y + (li * lineHeight) - (totalHeight - lineHeight) / 2
-            );
-        });
-    });
-
-    /* Центр */
-    const innerR = isCompact ? 24 : 26;
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
-    ctx.fillStyle = "#0b0d12";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.14)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    ctx.font = `800 ${isCompact ? 14 : 15}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(average.toFixed(1), cx, cy - 4);
-
-    ctx.font = `600 ${isCompact ? 9 : 9}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
-    ctx.fillStyle = "#9299a6";
-    ctx.fillText("из 5", cx, cy + (isCompact ? 8 : 9));
-}
-
-
-/* =========================================================
-   НАВИГАЦИЯ
-========================================================= */
-
-function findNextUncompletedCategory() {
-
-    const names = Object.keys(categories);
-    const start = currentCategoryIndex;
-
-    for (let i = start + 1; i < names.length; i++) {
-        if (!isCategoryCompleted(names[i])) return i;
-    }
-    for (let i = 0; i <= start; i++) {
-        if (!isCategoryCompleted(names[i])) return i;
-    }
-    return -1;
-}
-
-function continueFullAssessment() {
-
-    decisionScreen.classList.add("hidden");
-
-    const nextIndex = findNextUncompletedCategory();
-    if (nextIndex === -1) { finishAssessment(); return; }
-
-    const names = Object.keys(categories);
-
-    nextScreen.classList.remove("hidden");
-
-    document.getElementById("nextCategoryText").textContent =
-        `Следующая категория: ${names[nextIndex]}`;
-
-    const btn = nextScreen.querySelector("button");
-    btn.textContent = "Далее";
-    btn.onclick = goNextCategory;
-}
-
-function goNextCategory() {
-    const nextIndex = findNextUncompletedCategory();
-    if (nextIndex === -1) { finishAssessment(); return; }
-
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-
-    loadCategory(nextIndex);
-}
-
-function finishAssessment() {
-
-    saveResults();
-
-    testScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    resultsScreen.classList.remove("hidden");
-
-    renderResults();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-
-/* =========================================================
-   ЦВЕТ / УРОВЕНЬ
-========================================================= */
-
-function getRingColor(avg) {
-    if (avg >= 4) return "var(--good)";
-    if (avg >= 3) return "var(--accent)";
-    if (avg >= 2) return "var(--warning)";
-    return "var(--danger)";
-}
-
-function getRingColorHex(avg) {
-    if (avg >= 4) return "#55d68a";
-    if (avg >= 3) return "#7c8cff";
-    if (avg >= 2) return "#ffc857";
-    return "#ff6b6b";
-}
-
-function getLevelLabel(avg) {
-    if (avg >= 4.5) return "профи";
-    if (avg >= 3.5) return "продвинутый";
-    if (avg >= 2.5) return "уверенный";
-    if (avg >= 1.5) return "начальный";
-    return "нет опыта";
-}
-
-
-/* =========================================================
-   ANIMATION HELPERS
-========================================================= */
-
-function animateNumber(el, from, to, duration, formatter) {
-    const start = performance.now();
-    function tick(now) {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const val = from + (to - from) * eased;
-        el.textContent = formatter(val);
-        if (t < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-function animateCssVar(el, name, from, to, duration, unit) {
-    const start = performance.now();
-    function tick(now) {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const val = from + (to - from) * eased;
-        el.style.setProperty(name, val + unit);
-        if (t < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-
-/* =========================================================
-   РЕЗУЛЬТАТЫ
-========================================================= */
-
-function renderResults() {
-
-    const allSkills = [];
-    const categoryData = [];
-
-    Object.keys(results).forEach(category => {
-
-        const skillValues = results[category];
-        const values = Object.values(skillValues);
-        if (!values.length) return;
-
-        const average = values.reduce((a, b) => a + b, 0) / values.length;
-
-        categoryData.push({
-            name: category,
-            average: average,
-            count: values.length
-        });
-
-        Object.entries(skillValues).forEach(([name, value]) => {
-            allSkills.push({ category, name, value });
-        });
-    });
-
-    if (!allSkills.length) {
-        safeAlert("Сначала оцените хотя бы одну категорию.");
-        backToAssessment();
-        return;
-    }
-
-    const average =
-        allSkills.reduce((sum, item) => sum + item.value, 0) / allSkills.length;
-
-    const max = Math.max(...allSkills.map(item => item.value));
-    const min = Math.min(...allSkills.map(item => item.value));
-
-    const overallPercent = (average / 5) * 100;
-    const overallPercentRounded = Math.round(overallPercent);
-    const gaugeColor = getRingColor(average);
-
-    document.getElementById("statAverage").textContent = average.toFixed(1);
-    document.getElementById("statMax").textContent = max;
-    document.getElementById("statMin").textContent = min;
-
-    const gaugeEl = document.getElementById("overallGauge");
-    const percentEl = document.getElementById("overallPercent");
-    const avgEl = document.getElementById("overallAverage");
-
-    gaugeEl.style.setProperty("--gauge-color", gaugeColor);
-    gaugeEl.style.setProperty("--gauge-percent", "0%");
-    percentEl.textContent = "0%";
-    avgEl.textContent = "0.0";
-
-    animateNumber(percentEl, 0, overallPercentRounded, 900, v => Math.round(v) + "%");
-    animateNumber(avgEl, 0, average, 900, v => v.toFixed(1));
-    animateCssVar(gaugeEl, "--gauge-percent", 0, overallPercent, 900, "%");
-
-    const categoryResults = document.getElementById("categoryResults");
-    categoryResults.innerHTML = "";
-
-    categoryData.forEach(item => {
-
-        const percent = (item.average / 5) * 100;
-        const percentRounded = Math.round(percent);
-        const ringColor = getRingColor(item.average);
-        const level = getLevelLabel(item.average);
-
-        const card = document.createElement("div");
-        card.className = "category-result";
-
-        card.innerHTML = `
-            <div class="circle" style="--percent:${percent}%; --ring-color:${ringColor};">
-                <div>
-                    <div class="circle-value">${percentRounded}%</div>
-                    <div class="circle-level">${item.average.toFixed(1)}/5</div>
-                </div>
-            </div>
-            <div class="category-result-name">${escapeHtml(item.name)}</div>
-            <div class="category-result-count">${item.count} навыков · ${level}</div>
-        `;
-
-        categoryResults.appendChild(card);
-    });
-
-    const strengths = [...allSkills].sort((a, b) => b.value - a.value).slice(0, 7);
-    const strengthsList = document.getElementById("strengthsList");
-    strengthsList.innerHTML = "";
-    strengths.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "result-skill";
-        row.innerHTML = `
-            <div class="result-skill-name">${escapeHtml(item.name)}</div>
-            <div class="result-skill-value good">${item.value}/5</div>
-        `;
-        strengthsList.appendChild(row);
-    });
-
-    const development = [...allSkills].sort((a, b) => a.value - b.value).slice(0, 7);
-    const developmentList = document.getElementById("developmentList");
-    developmentList.innerHTML = "";
-    development.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "result-skill";
-        const className = item.value <= 2 ? "danger" : "warning";
-        row.innerHTML = `
-            <div class="result-skill-name">${escapeHtml(item.name)}</div>
-            <div class="result-skill-value ${className}">${item.value}/5</div>
-        `;
-        developmentList.appendChild(row);
-    });
-
-    renderInterpretation(average, categoryData);
-
-    lastCategoryData = categoryData;
-    drawRadar(categoryData);
-}
-
-function renderInterpretation(average, categoryData) {
-
-    const percent = Math.round((average / 5) * 100);
-    let text = "";
-
-    if (average < 2) {
-        text = "Большинство оценённых навыков находятся на начальном уровне. " +
-               "Это не означает отсутствие потенциала — скорее, карта показывает направления, " +
-               "в которых ещё предстоит накопить опыт.";
-    } else if (average < 3) {
-        text = "У вас формируется набор практических навыков, однако многие из них " +
-               "пока находятся на начальном или переходном уровне. Наиболее полезно " +
-               "сосредоточиться на нескольких направлениях и переводить знания в регулярную практику.";
-    } else if (average < 4) {
-        text = "У вас достаточно широкий набор навыков с преимущественно уверенным уровнем " +
-               "владения. На этом этапе особенно полезно определить несколько сильных " +
-               "направлений и углублять их до продвинутого уровня.";
-    } else {
-        text = "Карта показывает высокий средний уровень по оценённым навыкам. " +
-               "Вероятно, у вас уже сформирован значительный практический опыт. " +
-               "Следующий шаг — специализация, интеграция навыков и создание проектов на их основе.";
-    }
-
-    text += ` Общий уровень: ${percent}% (${average.toFixed(1)} из 5).`;
-
-    if (categoryData.length === 1) {
-        text += " Сейчас оценена только одна категория. Для более полноценной карты можно пройти остальные категории.";
-    } else {
-        text += ` Оценено категорий: ${categoryData.length}.`;
-    }
-
-    document.getElementById("interpretation").textContent = text;
-}
-
-
-/* =========================================================
-   ИТОГОВЫЙ РАДАР ПО КАТЕГОРИЯМ
-========================================================= */
-
-function drawRadar(categoryData) {
-
-    const canvas = document.getElementById("skillsRadar");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-    const containerWidth =
-        (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
-
-    const cssSize = Math.max(260, Math.min(containerWidth || 620, 620));
-
-    canvas.style.width  = cssSize + "px";
-    canvas.style.height = cssSize + "px";
-    canvas.width  = Math.round(cssSize * dpr);
-    canvas.height = Math.round(cssSize * dpr);
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-
-    const width = cssSize;
-    const height = cssSize;
-    ctx.clearRect(0, 0, width, height);
-
-    if (!categoryData.length) return;
-
-    const cx = width / 2;
-    const cy = height / 2;
-    const radius = Math.min(width, height) * 0.32;
-    const count = categoryData.length;
-    const labelRadius = radius + 58;
-
-    for (let level = 1; level <= 5; level++) {
-        const r = radius * level / 5;
-        ctx.beginPath();
-        for (let i = 0; i < count; i++) {
-            const angle = -Math.PI / 2 + i * 2 * Math.PI / count;
-            const x = cx + Math.cos(angle) * r;
-            const y = cy + Math.sin(angle) * r;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = "rgba(255,255,255,.10)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
-
-    for (let i = 0; i < count; i++) {
-        const angle = -Math.PI / 2 + i * 2 * Math.PI / count;
-        const x = cx + Math.cos(angle) * radius;
-        const y = cy + Math.sin(angle) * radius;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "rgba(255,255,255,.10)";
-        ctx.stroke();
-    }
-
-    ctx.beginPath();
-    categoryData.forEach((item, index) => {
-        const angle = -Math.PI / 2 + index * 2 * Math.PI / count;
-        const r = radius * item.average / 5;
-        const x = cx + Math.cos(angle) * r;
-        const y = cy + Math.sin(angle) * r;
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
-    ctx.closePath();
-    ctx.fillStyle = "rgba(124,140,255,.22)";
-    ctx.fill();
-    ctx.strokeStyle = "#7c8cff";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    categoryData.forEach((item, index) => {
-        const angle = -Math.PI / 2 + index * 2 * Math.PI / count;
-        const r = radius * item.average / 5;
-        const x = cx + Math.cos(angle) * r;
-        const y = cy + Math.sin(angle) * r;
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
-        ctx.fillStyle = "#9ca7ff";
-        ctx.fill();
-    });
-
-    categoryData.forEach((item, index) => {
-        const angle = -Math.PI / 2 + index * 2 * Math.PI / count;
-        const x = cx + Math.cos(angle) * labelRadius;
-        const y = cy + Math.sin(angle) * labelRadius;
-
-        ctx.fillStyle = "#d7dbe3";
-        ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const words = item.name.split(" ");
-        const lines = [];
-        let current = "";
-
-        words.forEach(word => {
-            const test = current ? current + " " + word : word;
-            if (ctx.measureText(test).width > 110) {
-                if (current) lines.push(current);
-                current = word;
-            } else {
-                current = test;
-            }
-        });
-        if (current) lines.push(current);
-
-        lines.slice(0, 3).forEach((line, lineIndex) => {
-            ctx.fillText(
-                line,
-                x,
-                y + (lineIndex - (Math.min(lines.length, 3) - 1) / 2) * 15
-            );
-        });
-    });
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "#ffffff";
-    ctx.fill();
-}
-
-
-/* =========================================================
-   PROGRESS / CHECKLIST / SELECT
-========================================================= */
-
-function updateProgress() {
-
-    const names = Object.keys(categories);
-    const completed = names.filter(isCategoryCompleted).length;
-    const current = currentCategoryIndex + 1;
-    const percent = Math.round(completed / names.length * 100);
-
-    document.getElementById("progressText").textContent =
-        `Категория ${current} из ${names.length}`;
-    document.getElementById("progressPercent").textContent = `${percent}%`;
-    document.getElementById("progressBar").style.width = `${percent}%`;
-}
-
-function updateChecklist() {
-
-    const container = document.getElementById("checklist");
-    if (!container) return;
-
-    const names = Object.keys(categories);
-    const completedCount = names.filter(isCategoryCompleted).length;
-
-    container.innerHTML = "";
-
-    const summary = document.createElement("div");
-    summary.className = "checklist-summary";
-    summary.textContent = `Пройдено: ${completedCount} из ${names.length}`;
-    container.appendChild(summary);
-
-    names.forEach((name, index) => {
-
-        const done = isCategoryCompleted(name);
-        const touched = isCategoryTouched(name);
-        const active = index === currentCategoryIndex;
-
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "checklist-item";
-        if (done) btn.classList.add("done");
-        else if (touched) btn.classList.add("partial");
-        if (active) btn.classList.add("active");
-
-        const mark = done ? "✓" : (touched ? "◐" : "○");
-
-        btn.innerHTML =
-            '<span class="checklist-check">' + mark + "</span>" +
-            '<span>' + escapeHtml(name) + "</span>";
-
-        btn.addEventListener("click", () => {
-            loadCategory(index);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-
-        container.appendChild(btn);
-    });
-}
-
-function refreshCategorySelect() {
-    const names = Object.keys(categories);
-    const opts = categorySelect.options;
-    for (let i = 0; i < opts.length; i++) {
-        const name = names[i];
-        let prefix = "";
-        if (isCategoryCompleted(name)) prefix = "✓ ";
-        else if (isCategoryTouched(name)) prefix = "◐ ";
-        opts[i].textContent = prefix + name;
-    }
-}
-
-
-/* =========================================================
-   BACK / RESET
-========================================================= */
-
-function backToAssessment() {
-    resultsScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-    loadCategory(currentCategoryIndex);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function resetTest() {
-
-    const confirmed = await safeConfirm("Удалить все оценки и начать заново?");
-    if (!confirmed) return;
-
-    results = {};
-    completedCategories = {};
-    lastCategoryData = null;
-    lastSkillRadarData = null;
-
-    try {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(STORAGE_COMPLETED_KEY);
-    } catch (e) {}
-
-    currentCategoryIndex = 0;
-
-    resultsScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-
-    loadCategory(0);
-    updateProgress();
-    updateChecklist();
-    refreshCategorySelect();
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-
-/* =========================================================
-   LOCAL STORAGE
-========================================================= */
-
-function saveResults() {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-        localStorage.setItem(
-            STORAGE_COMPLETED_KEY,
-            JSON.stringify(completedCategories)
-        );
-    } catch (e) {
-        console.log("Не удалось сохранить", e);
-    }
-}
-
-function loadResults() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) results = JSON.parse(saved) || {};
-
-        const savedCompleted = localStorage.getItem(STORAGE_COMPLETED_KEY);
-        if (savedCompleted) completedCategories = JSON.parse(savedCompleted) || {};
-    } catch (e) {
-        results = {};
-        completedCategories = {};
-    }
-}
-
-
-/* =========================================================
-   ЭКСПОРТ
-========================================================= */
-
-function exportResults() {
-
-    const data = {
-        title: "Карта навыков",
-        date: new Date().toLocaleString("ru-RU"),
-        results: results,
-        completed: Object.keys(completedCategories)
-    };
-
-    const blob = new Blob(
-        [JSON.stringify(data, null, 2)],
-        { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "karta-navykov.json";
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-
-/* =========================================================
-   UTILS
-========================================================= */
-
-function escapeHtml(text) {
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-/* ✅ ИСПРАВЛЕНО: правильные скобки */
-function pluralize(n, forms) {
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    if (mod10 === 1 && mod100 !== 11) return forms[0];
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return forms[1];
-    return forms[2];
-}
-
-
-/* =========================================================
-   МОДУЛЬ: ПРОГРАММЫ ОБУЧЕНИЯ
-========================================================= */
-
-function getWeakSkills(category) {
-    const skillValues = results[category] || {};
-    return Object.entries(skillValues)
-        .filter(([_, v]) => Number(v) <= 2)
-        .map(([name]) => name);
-}
-
-function openPrograms() {
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.impactOccurred("light"); } catch (e) {}
-    }
-
-    const categoryName = currentCategory || Object.keys(categories)[0];
-    const categoryPrograms = partners[categoryName] || [];
-    const weakSkills = getWeakSkills(categoryName);
-
-    const withRec = categoryPrograms.map(p => {
-        const matched = (p.skills || []).filter(s => weakSkills.includes(s));
-        return {
-            ...p,
-            recommended: matched.length > 0,
-            matchedSkills: matched
-        };
-    }).sort((a, b) => {
-        if (a.recommended !== b.recommended) return b.recommended ? 1 : -1;
-        return b.matchedSkills.length - a.matchedSkills.length;
-    });
-
-    document.getElementById("programsSubtitle").textContent = categoryName;
-
-    const body = document.getElementById("programsBody");
-
-    if (!withRec.length) {
-        body.innerHTML = `
-            <div class="programs-empty">
-                <div class="programs-empty-icon">🎓</div>
-                <div>Программы партнёров по этой категории скоро появятся.</div>
-                <div style="margin-top:10px;font-size:12px;opacity:.7;">
-                    Оставьте заявку на консультацию — подберём индивидуально.
-                </div>
-            </div>
-            <button class="btn-primary" style="width:100%;margin-top:14px;"
-                    onclick="closeModal('programsModal');openConsultation();">
-                💬 Оставить заявку
-            </button>
-        `;
-    } else {
-        body.innerHTML = `
-            <div class="programs-list">
-                ${withRec.map(p => renderProgramCard(p)).join("")}
-            </div>
-            <div class="consult-intro" style="margin-top:18px;margin-bottom:0;">
-                Не нашли подходящее? <a href="#" onclick="event.preventDefault();closeModal('programsModal');openConsultation();"
-                style="color:var(--accent);text-decoration:none;font-weight:700;">Оставьте заявку на консультацию</a> —
-                подберём программу индивидуально.
-            </div>
-        `;
-    }
-
-    body.querySelectorAll(".program-cta").forEach(btn => {
-        btn.addEventListener("click", () => {
-            handleProgramClick(btn.dataset.partner, btn.dataset.program);
-        });
-    });
-
-    document.getElementById("programsModal").classList.add("open");
-    document.body.style.overflow = "hidden";
-}
-
-function renderProgramCard(p) {
-
-    const meta = `
-        <span>🌐 ${escapeHtml(p.format || "Онлайн")}</span>
-        <span>⏱ ${escapeHtml(p.duration || "—")}</span>
-        <span>💳 ${escapeHtml(p.price || "—")}</span>
-    `;
-
-    return `
-        <div class="program-card ${p.recommended ? "recommended" : ""}">
-            <div class="program-head">
-                <div class="program-partner">
-                    <span class="program-partner-dot"></span>
-                    ${escapeHtml(p.partner)}
-                </div>
-                ${p.recommended ? '<div class="program-badge">Рекомендуем</div>' : ""}
-            </div>
-            <div class="program-title">${escapeHtml(p.program)}</div>
-            <div class="program-desc">${escapeHtml(p.desc)}</div>
-            <div class="program-meta">${meta}</div>
-            <button class="program-cta"
-                    data-partner="${escapeHtml(p.partner)}"
-                    data-program="${escapeHtml(p.program)}">
-                Открыть программу →
-            </button>
-        </div>
-    `;
-}
-
-function handleProgramClick(partner, program) {
-
-    if (tg && typeof tg.sendData === "function") {
-        try {
-            tg.sendData(JSON.stringify({
-                type: "program_interest",
-                partner: partner,
-                program: program,
-                category: currentCategory
-            }));
-        } catch (e) {}
-    }
-
-    showToast(`Заявка на «${program}» от ${partner} отправлена`);
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
-    }
-}
-
-
-/* =========================================================
-   МОДУЛЬ: КОНСУЛЬТАЦИЯ
-========================================================= */
-
-function openConsultation() {
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.impactOccurred("light"); } catch (e) {}
-    }
-
-    const categoryName = currentCategory || Object.keys(categories)[0];
-    const weakSkills = getWeakSkills(categoryName);
-
-    document.getElementById("consultationSubtitle").textContent = categoryName;
-
-    const weakHint = weakSkills.length
-        ? `Слабые места: ${weakSkills.slice(0, 3).join(", ")}${weakSkills.length > 3 ? " и др." : ""}`
-        : "Разбор текущего профиля по этой категории";
-
-    const topicText = weakSkills.length
-        ? `Хочу разобраться с навыками: ${weakSkills.join(", ")}`
-        : "";
-
-    document.getElementById("consultationBody").innerHTML = `
-        <div class="consult-intro">
-            💬 Специалист поможет разобрать ваши результаты и составить план развития
-            <strong>по категории «${escapeHtml(categoryName)}»</strong>.
-            ${weakSkills.length ? `<br><br>Найденные слабые места: <strong>${escapeHtml(weakHint)}</strong>` : ""}
-        </div>
-
-        <form class="consult-form" onsubmit="submitConsultation(event)">
-            <div class="consult-field">
-                <label>Как к вам обращаться</label>
-                <input type="text" id="consultName" placeholder="Имя" required>
-            </div>
-
-            <div class="consult-field">
-                <label>Контакт для связи</label>
-                <input type="text" id="consultContact"
-                       placeholder="@telegram, email или телефон" required>
-            </div>
-
-            <div class="consult-field">
-                <label>Что хотите обсудить</label>
-                <textarea id="consultTopic"
-                          placeholder="Опишите, с чем нужна помощь">${escapeHtml(topicText)}</textarea>
-            </div>
-
-            <div class="consult-field">
-                <label>Удобное время (необязательно)</label>
-                <input type="text" id="consultTime"
-                       placeholder="Например, будни после 18:00">
-            </div>
-
-            <button type="submit" class="consult-submit">
-                Отправить заявку
-            </button>
-        </form>
-    `;
-
-    document.getElementById("consultationModal").classList.add("open");
-    document.body.style.overflow = "hidden";
-}
-
-function submitConsultation(event) {
-
-    event.preventDefault();
-
-    const name = document.getElementById("consultName").value.trim();
-    const contact = document.getElementById("consultContact").value.trim();
-    const topic = document.getElementById("consultTopic").value.trim();
-    const time = document.getElementById("consultTime").value.trim();
-
-    if (!name || !contact) {
-        showToast("Заполните имя и контакт");
-        return;
-    }
-
-    const application = {
-        type: "consultation",
-        name, contact, topic, time,
-        category: currentCategory,
-        date: new Date().toISOString()
-    };
-
-    try {
-        const existing = JSON.parse(localStorage.getItem(STORAGE_APPLICATIONS_KEY) || "[]");
-        existing.push(application);
-        localStorage.setItem(STORAGE_APPLICATIONS_KEY, JSON.stringify(existing));
-    } catch (e) {}
-
-    if (tg && typeof tg.sendData === "function") {
-        try {
-            tg.sendData(JSON.stringify(application));
-        } catch (e) {}
-    }
-
-    document.getElementById("consultationBody").innerHTML = `
-        <div class="consult-success">
-            <div class="consult-success-icon">✓</div>
-            <h3>Заявка отправлена</h3>
-            <p>Мы свяжемся с вами по указанному контакту в течение 1 рабочего дня.</p>
-            <button class="btn-primary" style="width:100%;margin-top:20px;"
-                    onclick="closeModal('consultationModal')">
-                Хорошо
-            </button>
-        </div>
-    `;
-
-    if (tg && tg.HapticFeedback) {
-        try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
-    }
-}
-
-
-/* =========================================================
-   МОДАЛКИ — открытие / закрытие / тосты
-========================================================= */
-
-function closeModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove("open");
-    document.body.style.overflow = "";
-}
-
-let toastTimer = null;
-
-function showToast(text) {
-
-    let toast = document.getElementById("appToast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "appToast";
-        Object.assign(toast.style, {
-            position: "fixed",
-            left: "50%",
-            bottom: "24px",
-            transform: "translateX(-50%) translateY(80px)",
-            background: "#263653",
-            color: "#fff",
-            padding: "12px 18px",
-            borderRadius: "14px",
-            fontSize: "13px",
-            zIndex: "3000",
-            opacity: "0",
-            transition: "all .3s ease",
-            maxWidth: "calc(100vw - 30px)",
-            textAlign: "center",
-            boxShadow: "0 8px 30px rgba(0,0,0,.4)",
-            pointerEvents: "none"
-        });
-        document.body.appendChild(toast);
-    }
-
-    toast.textContent = text;
-    requestAnimationFrame(() => {
-        toast.style.opacity = "1";
-        toast.style.transform = "translateX(-50%) translateY(0)";
-    });
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateX(-50%) translateY(80px)";
-    }, 2800);
-}
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener("resize", () => {
-
-    if (!resultsScreen.classList.contains("hidden") && lastCategoryData) {
-        drawRadar(lastCategoryData);
-    }
-
-    if (!decisionScreen.classList.contains("hidden") && lastSkillRadarData) {
-        drawSkillRadar(
-            "skillRadar",
-            lastSkillRadarData.skills,
-            lastSkillRadarData.values,
-            lastSkillRadarData.average,
-            false
-        );
-    }
-
-    if (!testScreen.classList.contains("hidden")) {
-        updateLiveRadar();
-    }
-});
-
-
-/* =========================================================
-   START
-========================================================= */
-
-init();
-
-</script>
-
-</body>
-</html>
