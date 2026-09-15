@@ -35,11 +35,8 @@ body { padding: 20px 14px 50px; }
 .app { width: 100%; max-width: 1100px; margin: 0 auto; }
 
 header { text-align: center; margin-bottom: 22px; }
-
 .logo { font-size: 48px; margin-bottom: 8px; }
-
 h1 { margin: 0; font-size: 30px; font-weight: 750; }
-
 .subtitle { margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.45; }
 
 .card {
@@ -85,21 +82,22 @@ h1 { margin: 0; font-size: 30px; font-weight: 750; }
 .checklist-item.active .checklist-check { opacity: 1; }
 
 /* Category */
-.category-box { background: var(--card2); border: 1px solid var(--border); border-radius: 17px; padding: 15px; margin-bottom: 20px; }
-.category-label { color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+.category-box { background: var(--card2); border: 1px solid var(--border); border-radius: 17px; padding: 13px 15px; margin-bottom: 18px; }
+.category-label { color: var(--muted); font-size: 11px; margin-bottom: 6px; letter-spacing: .4px; }
 
 select {
     width: 100%; appearance: none;
     background: #10131a; color: var(--text);
     border: 1px solid var(--border); border-radius: 13px;
-    padding: 14px; font-size: 16px; outline: none;
+    padding: 12px 14px; font-size: 15px; outline: none;
+    font-family: inherit;
 }
 select:focus { border-color: var(--accent); }
 
 /* ===== Layout ===== */
 .category-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-columns: minmax(0, 1fr) 460px;
     gap: 18px;
     align-items: start;
     margin-top: 6px;
@@ -118,39 +116,52 @@ select:focus { border-color: var(--accent); }
 
 .live-radar-header {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 8px; padding: 0 2px;
+    margin-bottom: 8px; padding: 0 4px;
 }
 .live-radar-title { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
-.live-radar-percent { color: var(--accent); font-size: 16px; font-weight: 800; transition: color .2s ease; }
+.live-radar-percent { color: var(--accent); font-size: 18px; font-weight: 800; transition: color .2s ease; }
 
 .live-radar-container { display: flex; justify-content: center; align-items: center; width: 100%; }
 #liveSkillRadar { display: block; max-width: 100%; height: auto; }
 
-/* Skill card */
+/* Skill card — компактнее */
 .skill {
     background: #10131a; border: 1px solid var(--border);
-    border-radius: 16px; padding: 13px 14px 12px;
-    margin-bottom: 9px; transition: border-color .2s ease;
+    border-radius: 14px; padding: 11px 13px 10px;
+    margin-bottom: 8px; transition: border-color .2s ease;
 }
 .skill:focus-within { border-color: rgba(124,140,255,.35); }
-.skill-name { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 10px; color: var(--text); }
 
-/* Segmented */
+.skill-name { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; color: var(--text); }
+
+/* ===== Сегментированный контрол — компактный ===== */
 .segmented {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
-    background: #0b0d12; padding: 4px; border-radius: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
+    background: #0b0d12;
+    padding: 3px;
+    border-radius: 10px;
     border: 1px solid var(--border);
+    max-width: 260px;
 }
+
 .segmented button {
-    padding: 10px 0; border-radius: 8px;
-    background: transparent; color: var(--muted);
-    font-weight: 700; font-size: 14px; font-family: inherit;
-    cursor: pointer; border: none;
+    padding: 6px 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    line-height: 1;
     transition: background .15s ease, color .15s ease, transform .1s ease;
 }
 .segmented button:hover:not(.active) { background: rgba(255,255,255,.05); color: var(--text); }
 .segmented button:active { transform: scale(.94); }
-.segmented button.active { box-shadow: 0 4px 14px rgba(0,0,0,.30); color: #ffffff; }
+.segmented button.active { box-shadow: 0 3px 10px rgba(0,0,0,.30); color: #ffffff; }
 .segmented button[data-value="1"].active { background: var(--danger); color: #2a0a0a; }
 .segmented button[data-value="2"].active { background: var(--warning); color: #3a2a08; }
 .segmented button[data-value="3"].active { background: var(--accent); color: #ffffff; }
@@ -158,9 +169,10 @@ select:focus { border-color: var(--accent); }
 .segmented button[data-value="5"].active { background: #4be08a; color: #08130d; }
 
 .skill-level-hint {
-    text-align: center; font-size: 11px; font-weight: 700;
-    margin-top: 8px; letter-spacing: .3px;
+    font-size: 10px; font-weight: 700;
+    margin-top: 6px; letter-spacing: .3px;
     color: var(--muted); transition: color .2s ease;
+    display: inline-block;
 }
 .skill-level-hint.lv-1 { color: var(--danger); }
 .skill-level-hint.lv-2 { color: var(--warning); }
@@ -169,56 +181,55 @@ select:focus { border-color: var(--accent); }
 .skill-level-hint.lv-5 { color: #4be08a; }
 
 /* ===== Кнопки-модули ===== */
-
 .helper-box {
     background: linear-gradient(135deg, rgba(110,168,254,.08), rgba(156,124,255,.08));
     border: 1px solid rgba(124,140,255,.22);
     border-radius: 16px;
-    padding: 14px;
-    margin: 18px 0 0;
+    padding: 13px;
+    margin-top: 14px;
 }
 
 .helper-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 10px;
+    margin-bottom: 9px;
     letter-spacing: .2px;
 }
 
 .helper-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px;
+    gap: 8px;
 }
 
 .helper-btn {
-    display: flex; align-items: center; gap: 9px;
-    padding: 12px 13px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 11px;
     background: rgba(255,255,255,.04);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 11px;
     color: var(--text);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     font-family: inherit;
     text-align: left;
     cursor: pointer;
     transition: background .15s ease, border-color .15s ease;
-    line-height: 1.3;
+    line-height: 1.25;
 }
 .helper-btn:active { transform: scale(.98); }
 .helper-btn:hover { background: rgba(255,255,255,.07); border-color: rgba(124,140,255,.35); }
 
-.helper-btn-icon { font-size: 22px; flex-shrink: 0; }
-.helper-btn-body { display: flex; flex-direction: column; gap: 2px; }
-.helper-btn-label { color: var(--text); font-size: 13px; font-weight: 700; }
-.helper-btn-sub { color: var(--muted); font-size: 11px; font-weight: 500; }
+.helper-btn-icon { font-size: 20px; flex-shrink: 0; }
+.helper-btn-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.helper-btn-label { color: var(--text); font-size: 12px; font-weight: 700; }
+.helper-btn-sub { color: var(--muted); font-size: 10px; font-weight: 500; }
 
 /* ===== Buttons ===== */
 .buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
 
-button { 
+button {
     border: none; border-radius: 14px; padding: 14px 18px;
     font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
     transition: transform .15s ease, opacity .15s ease, background .15s ease;
@@ -232,7 +243,6 @@ button:active { transform: scale(.97); }
 
 /* Decision screen */
 .decision-top { text-align: center; margin-bottom: 6px; }
-
 .decision-icon {
     font-size: 42px; margin-bottom: 6px; line-height: 1;
     display: inline-flex; align-items: center; justify-content: center;
@@ -354,7 +364,7 @@ button:active { transform: scale(.97); }
 footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; }
 
 /* ============================================================
-   МОДАЛКИ (Программы / Консультация)
+   МОДАЛКИ
 ============================================================ */
 
 .modal-overlay {
@@ -427,11 +437,8 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     -webkit-overflow-scrolling: touch;
 }
 
-/* -------- Программы -------- */
-
-.programs-list {
-    display: flex; flex-direction: column; gap: 12px;
-}
+/* Программы */
+.programs-list { display: flex; flex-direction: column; gap: 12px; }
 
 .program-card {
     background: var(--card2);
@@ -453,9 +460,7 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .program-partner {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 11px; font-weight: 700;
-    color: var(--partner);
-    letter-spacing: .3px;
-    text-transform: uppercase;
+    color: var(--partner); letter-spacing: .3px; text-transform: uppercase;
 }
 .program-partner-dot {
     width: 6px; height: 6px; border-radius: 50%;
@@ -468,26 +473,12 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     color: var(--good);
     font-size: 10px; font-weight: 700;
     padding: 4px 8px; border-radius: 8px;
-    white-space: nowrap; letter-spacing: .3px;
-    flex-shrink: 0;
+    white-space: nowrap; letter-spacing: .3px; flex-shrink: 0;
 }
 
-.program-title {
-    font-size: 15px; font-weight: 700;
-    line-height: 1.35; margin-bottom: 6px;
-    color: var(--text);
-}
-
-.program-desc {
-    font-size: 12.5px; color: var(--muted);
-    line-height: 1.5; margin-bottom: 12px;
-}
-
-.program-meta {
-    display: flex; flex-wrap: wrap; gap: 8px 12px;
-    font-size: 11px; color: var(--muted);
-    margin-bottom: 12px;
-}
+.program-title { font-size: 15px; font-weight: 700; line-height: 1.35; margin-bottom: 6px; color: var(--text); }
+.program-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.program-meta { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 11px; color: var(--muted); margin-bottom: 12px; }
 .program-meta span { display: inline-flex; align-items: center; gap: 4px; }
 
 .program-cta {
@@ -505,17 +496,10 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .program-cta:hover { background: rgba(110,168,254,.22); border-color: rgba(110,168,254,.4); }
 .program-cta:active { transform: scale(.98); }
 
-.programs-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.5;
-}
+.programs-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 .programs-empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .6; }
 
-/* -------- Форма консультации -------- */
-
+/* Форма консультации */
 .consult-intro {
     font-size: 13px; color: var(--muted);
     line-height: 1.55; margin-bottom: 18px;
@@ -528,12 +512,9 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .consult-form { display: flex; flex-direction: column; gap: 14px; }
 
 .consult-field label {
-    display: block;
-    font-size: 12px; font-weight: 700;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: .3px;
-    text-transform: uppercase;
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--muted); margin-bottom: 6px;
+    letter-spacing: .3px; text-transform: uppercase;
 }
 
 .consult-field input,
@@ -555,23 +536,16 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .consult-field textarea:focus { border-color: var(--accent); }
 
 .consult-submit {
-    width: 100%;
-    padding: 15px;
-    background: var(--accent);
-    color: white;
-    border-radius: 13px;
-    font-size: 15px; font-weight: 700;
-    font-family: inherit;
-    cursor: pointer; border: none;
+    width: 100%; padding: 15px;
+    background: var(--accent); color: white;
+    border-radius: 13px; font-size: 15px; font-weight: 700;
+    font-family: inherit; cursor: pointer; border: none;
     margin-top: 4px;
 }
 .consult-submit:active { transform: scale(.98); }
 .consult-submit:disabled { opacity: .5; cursor: not-allowed; }
 
-.consult-success {
-    text-align: center;
-    padding: 30px 20px;
-}
+.consult-success { text-align: center; padding: 30px 20px; }
 .consult-success-icon {
     width: 68px; height: 68px; border-radius: 50%;
     background: rgba(85,214,138,.15);
@@ -584,39 +558,35 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 .consult-success p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
 
 /* ============================================================
-   АДАПТАЦИЯ — МОБИЛЬНАЯ ВЕРСИЯ
+   АДАПТАЦИЯ
 ============================================================ */
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
 
-    /* Схлопываем двухколоночный layout */
     .category-layout {
         grid-template-columns: 1fr;
         gap: 14px;
     }
 
-    /* Радар — наверх, во всю ширину */
     .radar-column {
         position: static;
         order: -1;
-        padding: 14px 14px 8px;
+        padding: 14px;
     }
 
-    .live-radar-container {
-        padding: 0 0 6px;
-    }
+    .live-radar-container { padding: 0; }
 
     #liveSkillRadar {
         max-width: 100%;
         width: 100%;
-        max-height: 320px;
+        max-height: 480px;
     }
 
-    .live-radar-header { padding: 0 4px; }
+    .live-radar-header { padding: 0 2px; }
     .live-radar-title { font-size: 11px; }
-    .live-radar-percent { font-size: 15px; }
+    .live-radar-percent { font-size: 16px; }
 
-    .helper-actions { grid-template-columns: 1fr; }
+    .helper-box { margin-top: 12px; }
 }
 
 @media (max-width: 560px) {
@@ -645,11 +615,19 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
     .decision-badge-value { font-size: 28px; }
     .decision-icon { width: 56px; height: 56px; font-size: 38px; }
 
-    .segmented button { padding: 11px 0; font-size: 15px; }
+    .segmented { max-width: 100%; }
+
+    #liveSkillRadar { max-height: 420px; }
 
     .modal-sheet { border-radius: 22px 22px 0 0; }
     .modal-body { padding: 14px 16px 20px; }
     .modal-header { padding: 8px 16px 12px; }
+
+    .helper-actions { grid-template-columns: 1fr 1fr; }
+    .helper-btn { padding: 9px 10px; }
+    .helper-btn-icon { font-size: 18px; }
+    .helper-btn-label { font-size: 11.5px; }
+    .helper-btn-sub { font-size: 9.5px; }
 }
 </style>
 </head>
@@ -701,28 +679,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 
             <div class="skills-column">
                 <div id="skillsContainer"></div>
-
-                <!-- Модули помощи во время оценки -->
-                <div class="helper-box">
-                    <div class="helper-title">Нужна помощь по этой категории?</div>
-                    <div class="helper-actions">
-                        <button class="helper-btn" onclick="openPrograms()">
-                            <span class="helper-btn-icon">🎓</span>
-                            <span class="helper-btn-body">
-                                <span class="helper-btn-label">Программа обучения</span>
-                                <span class="helper-btn-sub">Курсы партнёров под ваши цели</span>
-                            </span>
-                        </button>
-                        <button class="helper-btn" onclick="openConsultation()">
-                            <span class="helper-btn-icon">💬</span>
-                            <span class="helper-btn-body">
-                                <span class="helper-btn-label">Консультация</span>
-                                <span class="helper-btn-sub">Разбор со специалистом</span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
             </div>
 
             <aside class="radar-column">
@@ -732,6 +688,26 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
                 </div>
                 <div class="live-radar-container">
                     <canvas id="liveSkillRadar"></canvas>
+                </div>
+
+                <div class="helper-box">
+                    <div class="helper-title">Нужна помощь по этой категории?</div>
+                    <div class="helper-actions">
+                        <button class="helper-btn" onclick="openPrograms()">
+                            <span class="helper-btn-icon">🎓</span>
+                            <span class="helper-btn-body">
+                                <span class="helper-btn-label">Программа обучения</span>
+                                <span class="helper-btn-sub">Курсы партнёров</span>
+                            </span>
+                        </button>
+                        <button class="helper-btn" onclick="openConsultation()">
+                            <span class="helper-btn-icon">💬</span>
+                            <span class="helper-btn-body">
+                                <span class="helper-btn-label">Консультация</span>
+                                <span class="helper-btn-sub">Со специалистом</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </aside>
 
@@ -790,7 +766,6 @@ footer { text-align: center; color: #656c78; font-size: 12px; margin-top: 25px; 
 
         <div class="decision-category-name" id="decisionCategoryName">Категория</div>
 
-        <!-- Модули рекомендаций после завершения -->
         <div class="helper-box">
             <div class="helper-title">Что дальше?</div>
             <div class="helper-actions">
@@ -1146,332 +1121,175 @@ const categories = {
 
 
 /* =========================================================
-   ДАННЫЕ: ПРОГРАММЫ ПАРТНЁРОВ
-   Каждая программа привязана к категории (ключ) и содержит
-   массив skills — какие навыки она развивает.
+   ПРОГРАММЫ ПАРТНЁРОВ
 ========================================================= */
 
 const partners = {
 
     "Цифровые навыки": [
-        {
-            partner: "Skillbox",
-            program: "Веб-разработчик с нуля",
-            desc: "HTML, CSS, JavaScript, React, Node.js. Полный стек с проектами в портфолио.",
-            format: "Онлайн",
-            duration: "12 мес",
-            price: "5 500 ₽/мес",
-            skills: ["Программирование на ПК", "Веб-разработка (frontend)", "Веб-разработка (backend)"]
-        },
-        {
-            partner: "GeekBrains",
-            program: "Python-разработчик",
-            desc: "Основы Python, Django, REST API, работа с базами данных.",
-            format: "Онлайн",
-            duration: "9 мес",
-            price: "4 900 ₽/мес",
-            skills: ["Программирование на ПК", "Аналитика данных и таблицы"]
-        },
-        {
-            partner: "Нетология",
-            program: "Видеомонтаж в Premiere Pro",
-            desc: "Профессиональный монтаж, цветокоррекция, звук, экспорт под платформы.",
-            format: "Онлайн",
-            duration: "4 мес",
-            price: "3 900 ₽/мес",
-            skills: ["Монтаж видео на ПК", "Съёмка видео на камеру"]
-        },
-        {
-            partner: "Bang Bang Education",
-            program: "Графический дизайн",
-            desc: "Композиция, типографика, Figma, Photoshop, Illustrator.",
-            format: "Онлайн",
-            duration: "8 мес",
-            price: "5 200 ₽/мес",
-            skills: ["Графический дизайн на ПК", "Графический дизайн на смартфоне"]
-        },
-        {
-            partner: "Skillbox",
-            program: "SMM-менеджер",
-            desc: "Стратегия, контент, таргет, аналитика, работа с блогерами.",
-            format: "Онлайн",
-            duration: "6 мес",
-            price: "4 400 ₽/мес",
-            skills: ["SMM и ведение соцсетей", "Работа с текстами и редактура"]
-        }
+        { partner: "Skillbox", program: "Веб-разработчик с нуля",
+          desc: "HTML, CSS, JavaScript, React, Node.js. Полный стек с проектами в портфолио.",
+          format: "Онлайн", duration: "12 мес", price: "5 500 ₽/мес",
+          skills: ["Программирование на ПК", "Веб-разработка (frontend)", "Веб-разработка (backend)"] },
+        { partner: "GeekBrains", program: "Python-разработчик",
+          desc: "Основы Python, Django, REST API, работа с базами данных.",
+          format: "Онлайн", duration: "9 мес", price: "4 900 ₽/мес",
+          skills: ["Программирование на ПК", "Аналитика данных и таблицы"] },
+        { partner: "Нетология", program: "Видеомонтаж в Premiere Pro",
+          desc: "Профессиональный монтаж, цветокоррекция, звук, экспорт под платформы.",
+          format: "Онлайн", duration: "4 мес", price: "3 900 ₽/мес",
+          skills: ["Монтаж видео на ПК", "Съёмка видео на камеру"] },
+        { partner: "Bang Bang Education", program: "Графический дизайн",
+          desc: "Композиция, типографика, Figma, Photoshop, Illustrator.",
+          format: "Онлайн", duration: "8 мес", price: "5 200 ₽/мес",
+          skills: ["Графический дизайн на ПК", "Графический дизайн на смартфоне"] },
+        { partner: "Skillbox", program: "SMM-менеджер",
+          desc: "Стратегия, контент, таргет, аналитика, работа с блогерами.",
+          format: "Онлайн", duration: "6 мес", price: "4 400 ₽/мес",
+          skills: ["SMM и ведение соцсетей", "Работа с текстами и редактура"] }
     ],
 
     "Аналитические навыки": [
-        {
-            partner: "Яндекс Практикум",
-            program: "Аналитик данных",
-            desc: "SQL, Python, визуализация, A/B-тесты, дашборды.",
-            format: "Онлайн",
-            duration: "8 мес",
-            price: "6 000 ₽/мес",
-            skills: ["Анализ информации и источников", "Работа с данными и таблицами", "Поиск закономерностей"]
-        },
-        {
-            partner: "Skillbox",
-            program: "Системное мышление",
-            desc: "Инструменты для решения сложных задач и принятия решений.",
-            format: "Онлайн",
-            duration: "2 мес",
-            price: "3 500 ₽/мес",
-            skills: ["Системное мышление", "Решение сложных проблем"]
-        }
+        { partner: "Яндекс Практикум", program: "Аналитик данных",
+          desc: "SQL, Python, визуализация, A/B-тесты, дашборды.",
+          format: "Онлайн", duration: "8 мес", price: "6 000 ₽/мес",
+          skills: ["Анализ информации и источников", "Работа с данными и таблицами", "Поиск закономерностей"] },
+        { partner: "Skillbox", program: "Системное мышление",
+          desc: "Инструменты для решения сложных задач и принятия решений.",
+          format: "Онлайн", duration: "2 мес", price: "3 500 ₽/мес",
+          skills: ["Системное мышление", "Решение сложных проблем"] }
     ],
 
     "Коммуникация": [
-        {
-            partner: "Школа ораторского мастерства",
-            program: "Публичные выступления",
-            desc: "Голос, подача, работа с залом, структура речи, борьба со страхом.",
-            format: "Онлайн",
-            duration: "3 мес",
-            price: "4 200 ₽/мес",
-            skills: ["Устная речь и дикция", "Публичные выступления", "Презентация идей и проектов"]
-        },
-        {
-            partner: "Radical Agreement",
-            program: "Переговоры и работа с конфликтами",
-            desc: "Гарвардская модель, тактики влияния, разрешение сложных ситуаций.",
-            format: "Онлайн",
-            duration: "2 мес",
-            price: "5 800 ₽/мес",
-            skills: ["Переговоры и торг", "Работа с конфликтами", "Активное слушание"]
-        }
+        { partner: "Школа ораторского мастерства", program: "Публичные выступления",
+          desc: "Голос, подача, работа с залом, структура речи, борьба со страхом.",
+          format: "Онлайн", duration: "3 мес", price: "4 200 ₽/мес",
+          skills: ["Устная речь и дикция", "Публичные выступления", "Презентация идей и проектов"] },
+        { partner: "Radical Agreement", program: "Переговоры и работа с конфликтами",
+          desc: "Гарвардская модель, тактики влияния, разрешение сложных ситуаций.",
+          format: "Онлайн", duration: "2 мес", price: "5 800 ₽/мес",
+          skills: ["Переговоры и торг", "Работа с конфликтами", "Активное слушание"] }
     ],
 
     "Управленческие": [
-        {
-            partner: "Академия Eduson",
-            program: "Управление проектами",
-            desc: "Agile, Scrum, Kanban, планирование, ресурсы, риски.",
-            format: "Онлайн",
-            duration: "5 мес",
-            price: "5 400 ₽/мес",
-            skills: ["Управление проектами", "Организация процессов и задач", "Постановка задач команде"]
-        },
-        {
-            partner: "Business Speech",
-            program: "Лидерство и управление командой",
-            desc: "Мотивация, делегирование, обратная связь, командные сессии.",
-            format: "Онлайн",
-            duration: "3 мес",
-            price: "6 200 ₽/мес",
-            skills: ["Лидерство и мотивация", "Делегирование полномочий", "Работа в команде"]
-        }
+        { partner: "Академия Eduson", program: "Управление проектами",
+          desc: "Agile, Scrum, Kanban, планирование, ресурсы, риски.",
+          format: "Онлайн", duration: "5 мес", price: "5 400 ₽/мес",
+          skills: ["Управление проектами", "Организация процессов и задач", "Постановка задач команде"] },
+        { partner: "Business Speech", program: "Лидерство и управление командой",
+          desc: "Мотивация, делегирование, обратная связь, командные сессии.",
+          format: "Онлайн", duration: "3 мес", price: "6 200 ₽/мес",
+          skills: ["Лидерство и мотивация", "Делегирование полномочий", "Работа в команде"] }
     ],
 
     "Творческие": [
-        {
-            partner: "Bang Bang Education",
-            program: "Иллюстрация и digital art",
-            desc: "Работа в Procreate и Photoshop, композиция, свет, персонажи.",
-            format: "Онлайн",
-            duration: "6 мес",
-            price: "4 900 ₽/мес",
-            skills: ["Рисование на планшете (digital art)", "Рисование на бумаге", "Дизайн и композиция"]
-        },
-        {
-            partner: "Music Academy",
-            program: "Создание музыки на ПК",
-            desc: "Ableton, FL Studio, сведение, мастеринг, продюсирование.",
-            format: "Онлайн",
-            duration: "5 мес",
-            price: "5 500 ₽/мес",
-            skills: ["Создание музыки на ПК", "Игра на музыкальном инструменте"]
-        },
-        {
-            partner: "Creative Writing School",
-            program: "Писательское мастерство",
-            desc: "Структура текста, персонажи, сюжет, редактура.",
-            format: "Онлайн",
-            duration: "4 мес",
-            price: "4 300 ₽/мес",
-            skills: ["Писательство и проза", "Создание концепций и идей", "Креативное мышление"]
-        }
+        { partner: "Bang Bang Education", program: "Иллюстрация и digital art",
+          desc: "Работа в Procreate и Photoshop, композиция, свет, персонажи.",
+          format: "Онлайн", duration: "6 мес", price: "4 900 ₽/мес",
+          skills: ["Рисование на планшете (digital art)", "Рисование на бумаге", "Дизайн и композиция"] },
+        { partner: "Music Academy", program: "Создание музыки на ПК",
+          desc: "Ableton, FL Studio, сведение, мастеринг, продюсирование.",
+          format: "Онлайн", duration: "5 мес", price: "5 500 ₽/мес",
+          skills: ["Создание музыки на ПК", "Игра на музыкальном инструменте"] },
+        { partner: "Creative Writing School", program: "Писательское мастерство",
+          desc: "Структура текста, персонажи, сюжет, редактура.",
+          format: "Онлайн", duration: "4 мес", price: "4 300 ₽/мес",
+          skills: ["Писательство и проза", "Создание концепций и идей", "Креативное мышление"] }
     ],
 
     "Ручной труд": [
-        {
-            partner: "Школа ремёсел",
-            program: "Столярное мастерство",
-            desc: "Работа с деревом, ручной инструмент, соединения, финишная отделка.",
-            format: "Оффлайн",
-            duration: "6 мес",
-            price: "7 000 ₽/мес",
-            skills: ["Столярное дело", "Плотницкое дело", "Работа с ручным инструментом"]
-        },
-        {
-            partner: "Швейная академия",
-            program: "Шитьё и конструирование",
-            desc: "Основы кроя, работа с тканью, пошив одежды с нуля.",
-            format: "Онлайн",
-            duration: "5 мес",
-            price: "4 100 ₽/мес",
-            skills: ["Шитьё и работа с тканью", "Изготовление вещей своими руками"]
-        }
+        { partner: "Школа ремёсел", program: "Столярное мастерство",
+          desc: "Работа с деревом, ручной инструмент, соединения, финишная отделка.",
+          format: "Оффлайн", duration: "6 мес", price: "7 000 ₽/мес",
+          skills: ["Столярное дело", "Плотницкое дело", "Работа с ручным инструментом"] },
+        { partner: "Швейная академия", program: "Шитьё и конструирование",
+          desc: "Основы кроя, работа с тканью, пошив одежды с нуля.",
+          format: "Онлайн", duration: "5 мес", price: "4 100 ₽/мес",
+          skills: ["Шитьё и работа с тканью", "Изготовление вещей своими руками"] }
     ],
 
     "Строительство и ремонт": [
-        {
-            partner: "ПрофШкола",
-            program: "Электромонтаж с нуля",
-            desc: "Схемы, монтаж щитов, проводка, техника безопасности.",
-            format: "Оффлайн",
-            duration: "4 мес",
-            price: "6 500 ₽/мес",
-            skills: ["Электромонтажные работы", "Монтаж конструкций"]
-        },
-        {
-            partner: "Мастер-класс",
-            program: "Сантехника и отопление",
-            desc: "Разводка, пайка труб, монтаж оборудования.",
-            format: "Оффлайн",
-            duration: "3 мес",
-            price: "5 900 ₽/мес",
-            skills: ["Сантехнические работы", "Бытовой ремонт"]
-        }
+        { partner: "ПрофШкола", program: "Электромонтаж с нуля",
+          desc: "Схемы, монтаж щитов, проводка, техника безопасности.",
+          format: "Оффлайн", duration: "4 мес", price: "6 500 ₽/мес",
+          skills: ["Электромонтажные работы", "Монтаж конструкций"] },
+        { partner: "Мастер-класс", program: "Сантехника и отопление",
+          desc: "Разводка, пайка труб, монтаж оборудования.",
+          format: "Оффлайн", duration: "3 мес", price: "5 900 ₽/мес",
+          skills: ["Сантехнические работы", "Бытовой ремонт"] }
     ],
 
     "Техника и механика": [
-        {
-            partner: "АвтоШкола Pro",
-            program: "Ремонт автомобиля",
-            desc: "Двигатель, подвеска, тормоза, электрика, диагностика.",
-            format: "Оффлайн",
-            duration: "6 мес",
-            price: "8 000 ₽/мес",
-            skills: ["Ремонт автомобиля", "Общая механика", "Диагностика неисправностей"]
-        },
-        {
-            partner: "RoboSkill",
-            program: "Электроника и пайка",
-            desc: "Основы электроники, схемотехника, пайка, микроконтроллеры.",
-            format: "Онлайн",
-            duration: "4 мес",
-            price: "5 600 ₽/мес",
-            skills: ["Электроника и пайка", "Ремонт бытовой техники"]
-        }
+        { partner: "АвтоШкола Pro", program: "Ремонт автомобиля",
+          desc: "Двигатель, подвеска, тормоза, электрика, диагностика.",
+          format: "Оффлайн", duration: "6 мес", price: "8 000 ₽/мес",
+          skills: ["Ремонт автомобиля", "Общая механика", "Диагностика неисправностей"] },
+        { partner: "RoboSkill", program: "Электроника и пайка",
+          desc: "Основы электроники, схемотехника, пайка, микроконтроллеры.",
+          format: "Онлайн", duration: "4 мес", price: "5 600 ₽/мес",
+          skills: ["Электроника и пайка", "Ремонт бытовой техники"] }
     ],
 
     "Транспорт": [
-        {
-            partner: "Автошкола №1",
-            program: "Вождение категории B",
-            desc: "Полный курс вождения с инструктором и подготовка к экзамену.",
-            format: "Оффлайн",
-            duration: "3 мес",
-            price: "по запросу",
-            skills: ["Вождение автомобиля", "Техническое обслуживание транспорта"]
-        }
+        { partner: "Автошкола №1", program: "Вождение категории B",
+          desc: "Полный курс вождения с инструктором и подготовка к экзамену.",
+          format: "Оффлайн", duration: "3 мес", price: "по запросу",
+          skills: ["Вождение автомобиля", "Техническое обслуживание транспорта"] }
     ],
 
     "Бытовые": [
-        {
-            partner: "Кулинарная школа",
-            program: "Домашняя кухня",
-            desc: "Основы, техники, супы, вторые блюда, выпечка, планирование меню.",
-            format: "Онлайн",
-            duration: "3 мес",
-            price: "3 400 ₽/мес",
-            skills: ["Приготовление пищи", "Планирование быта и расписания"]
-        },
-        {
-            partner: "ФинГрамотность",
-            program: "Личные финансы",
-            desc: "Бюджет, накопления, инвестиции, финансовая подушка.",
-            format: "Онлайн",
-            duration: "2 мес",
-            price: "3 900 ₽/мес",
-            skills: ["Личное финансовое планирование", "Организация пространства"]
-        }
+        { partner: "Кулинарная школа", program: "Домашняя кухня",
+          desc: "Основы, техники, супы, вторые блюда, выпечка, планирование меню.",
+          format: "Онлайн", duration: "3 мес", price: "3 400 ₽/мес",
+          skills: ["Приготовление пищи", "Планирование быта и расписания"] },
+        { partner: "ФинГрамотность", program: "Личные финансы",
+          desc: "Бюджет, накопления, инвестиции, финансовая подушка.",
+          format: "Онлайн", duration: "2 мес", price: "3 900 ₽/мес",
+          skills: ["Личное финансовое планирование", "Организация пространства"] }
     ],
 
     "Социальные": [
-        {
-            partner: "Школа наставников",
-            program: "Наставничество и преподавание",
-            desc: "Методики обучения взрослых, обратная связь, групповая работа.",
-            format: "Онлайн",
-            duration: "3 мес",
-            price: "4 700 ₽/мес",
-            skills: ["Обучение и преподавание", "Наставничество", "Работа с группами"]
-        },
-        {
-            partner: "Медиатор Про",
-            program: "Медиация и разрешение споров",
-            desc: "Техники медиации, работа с конфликтами в группах.",
-            format: "Онлайн",
-            duration: "2 мес",
-            price: "5 100 ₽/мес",
-            skills: ["Медиация и разрешение споров", "Эмпатия и понимание людей"]
-        }
+        { partner: "Школа наставников", program: "Наставничество и преподавание",
+          desc: "Методики обучения взрослых, обратная связь, групповая работа.",
+          format: "Онлайн", duration: "3 мес", price: "4 700 ₽/мес",
+          skills: ["Обучение и преподавание", "Наставничество", "Работа с группами"] },
+        { partner: "Медиатор Про", program: "Медиация и разрешение споров",
+          desc: "Техники медиации, работа с конфликтами в группах.",
+          format: "Онлайн", duration: "2 мес", price: "5 100 ₽/мес",
+          skills: ["Медиация и разрешение споров", "Эмпатия и понимание людей"] }
     ],
 
     "Языки": [
-        {
-            partner: "Skyeng",
-            program: "Английский язык — с нуля до C1",
-            desc: "Индивидуальные занятия с преподавателем, разговорный клуб.",
-            format: "Онлайн",
-            duration: "гибко",
-            price: "от 1 200 ₽/занятие",
-            skills: ["Английский язык", "Разговорная практика"]
-        },
-        {
-            partner: "Deutsch Online",
-            program: "Немецкий язык A1–B2",
-            desc: "Курс с носителем, подготовка к Goethe-Zertifikat.",
-            format: "Онлайн",
-            duration: "8 мес",
-            price: "4 800 ₽/мес",
-            skills: ["Немецкий язык", "Письменный перевод"]
-        }
+        { partner: "Skyeng", program: "Английский язык — с нуля до C1",
+          desc: "Индивидуальные занятия с преподавателем, разговорный клуб.",
+          format: "Онлайн", duration: "гибко", price: "от 1 200 ₽/занятие",
+          skills: ["Английский язык", "Разговорная практика"] },
+        { partner: "Deutsch Online", program: "Немецкий язык A1–B2",
+          desc: "Курс с носителем, подготовка к Goethe-Zertifikat.",
+          format: "Онлайн", duration: "8 мес", price: "4 800 ₽/мес",
+          skills: ["Немецкий язык", "Письменный перевод"] }
     ],
 
     "Предпринимательство": [
-        {
-            partner: "Акселератор ФРИИ",
-            program: "Запуск стартапа",
-            desc: "Идея, продукт, метрики, привлечение инвестиций, питч.",
-            format: "Онлайн + оффлайн",
-            duration: "3 мес",
-            price: "по запросу",
-            skills: ["Поиск и генерация идей", "Создание продукта", "Запуск проектов и стартапов"]
-        },
-        {
-            partner: "Sales Academy",
-            program: "Продажи B2B",
-            desc: "Скрипты, работа с возражениями, воронка, CRM.",
-            format: "Онлайн",
-            duration: "3 мес",
-            price: "5 200 ₽/мес",
-            skills: ["Продажи", "Работа с клиентами", "Переговоры и партнёрства"]
-        }
+        { partner: "Акселератор ФРИИ", program: "Запуск стартапа",
+          desc: "Идея, продукт, метрики, привлечение инвестиций, питч.",
+          format: "Онлайн + оффлайн", duration: "3 мес", price: "по запросу",
+          skills: ["Поиск и генерация идей", "Создание продукта", "Запуск проектов и стартапов"] },
+        { partner: "Sales Academy", program: "Продажи B2B",
+          desc: "Скрипты, работа с возражениями, воронка, CRM.",
+          format: "Онлайн", duration: "3 мес", price: "5 200 ₽/мес",
+          skills: ["Продажи", "Работа с клиентами", "Переговоры и партнёрства"] }
     ],
 
     "Саморазвитие": [
-        {
-            partner: "Лайфхакер Академия",
-            program: "Управление временем",
-            desc: "GTD, Pomodoro, приоритизация, борьба с прокрастинацией.",
-            format: "Онлайн",
-            duration: "1 мес",
-            price: "2 900 ₽",
-            skills: ["Управление временем", "Самоорганизация", "Концентрация и внимание"]
-        },
-        {
-            partner: "Нетология",
-            program: "Обучение новым навыкам",
-            desc: "Методики быстрого обучения, метапознание, практика.",
-            format: "Онлайн",
-            duration: "2 мес",
-            price: "3 400 ₽/мес",
-            skills: ["Обучение новым навыкам", "Работа с информацией", "Адаптивность к изменениям"]
-        }
+        { partner: "Лайфхакер Академия", program: "Управление временем",
+          desc: "GTD, Pomodoro, приоритизация, борьба с прокрастинацией.",
+          format: "Онлайн", duration: "1 мес", price: "2 900 ₽",
+          skills: ["Управление временем", "Самоорганизация", "Концентрация и внимание"] },
+        { partner: "Нетология", program: "Обучение новым навыкам",
+          desc: "Методики быстрого обучения, метапознание, практика.",
+          format: "Онлайн", duration: "2 мес", price: "3 400 ₽/мес",
+          skills: ["Обучение новым навыкам", "Работа с информацией", "Адаптивность к изменениям"] }
     ]
 };
 
@@ -1557,7 +1375,6 @@ function init() {
         loadCategory(currentCategoryIndex);
     });
 
-    /* Закрытие модалок по клику на фон и Escape */
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
         overlay.addEventListener("click", e => {
             if (e.target === overlay) closeModal(overlay.id);
@@ -1618,7 +1435,7 @@ function loadCategory(index) {
                     <button type="button" data-value="${v}">${v}</button>
                 `).join("")}
             </div>
-            <div class="skill-level-hint" id="level-hint-${skillIndex}">
+            <div class="skill-level-hint lv-${savedValue}" id="level-hint-${skillIndex}">
                 ${LEVEL_WORDS[savedValue]}
             </div>
         `;
@@ -1632,9 +1449,6 @@ function loadCategory(index) {
                 setSkillValue(skillIndex, Number(btn.dataset.value));
             });
         });
-
-        const hint = wrapper.querySelector(".skill-level-hint");
-        hint.classList.add("lv-" + savedValue);
 
         skillsContainer.appendChild(wrapper);
     });
@@ -1769,9 +1583,12 @@ function showDecisionScreen() {
     const weak = getWeakSkills(currentCategory);
     const hint = document.getElementById("programsHint");
     if (hint) {
-        hint.textContent = weak.length
-            ? `${weak.length} ${pluralize(weak.length, ["навык", "навыка", "навыков")]} ниже нормы`
-            : "Подобрать курс под ваши цели";
+        if (weak.length) {
+            const word = pluralize(weak.length, ["навык", "навыка", "навыков"]);
+            hint.textContent = `${weak.length} ${word} ниже нормы`;
+        } else {
+            hint.textContent = "Подобрать курс под ваши цели";
+        }
     }
 
     lastSkillRadarData = { skills, values, average };
@@ -1797,8 +1614,9 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
     const containerWidth =
         (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
 
-    let maxSize = compact ? 340 : 620;
-    let cssSize = Math.max(240, Math.min(containerWidth || maxSize, maxSize));
+    /* Увеличили лимиты: компактный до 440, обычный до 620 */
+    const maxSize = compact ? 440 : 620;
+    const cssSize = Math.max(260, Math.min(containerWidth || maxSize, maxSize));
 
     canvas.style.width  = cssSize + "px";
     canvas.style.height = cssSize + "px";
@@ -1823,19 +1641,19 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
     const radius = Math.min(width, height) * (isCompact ? 0.34 : 0.30);
 
     const labelOffset =
-        isCompact ? 38 :
+        isCompact ? 42 :
         count > 12 ? 54 :
         count > 9  ? 62 : 72;
 
     const labelRadius = radius + labelOffset;
 
     const fontSize =
-        isCompact ? 8 :
+        isCompact ? 9 :
         count > 12 ? 10 :
         count > 9  ? 11 : 12;
 
     const maxLabelWidth =
-        isCompact ? 58 :
+        isCompact ? 70 :
         count > 12 ? 76 :
         count > 9  ? 92 : 110;
 
@@ -1885,7 +1703,7 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
     /* Свечение */
     ctx.save();
     ctx.shadowColor = "rgba(124,140,255,.45)";
-    ctx.shadowBlur = isCompact ? 14 : 24;
+    ctx.shadowBlur = isCompact ? 16 : 24;
 
     ctx.beginPath();
     points.forEach((p, i) => {
@@ -1915,16 +1733,16 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
 
     /* Контур */
     ctx.strokeStyle = "#9ca7ff";
-    ctx.lineWidth = isCompact ? 2 : 2.5;
+    ctx.lineWidth = isCompact ? 2.2 : 2.5;
     ctx.lineJoin = "round";
     ctx.stroke();
 
     /* Точки по уровню */
     points.forEach(p => {
         const color = getRingColorHex(p.value);
-        const outerR = isCompact ? 6 : 8;
-        const innerR = isCompact ? 4 : 5.5;
-        const whiteR = isCompact ? 1.6 : 2.2;
+        const outerR = isCompact ? 7 : 8;
+        const innerR = isCompact ? 4.5 : 5.5;
+        const whiteR = isCompact ? 1.8 : 2.2;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
@@ -1986,7 +1804,7 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
     });
 
     /* Центр */
-    const innerR = isCompact ? 20 : 26;
+    const innerR = isCompact ? 24 : 26;
 
     ctx.beginPath();
     ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
@@ -1996,15 +1814,15 @@ function drawSkillRadar(canvasId, skills, values, average, compact) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    ctx.font = `800 ${isCompact ? 13 : 15}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
+    ctx.font = `800 ${isCompact ? 14 : 15}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(average.toFixed(1), cx, cy - 4);
 
-    ctx.font = `600 ${isCompact ? 8 : 9}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
+    ctx.font = `600 ${isCompact ? 9 : 9}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
     ctx.fillStyle = "#9299a6";
-    ctx.fillText("из 5", cx, cy + (isCompact ? 7 : 9));
+    ctx.fillText("из 5", cx, cy + (isCompact ? 8 : 9));
 }
 
 
@@ -2295,7 +2113,7 @@ function drawRadar(categoryData) {
     const containerWidth =
         (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
 
-    const cssSize = Math.max(240, Math.min(containerWidth || 620, 620));
+    const cssSize = Math.max(260, Math.min(containerWidth || 620, 620));
 
     canvas.style.width  = cssSize + "px";
     canvas.style.height = cssSize + "px";
@@ -2599,6 +2417,7 @@ function escapeHtml(text) {
         .replace(/'/g, "&#039;");
 }
 
+/* ✅ ИСПРАВЛЕНО: правильные скобки */
 function pluralize(n, forms) {
     const mod10 = n % 10;
     const mod100 = n % 100;
@@ -2629,7 +2448,6 @@ function openPrograms() {
     const categoryPrograms = partners[categoryName] || [];
     const weakSkills = getWeakSkills(categoryName);
 
-    /* Сортировка: рекомендованные (покрывающие слабые навыки) — вверх */
     const withRec = categoryPrograms.map(p => {
         const matched = (p.skills || []).filter(s => weakSkills.includes(s));
         return {
@@ -2642,10 +2460,8 @@ function openPrograms() {
         return b.matchedSkills.length - a.matchedSkills.length;
     });
 
-    /* Header */
     document.getElementById("programsSubtitle").textContent = categoryName;
 
-    /* Body */
     const body = document.getElementById("programsBody");
 
     if (!withRec.length) {
@@ -2675,12 +2491,9 @@ function openPrograms() {
         `;
     }
 
-    /* Проставляем onclick на кнопки */
     body.querySelectorAll(".program-cta").forEach(btn => {
         btn.addEventListener("click", () => {
-            const partner = btn.dataset.partner;
-            const program = btn.dataset.program;
-            handleProgramClick(partner, program);
+            handleProgramClick(btn.dataset.partner, btn.dataset.program);
         });
     });
 
@@ -2719,7 +2532,6 @@ function renderProgramCard(p) {
 
 function handleProgramClick(partner, program) {
 
-    /* Здесь можно интегрировать с ботом: отправить заявку в Telegram */
     if (tg && typeof tg.sendData === "function") {
         try {
             tg.sendData(JSON.stringify({
@@ -2731,7 +2543,6 @@ function handleProgramClick(partner, program) {
         } catch (e) {}
     }
 
-    /* Показываем подтверждение */
     showToast(`Заявка на «${program}» от ${partner} отправлена`);
 
     if (tg && tg.HapticFeedback) {
@@ -2825,21 +2636,18 @@ function submitConsultation(event) {
         date: new Date().toISOString()
     };
 
-    /* Сохраняем в localStorage */
     try {
         const existing = JSON.parse(localStorage.getItem(STORAGE_APPLICATIONS_KEY) || "[]");
         existing.push(application);
         localStorage.setItem(STORAGE_APPLICATIONS_KEY, JSON.stringify(existing));
     } catch (e) {}
 
-    /* Отправляем в Telegram-бот, если доступно */
     if (tg && typeof tg.sendData === "function") {
         try {
             tg.sendData(JSON.stringify(application));
         } catch (e) {}
     }
 
-    /* Success screen */
     document.getElementById("consultationBody").innerHTML = `
         <div class="consult-success">
             <div class="consult-success-icon">✓</div>
@@ -2868,8 +2676,6 @@ function closeModal(id) {
     el.classList.remove("open");
     document.body.style.overflow = "";
 }
-
-/* --- Toast --- */
 
 let toastTimer = null;
 
