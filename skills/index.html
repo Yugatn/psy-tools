@@ -48,7 +48,7 @@ body {
 
 .app {
     width: 100%;
-    max-width: 850px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -184,7 +184,6 @@ h1 {
     border-color: rgba(85,214,138,.35);
     background: rgba(85,214,138,.07);
 }
-
 .checklist-item.done .checklist-check {
     opacity: 1;
     color: var(--good);
@@ -195,7 +194,6 @@ h1 {
     border-color: rgba(124,140,255,.30);
     background: rgba(124,140,255,.05);
 }
-
 .checklist-item.partial .checklist-check {
     opacity: 1;
     color: var(--accent);
@@ -207,12 +205,9 @@ h1 {
     background: rgba(124,140,255,.12);
     box-shadow: 0 0 0 1px rgba(124,140,255,.35) inset;
 }
+.checklist-item.active .checklist-check { opacity: 1; }
 
-.checklist-item.active .checklist-check {
-    opacity: 1;
-}
-
-/* Category */
+/* Category select */
 
 .category-box {
     background: var(--card2);
@@ -240,65 +235,168 @@ select {
     outline: none;
 }
 
-select:focus {
-    border-color: var(--accent);
+select:focus { border-color: var(--accent); }
+
+/* ===== ДВУХКОЛОНОЧНЫЙ LAYOUT ===== */
+
+.category-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 18px;
+    align-items: start;
+    margin-top: 6px;
 }
 
-/* Skills */
+.skills-column {
+    min-width: 0;
+}
+
+.radar-column {
+    position: sticky;
+    top: 16px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 14px;
+}
+
+.live-radar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 0 2px;
+}
+
+.live-radar-title {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.live-radar-percent {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 800;
+    transition: color .2s ease;
+}
+
+.live-radar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#liveSkillRadar {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===== SKILL CARD ===== */
 
 .skill {
     background: #10131a;
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 15px;
-    margin-bottom: 11px;
+    padding: 13px 14px 12px;
+    margin-bottom: 9px;
+    transition: border-color .2s ease;
 }
 
-.skill-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 13px;
+.skill:focus-within {
+    border-color: rgba(124,140,255,.35);
 }
 
 .skill-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     line-height: 1.35;
-    padding-right: 4px;
+    margin-bottom: 10px;
+    color: var(--text);
 }
 
-.skill-value {
-    min-width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--card2);
-    border-radius: 10px;
-    font-weight: 700;
-    color: var(--accent);
-    flex-shrink: 0;
-}
+/* ===== СЕГМЕНТИРОВАННЫЙ КОНТРОЛ ===== */
 
-input[type="range"] {
-    width: 100%;
-    margin: 0;
-    accent-color: var(--accent);
-    cursor: pointer;
-}
-
-.level-labels {
+.segmented {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    margin-top: 7px;
-    font-size: 10px;
-    color: var(--muted);
-    text-align: center;
-    gap: 2px;
-    line-height: 1.2;
+    gap: 4px;
+    background: #0b0d12;
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
 }
+
+.segmented button {
+    padding: 10px 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition:
+        background .15s ease,
+        color .15s ease,
+        transform .1s ease;
+}
+
+.segmented button:hover:not(.active) {
+    background: rgba(255,255,255,.05);
+    color: var(--text);
+}
+
+.segmented button:active {
+    transform: scale(.94);
+}
+
+/* Цвет активной кнопки зависит от значения */
+.segmented button.active {
+    box-shadow: 0 4px 14px rgba(0,0,0,.30);
+    color: #ffffff;
+}
+.segmented button[data-value="1"].active {
+    background: var(--danger);
+    color: #2a0a0a;
+}
+.segmented button[data-value="2"].active {
+    background: var(--warning);
+    color: #3a2a08;
+}
+.segmented button[data-value="3"].active {
+    background: var(--accent);
+    color: #ffffff;
+}
+.segmented button[data-value="4"].active {
+    background: var(--good);
+    color: #08130d;
+}
+.segmented button[data-value="5"].active {
+    background: #4be08a;
+    color: #08130d;
+}
+
+.skill-level-hint {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 8px;
+    letter-spacing: .3px;
+    color: var(--muted);
+    transition: color .2s ease;
+}
+
+.skill-level-hint.lv-1 { color: var(--danger); }
+.skill-level-hint.lv-2 { color: var(--warning); }
+.skill-level-hint.lv-3 { color: var(--accent); }
+.skill-level-hint.lv-4 { color: var(--good); }
+.skill-level-hint.lv-5 { color: #4be08a; }
 
 /* Buttons */
 
@@ -316,15 +414,14 @@ button {
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
+    font-family: inherit;
     transition:
         transform .15s ease,
         opacity .15s ease,
         background .15s ease;
 }
 
-button:active {
-    transform: scale(.97);
-}
+button:active { transform: scale(.97); }
 
 .btn-primary {
     flex: 1;
@@ -363,16 +460,15 @@ button:active {
     font-size: 42px;
     margin-bottom: 6px;
     line-height: 1;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 62px;
     height: 62px;
     border-radius: 50%;
     background: rgba(85,214,138,.12);
     border: 1px solid rgba(85,214,138,.35);
     color: var(--good);
-    align-items: center;
-    justify-content: center;
-    display: inline-flex;
 }
 
 .decision h2 {
@@ -467,9 +563,7 @@ button:active {
     gap: 10px;
 }
 
-.choice-buttons button {
-    width: 100%;
-}
+.choice-buttons button { width: 100%; }
 
 /* Next category screen */
 
@@ -484,11 +578,9 @@ button:active {
     color: var(--accent);
 }
 
-/* Results — общий заголовок */
+/* Results */
 
-.result-header {
-    text-align: center;
-}
+.result-header { text-align: center; }
 
 .overall-gauge {
     display: flex;
@@ -548,8 +640,6 @@ button:active {
     font-weight: 700;
 }
 
-/* Radar */
-
 .radar-container {
     display: flex;
     justify-content: center;
@@ -564,8 +654,6 @@ button:active {
     max-width: 100%;
     height: auto;
 }
-
-/* Category circles */
 
 .category-results {
     display: grid;
@@ -635,8 +723,6 @@ button:active {
     font-size: 11px;
 }
 
-/* Strengths */
-
 .skill-list {
     display: flex;
     flex-direction: column;
@@ -668,8 +754,6 @@ button:active {
 .warning { color: var(--warning); }
 .danger { color: var(--danger); }
 
-/* Stats */
-
 .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -694,15 +778,11 @@ button:active {
     margin-top: 4px;
 }
 
-/* Info */
-
 .info {
     color: var(--muted);
     font-size: 13px;
     line-height: 1.55;
 }
-
-/* Footer */
 
 footer {
     text-align: center;
@@ -711,13 +791,25 @@ footer {
     margin-top: 25px;
 }
 
-/* Mobile */
+/* ===== АДАПТАЦИЯ ===== */
+
+@media (max-width: 900px) {
+    .category-layout {
+        grid-template-columns: 1fr;
+    }
+    .radar-column {
+        position: static;
+        order: -1;
+    }
+    #liveSkillRadar {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+}
 
 @media (max-width: 560px) {
 
-    body {
-        padding: 14px 10px 35px;
-    }
+    body { padding: 14px 10px 35px; }
 
     h1 { font-size: 26px; }
     .logo { font-size: 40px; }
@@ -735,12 +827,10 @@ footer {
         width: 100px;
         height: 100px;
     }
-
     .circle::before {
         width: 73px;
         height: 73px;
     }
-
     .circle-value { font-size: 20px; }
     .circle-level { font-size: 10px; }
 
@@ -753,6 +843,15 @@ footer {
 
     .decision-badge-value { font-size: 28px; }
     .decision-icon { width: 56px; height: 56px; font-size: 38px; }
+
+    .segmented button {
+        padding: 11px 0;
+        font-size: 15px;
+    }
+
+    #liveSkillRadar {
+        max-width: 280px;
+    }
 }
 </style>
 </head>
@@ -781,7 +880,6 @@ footer {
                 <span id="progressText">Категория 1</span>
                 <span id="progressPercent">0%</span>
             </div>
-
             <div class="progress">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -789,9 +887,7 @@ footer {
 
         <div class="checklist" id="checklist"></div>
 
-        <div class="section-title">
-            Оценка навыков
-        </div>
+        <div class="section-title">Оценка навыков</div>
 
         <div class="section-description">
             Выберите категорию и оцените каждый навык от 1 до 5.
@@ -803,13 +899,27 @@ footer {
             <select id="categorySelect"></select>
         </div>
 
-        <div id="skillsContainer"></div>
+        <!-- ===== Двухколоночный layout: слайдеры слева, радар справа ===== -->
+        <div class="category-layout">
+
+            <div class="skills-column">
+                <div id="skillsContainer"></div>
+            </div>
+
+            <aside class="radar-column">
+                <div class="live-radar-header">
+                    <span class="live-radar-title">Профиль</span>
+                    <span class="live-radar-percent" id="liveRadarPercent">0%</span>
+                </div>
+                <div class="live-radar-container">
+                    <canvas id="liveSkillRadar"></canvas>
+                </div>
+            </aside>
+
+        </div>
 
         <div class="buttons">
-            <button
-                class="btn-primary"
-                id="saveCategoryBtn"
-                onclick="saveCategory()">
+            <button class="btn-primary" id="saveCategoryBtn" onclick="saveCategory()">
                 Готово
             </button>
         </div>
@@ -859,19 +969,13 @@ footer {
             </span>
         </div>
 
-        <div class="decision-category-name" id="decisionCategoryName">
-            Категория
-        </div>
+        <div class="decision-category-name" id="decisionCategoryName">Категория</div>
 
         <div class="choice-buttons">
-            <button
-                class="btn-primary"
-                onclick="continueFullAssessment()">
+            <button class="btn-primary" onclick="continueFullAssessment()">
                 Пройти полную оценку
             </button>
-            <button
-                class="btn-success"
-                onclick="finishAssessment()">
+            <button class="btn-success" onclick="finishAssessment()">
                 Завершить
             </button>
         </div>
@@ -896,11 +1000,7 @@ footer {
             <p id="nextCategoryText"></p>
 
             <div class="buttons">
-                <button
-                    class="btn-primary"
-                    onclick="goNextCategory()">
-                    Далее
-                </button>
+                <button class="btn-primary" onclick="goNextCategory()">Далее</button>
             </div>
 
         </div>
@@ -916,9 +1016,7 @@ footer {
 
     <div class="card result-header">
 
-        <div class="section-title">
-            Ваша карта навыков
-        </div>
+        <div class="section-title">Ваша карта навыков</div>
 
         <div class="overall-gauge">
             <div class="overall-gauge-ring" id="overallGauge">
@@ -938,113 +1036,77 @@ footer {
 
 
     <div class="card">
-
         <div class="section-title">Карта компетенций</div>
-
         <div class="section-description">
             Чем дальше область от центра, тем выше средний уровень
             навыков в соответствующей категории.
         </div>
-
         <div class="radar-container">
             <canvas id="skillsRadar"></canvas>
         </div>
-
     </div>
 
 
     <div class="card">
-
         <div class="section-title">Общая статистика</div>
-
         <div class="stats">
-
             <div class="stat">
                 <div class="stat-value" id="statAverage">—</div>
                 <div class="stat-label">Средний уровень</div>
             </div>
-
             <div class="stat">
                 <div class="stat-value" id="statMax">—</div>
                 <div class="stat-label">Максимум</div>
             </div>
-
             <div class="stat">
                 <div class="stat-value" id="statMin">—</div>
                 <div class="stat-label">Минимум</div>
             </div>
-
         </div>
-
     </div>
 
 
     <div class="card">
-
         <div class="section-title">Уровень по категориям</div>
-
         <div class="section-description">
             Средняя оценка навыков внутри каждой пройденной категории.
         </div>
-
         <div class="category-results" id="categoryResults"></div>
-
     </div>
 
 
     <div class="card">
-
         <div class="section-title">Сильные навыки</div>
-
-        <div class="section-description">
-            Навыки с наиболее высокой оценкой.
-        </div>
-
+        <div class="section-description">Навыки с наиболее высокой оценкой.</div>
         <div class="skill-list" id="strengthsList"></div>
-
     </div>
 
 
     <div class="card">
-
         <div class="section-title">Навыки для развития</div>
-
-        <div class="section-description">
-            Навыки, которые могут стать точками роста.
-        </div>
-
+        <div class="section-description">Навыки, которые могут стать точками роста.</div>
         <div class="skill-list" id="developmentList"></div>
-
     </div>
 
 
     <div class="card">
-
         <div class="section-title">Интерпретация</div>
-
         <div class="info" id="interpretation"></div>
-
     </div>
 
 
     <div class="card">
-
         <div class="buttons">
-
             <button class="btn-secondary" onclick="backToAssessment()">
                 Изменить оценки
             </button>
-
             <button class="btn-primary" onclick="exportResults()">
                 Экспорт JSON
             </button>
-
             <button class="btn-danger" onclick="resetTest()">
                 Начать заново
             </button>
-
         </div>
-
     </div>
 
 </div>
@@ -1242,6 +1304,15 @@ const categories = {
 };
 
 
+const LEVEL_WORDS = {
+    1: "Нет опыта",
+    2: "Начальный",
+    3: "Уверенный",
+    4: "Продвинутый",
+    5: "Профи"
+};
+
+
 /* =========================================================
    STATE
 ========================================================= */
@@ -1255,7 +1326,7 @@ let lastSkillRadarData = null;
 
 
 /* =========================================================
-   STORAGE KEYS
+   STORAGE
 ========================================================= */
 
 const STORAGE_KEY = "psyToolsSkillsV2";
@@ -1356,36 +1427,37 @@ function loadCategory(index) {
 
     skills.forEach((skill, skillIndex) => {
 
-        const savedValue = results[currentCategory]?.[skill] || 1;
+        const savedValue = results[currentCategory]?.[skill] || 3;
 
         const wrapper = document.createElement("div");
         wrapper.className = "skill";
 
         wrapper.innerHTML = `
-            <div class="skill-top">
-                <div class="skill-name">${escapeHtml(skill)}</div>
-                <div class="skill-value" id="value-${skillIndex}">
-                    ${savedValue}
-                </div>
+            <div class="skill-name">${escapeHtml(skill)}</div>
+            <div class="segmented" data-idx="${skillIndex}">
+                ${[1,2,3,4,5].map(v => `
+                    <button type="button" data-value="${v}">${v}</button>
+                `).join("")}
             </div>
-
-            <input
-                type="range"
-                min="1"
-                max="5"
-                step="1"
-                value="${savedValue}"
-                data-skill="${escapeHtml(skill)}"
-                oninput="updateSkillValue(this, ${skillIndex})">
-
-            <div class="level-labels">
-                <span>1 · Нет опыта</span>
-                <span>2 · Начальный</span>
-                <span>3 · Уверенный</span>
-                <span>4 · Продвинутый</span>
-                <span>5 · Профи</span>
+            <div class="skill-level-hint" id="level-hint-${skillIndex}">
+                ${LEVEL_WORDS[savedValue]}
             </div>
         `;
+
+        /* Подсветка активной кнопки */
+        const segmented = wrapper.querySelector(".segmented");
+        segmented.querySelectorAll("button").forEach(btn => {
+            if (Number(btn.dataset.value) === savedValue) {
+                btn.classList.add("active");
+            }
+            btn.addEventListener("click", () => {
+                setSkillValue(skillIndex, Number(btn.dataset.value));
+            });
+        });
+
+        /* Класс на hint */
+        const hint = wrapper.querySelector(".skill-level-hint");
+        hint.classList.add("lv-" + savedValue);
 
         skillsContainer.appendChild(wrapper);
     });
@@ -1393,37 +1465,87 @@ function loadCategory(index) {
     updateProgress();
     updateChecklist();
     refreshCategorySelect();
+
+    /* Live-радар — после того, как DOM отрисован */
+    requestAnimationFrame(() => updateLiveRadar());
 }
 
 
 /* =========================================================
-   RANGE UPDATE
+   SET SKILL VALUE
 ========================================================= */
 
-function updateSkillValue(input, index) {
+function setSkillValue(skillIndex, value) {
 
-    const value = Number(input.value);
+    const skills = categories[currentCategory] || [];
+    const skill = skills[skillIndex];
+    if (!skill) return;
 
-    const output = document.getElementById(`value-${index}`);
-    if (output) output.textContent = value;
+    if (!results[currentCategory]) results[currentCategory] = {};
+    results[currentCategory][skill] = value;
+    saveResults();
 
-    if (!results[currentCategory]) {
-        results[currentCategory] = {};
+    /* Обновляем UI: активная кнопка */
+    const segmented = document.querySelector(
+        `.segmented[data-idx="${skillIndex}"]`
+    );
+    if (segmented) {
+        segmented.querySelectorAll("button").forEach(btn => {
+            btn.classList.toggle(
+                "active",
+                Number(btn.dataset.value) === value
+            );
+        });
     }
 
-    const skill = input.dataset.skill;
-    if (skill) {
-        results[currentCategory][skill] = value;
-        saveResults();
+    /* Подсказка уровня */
+    const hint = document.getElementById(`level-hint-${skillIndex}`);
+    if (hint) {
+        hint.textContent = LEVEL_WORDS[value] || "";
+        hint.className = "skill-level-hint lv-" + value;
     }
 
+    /* Прогресс */
     updateChecklist();
     updateProgress();
     refreshCategorySelect();
 
+    /* Live-радар */
+    updateLiveRadar();
+
+    /* Haptic */
     if (tg && tg.HapticFeedback) {
         try { tg.HapticFeedback.impactOccurred("light"); } catch (e) {}
     }
+}
+
+
+/* =========================================================
+   LIVE RADAR (внутри экрана теста)
+========================================================= */
+
+function updateLiveRadar() {
+
+    const skills = categories[currentCategory] || [];
+    const skillValues = results[currentCategory] || {};
+
+    const values = skills.map(s => Number(skillValues[s]) || 3);
+
+    const avg = values.length
+        ? values.reduce((a, b) => a + b, 0) / values.length
+        : 0;
+
+    const percent = Math.round((avg / 5) * 100);
+
+    /* Процентная плашка */
+    const pctEl = document.getElementById("liveRadarPercent");
+    if (pctEl) {
+        pctEl.textContent = percent + "%";
+        pctEl.style.color = getRingColorHex(avg);
+    }
+
+    /* Радар */
+    drawSkillRadar("liveSkillRadar", skills, values, avg, true);
 }
 
 
@@ -1433,17 +1555,11 @@ function updateSkillValue(input, index) {
 
 function saveCategory() {
 
-    const inputs = skillsContainer.querySelectorAll('input[type="range"]');
-
+    /* Все значения уже сохранены в setSkillValue, но на всякий
+       случай подстрахуемся — фиксируем, что категория пройдена. */
     if (!results[currentCategory]) {
         results[currentCategory] = {};
     }
-
-    inputs.forEach(input => {
-        const skill = input.dataset.skill;
-        const value = Number(input.value);
-        results[currentCategory][skill] = value;
-    });
 
     completedCategories[currentCategory] = true;
 
@@ -1473,7 +1589,7 @@ function showDecisionScreen() {
     const skills = categories[currentCategory] || [];
     const skillValues = results[currentCategory] || {};
 
-    const values = skills.map(s => Number(skillValues[s]) || 1);
+    const values = skills.map(s => Number(skillValues[s]) || 3);
 
     const average = values.length
         ? values.reduce((a, b) => a + b, 0) / values.length
@@ -1481,47 +1597,46 @@ function showDecisionScreen() {
 
     const percent = Math.round((average / 5) * 100);
 
-    /* Тексты */
     document.getElementById("decisionText").textContent =
         `Вы оценили ${values.length} навыков`;
 
     document.getElementById("decisionCategoryName").textContent =
         currentCategory;
 
-    /* Процентная плашка — с анимацией */
     const percentEl = document.getElementById("decisionPercent");
     percentEl.textContent = "0%";
     animateNumber(percentEl, 0, percent, 700, v => Math.round(v) + "%");
 
-    /* Радар по навыкам */
     lastSkillRadarData = { skills, values, average };
 
-    /* Рисуем после того, как экран стал видимым (клиентская ширина доступна) */
     requestAnimationFrame(() => {
-        drawSkillRadar(skills, values, average);
+        drawSkillRadar("skillRadar", skills, values, average, false);
     });
 }
 
 
 /* =========================================================
-   RADAR ПО НАВЫКАМ (одна категория)
+   УНИВЕРСАЛЬНЫЙ РАДАР ПО НАВЫКАМ
+   compact = true → уменьшенные подписи и радиус (для live-режима)
 ========================================================= */
 
-function drawSkillRadar(skills, values, average) {
+function drawSkillRadar(canvasId, skills, values, average, compact) {
 
-    const canvas = document.getElementById("skillRadar");
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
 
     const dpr = window.devicePixelRatio || 1;
 
+    /* Определяем размер контейнера */
     const containerWidth =
         (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
 
-    const cssSize = Math.max(
-        260,
-        Math.min(containerWidth || 620, 620)
+    let maxSize = compact ? 340 : 620;
+    let cssSize = Math.max(
+        240,
+        Math.min(containerWidth || maxSize, maxSize)
     );
 
     canvas.style.width  = cssSize + "px";
@@ -1543,27 +1658,31 @@ function drawSkillRadar(skills, values, average) {
     const cx = width / 2;
     const cy = height / 2;
 
-    /* Адаптивный радиус и подписи в зависимости от количества навыков */
-    const radius = Math.min(width, height) * 0.30;
+    /* Адаптивные параметры */
+    const isCompact = compact || cssSize < 400;
+    const radius = Math.min(width, height) * (isCompact ? 0.34 : 0.30);
 
     const labelOffset =
+        isCompact ? 38 :
         count > 12 ? 54 :
         count > 9  ? 62 : 72;
 
     const labelRadius = radius + labelOffset;
 
     const fontSize =
+        isCompact ? 8 :
         count > 12 ? 10 :
         count > 9  ? 11 : 12;
 
     const maxLabelWidth =
+        isCompact ? 58 :
         count > 12 ? 76 :
         count > 9  ? 92 : 110;
 
     const angleStep = (Math.PI * 2) / count;
 
 
-    /* ---------- Сетка (5 уровней) ---------- */
+    /* ===== Сетка ===== */
 
     for (let level = 1; level <= 5; level++) {
 
@@ -1591,10 +1710,9 @@ function drawSkillRadar(skills, values, average) {
     }
 
 
-    /* ---------- Оси (лучи) ---------- */
+    /* ===== Оси ===== */
 
     for (let i = 0; i < count; i++) {
-
         const angle = -Math.PI / 2 + i * angleStep;
         const x = cx + Math.cos(angle) * radius;
         const y = cy + Math.sin(angle) * radius;
@@ -1608,7 +1726,7 @@ function drawSkillRadar(skills, values, average) {
     }
 
 
-    /* ---------- Точки данных ---------- */
+    /* ===== Точки данных ===== */
 
     const points = values.map((v, i) => {
         const angle = -Math.PI / 2 + i * angleStep;
@@ -1621,11 +1739,11 @@ function drawSkillRadar(skills, values, average) {
     });
 
 
-    /* ---------- Свечение под полигоном ---------- */
+    /* ===== Свечение ===== */
 
     ctx.save();
     ctx.shadowColor = "rgba(124,140,255,.45)";
-    ctx.shadowBlur = 24;
+    ctx.shadowBlur = isCompact ? 14 : 24;
 
     ctx.beginPath();
     points.forEach((p, i) => {
@@ -1639,11 +1757,10 @@ function drawSkillRadar(skills, values, average) {
     ctx.restore();
 
 
-    /* ---------- Градиентная заливка ---------- */
+    /* ===== Градиент ===== */
 
     const fillGradient = ctx.createRadialGradient(
-        cx, cy, 0,
-        cx, cy, radius
+        cx, cy, 0, cx, cy, radius
     );
     fillGradient.addColorStop(0, "rgba(156,124,255,.40)");
     fillGradient.addColorStop(1, "rgba(124,140,255,.12)");
@@ -1659,42 +1776,42 @@ function drawSkillRadar(skills, values, average) {
     ctx.fill();
 
 
-    /* ---------- Контур полигона ---------- */
+    /* ===== Контур ===== */
 
     ctx.strokeStyle = "#9ca7ff";
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = isCompact ? 2 : 2.5;
     ctx.lineJoin = "round";
     ctx.stroke();
 
 
-    /* ---------- Точки с обводкой ---------- */
+    /* ===== Точки с цветом по уровню ===== */
 
     points.forEach(p => {
-        const color = getRingColor(p.value);
+        const color = getRingColorHex(p.value);
+        const outerR = isCompact ? 6 : 8;
+        const innerR = isCompact ? 4 : 5.5;
+        const whiteR = isCompact ? 1.6 : 2.2;
 
-        /* Внешнее свечение */
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.globalAlpha = 0.25;
         ctx.fill();
         ctx.globalAlpha = 1;
 
-        /* Основная точка */
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 5.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
 
-        /* Белый центр */
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, whiteR, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
         ctx.fill();
     });
 
 
-    /* ---------- Подписи навыков ---------- */
+    /* ===== Подписи навыков ===== */
 
     ctx.font =
         `600 ${fontSize}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
@@ -1707,7 +1824,6 @@ function drawSkillRadar(skills, values, average) {
         const x = cx + Math.cos(angle) * labelRadius;
         const y = cy + Math.sin(angle) * labelRadius;
 
-        /* Умный перенос по словам */
         const words = skill.split(" ");
         const lines = [];
         let current = "";
@@ -1723,10 +1839,9 @@ function drawSkillRadar(skills, values, average) {
         });
         if (current) lines.push(current);
 
-        const displayLines = lines.slice(0, 3);
+        const displayLines = lines.slice(0, isCompact ? 2 : 3);
         const lineHeight = fontSize + 2;
-        const totalHeight =
-            displayLines.length * lineHeight;
+        const totalHeight = displayLines.length * lineHeight;
 
         ctx.fillStyle = "#d7dbe3";
 
@@ -1740,34 +1855,32 @@ function drawSkillRadar(skills, values, average) {
     });
 
 
-    /* ---------- Центр ---------- */
+    /* ===== Центр ===== */
 
-    /* Внутренний круг */
+    const innerR = isCompact ? 20 : 26;
+
     ctx.beginPath();
-    ctx.arc(cx, cy, 26, 0, Math.PI * 2);
+    ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
     ctx.fillStyle = "#0b0d12";
     ctx.fill();
     ctx.strokeStyle = "rgba(255,255,255,.14)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    /* Средний балл в центре */
-    ctx.font =
-        "800 15px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+    ctx.font = `800 ${isCompact ? 13 : 15}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(average.toFixed(1), cx, cy - 4);
 
-    ctx.font =
-        "600 9px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+    ctx.font = `600 ${isCompact ? 8 : 9}px -apple-system, BlinkMacSystemFont, Segoe UI, Arial`;
     ctx.fillStyle = "#9299a6";
-    ctx.fillText("из 5", cx, cy + 9);
+    ctx.fillText("из 5", cx, cy + (isCompact ? 7 : 9));
 }
 
 
 /* =========================================================
-   FIND NEXT UNCOMPLETED CATEGORY
+   FIND NEXT UNCOMPLETED
 ========================================================= */
 
 function findNextUncompletedCategory() {
@@ -1778,11 +1891,9 @@ function findNextUncompletedCategory() {
     for (let i = start + 1; i < names.length; i++) {
         if (!isCategoryCompleted(names[i])) return i;
     }
-
     for (let i = 0; i <= start; i++) {
         if (!isCategoryCompleted(names[i])) return i;
     }
-
     return -1;
 }
 
@@ -1796,7 +1907,6 @@ function continueFullAssessment() {
     decisionScreen.classList.add("hidden");
 
     const nextIndex = findNextUncompletedCategory();
-
     if (nextIndex === -1) {
         finishAssessment();
         return;
@@ -1822,7 +1932,6 @@ function continueFullAssessment() {
 function goNextCategory() {
 
     const nextIndex = findNextUncompletedCategory();
-
     if (nextIndex === -1) {
         finishAssessment();
         return;
@@ -1849,7 +1958,6 @@ function finishAssessment() {
     resultsScreen.classList.remove("hidden");
 
     renderResults();
-
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -1865,7 +1973,6 @@ function getRingColor(avg) {
     return "var(--danger)";
 }
 
-/* Для canvas нужны реальные hex-цвета (CSS-переменные там не читаются) */
 function getRingColorHex(avg) {
     if (avg >= 4) return "#55d68a";
     if (avg >= 3) return "#7c8cff";
@@ -1962,7 +2069,7 @@ function renderResults() {
     document.getElementById("statMin").textContent = min;
 
 
-    /* Круговой индикатор */
+    /* Круговой gauge */
     const gaugeEl = document.getElementById("overallGauge");
     const percentEl = document.getElementById("overallPercent");
     const avgEl = document.getElementById("overallAverage");
@@ -2001,9 +2108,7 @@ function renderResults() {
                 </div>
             </div>
 
-            <div class="category-result-name">
-                ${escapeHtml(item.name)}
-            </div>
+            <div class="category-result-name">${escapeHtml(item.name)}</div>
 
             <div class="category-result-count">
                 ${item.count} навыков · ${level}
@@ -2014,7 +2119,7 @@ function renderResults() {
     });
 
 
-    /* Сильные навыки */
+    /* Сильные */
     const strengths = [...allSkills]
         .sort((a, b) => b.value - a.value)
         .slice(0, 7);
@@ -2033,7 +2138,7 @@ function renderResults() {
     });
 
 
-    /* Навыки для развития */
+    /* Для развития */
     const development = [...allSkills]
         .sort((a, b) => a.value - b.value)
         .slice(0, 7);
@@ -2054,7 +2159,6 @@ function renderResults() {
 
 
     renderInterpretation(average, categoryData);
-
 
     lastCategoryData = categoryData;
     drawRadar(categoryData);
@@ -2474,10 +2578,16 @@ window.addEventListener("resize", () => {
 
     if (!decisionScreen.classList.contains("hidden") && lastSkillRadarData) {
         drawSkillRadar(
+            "skillRadar",
             lastSkillRadarData.skills,
             lastSkillRadarData.values,
-            lastSkillRadarData.average
+            lastSkillRadarData.average,
+            false
         );
+    }
+
+    if (!testScreen.classList.contains("hidden")) {
+        updateLiveRadar();
     }
 });
 
