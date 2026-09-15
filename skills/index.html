@@ -1,1501 +1,2280 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Карта навыков</title>
+<title>Карта навыков</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #101218;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-        }
+:root {
+    --bg: #0b0d12;
+    --card: #151922;
+    --card2: #1b202b;
+    --border: rgba(255,255,255,.09);
+    --text: #f3f5f7;
+    --muted: #9299a6;
+    --accent: #7c8cff;
+    --accent2: #9c7cff;
+    --good: #55d68a;
+    --warning: #ffc857;
+    --danger: #ff6b6b;
+}
 
-        .container {
-            width: min(760px, 94%);
-            margin: 0 auto;
-            padding: 25px 0 50px;
-        }
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: 32px;
-        }
+body {
+    padding: 20px 14px 50px;
+}
 
-        .subtitle {
-            color: #aeb4c0;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
+.app {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+}
 
-        .panel {
-            background: #191d26;
-            border: 1px solid #2c3240;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 18px;
-        }
+header {
+    text-align: center;
+    margin-bottom: 22px;
+}
 
-        label {
-            display: block;
-            color: #aeb4c0;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
+.logo {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
 
-        select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid #363d4c;
-            background: #202530;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
+h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 750;
+}
 
-        .category-title {
-            margin: 5px 0 20px;
-            font-size: 24px;
-        }
+.subtitle {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.45;
+}
 
-        .skill {
-            padding: 17px 0;
-            border-bottom: 1px solid #2c3240;
-        }
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.16);
+}
 
-        .skill:last-child {
-            border-bottom: none;
-        }
+.hidden {
+    display: none !important;
+}
 
-        .skill-name {
-            font-size: 17px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+.section-title {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
 
-        .skill-description {
-            color: #8f97a6;
-            font-size: 13px;
-            line-height: 1.4;
-            margin-bottom: 13px;
-        }
+.section-description {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
 
-        .range-row {
-            display: grid;
-            grid-template-columns: 1fr 48px;
-            gap: 12px;
-            align-items: center;
-        }
+/* Progress */
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: white;
-            cursor: pointer;
-        }
+.progress-wrap {
+    margin-bottom: 20px;
+}
 
-        .value {
-            background: #202530;
-            border: 1px solid #363d4c;
-            border-radius: 10px;
-            padding: 8px;
-            text-align: center;
-            font-weight: bold;
-        }
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 7px;
+}
 
-        .scale {
-            display: flex;
-            justify-content: space-between;
-            color: #737b8b;
-            font-size: 11px;
-            margin-top: 5px;
-        }
+.progress {
+    width: 100%;
+    height: 8px;
+    background: #272c37;
+    border-radius: 20px;
+    overflow: hidden;
+}
 
-        .buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 20px;
+    transition: width .3s ease;
+}
 
-        button {
-            border: none;
-            border-radius: 12px;
-            padding: 13px 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+/* ===== ЧЕК-ЛИСТ КАТЕГОРИЙ ===== */
 
-        .primary {
-            background: white;
-            color: #101218;
-        }
+.checklist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 18px;
+}
 
-        .secondary {
-            background: #202530;
-            color: white;
-            border: 1px solid #363d4c;
-        }
+.checklist-summary {
+    width: 100%;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 2px;
+}
 
-        .danger {
-            background: #2a2023;
-            color: #ffb5bd;
-            border: 1px solid #52333a;
-        }
+.checklist-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    background: #10131a;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s ease;
+    font-family: inherit;
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-        .progress {
-            color: #8f97a6;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
+.checklist-item:active {
+    transform: scale(.97);
+}
 
-        .result {
-            display: none;
-        }
+.checklist-item .checklist-check {
+    font-size: 12px;
+    line-height: 1;
+    opacity: .35;
+    transition: opacity .15s ease, color .15s ease;
+}
 
-        .result.show {
-            display: block;
-        }
+.checklist-item.done {
+    color: var(--good);
+    border-color: rgba(85,214,138,.35);
+    background: rgba(85,214,138,.07);
+}
 
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid #2c3240;
-        }
+.checklist-item.done .checklist-check {
+    opacity: 1;
+    color: var(--good);
+}
 
-        .result-item:last-child {
-            border-bottom: none;
-        }
+.checklist-item.partial {
+    color: var(--accent);
+    border-color: rgba(124,140,255,.30);
+    background: rgba(124,140,255,.05);
+}
 
-        .result-score {
-            font-weight: bold;
-            white-space: nowrap;
-        }
+.checklist-item.partial .checklist-check {
+    opacity: 1;
+    color: var(--accent);
+}
 
-        .category-result {
-            margin-bottom: 22px;
-        }
+.checklist-item.active {
+    color: var(--text);
+    border-color: var(--accent);
+    background: rgba(124,140,255,.12);
+    box-shadow: 0 0 0 1px rgba(124,140,255,.35) inset;
+}
 
-        .category-result h3 {
-            margin: 0 0 10px;
-        }
+.checklist-item.active .checklist-check {
+    opacity: 1;
+}
 
-        .average {
-            color: #aeb4c0;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+/* Category */
 
-        .empty {
-            color: #8f97a6;
-            text-align: center;
-            padding: 20px 0;
-        }
+.category-box {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
 
-        .footer {
-            color: #737b8b;
-            font-size: 12px;
-            line-height: 1.5;
-            margin-top: 25px;
-        }
+.category-label {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 7px;
+}
 
-        @media (max-width: 520px) {
-            .container {
-                width: 94%;
-                padding-top: 20px;
-            }
+select {
+    width: 100%;
+    appearance: none;
+    background: #10131a;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 14px;
+    font-size: 16px;
+    outline: none;
+}
 
-            h1 {
-                font-size: 28px;
-            }
+select:focus {
+    border-color: var(--accent);
+}
 
-            .panel {
-                padding: 16px;
-                border-radius: 16px;
-            }
-        }
-    </style>
+/* Skills */
+
+.skill {
+    background: #10131a;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 11px;
+}
+
+.skill-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.skill-name {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.skill-value {
+    min-width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card2);
+    border-radius: 10px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.level-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 7px;
+    font-size: 10px;
+    color: var(--muted);
+}
+
+/* Buttons */
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+button {
+    border: none;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform .15s ease,
+        opacity .15s ease,
+        background .15s ease;
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+.btn-primary {
+    flex: 1;
+    min-width: 180px;
+    background: var(--accent);
+    color: white;
+}
+
+.btn-secondary {
+    flex: 1;
+    min-width: 180px;
+    background: #272c37;
+    color: white;
+}
+
+.btn-success {
+    flex: 1;
+    min-width: 180px;
+    background: var(--good);
+    color: #08130d;
+}
+
+.btn-danger {
+    background: rgba(255,107,107,.12);
+    color: var(--danger);
+}
+
+/* Decision */
+
+.decision {
+    text-align: center;
+    padding: 22px 10px 5px;
+}
+
+.decision-icon {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.decision h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+}
+
+.decision p {
+    color: var(--muted);
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.choice-buttons button {
+    width: 100%;
+}
+
+/* Results */
+
+.result-header {
+    text-align: center;
+}
+
+.result-score {
+    font-size: 54px;
+    font-weight: 800;
+    margin: 8px 0;
+    background: linear-gradient(135deg, #fff, #9da7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.result-caption {
+    color: var(--muted);
+}
+
+/* Radar */
+
+.radar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    padding: 5px;
+}
+
+#skillsRadar {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Category circles */
+
+.category-results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.category-result {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 16px;
+    text-align: center;
+}
+
+.circle {
+    width: 118px;
+    height: 118px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(
+        var(--ring-color, var(--accent)) var(--percent),
+        #303642 var(--percent)
+    );
+    transition: transform .25s ease;
+}
+
+.circle::before {
+    content: "";
+    position: absolute;
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: var(--card2);
+}
+
+.circle-value {
+    position: relative;
+    z-index: 2;
+    font-size: 25px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+}
+
+.circle-level {
+    position: relative;
+    z-index: 2;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.category-result-name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.category-result-count {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* Strengths */
+
+.skill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.result-skill {
+    background: var(--card2);
+    border-radius: 13px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.result-skill-name {
+    font-size: 14px;
+}
+
+.result-skill-value {
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.good {
+    color: var(--good);
+}
+
+.warning {
+    color: var(--warning);
+}
+
+.danger {
+    color: var(--danger);
+}
+
+/* Stats */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.stat {
+    text-align: center;
+    background: var(--card2);
+    border-radius: 14px;
+    padding: 15px 8px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+/* Info */
+
+.info {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+    color: #656c78;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+/* Mobile */
+
+@media (max-width: 560px) {
+
+    body {
+        padding: 14px 10px 35px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .logo {
+        font-size: 40px;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 19px;
+    }
+
+    .category-results {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .circle::before {
+        width: 73px;
+        height: 73px;
+    }
+
+    .circle-value {
+        font-size: 21px;
+    }
+
+    .circle-level {
+        font-size: 9px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-    <h1>🧭 Карта навыков</h1>
-
+<header>
+    <div class="logo">🧭</div>
+    <h1>Карта навыков</h1>
     <div class="subtitle">
-        Оцените свои навыки и определите сильные стороны,
-        опыт и направления для развития.
+        Оцените свои навыки и получите визуальную карту компетенций
     </div>
+</header>
 
 
-    <!-- ВЫБОР КАТЕГОРИИ -->
+<!-- ================= TEST ================= -->
 
-    <div class="panel">
+<div id="testScreen">
 
-        <label for="categorySelect">
-            Выберите категорию навыков
-        </label>
+    <div class="card">
 
-        <select id="categorySelect">
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span id="progressText">Категория 1</span>
+                <span id="progressPercent">0%</span>
+            </div>
 
-            <option value="">
-                — Выберите категорию —
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <!-- НАВЫКИ -->
-
-    <div
-        class="panel"
-        id="skillsPanel"
-        style="display:none;"
-    >
-
-        <div
-            class="progress"
-            id="progress">
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
 
-        <h2
-            class="category-title"
-            id="categoryTitle">
-        </h2>
+        <!-- Чек-лист категорий -->
+        <div class="checklist" id="checklist"></div>
+
+
+        <div class="section-title">
+            Оценка навыков
+        </div>
+
+        <div class="section-description">
+            Выберите категорию и оцените каждый навык от 1 до 5.
+            Оценивайте именно текущий уровень, а не желаемый.
+        </div>
+
+
+        <div class="category-box">
+
+            <div class="category-label">
+                КАТЕГОРИЯ
+            </div>
+
+            <select id="categorySelect">
+            </select>
+
+        </div>
+
 
         <div id="skillsContainer"></div>
 
+
         <div class="buttons">
 
             <button
-                class="primary"
-                id="nextBtn">
+                class="btn-primary"
+                id="saveCategoryBtn"
+                onclick="saveCategory()">
                 Сохранить категорию
-            </button>
-
-            <button
-                class="secondary"
-                id="backBtn">
-                Выбрать другую
             </button>
 
         </div>
 
     </div>
 
+</div>
 
-    <!-- ИТОГ -->
 
-    <div
-        class="panel result"
-        id="resultPanel">
+<!-- ================= DECISION ================= -->
 
-        <h2>📊 Моя карта навыков</h2>
+<div id="decisionScreen" class="hidden">
 
-        <div id="resultContainer"></div>
+    <div class="card">
+
+        <div class="decision">
+
+            <div class="decision-icon">
+                ✓
+            </div>
+
+            <h2>Категория завершена</h2>
+
+            <p id="decisionText">
+                Вы оценили навыки этой категории.
+            </p>
+
+            <div class="choice-buttons">
+
+                <button
+                    class="btn-primary"
+                    onclick="continueFullAssessment()">
+                    Пройти полную оценку
+                </button>
+
+                <button
+                    class="btn-success"
+                    onclick="finishAssessment()">
+                    Завершить
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= NEXT CATEGORY ================= -->
+
+<div id="nextScreen" class="hidden">
+
+    <div class="card">
+
+        <div class="decision">
+
+            <div class="decision-icon">
+                →
+            </div>
+
+            <h2>Следующая категория</h2>
+
+            <p id="nextCategoryText"></p>
+
+            <div class="buttons">
+
+                <button
+                    class="btn-primary"
+                    onclick="goNextCategory()">
+                    Далее
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= RESULTS ================= -->
+
+<div id="resultsScreen" class="hidden">
+
+    <div class="card result-header">
+
+        <div class="section-title">
+            Ваша карта навыков
+        </div>
+
+        <div class="result-score" id="overallScore">
+            0
+        </div>
+
+        <div class="result-caption">
+            средний уровень по оценённым навыкам из 5
+        </div>
+
+    </div>
+
+
+    <!-- Radar -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Карта компетенций
+        </div>
+
+        <div class="section-description">
+            Чем дальше область от центра, тем выше средний уровень
+            навыков в соответствующей категории.
+        </div>
+
+        <div class="radar-container">
+            <canvas id="skillsRadar"></canvas>
+        </div>
+
+    </div>
+
+
+    <!-- Stats -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Общая статистика
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <div
+                    class="stat-value"
+                    id="statAverage">
+                    —
+                </div>
+                <div class="stat-label">
+                    Средний уровень
+                </div>
+            </div>
+
+            <div class="stat">
+                <div
+                    class="stat-value"
+                    id="statMax">
+                    —
+                </div>
+                <div class="stat-label">
+                    Максимум
+                </div>
+            </div>
+
+            <div class="stat">
+                <div
+                    class="stat-value"
+                    id="statMin">
+                    —
+                </div>
+                <div class="stat-label">
+                    Минимум
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Categories -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Уровень по категориям
+        </div>
+
+        <div class="section-description">
+            Средняя оценка навыков внутри каждой пройденной категории.
+        </div>
+
+        <div
+            class="category-results"
+            id="categoryResults">
+        </div>
+
+    </div>
+
+
+    <!-- Strengths -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Сильные навыки
+        </div>
+
+        <div class="section-description">
+            Навыки с наиболее высокой оценкой.
+        </div>
+
+        <div
+            class="skill-list"
+            id="strengthsList">
+        </div>
+
+    </div>
+
+
+    <!-- Development -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Навыки для развития
+        </div>
+
+        <div class="section-description">
+            Навыки, которые могут стать точками роста.
+        </div>
+
+        <div
+            class="skill-list"
+            id="developmentList">
+        </div>
+
+    </div>
+
+
+    <!-- Info -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Интерпретация
+        </div>
+
+        <div
+            class="info"
+            id="interpretation">
+        </div>
+
+    </div>
+
+
+    <!-- Actions -->
+
+    <div class="card">
 
         <div class="buttons">
 
             <button
-                class="secondary"
-                id="restartBtn">
+                class="btn-secondary"
+                onclick="backToAssessment()">
                 Изменить оценки
             </button>
 
             <button
-                class="secondary"
-                id="saveBtn">
-                Сохранить
+                class="btn-primary"
+                onclick="exportResults()">
+                Экспорт JSON
             </button>
 
             <button
-                class="secondary"
-                id="exportBtn">
-                Экспорт
-            </button>
-
-            <button
-                class="danger"
-                id="resetBtn">
-                Сбросить всё
+                class="btn-danger"
+                onclick="resetTest()">
+                Начать заново
             </button>
 
         </div>
 
     </div>
 
+</div>
 
-    <div class="footer">
-        Инструмент предназначен для саморефлексии и оценки
-        собственных навыков. Результаты являются субъективной
-        самооценкой и не являются профессиональной диагностикой.
-    </div>
+
+<footer>
+    Карта навыков • персональная оценка компетенций
+</footer>
 
 </div>
 
 
 <script>
 
-/* =====================================================
-   БАЗА НАВЫКОВ
-   ===================================================== */
+/* =========================================================
+   TELEGRAM
+========================================================= */
 
-const skillCategories = {
+let tg = null;
 
-    "Цифровые": [
+try {
+    if (
+        window.Telegram &&
+        window.Telegram.WebApp
+    ) {
+        tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+    }
+} catch (e) {
+    console.log("Telegram WebApp недоступен");
+}
 
-        {
-            name: "Программирование",
-            description: "Создание программ, скриптов и приложений."
-        },
 
-        {
-            name: "Видеомонтаж",
-            description: "Монтаж и обработка видео."
-        },
+/* =========================================================
+   DATA
+========================================================= */
 
-        {
-            name: "Графический дизайн",
-            description: "Создание визуальных материалов и макетов."
-        },
+const categories = {
 
-        {
-            name: "Веб-разработка",
-            description: "Создание сайтов и веб-приложений."
-        },
-
-        {
-            name: "Работа с ИИ",
-            description: "Использование нейросетей и ИИ-инструментов."
-        },
-
-        {
-            name: "Аналитика данных",
-            description: "Анализ, обработка и интерпретация данных."
-        },
-
-        {
-            name: "Фотография",
-            description: "Создание и обработка фотографий."
-        },
-
-        {
-            name: "3D-моделирование",
-            description: "Создание и редактирование трёхмерных моделей."
-        },
-
-        {
-            name: "SMM",
-            description: "Создание и продвижение контента в социальных сетях."
-        },
-
-        {
-            name: "Работа с текстами",
-            description: "Написание, редактирование и структурирование текстов."
-        }
-
+    "Цифровые навыки": [
+        "Программирование",
+        "Веб-разработка",
+        "Видеомонтаж",
+        "Графический дизайн",
+        "Работа с ИИ",
+        "Аналитика данных",
+        "Фотография",
+        "3D-моделирование",
+        "SMM",
+        "Работа с текстами"
     ],
 
-
-    "Аналитические": [
-
-        {
-            name: "Критическое мышление",
-            description: "Анализ информации и оценка аргументов."
-        },
-
-        {
-            name: "Аналитическое мышление",
-            description: "Поиск закономерностей и работа со сложной информацией."
-        },
-
-        {
-            name: "Системное мышление",
-            description: "Понимание взаимосвязей между элементами системы."
-        },
-
-        {
-            name: "Решение проблем",
-            description: "Поиск решений нестандартных задач."
-        },
-
-        {
-            name: "Исследовательские навыки",
-            description: "Поиск, проверка и систематизация информации."
-        },
-
-        {
-            name: "Планирование",
-            description: "Построение последовательности действий для достижения цели."
-        }
-
+    "Аналитические навыки": [
+        "Анализ информации",
+        "Критическое мышление",
+        "Системное мышление",
+        "Работа с данными",
+        "Поиск закономерностей",
+        "Решение проблем",
+        "Планирование",
+        "Принятие решений"
     ],
-
 
     "Коммуникация": [
-
-        {
-            name: "Устная коммуникация",
-            description: "Умение ясно выражать свои мысли."
-        },
-
-        {
-            name: "Письменная коммуникация",
-            description: "Умение понятно формулировать мысли письменно."
-        },
-
-        {
-            name: "Активное слушание",
-            description: "Умение внимательно воспринимать собеседника."
-        },
-
-        {
-            name: "Переговоры",
-            description: "Поиск взаимоприемлемых решений."
-        },
-
-        {
-            name: "Публичные выступления",
-            description: "Выступление перед аудиторией."
-        },
-
-        {
-            name: "Презентация",
-            description: "Представление идей, проектов или продуктов."
-        }
-
+        "Устная речь",
+        "Письменная речь",
+        "Публичные выступления",
+        "Переговоры",
+        "Активное слушание",
+        "Работа с конфликтами",
+        "Презентация идей",
+        "Нетворкинг"
     ],
-
 
     "Управленческие": [
-
-        {
-            name: "Лидерство",
-            description: "Организация людей и направление совместной работы."
-        },
-
-        {
-            name: "Управление проектами",
-            description: "Планирование и реализация проектов."
-        },
-
-        {
-            name: "Управление командой",
-            description: "Организация работы группы людей."
-        },
-
-        {
-            name: "Делегирование",
-            description: "Распределение задач и ответственности."
-        },
-
-        {
-            name: "Принятие решений",
-            description: "Выбор оптимального решения в условиях неопределённости."
-        },
-
-        {
-            name: "Управление временем",
-            description: "Планирование и распределение времени."
-        }
-
+        "Организация процессов",
+        "Постановка задач",
+        "Контроль выполнения",
+        "Распределение ресурсов",
+        "Работа в команде",
+        "Лидерство",
+        "Делегирование",
+        "Управление проектами"
     ],
-
 
     "Творческие": [
-
-        {
-            name: "Рисование",
-            description: "Создание изображений."
-        },
-
-        {
-            name: "Живопись",
-            description: "Работа с цветом, формой и композицией."
-        },
-
-        {
-            name: "Музыка",
-            description: "Создание или исполнение музыки."
-        },
-
-        {
-            name: "Вокал",
-            description: "Исполнение вокальных произведений."
-        },
-
-        {
-            name: "Литературное творчество",
-            description: "Создание художественных и авторских текстов."
-        },
-
-        {
-            name: "Сценаристика",
-            description: "Создание сценариев и сюжетных структур."
-        },
-
-        {
-            name: "Декоративно-прикладное искусство",
-            description: "Создание предметов декоративного искусства."
-        }
-
+        "Рисование",
+        "Музыка",
+        "Создание видео",
+        "Фотография",
+        "Писательство",
+        "Дизайн",
+        "Создание концепций",
+        "Креативное мышление"
     ],
-
 
     "Ручной труд": [
-
-        {
-            name: "Столярное дело",
-            description: "Работа с древесиной и столярными инструментами."
-        },
-
-        {
-            name: "Плотницкое дело",
-            description: "Создание и монтаж деревянных конструкций."
-        },
-
-        {
-            name: "Шитьё",
-            description: "Ручное и машинное шитьё."
-        },
-
-        {
-            name: "Работа с металлом",
-            description: "Обработка и изготовление металлических деталей."
-        },
-
-        {
-            name: "Работа с инструментами",
-            description: "Безопасное использование ручного инструмента."
-        },
-
-        {
-            name: "Малярные работы",
-            description: "Покраска и отделка поверхностей."
-        }
-
+        "Столярное дело",
+        "Плотницкое дело",
+        "Шитьё",
+        "Вязание",
+        "Работа с металлом",
+        "Работа с инструментами",
+        "Реставрация",
+        "Изготовление вещей"
     ],
-
 
     "Строительство и ремонт": [
-
-        {
-            name: "Сантехника",
-            description: "Монтаж и ремонт сантехнических систем."
-        },
-
-        {
-            name: "Электромонтаж",
-            description: "Работа с электрическими системами."
-        },
-
-        {
-            name: "Бытовой ремонт",
-            description: "Ремонт предметов и элементов жилья."
-        },
-
-        {
-            name: "Отделочные работы",
-            description: "Работа с покрытиями и отделочными материалами."
-        },
-
-        {
-            name: "Кладка",
-            description: "Работа с кирпичом, блоками и строительными материалами."
-        },
-
-        {
-            name: "Монтаж",
-            description: "Сборка и установка конструкций и оборудования."
-        }
-
+        "Сантехника",
+        "Электромонтаж",
+        "Бытовой ремонт",
+        "Отделочные работы",
+        "Малярные работы",
+        "Кладка",
+        "Монтаж",
+        "Работа с измерительными инструментами"
     ],
-
 
     "Техника и механика": [
-
-        {
-            name: "Ремонт автомобиля",
-            description: "Диагностика и ремонт автомобиля."
-        },
-
-        {
-            name: "Механика",
-            description: "Понимание и обслуживание механических систем."
-        },
-
-        {
-            name: "Электроника",
-            description: "Работа с электронными компонентами."
-        },
-
-        {
-            name: "Обслуживание техники",
-            description: "Диагностика и техническое обслуживание оборудования."
-        },
-
-        {
-            name: "Сборка техники",
-            description: "Сборка устройств и технических систем."
-        }
-
+        "Ремонт автомобиля",
+        "Механика",
+        "Электроника",
+        "Ремонт бытовой техники",
+        "Обслуживание техники",
+        "Сборка техники",
+        "Работа с электроинструментом",
+        "Диагностика неисправностей"
     ],
-
 
     "Транспорт": [
-
-        {
-            name: "Вождение автомобиля",
-            description: "Управление автомобилем."
-        },
-
-        {
-            name: "Вождение мотоцикла",
-            description: "Управление мотоциклом."
-        },
-
-        {
-            name: "Велосипед",
-            description: "Уверенное управление велосипедом."
-        },
-
-        {
-            name: "Навигация",
-            description: "Ориентирование и использование навигационных систем."
-        }
-
+        "Вождение автомобиля",
+        "Вождение мотоцикла",
+        "Велосипед",
+        "Навигация",
+        "Ориентирование на местности",
+        "Техническое обслуживание транспорта"
     ],
-
 
     "Бытовые": [
-
-        {
-            name: "Приготовление пищи",
-            description: "Приготовление повседневных и сложных блюд."
-        },
-
-        {
-            name: "Организация быта",
-            description: "Поддержание порядка и организация домашнего пространства."
-        },
-
-        {
-            name: "Уход за одеждой",
-            description: "Стирка, глажка и уход за одеждой."
-        },
-
-        {
-            name: "Садоводство",
-            description: "Уход за растениями и садом."
-        },
-
-        {
-            name: "Уход за животными",
-            description: "Повседневный уход за домашними животными."
-        },
-
-        {
-            name: "Первая помощь",
-            description: "Базовые навыки оказания первой помощи."
-        }
-
+        "Приготовление пищи",
+        "Уборка",
+        "Организация пространства",
+        "Планирование быта",
+        "Уход за одеждой",
+        "Уход за растениями",
+        "Финансовое планирование"
     ],
-
 
     "Социальные": [
-
-        {
-            name: "Работа в команде",
-            description: "Совместная деятельность с другими людьми."
-        },
-
-        {
-            name: "Эмпатия",
-            description: "Понимание переживаний другого человека."
-        },
-
-        {
-            name: "Разрешение конфликтов",
-            description: "Конструктивное разрешение разногласий."
-        },
-
-        {
-            name: "Наставничество",
-            description: "Передача знаний и помощь в развитии других."
-        },
-
-        {
-            name: "Установление контактов",
-            description: "Создание и поддержание профессиональных и социальных связей."
-        }
-
+        "Помощь людям",
+        "Обучение других",
+        "Наставничество",
+        "Эмпатия",
+        "Медиация",
+        "Работа с группами",
+        "Организация мероприятий"
     ],
-
 
     "Языки": [
-
-        {
-            name: "Английский язык",
-            description: "Понимание и использование английского языка."
-        },
-
-        {
-            name: "Другие иностранные языки",
-            description: "Владение иностранными языками."
-        },
-
-        {
-            name: "Перевод",
-            description: "Перевод устных и письменных материалов."
-        },
-
-        {
-            name: "Грамотность",
-            description: "Грамотное использование родного языка."
-        }
-
+        "Русский язык",
+        "Английский язык",
+        "Немецкий язык",
+        "Другие иностранные языки",
+        "Перевод",
+        "Разговорная практика"
     ],
-
 
     "Предпринимательство": [
-
-        {
-            name: "Продажи",
-            description: "Продвижение и продажа товаров или услуг."
-        },
-
-        {
-            name: "Маркетинг",
-            description: "Продвижение продукта или проекта."
-        },
-
-        {
-            name: "Финансовое планирование",
-            description: "Планирование доходов, расходов и бюджета."
-        },
-
-        {
-            name: "Создание бизнеса",
-            description: "Запуск и развитие собственного проекта."
-        },
-
-        {
-            name: "Работа с клиентами",
-            description: "Взаимодействие с клиентами и решение их задач."
-        }
-
+        "Поиск идей",
+        "Создание продукта",
+        "Продажи",
+        "Маркетинг",
+        "Финансовое планирование",
+        "Работа с клиентами",
+        "Переговоры",
+        "Запуск проектов"
     ],
 
-
     "Саморазвитие": [
-
-        {
-            name: "Самостоятельное обучение",
-            description: "Способность самостоятельно осваивать новые навыки."
-        },
-
-        {
-            name: "Самодисциплина",
-            description: "Способность последовательно выполнять поставленные задачи."
-        },
-
-        {
-            name: "Адаптивность",
-            description: "Способность приспосабливаться к изменениям."
-        },
-
-        {
-            name: "Организованность",
-            description: "Умение структурировать собственную деятельность."
-        },
-
-        {
-            name: "Креативность",
-            description: "Создание новых идей и нестандартных решений."
-        }
-
+        "Самоорганизация",
+        "Управление временем",
+        "Обучение новым навыкам",
+        "Работа с информацией",
+        "Концентрация",
+        "Адаптивность",
+        "Самодисциплина",
+        "Постановка целей"
     ]
 
 };
 
 
-/* =====================================================
-   СОСТОЯНИЕ
-   ===================================================== */
+/* =========================================================
+   STATE
+========================================================= */
 
-const STORAGE_KEY = "psyToolsSkillsCompactV1";
+let results = {};
 
-let state = loadState();
+/* Отдельно храним, какие категории пользователь подтвердил
+   кнопкой «Сохранить категорию» — чтобы отличать «в процессе»
+   от «завершено». */
+let completedCategories = {};
 
-let currentCategory = "";
+let currentCategoryIndex = 0;
+
+let currentCategory = null;
+
+/* Кэш для перерисовки радара при resize */
+let lastCategoryData = null;
 
 
-/* =====================================================
-   ЭЛЕМЕНТЫ
-   ===================================================== */
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
+
+const STORAGE_KEY = "psyToolsSkills";
+const STORAGE_COMPLETED_KEY = "psyToolsSkillsCompleted";
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
 const categorySelect =
     document.getElementById("categorySelect");
 
-const skillsPanel =
-    document.getElementById("skillsPanel");
-
-const categoryTitle =
-    document.getElementById("categoryTitle");
-
 const skillsContainer =
     document.getElementById("skillsContainer");
 
-const progress =
-    document.getElementById("progress");
+const testScreen =
+    document.getElementById("testScreen");
 
-const resultPanel =
-    document.getElementById("resultPanel");
+const decisionScreen =
+    document.getElementById("decisionScreen");
 
-const resultContainer =
-    document.getElementById("resultContainer");
+const nextScreen =
+    document.getElementById("nextScreen");
 
-
-/* =====================================================
-   ЗАПОЛНЯЕМ КАТЕГОРИИ
-   ===================================================== */
-
-Object.keys(skillCategories).forEach(category => {
-
-    const option =
-        document.createElement("option");
-
-    option.value = category;
-    option.textContent = category;
-
-    categorySelect.appendChild(option);
-
-});
+const resultsScreen =
+    document.getElementById("resultsScreen");
 
 
-/* =====================================================
-   НАЧАЛЬНОЕ СОСТОЯНИЕ
-   ===================================================== */
+/* =========================================================
+   SAFE CONFIRM / ALERT
+   В Telegram WebView нативные диалоги иногда блокируются,
+   поэтому используем SDK, если он доступен.
+========================================================= */
 
-function loadState() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(STORAGE_KEY);
-
-        if (saved) {
-            return JSON.parse(saved);
+function safeConfirm(message) {
+    return new Promise(resolve => {
+        if (tg && typeof tg.showConfirm === "function") {
+            try {
+                tg.showConfirm(message, ok => resolve(!!ok));
+                return;
+            } catch (e) {}
         }
+        resolve(window.confirm(message));
+    });
+}
 
-    } catch (error) {
-
-        console.log(error);
-
+function safeAlert(message) {
+    if (tg && typeof tg.showAlert === "function") {
+        try {
+            tg.showAlert(message);
+            return;
+        } catch (e) {}
     }
-
-    return {
-        values: {},
-        completedCategories: []
-    };
-
+    window.alert(message);
 }
 
 
-function saveState() {
+/* =========================================================
+   INIT
+========================================================= */
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(state)
+function init() {
+
+    loadResults();
+
+    const names = Object.keys(categories);
+
+    names.forEach((name, index) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = index;
+        option.textContent = name;
+
+        categorySelect.appendChild(option);
+
+    });
+
+    categorySelect.addEventListener(
+        "change",
+        () => {
+
+            currentCategoryIndex =
+                Number(categorySelect.value);
+
+            loadCategory(
+                currentCategoryIndex
+            );
+
+        }
     );
 
+    loadCategory(0);
 }
 
 
-/* =====================================================
-   ВЫБОР КАТЕГОРИИ
-   ===================================================== */
+/* =========================================================
+   STATE HELPERS
+========================================================= */
 
-categorySelect.addEventListener(
-    "change",
-    () => {
+function isCategoryTouched(name) {
+    return !!(
+        results[name] &&
+        Object.keys(results[name]).length > 0
+    );
+}
 
-        const category =
-            categorySelect.value;
+function isCategoryCompleted(name) {
+    return completedCategories[name] === true;
+}
 
-        if (!category) {
 
-            skillsPanel.style.display =
-                "none";
+/* =========================================================
+   LOAD CATEGORY
+========================================================= */
 
-            return;
+function loadCategory(index) {
 
-        }
+    const names =
+        Object.keys(categories);
 
-        openCategory(category);
-
+    if (
+        index < 0 ||
+        index >= names.length
+    ) {
+        return;
     }
-);
+
+    currentCategoryIndex = index;
+
+    currentCategory = names[index];
+
+    categorySelect.value = index;
+
+    skillsContainer.innerHTML = "";
+
+    const skills =
+        categories[currentCategory];
 
 
-/* =====================================================
-   ОТКРЫТИЕ КАТЕГОРИИ
-   ===================================================== */
+    skills.forEach((skill, skillIndex) => {
 
-function openCategory(category) {
+        const savedValue =
+            results[currentCategory]?.[skill] || 1;
 
-    currentCategory = category;
+        const wrapper =
+            document.createElement("div");
 
-    categoryTitle.textContent =
-        category;
+        wrapper.className = "skill";
 
-    skillsPanel.style.display =
-        "block";
+        wrapper.innerHTML = `
 
-    renderSkills();
+            <div class="skill-top">
+
+                <div class="skill-name">
+                    ${escapeHtml(skill)}
+                </div>
+
+                <div
+                    class="skill-value"
+                    id="value-${skillIndex}">
+                    ${savedValue}
+                </div>
+
+            </div>
+
+            <input
+                type="range"
+                min="1"
+                max="5"
+                step="1"
+                value="${savedValue}"
+                data-skill="${escapeHtml(skill)}"
+                oninput="updateSkillValue(this, ${skillIndex})">
+
+            <div class="level-labels">
+                <span>Нет опыта</span>
+                <span>Начальный</span>
+                <span>Уверенный</span>
+                <span>Продвинутый</span>
+                <span>Профи</span>
+            </div>
+
+        `;
+
+        skillsContainer.appendChild(wrapper);
+
+    });
 
     updateProgress();
+    updateChecklist();
+    refreshCategorySelect();
+}
+
+
+/* =========================================================
+   RANGE UPDATE — с автосохранением
+========================================================= */
+
+function updateSkillValue(input, index) {
+
+    const value = Number(input.value);
+
+    /* Обновляем цифру рядом с навыком */
+    const output =
+        document.getElementById(`value-${index}`);
+
+    if (output) output.textContent = value;
+
+    /* Автосохранение в results */
+    if (!results[currentCategory]) {
+        results[currentCategory] = {};
+    }
+
+    const skill = input.dataset.skill;
+
+    if (skill) {
+        results[currentCategory][skill] = value;
+        saveResults();
+    }
+
+    /* Обновляем индикаторы прогресса */
+    updateChecklist();
+    updateProgress();
+    refreshCategorySelect();
+
+    /* Haptic */
+    if (tg && tg.HapticFeedback) {
+        try {
+            tg.HapticFeedback.impactOccurred("light");
+        } catch (e) {}
+    }
+}
+
+
+/* =========================================================
+   SAVE CATEGORY (подтверждение)
+========================================================= */
+
+function saveCategory() {
+
+    const inputs =
+        skillsContainer.querySelectorAll(
+            'input[type="range"]'
+        );
+
+    if (!results[currentCategory]) {
+        results[currentCategory] = {};
+    }
+
+    inputs.forEach(input => {
+
+        const skill =
+            input.dataset.skill;
+
+        const value =
+            Number(input.value);
+
+        results[currentCategory][skill] =
+            value;
+
+    });
+
+    /* Помечаем категорию как подтверждённую */
+    completedCategories[currentCategory] = true;
+
+    saveResults();
+    updateChecklist();
+    updateProgress();
+    refreshCategorySelect();
+
+    showDecisionScreen();
+}
+
+
+/* =========================================================
+   DECISION
+========================================================= */
+
+function showDecisionScreen() {
+
+    testScreen.classList.add("hidden");
+    decisionScreen.classList.remove("hidden");
+    nextScreen.classList.add("hidden");
+
+    const values =
+        Object.values(
+            results[currentCategory] || {}
+        );
+
+    const average =
+        values.length
+            ? values.reduce((a, b) => a + b, 0) / values.length
+            : 0;
+
+    document.getElementById(
+        "decisionText"
+    ).textContent =
+        `Вы оценили ${values.length} навыков. ` +
+        `Средний уровень категории — ${average.toFixed(1)} из 5.`;
+}
+
+
+/* =========================================================
+   FIND NEXT UNCOMPLETED CATEGORY
+   Идёт последовательно после текущей, затем wrap-around.
+========================================================= */
+
+function findNextUncompletedCategory() {
+
+    const names = Object.keys(categories);
+    const start = currentCategoryIndex;
+
+    for (let i = start + 1; i < names.length; i++) {
+        if (!isCategoryCompleted(names[i])) return i;
+    }
+
+    for (let i = 0; i <= start; i++) {
+        if (!isCategoryCompleted(names[i])) return i;
+    }
+
+    return -1;
+}
+
+
+/* =========================================================
+   CONTINUE FULL ASSESSMENT
+========================================================= */
+
+function continueFullAssessment() {
+
+    decisionScreen.classList.add("hidden");
+
+    const nextIndex = findNextUncompletedCategory();
+
+    if (nextIndex === -1) {
+        /* Всё уже оценено → сразу к результатам */
+        finishAssessment();
+        return;
+    }
+
+    const names = Object.keys(categories);
+
+    nextScreen.classList.remove("hidden");
+
+    document.getElementById(
+        "nextCategoryText"
+    ).textContent =
+        `Следующая категория: ${names[nextIndex]}`;
+
+    const btn = nextScreen.querySelector("button");
+    btn.textContent = "Далее";
+    btn.onclick = goNextCategory;
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+function goNextCategory() {
+
+    const nextIndex = findNextUncompletedCategory();
+
+    if (nextIndex === -1) {
+        finishAssessment();
+        return;
+    }
+
+    nextScreen.classList.add("hidden");
+    testScreen.classList.remove("hidden");
+
+    loadCategory(nextIndex);
+}
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishAssessment() {
+
+    saveResults();
+
+    testScreen.classList.add("hidden");
+    decisionScreen.classList.add("hidden");
+    nextScreen.classList.add("hidden");
+    resultsScreen.classList.remove("hidden");
+
+    renderResults();
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
-
 }
 
 
-/* =====================================================
-   ОТРИСОВКА НАВЫКОВ
-   ===================================================== */
+/* =========================================================
+   RING COLOR / LEVEL
+========================================================= */
 
-function renderSkills() {
+function getRingColor(avg) {
+    if (avg >= 4) return "var(--good)";
+    if (avg >= 3) return "var(--accent)";
+    if (avg >= 2) return "var(--warning)";
+    return "var(--danger)";
+}
 
-    skillsContainer.innerHTML = "";
-
-    const list =
-        skillCategories[currentCategory];
-
-
-    list.forEach((skill, index) => {
-
-        const key =
-            createKey(
-                currentCategory,
-                skill.name
-            );
-
-
-        const value =
-            state.values[key] || 1;
+function getLevelLabel(avg) {
+    if (avg >= 4.5) return "профи";
+    if (avg >= 3.5) return "продвинутый";
+    if (avg >= 2.5) return "уверенный";
+    if (avg >= 1.5) return "начальный";
+    return "нет опыта";
+}
 
 
-        const div =
-            document.createElement("div");
+/* =========================================================
+   RESULTS
+========================================================= */
 
-        div.className =
-            "skill";
+function renderResults() {
 
+    const allSkills = [];
 
-        div.innerHTML = `
+    const categoryData = [];
 
-            <div class="skill-name">
-                ${skill.name}
-            </div>
+    Object.keys(results).forEach(category => {
 
-            <div class="skill-description">
-                ${skill.description}
-            </div>
+        const skillValues = results[category];
 
-            <div class="range-row">
+        const values = Object.values(skillValues);
 
-                <input
-                    type="range"
-                    min="1"
-                    max="5"
-                    step="1"
-                    value="${value}"
-                    data-key="${key}"
-                >
+        if (!values.length) return;
 
-                <div
-                    class="value"
-                    id="value-${index}">
-                    ${value}
-                </div>
+        const average =
+            values.reduce((a, b) => a + b, 0) / values.length;
 
-            </div>
+        categoryData.push({
+            name: category,
+            average: average,
+            count: values.length
+        });
 
-            <div class="scale">
-
-                <span>1 — нет опыта</span>
-
-                <span>2</span>
-
-                <span>3</span>
-
-                <span>4</span>
-
-                <span>5 — профессионал</span>
-
-            </div>
-
-        `;
-
-
-        skillsContainer.appendChild(div);
-
-
-        const slider =
-            div.querySelector("input");
-
-
-        slider.addEventListener(
-            "input",
-            event => {
-
-                const value =
-                    Number(event.target.value);
-
-                state.values[key] =
-                    value;
-
-                div
-                    .querySelector(".value")
-                    .textContent =
-                    value;
-
-                saveState();
-
-            }
-        );
+        Object.entries(skillValues).forEach(([name, value]) => {
+            allSkills.push({
+                category,
+                name,
+                value
+            });
+        });
 
     });
 
+
+    if (!allSkills.length) {
+
+        safeAlert("Сначала оцените хотя бы одну категорию.");
+        backToAssessment();
+        return;
+    }
+
+
+    /* Overall */
+
+    const average =
+        allSkills.reduce((sum, item) => sum + item.value, 0) /
+        allSkills.length;
+
+    const max = Math.max(...allSkills.map(item => item.value));
+    const min = Math.min(...allSkills.map(item => item.value));
+
+
+    document.getElementById("overallScore").textContent =
+        average.toFixed(1);
+
+    document.getElementById("statAverage").textContent =
+        average.toFixed(1);
+
+    document.getElementById("statMax").textContent = max;
+    document.getElementById("statMin").textContent = min;
+
+
+    /* Category cards */
+
+    const categoryResults =
+        document.getElementById("categoryResults");
+
+    categoryResults.innerHTML = "";
+
+
+    categoryData.forEach(item => {
+
+        const percent = (item.average / 5) * 100;
+        const ringColor = getRingColor(item.average);
+        const level = getLevelLabel(item.average);
+
+        const card = document.createElement("div");
+        card.className = "category-result";
+
+        card.innerHTML = `
+            <div class="circle"
+                 style="--percent:${percent}%; --ring-color:${ringColor};">
+                <div>
+                    <div class="circle-value">${item.average.toFixed(1)}</div>
+                    <div class="circle-level">${level}</div>
+                </div>
+            </div>
+
+            <div class="category-result-name">
+                ${escapeHtml(item.name)}
+            </div>
+
+            <div class="category-result-count">
+                ${item.count} навыков
+            </div>
+        `;
+
+        categoryResults.appendChild(card);
+
+    });
+
+
+    /* Strong skills */
+
+    const strengths =
+        [...allSkills]
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 7);
+
+    const strengthsList =
+        document.getElementById("strengthsList");
+
+    strengthsList.innerHTML = "";
+
+    strengths.forEach(item => {
+
+        const row = document.createElement("div");
+        row.className = "result-skill";
+
+        row.innerHTML = `
+            <div class="result-skill-name">
+                ${escapeHtml(item.name)}
+            </div>
+            <div class="result-skill-value good">
+                ${item.value}/5
+            </div>
+        `;
+
+        strengthsList.appendChild(row);
+    });
+
+
+    /* Development */
+
+    const development =
+        [...allSkills]
+        .sort((a, b) => a.value - b.value)
+        .slice(0, 7);
+
+    const developmentList =
+        document.getElementById("developmentList");
+
+    developmentList.innerHTML = "";
+
+    development.forEach(item => {
+
+        const row = document.createElement("div");
+        row.className = "result-skill";
+
+        const className =
+            item.value <= 2 ? "danger" : "warning";
+
+        row.innerHTML = `
+            <div class="result-skill-name">
+                ${escapeHtml(item.name)}
+            </div>
+            <div class="result-skill-value ${className}">
+                ${item.value}/5
+            </div>
+        `;
+
+        developmentList.appendChild(row);
+    });
+
+
+    /* Interpretation */
+
+    renderInterpretation(average, categoryData);
+
+
+    /* Radar */
+
+    lastCategoryData = categoryData;
+    drawRadar(categoryData);
 }
 
 
-/* =====================================================
-   СОЗДАНИЕ КЛЮЧА
-   ===================================================== */
+/* =========================================================
+   INTERPRETATION
+========================================================= */
 
-function createKey(
-    category,
-    skill
-) {
+function renderInterpretation(average, categoryData) {
 
-    return category +
-        "::" +
-        skill;
+    let text = "";
 
+    if (average < 2) {
+        text =
+            "Большинство оценённых навыков находятся на начальном уровне. " +
+            "Это не означает отсутствие потенциала — скорее, карта показывает " +
+            "направления, в которых ещё предстоит накопить опыт.";
+    } else if (average < 3) {
+        text =
+            "У вас формируется набор практических навыков, однако многие " +
+            "из них пока находятся на начальном или переходном уровне. " +
+            "Наиболее полезно сосредоточиться на нескольких направлениях " +
+            "и переводить знания в регулярную практику.";
+    } else if (average < 4) {
+        text =
+            "У вас достаточно широкий набор навыков с преимущественно " +
+            "уверенным уровнем владения. На этом этапе особенно полезно " +
+            "определить несколько сильных направлений и углублять их " +
+            "до продвинутого уровня.";
+    } else {
+        text =
+            "Карта показывает высокий средний уровень по оценённым навыкам. " +
+            "Вероятно, у вас уже сформирован значительный практический опыт. " +
+            "Следующий шаг — специализация, интеграция навыков и создание " +
+            "проектов на их основе.";
+    }
+
+
+    if (categoryData.length === 1) {
+        text +=
+            " Сейчас оценена только одна категория. Для более полноценной " +
+            "карты можно пройти остальные категории.";
+    } else {
+        text += ` Оценено категорий: ${categoryData.length}.`;
+    }
+
+
+    document.getElementById("interpretation").textContent = text;
 }
 
 
-/* =====================================================
-   ПРОГРЕСС
-   ===================================================== */
+/* =========================================================
+   RADAR CHART (Hi-DPI)
+========================================================= */
+
+function drawRadar(categoryData) {
+
+    const canvas = document.getElementById("skillsRadar");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    /* --- Hi-DPI --- */
+    const dpr = window.devicePixelRatio || 1;
+
+    const containerWidth =
+        (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
+
+    const cssSize = Math.max(
+        240,
+        Math.min(containerWidth || 620, 620)
+    );
+
+    canvas.style.width  = cssSize + "px";
+    canvas.style.height = cssSize + "px";
+    canvas.width  = Math.round(cssSize * dpr);
+    canvas.height = Math.round(cssSize * dpr);
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+
+    const width  = cssSize;
+    const height = cssSize;
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (!categoryData.length) return;
+
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) * 0.32;
+    const count = categoryData.length;
+    const labelRadius = radius + 58;
+
+
+    /* Grid */
+    for (let level = 1; level <= 5; level++) {
+
+        const r = radius * level / 5;
+
+        ctx.beginPath();
+
+        for (let i = 0; i < count; i++) {
+
+            const angle =
+                -Math.PI / 2 + i * 2 * Math.PI / count;
+
+            const x = cx + Math.cos(angle) * r;
+            const y = cy + Math.sin(angle) * r;
+
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(255,255,255,.10)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+
+    /* Axes */
+    for (let i = 0; i < count; i++) {
+
+        const angle =
+            -Math.PI / 2 + i * 2 * Math.PI / count;
+
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = "rgba(255,255,255,.10)";
+        ctx.stroke();
+    }
+
+
+    /* Data */
+    ctx.beginPath();
+
+    categoryData.forEach((item, index) => {
+
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
+
+        const r = radius * item.average / 5;
+
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+
+    ctx.closePath();
+
+    ctx.fillStyle = "rgba(124,140,255,.22)";
+    ctx.fill();
+
+    ctx.strokeStyle = "#7c8cff";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+
+    /* Points */
+    categoryData.forEach((item, index) => {
+
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
+
+        const r = radius * item.average / 5;
+
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#9ca7ff";
+        ctx.fill();
+    });
+
+
+    /* Labels */
+    categoryData.forEach((item, index) => {
+
+        const angle =
+            -Math.PI / 2 + index * 2 * Math.PI / count;
+
+        const x = cx + Math.cos(angle) * labelRadius;
+        const y = cy + Math.sin(angle) * labelRadius;
+
+        ctx.fillStyle = "#d7dbe3";
+        ctx.font =
+            "12px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const words = item.name.split(" ");
+        const lines = [];
+        let current = "";
+
+        words.forEach(word => {
+
+            const test = current ? current + " " + word : word;
+
+            if (ctx.measureText(test).width > 110) {
+                if (current) lines.push(current);
+                current = word;
+            } else {
+                current = test;
+            }
+        });
+
+        if (current) lines.push(current);
+
+        lines.slice(0, 3).forEach((line, lineIndex) => {
+            ctx.fillText(
+                line,
+                x,
+                y + (lineIndex - (Math.min(lines.length, 3) - 1) / 2) * 15
+            );
+        });
+    });
+
+
+    /* Center */
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
 
 function updateProgress() {
 
+    const names = Object.keys(categories);
+
     const completed =
-        state.completedCategories.length;
+        names.filter(isCategoryCompleted).length;
 
-    const total =
-        Object.keys(skillCategories).length;
+    const current = currentCategoryIndex + 1;
 
+    const percent =
+        Math.round(completed / names.length * 100);
 
-    progress.textContent =
-        `Категорий пройдено: ${completed} из ${total}`;
+    document.getElementById("progressText").textContent =
+        `Категория ${current} из ${names.length}`;
 
+    document.getElementById("progressPercent").textContent =
+        `${percent}%`;
+
+    document.getElementById("progressBar").style.width =
+        `${percent}%`;
 }
 
 
-/* =====================================================
-   СОХРАНИТЬ КАТЕГОРИЮ
-   ===================================================== */
+/* =========================================================
+   CHECKLIST
+========================================================= */
 
-document
-    .getElementById("nextBtn")
-    .addEventListener(
-        "click",
-        () => {
+function updateChecklist() {
 
-            if (
-                !state.completedCategories.includes(
-                    currentCategory
-                )
-            ) {
+    const container = document.getElementById("checklist");
+    if (!container) return;
 
-                state.completedCategories.push(
-                    currentCategory
-                );
+    const names = Object.keys(categories);
+    const completedCount = names.filter(isCategoryCompleted).length;
 
-            }
+    container.innerHTML = "";
 
+    /* Сводка */
+    const summary = document.createElement("div");
+    summary.className = "checklist-summary";
+    summary.textContent =
+        `Пройдено: ${completedCount} из ${names.length}`;
+    container.appendChild(summary);
 
-            saveState();
 
-            updateProgress();
+    /* Пункты */
+    names.forEach((name, index) => {
 
-            categorySelect.value = "";
+        const done = isCategoryCompleted(name);
+        const touched = isCategoryTouched(name);
+        const active = index === currentCategoryIndex;
 
-            skillsPanel.style.display =
-                "none";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "checklist-item";
 
+        if (done) btn.classList.add("done");
+        else if (touched) btn.classList.add("partial");
 
-            const next =
-                findNextCategory();
+        if (active) btn.classList.add("active");
 
+        const mark = done ? "✓" : (touched ? "◐" : "○");
 
-            if (next) {
+        btn.innerHTML =
+            '<span class="checklist-check">' + mark + "</span>" +
+            '<span>' + escapeHtml(name) + "</span>";
 
-                categorySelect.value =
-                    next;
+        btn.addEventListener("click", () => {
+            loadCategory(index);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
 
-                openCategory(next);
-
-            } else {
-
-                showResults();
-
-            }
-
-        }
-    );
-
-
-/* =====================================================
-   СЛЕДУЮЩАЯ КАТЕГОРИЯ
-   ===================================================== */
-
-function findNextCategory() {
-
-    return Object.keys(skillCategories)
-        .find(
-            category =>
-                !state.completedCategories
-                    .includes(category)
-        );
-
-}
-
-
-/* =====================================================
-   ВЫБРАТЬ ДРУГУЮ
-   ===================================================== */
-
-document
-    .getElementById("backBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            skillsPanel.style.display =
-                "none";
-
-            categorySelect.value = "";
-
-        }
-    );
-
-
-/* =====================================================
-   РЕЗУЛЬТАТ
-   ===================================================== */
-
-function showResults() {
-
-    resultPanel.classList.add("show");
-
-    resultContainer.innerHTML = "";
-
-
-    const categories =
-        Object.keys(skillCategories);
-
-
-    categories.forEach(category => {
-
-        const list =
-            skillCategories[category];
-
-
-        const evaluated =
-            list.map(skill => {
-
-                const key =
-                    createKey(
-                        category,
-                        skill.name
-                    );
-
-                return {
-                    ...skill,
-                    value:
-                        state.values[key] || 1
-                };
-
-            });
-
-
-        const average =
-            evaluated.reduce(
-                (sum, skill) =>
-                    sum + skill.value,
-                0
-            ) / evaluated.length;
-
-
-        const box =
-            document.createElement("div");
-
-        box.className =
-            "category-result";
-
-
-        box.innerHTML = `
-
-            <h3>
-                ${category}
-            </h3>
-
-            <div class="average">
-                Средний уровень:
-                ${average.toFixed(1)} / 5
-            </div>
-
-        `;
-
-
-        evaluated
-            .sort(
-                (a, b) =>
-                    b.value - a.value
-            )
-            .forEach(skill => {
-
-                const item =
-                    document.createElement("div");
-
-                item.className =
-                    "result-item";
-
-
-                item.innerHTML = `
-
-                    <span>
-                        ${skill.name}
-                    </span>
-
-                    <span class="result-score">
-                        ${skill.value} / 5
-                    </span>
-
-                `;
-
-
-                box.appendChild(item);
-
-            });
-
-
-        resultContainer.appendChild(box);
-
+        container.appendChild(btn);
     });
+}
 
 
-    resultPanel.scrollIntoView({
+/* =========================================================
+   REFRESH SELECT (статус в опциях)
+========================================================= */
+
+function refreshCategorySelect() {
+
+    const names = Object.keys(categories);
+    const opts = categorySelect.options;
+
+    for (let i = 0; i < opts.length; i++) {
+
+        const name = names[i];
+
+        let prefix = "";
+        if (isCategoryCompleted(name)) prefix = "✓ ";
+        else if (isCategoryTouched(name)) prefix = "◐ ";
+
+        opts[i].textContent = prefix + name;
+    }
+}
+
+
+/* =========================================================
+   BACK TO TEST
+========================================================= */
+
+function backToAssessment() {
+
+    resultsScreen.classList.add("hidden");
+    decisionScreen.classList.add("hidden");
+    nextScreen.classList.add("hidden");
+    testScreen.classList.remove("hidden");
+
+    loadCategory(currentCategoryIndex);
+
+    window.scrollTo({
+        top: 0,
         behavior: "smooth"
     });
-
 }
 
 
-/* =====================================================
-   ИЗМЕНИТЬ ОЦЕНКИ
-   ===================================================== */
+/* =========================================================
+   RESET
+========================================================= */
 
-document
-    .getElementById("restartBtn")
-    .addEventListener(
-        "click",
-        () => {
+async function resetTest() {
 
-            resultPanel.classList.remove(
-                "show"
-            );
-
-            categorySelect.value = "";
-
-            skillsPanel.style.display =
-                "none";
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        }
+    const confirmed = await safeConfirm(
+        "Удалить все оценки и начать заново?"
     );
 
+    if (!confirmed) return;
 
-/* =====================================================
-   СОХРАНЕНИЕ
-   ===================================================== */
-
-document
-    .getElementById("saveBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            saveState();
-
-            alert(
-                "Карта навыков сохранена."
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   ЭКСПОРТ
-   ===================================================== */
-
-document
-    .getElementById("exportBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            const data = {
-
-                version: 1,
-
-                createdAt:
-                    new Date().toISOString(),
-
-                data: state
-
-            };
-
-
-            const blob =
-                new Blob(
-                    [
-                        JSON.stringify(
-                            data,
-                            null,
-                            2
-                        )
-                    ],
-                    {
-                        type:
-                            "application/json"
-                    }
-                );
-
-
-            const url =
-                URL.createObjectURL(blob);
-
-
-            const link =
-                document.createElement("a");
-
-            link.href = url;
-
-            link.download =
-                "my-skills-map.json";
-
-            link.click();
-
-            URL.revokeObjectURL(url);
-
-        }
-    );
-
-
-/* =====================================================
-   СБРОС
-   ===================================================== */
-
-document
-    .getElementById("resetBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            const confirmed =
-                confirm(
-                    "Удалить все оценки навыков?"
-                );
-
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            state = {
-                values: {},
-                completedCategories: []
-            };
-
-
-            saveState();
-
-            resultPanel.classList.remove(
-                "show"
-            );
-
-            skillsPanel.style.display =
-                "none";
-
-            categorySelect.value = "";
-
-            alert(
-                "Карта навыков сброшена."
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   TELEGRAM WEB APP
-   ===================================================== */
-
-if (
-    window.Telegram &&
-    window.Telegram.WebApp
-) {
+    results = {};
+    completedCategories = {};
+    lastCategoryData = null;
 
     try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_COMPLETED_KEY);
+    } catch (e) {}
 
-        window.Telegram.WebApp.ready();
+    currentCategoryIndex = 0;
 
-        window.Telegram.WebApp.expand();
+    resultsScreen.classList.add("hidden");
+    decisionScreen.classList.add("hidden");
+    nextScreen.classList.add("hidden");
+    testScreen.classList.remove("hidden");
 
-    } catch (error) {
+    loadCategory(0);
 
-        console.log(error);
+    updateProgress();
+    updateChecklist();
+    refreshCategorySelect();
 
-    }
-
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function saveResults() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(results)
+        );
+        localStorage.setItem(
+            STORAGE_COMPLETED_KEY,
+            JSON.stringify(completedCategories)
+        );
+    } catch (e) {
+        console.log("Не удалось сохранить результаты", e);
+    }
+}
+
+
+function loadResults() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) results = JSON.parse(saved) || {};
+
+        const savedCompleted =
+            localStorage.getItem(STORAGE_COMPLETED_KEY);
+
+        if (savedCompleted) {
+            completedCategories = JSON.parse(savedCompleted) || {};
+        }
+    } catch (e) {
+        results = {};
+        completedCategories = {};
+    }
+}
+
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+function exportResults() {
+
+    const data = {
+        title: "Карта навыков",
+        date: new Date().toLocaleString("ru-RU"),
+        results: results,
+        completed: Object.keys(completedCategories)
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "karta-navykov.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* =========================================================
+   SECURITY / TEXT
+========================================================= */
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   RESIZE — перерисовка радара
+========================================================= */
+
+window.addEventListener("resize", () => {
+    if (
+        !resultsScreen.classList.contains("hidden") &&
+        lastCategoryData
+    ) {
+        drawRadar(lastCategoryData);
+    }
+});
+
+
+/* =========================================================
+   START
+========================================================= */
+
+init();
 
 </script>
 
