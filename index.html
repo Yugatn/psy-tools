@@ -36,19 +36,6 @@ body {
 }
 
 /* =========================================================
-   NEURAL BACKGROUND
-========================================================= */
-
-#neuralCanvas {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-}
-
-/* =========================================================
    BACKGROUND GRID
 ========================================================= */
 
@@ -116,8 +103,6 @@ body {
     filter:
         drop-shadow(0 0 10px rgba(40, 220, 255, .4))
         drop-shadow(0 0 30px rgba(0, 160, 255, .2));
-
-    animation: logoPulse 5s ease-in-out infinite;
 }
 
 .logo::after {
@@ -134,11 +119,6 @@ body {
 
     background: linear-gradient(90deg, transparent, rgba(80, 230, 255, .8), transparent);
     box-shadow: 0 0 12px rgba(50, 220, 255, .6);
-}
-
-@keyframes logoPulse {
-    0%, 100% { opacity: .82; }
-    50% { opacity: 1; }
 }
 
 /* =========================================================
@@ -256,208 +236,18 @@ body {
 }
 
 /* =========================================================
-   RIPPLES
-========================================================= */
-
-.ripples {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 100%;
-    height: 100%;
-
-    transform: translate(-50%, -50%);
-
-    pointer-events: none;
-
-    z-index: -3;
-}
-
-.ripple {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 115%;
-    height: 115%;
-
-    transform: translate(-50%, -50%);
-
-    border: 1px solid rgba(62, 220, 255, .38);
-
-    border-radius: 48% 52% 51% 49%;
-
-    opacity: .25;
-
-    box-shadow:
-        0 0 8px rgba(30, 190, 255, .18),
-        inset 0 0 8px rgba(30, 190, 255, .06);
-
-    animation: rippleExpand 5.5s ease-out infinite;
-}
-
-.ripple:nth-child(2) { animation-delay: 1.8s; }
-.ripple:nth-child(3) { animation-delay: 3.6s; }
-
-.card:nth-child(3n+1) .ripple {
-    border-radius: 48% 52% 51% 49%;
-    animation-duration: 5.5s;
-}
-.card:nth-child(3n+2) .ripple {
-    border-radius: 53% 47% 49% 51%;
-    animation-duration: 6.4s;
-}
-.card:nth-child(3n+3) .ripple {
-    border-radius: 51% 49% 53% 47%;
-    animation-duration: 5.9s;
-}
-
-@keyframes rippleExpand {
-    0% {
-        width: 85%;
-        height: 85%;
-        opacity: 0;
-        border-color: rgba(50, 230, 255, .0);
-    }
-    15% {
-        opacity: .5;
-        border-color: rgba(50, 230, 255, .55);
-    }
-    65% { opacity: .22; }
-    100% {
-        width: 245%;
-        height: 245%;
-        opacity: 0;
-        border-color: rgba(50, 190, 255, .0);
-    }
-}
-
-/* =========================================================
-   CYBER RING
-========================================================= */
-
-.cyber-ring {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 145%;
-    height: 145%;
-
-    transform: translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    opacity: .38;
-
-    z-index: -2;
-}
-
-.cyber-ring::before,
-.cyber-ring::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    border-radius: 50%;
-
-    background:
-        conic-gradient(
-            from 0deg,
-            transparent 0deg 14deg,
-            rgba(62, 226, 255, .8) 14deg 15deg,
-            transparent 15deg 42deg,
-            rgba(68, 190, 255, .55) 42deg 43deg,
-            transparent 43deg 76deg,
-            rgba(100, 255, 215, .7) 76deg 77deg,
-            transparent 77deg 112deg,
-            rgba(60, 190, 255, .55) 112deg 113deg,
-            transparent 113deg 156deg,
-            rgba(65, 225, 255, .75) 156deg 157deg,
-            transparent 157deg 210deg,
-            rgba(70, 190, 255, .5) 210deg 211deg,
-            transparent 211deg 270deg,
-            rgba(65, 230, 255, .8) 270deg 271deg,
-            transparent 271deg 315deg,
-            rgba(90, 255, 220, .55) 315deg 316deg,
-            transparent 316deg
-        );
-
-    mask: radial-gradient(circle, transparent 0 47%, black 48% 49%, transparent 50%);
-    -webkit-mask: radial-gradient(circle, transparent 0 47%, black 48% 49%, transparent 50%);
-
-    animation: cyberPulse 4.5s ease-in-out infinite;
-}
-
-.cyber-ring::after {
-    width: 82%;
-    height: 82%;
-
-    left: 9%;
-    top: 9%;
-
-    animation-delay: 1.7s;
-
-    opacity: .65;
-}
-
-@keyframes cyberPulse {
-    0%, 100% {
-        transform: scale(.96);
-        opacity: .25;
-    }
-    50% {
-        transform: scale(1.04);
-        opacity: .65;
-    }
-}
-
-.card:nth-child(3n+1) .cyber-ring::before {
-    animation-duration: 4.2s;
-    animation-delay: -0.3s;
-}
-.card:nth-child(3n+2) .cyber-ring::before {
-    animation-duration: 5.6s;
-    animation-delay: -1.9s;
-}
-.card:nth-child(3n+3) .cyber-ring::before {
-    animation-duration: 3.9s;
-    animation-delay: -2.7s;
-}
-
-.card:nth-child(3n+1) .cyber-ring::after {
-    animation-duration: 5.3s;
-    animation-delay: -1.4s;
-}
-.card:nth-child(3n+2) .cyber-ring::after {
-    animation-duration: 4.1s;
-    animation-delay: -2.2s;
-}
-.card:nth-child(3n+3) .cyber-ring::after {
-    animation-duration: 6.0s;
-    animation-delay: -0.8s;
-}
-
-/* =========================================================
-   DENDRITES
+   DENDRITES — статичные декоративные лучи
 ========================================================= */
 
 .dendrites {
     position: absolute;
-    inset: -90px;
+    inset: -60px;
 
     pointer-events: none;
 
     z-index: -4;
 
-    opacity: .45;
+    opacity: .35;
 }
 
 .dendrites span {
@@ -471,10 +261,10 @@ body {
     box-shadow: 0 0 5px rgba(40, 200, 255, .25);
 }
 
-.dendrites span:nth-child(1) { width: 90px; left: 20%; top: 35%; transform: rotate(-25deg); }
-.dendrites span:nth-child(2) { width: 75px; right: 15%; top: 30%; transform: rotate(24deg); }
-.dendrites span:nth-child(3) { width: 95px; left: 18%; bottom: 28%; transform: rotate(25deg); }
-.dendrites span:nth-child(4) { width: 70px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
+.dendrites span:nth-child(1) { width: 75px; left: 20%; top: 35%; transform: rotate(-25deg); }
+.dendrites span:nth-child(2) { width: 60px; right: 15%; top: 30%; transform: rotate(24deg); }
+.dendrites span:nth-child(3) { width: 80px; left: 18%; bottom: 28%; transform: rotate(25deg); }
+.dendrites span:nth-child(4) { width: 55px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
 
 /* =========================================================
    NEURON BODY
@@ -501,9 +291,9 @@ body {
         inset 12px 12px 30px rgba(130, 245, 255, .07);
 
     transition:
-        transform 1s cubic-bezier(.2, .8, .2, 1),
-        box-shadow 1s ease,
-        border-color 1s ease;
+        transform .8s cubic-bezier(.2, .8, .2, 1),
+        box-shadow .8s ease,
+        border-color .8s ease;
 
     z-index: 1;
 }
@@ -524,7 +314,7 @@ body {
 }
 
 /* =========================================================
-   MATRIX CODE
+   MATRIX CODE — ВНУТРИ СФЕР
 ========================================================= */
 
 .matrix-code {
@@ -540,8 +330,8 @@ body {
     clip-path: circle(0% at 50% 50%);
 
     transition:
-        opacity 1.5s ease,
-        clip-path 2.5s cubic-bezier(.15, .75, .15, 1);
+        opacity 1s ease,
+        clip-path 1.5s cubic-bezier(.15, .75, .15, 1);
 
     z-index: 3;
 
@@ -631,9 +421,9 @@ body {
     filter: drop-shadow(0 0 7px rgba(70, 220, 255, .35));
 
     transition:
-        transform .8s ease,
-        filter .8s ease,
-        color .8s ease;
+        transform .6s ease,
+        filter .6s ease,
+        color .6s ease;
 }
 
 .icon svg {
@@ -692,9 +482,9 @@ body {
     text-shadow: 0 0 8px rgba(50, 210, 255, .45);
 
     transition:
-        transform .5s cubic-bezier(.2, .8, .2, 1),
-        color .4s ease,
-        text-shadow .4s ease;
+        transform .4s cubic-bezier(.2, .8, .2, 1),
+        color .3s ease,
+        text-shadow .3s ease;
 }
 
 .card:hover .card-title,
@@ -764,7 +554,7 @@ body {
 
     box-shadow: 0 0 18px rgba(20, 190, 255, .12);
 
-    transition: opacity .3s ease, transform .3s ease;
+    transition: opacity .25s ease, transform .25s ease;
 }
 
 .card:hover .description,
@@ -785,7 +575,7 @@ body {
 }
 
 /* =========================================================
-   MOBILE — ВСЁ ПО ЦЕНТРУ
+   MOBILE
 ========================================================= */
 
 @media (max-width: 700px) {
@@ -805,7 +595,6 @@ body {
         text-align: center;
     }
 
-    /* Заголовок раздела — по центру */
     .section-title {
         flex-direction: column;
         gap: 12px;
@@ -828,7 +617,6 @@ body {
         width: 140px;
     }
 
-    /* Сетка — всегда 2 колонки по центру */
     .cards {
         width: 100%;
 
@@ -855,7 +643,6 @@ body {
         height: 58px;
     }
 
-    /* Название по центру под сферой */
     .card-title {
         width: 220%;
         font-size: 12.5px;
@@ -878,15 +665,6 @@ body {
         font-size: 13px;
 
         line-height: 1.45;
-    }
-
-    .cyber-ring {
-        width: 145%;
-        height: 145%;
-    }
-
-    .ripple {
-        animation-duration: 6s;
     }
 }
 
@@ -947,8 +725,6 @@ body {
 
 <body>
 
-<canvas id="neuralCanvas"></canvas>
-
 <div class="grid-background"></div>
 
 <main class="main">
@@ -981,14 +757,6 @@ body {
                 <div class="dendrites">
                     <span></span><span></span><span></span><span></span>
                 </div>
-
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
 
                 <div class="neuron-body">
 
@@ -1041,14 +809,6 @@ body {
                     <span></span><span></span><span></span><span></span>
                 </div>
 
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
-
                 <div class="neuron-body">
 
                     <div class="matrix-code">
@@ -1088,14 +848,6 @@ body {
                 <div class="dendrites">
                     <span></span><span></span><span></span><span></span>
                 </div>
-
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
 
                 <div class="neuron-body">
 
@@ -1161,14 +913,6 @@ body {
                     <span></span><span></span><span></span><span></span>
                 </div>
 
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
-
                 <div class="neuron-body">
 
                     <div class="matrix-code">
@@ -1211,14 +955,6 @@ body {
                 <div class="dendrites">
                     <span></span><span></span><span></span><span></span>
                 </div>
-
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
 
                 <div class="neuron-body">
 
@@ -1265,14 +1001,6 @@ body {
                 <div class="dendrites">
                     <span></span><span></span><span></span><span></span>
                 </div>
-
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
 
                 <div class="neuron-body">
 
@@ -1337,14 +1065,6 @@ body {
                     <span></span><span></span><span></span><span></span>
                 </div>
 
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
-
                 <div class="neuron-body">
 
                     <div class="matrix-code">
@@ -1387,14 +1107,6 @@ body {
                 <div class="dendrites">
                     <span></span><span></span><span></span><span></span>
                 </div>
-
-                <div class="ripples">
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                </div>
-
-                <div class="cyber-ring"></div>
 
                 <div class="neuron-body">
 
@@ -1531,198 +1243,6 @@ document.querySelectorAll('.card').forEach(function(card) {
         card.classList.remove('active');
     });
 });
-
-
-/* =========================================================
-   NEURAL NETWORK CANVAS
-========================================================= */
-
-const canvas = document.getElementById('neuralCanvas');
-const ctx = canvas.getContext('2d');
-
-let width = 0;
-let height = 0;
-
-let nodes = [];
-let pulses = [];
-
-
-function resizeCanvas() {
-
-    width = canvas.width = window.innerWidth * window.devicePixelRatio;
-    height = canvas.height = window.innerHeight * window.devicePixelRatio;
-
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-
-    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-
-    createBackgroundNodes();
-}
-
-
-function createBackgroundNodes() {
-
-    nodes = [];
-
-    const count = Math.min(65, Math.max(28, Math.floor(window.innerWidth / 24)));
-
-    for (let i = 0; i < count; i++) {
-        nodes.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            r: .7 + Math.random() * 1.7,
-            phase: Math.random() * Math.PI * 2
-        });
-    }
-}
-
-
-function getCardCenters() {
-    return Array.from(document.querySelectorAll('.card')).map(function(card) {
-        const rect = card.getBoundingClientRect();
-        return {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2
-        };
-    });
-}
-
-
-function distance(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-
-function createPulse(a, b) {
-    pulses.push({
-        a: a, b: b,
-        progress: 0,
-        speed: .0015 + Math.random() * .0018,
-        life: 1
-    });
-}
-
-
-function drawNetwork(time) {
-
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-    const cardCenters = getCardCenters();
-
-    for (let i = 0; i < nodes.length; i++) {
-
-        const node = nodes[i];
-        node.phase += .004;
-
-        const glow = .35 + Math.sin(node.phase) * .15;
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(70,210,255,' + glow + ')';
-        ctx.fill();
-
-        for (let j = i + 1; j < nodes.length; j++) {
-
-            const other = nodes[j];
-            const dist = distance(node, other);
-
-            if (dist < 170) {
-                const alpha = (1 - dist / 170) * .13;
-                ctx.beginPath();
-                ctx.moveTo(node.x, node.y);
-                ctx.lineTo(other.x, other.y);
-                ctx.strokeStyle = 'rgba(50,190,240,' + alpha + ')';
-                ctx.lineWidth = .7;
-                ctx.stroke();
-            }
-        }
-    }
-
-    for (let i = 0; i < cardCenters.length; i++) {
-        for (let j = i + 1; j < cardCenters.length; j++) {
-
-            const a = cardCenters[i];
-            const b = cardCenters[j];
-            const dist = distance(a, b);
-
-            if (dist < 620) {
-
-                const alpha = Math.max(.04, 1 - dist / 620) * .32;
-
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-
-                const midX = (a.x + b.x) / 2;
-                const midY = (a.y + b.y) / 2;
-
-                const dx = b.x - a.x;
-                const dy = b.y - a.y;
-                const length = Math.sqrt(dx * dx + dy * dy);
-
-                const nx = -dy / length;
-                const ny = dx / length;
-
-                const bend = Math.sin(time * .0004 + i * 2 + j) * 12;
-
-                ctx.quadraticCurveTo(midX + nx * bend, midY + ny * bend, b.x, b.y);
-
-                ctx.strokeStyle = 'rgba(50,205,245,' + alpha + ')';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                if (Math.random() < .0008) createPulse(a, b);
-            }
-        }
-    }
-
-    for (let i = pulses.length - 1; i >= 0; i--) {
-
-        const pulse = pulses[i];
-        pulse.progress += pulse.speed * 16;
-
-        if (pulse.progress >= 1) {
-            pulses.splice(i, 1);
-            continue;
-        }
-
-        const x = pulse.a.x + (pulse.b.x - pulse.a.x) * pulse.progress;
-        const y = pulse.a.y + (pulse.b.y - pulse.a.y) * pulse.progress;
-
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 14);
-        gradient.addColorStop(0, 'rgba(130,255,255,.95)');
-        gradient.addColorStop(1, 'rgba(40,200,255,0)');
-
-        ctx.beginPath();
-        ctx.arc(x, y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-    }
-
-    for (let i = 0; i < cardCenters.length; i++) {
-
-        const p = cardCenters[i];
-        const pulse = 1 + Math.sin(time * .002 + i) * .4;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.2 * pulse, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(90,230,255,.55)';
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = 'rgba(50,220,255,.7)';
-        ctx.fill();
-        ctx.shadowBlur = 0;
-    }
-
-    requestAnimationFrame(drawNetwork);
-}
-
-
-window.addEventListener('resize', resizeCanvas);
-
-resizeCanvas();
-requestAnimationFrame(drawNetwork);
 
 </script>
 
