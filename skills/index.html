@@ -1,423 +1,1092 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Карта навыков</title>
-    <style>
-      * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-      }
-      :root {
-        --bg: #0b0d12;
-        --card: #151922;
-        --card2: #1b202b;
-        --border: rgba(255, 255, 255, 0.09);
-        --text: #f3f5f7;
-        --muted: #9299a6;
-        --accent: #7c8cff;
-        --accent2: #9c7cff;
-        --good: #55d68a;
-        --warning: #ffc857;
-        --danger: #ff6b6b;
-        --partner: #6ea8fe;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        min-height: 100%;
-        background: var(--bg);
-        color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      }
-      body {
-        padding: 20px 14px 50px;
-      }
-      .app {
-        width: 100%;
-        max-width: 1180px;
-        margin: 0 auto;
-      }
-      header {
-        text-align: center;
-        margin-bottom: 18px;
-      }
-      .logo {
-        font-size: 44px;
-        margin-bottom: 6px;
-      }
-      h1 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 750;
-      }
-      .subtitle {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.4;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 16px;
-        margin-bottom: 12px;
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.16);
-      }
-      .hidden {
-        display: none !important;
-      }
-      .section-title {
-        font-size: 19px;
-        font-weight: 700;
-        margin-bottom: 5px;
-      }
-      .section-description {
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.45;
-        margin-bottom: 14px;
-      }
-      .progress-wrap {
-        margin-bottom: 14px;
-      }
-      .progress-info {
-        display: flex;
-        justify-content: space-between;
-        color: var(--muted);
-        font-size: 12px;
-        margin-bottom: 6px;
-      }
-      .progress {
-        width: 100%;
-        height: 7px;
-        background: #272c37;
-        border-radius: 20px;
-        overflow: hidden;
-      }
-      .progress-bar {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, var(--accent), var(--accent2));
-        border-radius: 20px;
-        transition: width 0.3s ease;
-      }
-      .checklist {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 14px;
-      }
-      .checklist-summary {
-        width: 100%;
-        color: var(--muted);
-        font-size: 11px;
-        margin-bottom: 1px;
-      }
-      .checklist-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 6px 10px;
-        background: #10131a;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        font-size: 11.5px;
-        font-weight: 600;
-        color: var(--muted);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        font-family: inherit;
-        line-height: 1;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .checklist-item:active {
-        transform: scale(0.97);
-      }
-      .checklist-item .checklist-check {
-        font-size: 11px;
-        line-height: 1;
-        opacity: 0.35;
-      }
-      .checklist-item.done {
-        color: var(--good);
-        border-color: rgba(85, 214, 138, 0.35);
-        background: rgba(85, 214, 138, 0.07);
-      }
-      .checklist-item.done .checklist-check {
-        opacity: 1;
-        color: var(--good);
-      }
-      .checklist-item.partial {
-        color: var(--accent);
-        border-color: rgba(124, 140, 255, 0.3);
-        background: rgba(124, 140, 255, 0.05);
-      }
-      .checklist-item.partial .checklist-check {
-        opacity: 1;
-        color: var(--accent);
-      }
-      .checklist-item.active {
-        color: var(--text);
-        border-color: var(--accent);
-        background: rgba(124, 140, 255, 0.12);
-        box-shadow: 0 0 0 1px rgba(124, 140, 255, 0.35) inset;
-      }
-      .checklist-item.active .checklist-check {
-        opacity: 1;
-      }
-      .category-box {
-        background: var(--card2);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 10px 12px;
-        margin-bottom: 14px;
-      }
-      .category-label {
-        color: var(--muted);
-        font-size: 10.5px;
-        margin-bottom: 5px;
-        letter-spacing: 0.4px;
-      }
-      select {
-        width: 100%;
-        appearance: none;
-        background: #10131a;
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 11px;
-        padding: 10px 12px;
-        font-size: 14px;
-        outline: none;
-        font-family: inherit;
-      }
-      select:focus {
-        border-color: var(--accent);
-      }
-      .category-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 520px;
-        gap: 16px;
-        align-items: start;
-        margin-top: 4px;
-      }
-      .skills-column {
-        min-width: 0;
-      }
-      .radar-column {
-        position: sticky;
-        top: 16px;
-        background: var(--card2);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 12px;
-      }
-      .live-radar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 6px;
-        padding: 0 4px;
-      }
-      .live-radar-title {
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .live-radar-percent {
-        color: var(--accent);
-        font-size: 20px;
-        font-weight: 800;
-        transition: color 0.2s ease;
-      }
-      .live-radar-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-      }
-      #liveSkillRadar {
-        display: block;
-        max-width: 100%;
-        height: auto;
-      }
-      .skill {
-        background: #10131a;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 9px 12px 8px;
-        margin-bottom: 6px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      }
-      .skill:focus-within {
-        border-color: rgba(124, 140, 255, 0.35);
-      }
-      .skill.verified {
-        border-color: rgba(85, 214, 138, 0.35);
-        box-shadow: 0 0 0 1px rgba(85, 214, 138, 0.1) inset;
-      }
-      .skill.unverified {
-        border-color: rgba(255, 200, 87, 0.3);
-      }
-      .skill.has-reflection {
-        border-color: rgba(255, 200, 87, 0.35);
-        box-shadow: 0 0 0 1px rgba(255, 200, 87, 0.08) inset;
-      }
-      .skill-name-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 6px;
-      }
-      .skill-name {
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.3;
-        color: var(--text);
-        flex: 1;
-        min-width: 0;
-      }
-      .skill-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        padding: 3px 7px;
-        border-radius: 6px;
-        font-size: 9.5px;
-        font-weight: 800;
-        letter-spacing: 0.4px;
-        text-transform: uppercase;
-        flex-shrink: 0;
-        white-space: nowrap;
-      }
-      .skill-badge.verified {
-        background: rgba(85, 214, 138, 0.15);
-        color: var(--good);
-        border: 1px solid rgba(85, 214, 138, 0.4);
-      }
-      .skill-badge.unverified {
-        background: rgba(255, 200, 87, 0.13);
-        color: var(--warning);
-        border: 1px solid rgba(255, 200, 87, 0.35);
-      }
-      .skill-badge.reflection {
-        background: rgba(255, 200, 87, 0.15);
-        color: var(--warning);
-        border: 1px solid rgba(255, 200, 87, 0.4);
-      }
-      .segmented {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 3px;
-        background: #0b0d12;
-        padding: 3px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        max-width: 280px;
-      }
-      .segmented button {
-        padding: 8px 0;
-        border-radius: 7px;
-        background: transparent;
-        color: var(--muted);
-        font-weight: 700;
-        font-size: 13px;
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        line-height: 1;
-        transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-      }
-      .segmented button:hover:not(.active) {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text);
-      }
-      .segmented button:active {
-        transform: scale(0.94);
-      }
-      .segmented button.active {
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        color: #fff;
-      }
-      .segmented button[data-value="1"].active {
-        background: var(--danger);
-        color: #2a0a0a;
-      }
-      .segmented button[data-value="2"].active {
-        background: var(--warning);
-        color: #3a2a08;
-      }
-      .segmented button[data-value="3"].active {
-        background: var(--accent);
-        color: #fff;
-      }
-      .segmented button[data-value="4"].active {
-        background: var(--good);
-        color: #08130d;
-      }
-      .segmented button[data-value="5"].active {
-        background: #4be08a;
-        color: #08130d;
-      }
-      .skill-level-hint {
-        font-size: 10.5px;
-        font-weight: 700;
-        margin-top: 5px;
-        letter-spacing: 0.3px;
-        color: var(--muted);
-        transition: color 0.2s ease;
-        display: inline-block;
-      }
-      .skill-level-hint.lv-1 {
-        color: var(--danger);
-      }
-      .skill-level-hint.lv-2 {
-        color: var(--warning);
-      }
-      .skill-level-hint.lv-3 {
-        color: var(--accent);
-      }
-      .skill-level-hint.lv-4 {
-        color: var(--good);
-      }
-      .skill-level-hint.lv-5 {
-        color: #4be08a;
-      }
-      .verification-block {
-        margin-top: 10px;
-        padding: 10px 12px;
-        background: rgba(124, 140, 255, 0.05);
-        border: 1px solid rgba(124, 140, 255, 0.18);
-        border-radius: 10px;
-        animation: vSlideDown 0.22s ease-out;
-      }
-      @keyframes vSlideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .verification-title {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 10.5px;
-        font-weight: 800;
-        color: var(--accent);
-        letter-spacing: 0.5
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Карта навыков</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0b0d12;--card:#151922;--card2:#1b202b;--border:rgba(255,255,255,.09);--text:#f3f5f7;--muted:#9299a6;--accent:#7c8cff;--accent2:#9c7cff;--good:#55d68a;--warning:#ffc857;--danger:#ff6b6b;--partner:#6ea8fe}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{padding:20px 14px 50px}
+.app{width:100%;max-width:1180px;margin:0 auto}
+header{text-align:center;margin-bottom:18px}
+.logo{font-size:44px;margin-bottom:6px}
+h1{margin:0;font-size:28px;font-weight:750}
+.subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 10px 35px rgba(0,0,0,.16)}
+.hidden{display:none!important}
+.section-title{font-size:19px;font-weight:700;margin-bottom:5px}
+.section-description{color:var(--muted);font-size:13px;line-height:1.45;margin-bottom:14px}
+.progress-wrap{margin-bottom:14px}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
+.progress{width:100%;height:7px;background:#272c37;border-radius:20px;overflow:hidden}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .3s}
+.checklist{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.checklist-summary{width:100%;color:var(--muted);font-size:11px;margin-bottom:1px}
+.checklist-item{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;background:#10131a;border:1px solid var(--border);border-radius:10px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;line-height:1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.checklist-item .checklist-check{font-size:11px;opacity:.35}
+.checklist-item.done{color:var(--good);border-color:rgba(85,214,138,.35);background:rgba(85,214,138,.07)}
+.checklist-item.done .checklist-check{opacity:1;color:var(--good)}
+.checklist-item.partial{color:var(--accent);border-color:rgba(124,140,255,.30);background:rgba(124,140,255,.05)}
+.checklist-item.partial .checklist-check{opacity:1;color:var(--accent)}
+.checklist-item.active{color:var(--text);border-color:var(--accent);background:rgba(124,140,255,.12);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
+.checklist-item.active .checklist-check{opacity:1}
+.category-box{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:14px}
+.category-label{color:var(--muted);font-size:10.5px;margin-bottom:5px;letter-spacing:.4px}
+select{width:100%;appearance:none;background:#10131a;color:var(--text);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit}
+select:focus{border-color:var(--accent)}
+.category-layout{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:16px;align-items:start;margin-top:4px}
+.skills-column{min-width:0}
+.radar-column{position:sticky;top:16px;background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:12px}
+.live-radar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 4px}
+.live-radar-title{color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.live-radar-percent{color:var(--accent);font-size:20px;font-weight:800;transition:color .2s}
+.live-radar-container{display:flex;justify-content:center;align-items:center;width:100%}
+#liveSkillRadar{display:block;max-width:100%;height:auto}
+.skill{background:#10131a;border:1px solid var(--border);border-radius:12px;padding:9px 12px 8px;margin-bottom:6px;transition:border-color .2s,box-shadow .2s}
+.skill:focus-within{border-color:rgba(124,140,255,.35)}
+.skill.verified{border-color:rgba(85,214,138,.35);box-shadow:0 0 0 1px rgba(85,214,138,.10) inset}
+.skill.unverified{border-color:rgba(255,200,87,.30)}
+.skill.has-reflection{border-color:rgba(255,200,87,.35);box-shadow:0 0 0 1px rgba(255,200,87,.08) inset}
+.skill-name-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.skill-name{font-size:13px;font-weight:600;line-height:1.3;color:var(--text);flex:1;min-width:0}
+.skill-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:6px;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;flex-shrink:0;white-space:nowrap}
+.skill-badge.verified{background:rgba(85,214,138,.15);color:var(--good);border:1px solid rgba(85,214,138,.4)}
+.skill-badge.unverified{background:rgba(255,200,87,.13);color:var(--warning);border:1px solid rgba(255,200,87,.35)}
+.skill-badge.reflection{background:rgba(255,200,87,.15);color:var(--warning);border:1px solid rgba(255,200,87,.4)}
+.segmented{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:#0b0d12;padding:3px;border-radius:10px;border:1px solid var(--border);max-width:280px}
+.segmented button{padding:8px 0;border-radius:7px;background:transparent;color:var(--muted);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;border:none;line-height:1;transition:background .15s,color .15s,transform .1s}
+.segmented button:hover:not(.active){background:rgba(255,255,255,.05);color:var(--text)}
+.segmented button:active{transform:scale(.94)}
+.segmented button.active{box-shadow:0 3px 10px rgba(0,0,0,.30);color:#fff}
+.segmented button[data-value="1"].active{background:var(--danger);color:#2a0a0a}
+.segmented button[data-value="2"].active{background:var(--warning);color:#3a2a08}
+.segmented button[data-value="3"].active{background:var(--accent);color:#fff}
+.segmented button[data-value="4"].active{background:var(--good);color:#08130d}
+.segmented button[data-value="5"].active{background:#4be08a;color:#08130d}
+.skill-level-hint{font-size:10.5px;font-weight:700;margin-top:5px;letter-spacing:.3px;color:var(--muted);transition:color .2s;display:inline-block}
+.skill-level-hint.lv-1{color:var(--danger)}
+.skill-level-hint.lv-2{color:var(--warning)}
+.skill-level-hint.lv-3{color:var(--accent)}
+.skill-level-hint.lv-4{color:var(--good)}
+.skill-level-hint.lv-5{color:#4be08a}
+.verification-block{margin-top:10px;padding:10px 12px;background:rgba(124,140,255,.05);border:1px solid rgba(124,140,255,.18);border-radius:10px;animation:vSD .22s ease-out}
+@keyframes vSD{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.verification-title{font-size:10.5px;font-weight:800;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.verification-question{display:flex;align-items:flex-start;gap:8px;padding:7px 0;cursor:pointer;font-size:12.5px;line-height:1.4;color:var(--text);user-select:none;transition:color .15s}
+.verification-question:not(:last-child){border-bottom:1px solid rgba(255,255,255,.05)}
+.verification-checkbox{width:18px;height:18px;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);background:#10131a;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s;font-size:12px;color:transparent;font-weight:900}
+.verification-question.checked .verification-checkbox{background:var(--good);border-color:var(--good);color:#08130d}
+.verification-question.checked{color:#b8c1d0}
+.verification-question.checked .verification-checkbox::after{content:"✓"}
+.verification-hint{font-size:10.5px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05);line-height:1.4}
+.verification-hint.all-yes{color:var(--good)}
+.verification-hint.some-no{color:var(--warning)}
+.reflection-block{margin-top:10px;padding:10px 12px;background:rgba(255,200,87,.04);border:1px solid rgba(255,200,87,.20);border-radius:10px;animation:vSD .22s ease-out}
+.reflection-title{font-size:10.5px;font-weight:800;color:var(--warning);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.reflection-input{width:100%;background:#10131a;border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.45;color:var(--text);font-family:inherit;outline:none;resize:vertical;min-height:56px;transition:border-color .15s}
+.reflection-input:focus{border-color:var(--warning)}
+.reflection-input::placeholder{color:#5a6172}
+.reflection-hint{font-size:10.5px;color:var(--muted);margin-top:6px;transition:color .2s}
+.reflection-hint.saved{color:var(--good)}
+.reflections-list{display:flex;flex-direction:column;gap:10px}
+.reflection-item{background:var(--card2);border-left:3px solid var(--warning);border-radius:8px;padding:11px 13px}
+.reflection-item-cat{font-size:10.5px;color:var(--warning);font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
+.reflection-item-skill{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.reflection-item-score{font-size:12px;color:var(--warning);font-weight:800;flex-shrink:0}
+.reflection-item-text{font-size:13px;color:var(--muted);line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+.helper-box{background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.08));border:1px solid rgba(124,140,255,.22);border-radius:14px;padding:11px;margin-top:12px}
+.helper-title{font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:8px}
+.helper-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.helper-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:11.5px;font-weight:600;font-family:inherit;text-align:left;cursor:pointer;transition:background .15s,border-color .15s;line-height:1.25}
+.helper-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(124,140,255,.35)}
+.helper-btn-icon{font-size:18px;flex-shrink:0}
+.helper-btn-body{display:flex;flex-direction:column;gap:1px;min-width:0}
+.helper-btn-label{color:var(--text);font-size:11.5px;font-weight:700}
+.helper-btn-sub{color:var(--muted);font-size:9.5px;font-weight:500}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s,opacity .15s,background .15s}
+button:active{transform:scale(.97)}
+.btn-primary{flex:1;min-width:180px;background:var(--accent);color:#fff}
+.btn-secondary{flex:1;min-width:180px;background:#272c37;color:#fff}
+.btn-success{flex:1;min-width:180px;background:var(--good);color:#08130d}
+.btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
+.decision-top{text-align:center;margin-bottom:6px}
+.decision-icon{font-size:42px;margin-bottom:6px;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;border-radius:50%;background:rgba(85,214,138,.12);border:1px solid rgba(85,214,138,.35);color:var(--good)}
+.decision-icon.neutral{background:rgba(124,140,255,.12);border-color:rgba(124,140,255,.35);color:var(--accent)}
+.decision h2{margin:12px 0 6px;font-size:22px}
+.decision p{color:var(--muted);line-height:1.5;font-size:13.5px;margin:0}
+.decision-badge{display:inline-flex;flex-direction:column;align-items:center;margin-top:14px;padding:11px 22px;background:linear-gradient(135deg,rgba(124,140,255,.15),rgba(156,124,255,.15));border:1px solid rgba(124,140,255,.28);border-radius:17px}
+.decision-badge-value{font-size:30px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
+.decision-badge-label{font-size:10.5px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.skill-radar-wrap{display:flex;align-items:center;gap:6px;margin-top:8px;position:relative}
+.skill-radar-container{flex:1;min-width:0;display:flex;justify-content:center;align-items:center;padding:4px 0}
+#skillRadar{display:block;max-width:100%;height:auto}
+.radar-nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(124,140,255,.10);border:1px solid rgba(124,140,255,.28);color:var(--accent);font-size:26px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;padding:0 0 4px;font-family:inherit}
+.radar-nav-btn:hover:not(:disabled){background:rgba(124,140,255,.22);border-color:rgba(124,140,255,.55)}
+.radar-nav-btn:active:not(:disabled){transform:scale(.92)}
+.radar-nav-btn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.radar-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:10px 0 6px;min-height:8px}
+.radar-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s;cursor:pointer;flex-shrink:0}
+.radar-dot:hover:not(.active){background:rgba(255,255,255,.6)}
+.radar-dot.active{width:24px;border-radius:4px;background:var(--accent)}
+.radar-dot.empty{background:transparent;border:1.5px solid rgba(255,255,255,.25)}
+.radar-dot.empty:hover:not(.active){border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.05)}
+.radar-dot.empty.active{background:var(--accent);border-color:var(--accent)}
+.skill-radar-legend{display:flex;justify-content:center;gap:14px;margin:4px 0 14px;font-size:11px;color:var(--muted)}
+.skill-radar-legend-item{display:inline-flex;align-items:center;gap:5px}
+.skill-radar-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.decision-category-name{text-align:center;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:14px;letter-spacing:.3px}
+.choice-buttons{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.choice-buttons button{width:100%}
+.result-header{text-align:center}
+.overall-gauge{display:flex;justify-content:center;margin:20px 0 12px}
+.overall-gauge-ring{--gauge-percent:0%;--gauge-color:var(--accent);width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--gauge-color) var(--gauge-percent),#272c37 var(--gauge-percent));display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 12px 40px rgba(124,140,255,.10)}
+.overall-gauge-inner{width:156px;height:156px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.overall-gauge-value{font-size:46px;font-weight:800;line-height:1;background:linear-gradient(135deg,#fff,#9da7ff);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
+.result-caption{color:var(--muted);font-size:14px}
+.result-caption-strong{color:var(--text);font-weight:700}
+.radar-container{display:flex;justify-content:center;align-items:center;width:100%;overflow:hidden;padding:5px}
+#skillsRadar{display:block;max-width:100%;height:auto}
+.category-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.category-result{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center}
+.circle{width:110px;height:110px;margin:0 auto 10px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--ring-color,var(--accent)) var(--percent),#303642 var(--percent))}
+.circle::before{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:var(--card2)}
+.circle-value{position:relative;z-index:2;font-size:22px;font-weight:800;color:var(--text);line-height:1}
+.circle-level{position:relative;z-index:2;font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600}
+.category-result-name{font-size:13.5px;font-weight:700;line-height:1.3}
+.category-result-count{margin-top:4px;color:var(--muted);font-size:10.5px}
+.skill-list{display:flex;flex-direction:column;gap:8px}
+.result-skill{background:var(--card2);border-radius:12px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.result-skill-name{font-size:13.5px;line-height:1.35}
+.result-skill-value{font-weight:800;font-size:14.5px;flex-shrink:0}
+.good{color:var(--good)}
+.warning{color:var(--warning)}
+.danger{color:var(--danger)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{text-align:center;background:var(--card2);border-radius:13px;padding:13px 8px}
+.stat-value{font-size:22px;font-weight:800}
+.stat-label{color:var(--muted);font-size:10.5px;margin-top:3px}
+.info{color:var(--muted);font-size:13px;line-height:1.55}
+footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-sheet{width:100%;max-width:720px;margin:0 auto;max-height:92vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.9,.3,1);overflow:hidden}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-grabber{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:10px auto 4px;flex-shrink:0}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-header-left{display:flex;align-items:center;gap:12px;min-width:0}
+.modal-header-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(124,140,255,.14)}
+.modal-title{font-size:17px;font-weight:800;line-height:1.2}
+.modal-subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+.modal-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--muted);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;padding:0;flex-shrink:0;line-height:1}
+.modal-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.modal-body{padding:16px 20px 24px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.programs-list{display:flex;flex-direction:column;gap:12px}
+.program-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:15px}
+.program-card.recommended{border-color:rgba(110,168,254,.45);background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.06))}
+.program-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.program-partner{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--partner);letter-spacing:.3px;text-transform:uppercase}
+.program-partner-dot{width:6px;height:6px;border-radius:50%;background:var(--partner);box-shadow:0 0 8px rgba(110,168,254,.7)}
+.program-badge{background:rgba(85,214,138,.15);border:1px solid rgba(85,214,138,.35);color:var(--good);font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;white-space:nowrap;letter-spacing:.3px;flex-shrink:0}
+.program-title{font-size:15px;font-weight:700;line-height:1.35;margin-bottom:6px;color:var(--text)}
+.program-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.program-meta{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:11px;color:var(--muted);margin-bottom:12px}
+.program-cta{width:100%;padding:11px 14px;border-radius:11px;background:rgba(110,168,254,.14);color:var(--partner);font-size:13px;font-weight:700;font-family:inherit;border:1px solid rgba(110,168,254,.25);cursor:pointer}
+.programs-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;line-height:1.5}
+.consult-intro{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:18px;padding:12px 14px;background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px}
+.consult-form{display:flex;flex-direction:column;gap:14px}
+.consult-field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase}
+.consult-field input,.consult-field textarea{width:100%;background:#10131a;border:1px solid var(--border);border-radius:12px;padding:13px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;resize:vertical}
+.consult-field textarea{min-height:90px}
+.consult-field input:focus,.consult-field textarea:focus{border-color:var(--accent)}
+.consult-submit{width:100%;padding:15px;background:var(--accent);color:#fff;border-radius:13px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;border:none;margin-top:4px}
+.consult-success{text-align:center;padding:30px 20px}
+.consult-success-icon{width:68px;height:68px;border-radius:50%;background:rgba(85,214,138,.15);border:1px solid rgba(85,214,138,.4);color:var(--good);font-size:34px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.consult-success h3{margin:0 0 8px;font-size:19px}
+.consult-success p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+#jsErrorBanner{position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;max-height:50vh;overflow:auto;display:none}
+#jsErrorBanner.visible{display:block}
+@media (max-width:1040px){.category-layout{grid-template-columns:minmax(0,1fr) 440px}.app{max-width:1040px}}
+@media (max-width:900px){.category-layout{grid-template-columns:1fr;gap:12px}.radar-column{position:static;order:-1;padding:12px}#liveSkillRadar{max-width:100%;width:100%;max-height:500px}}
+@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:24px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.category-results{grid-template-columns:1fr 1fr}.circle{width:96px;height:96px}.circle::before{width:70px;height:70px}.circle-value{font-size:19px}.overall-gauge-ring{width:165px;height:165px}.overall-gauge-inner{width:135px;height:135px}.overall-gauge-value{font-size:40px}.stats{grid-template-columns:1fr 1fr 1fr}.stat-value{font-size:20px}.decision-badge-value{font-size:28px}.decision-icon{width:56px;height:56px;font-size:38px}.segmented{max-width:100%}#liveSkillRadar{max-height:440px}.modal-sheet{border-radius:22px 22px 0 0}.modal-body{padding:14px 16px 20px}.modal-header{padding:8px 16px 12px}.radar-nav-btn{width:36px;height:36px;font-size:22px;padding-bottom:3px}.radar-dot{width:7px;height:7px}.radar-dot.active{width:20px}.skill-badge{font-size:9px;padding:2px 6px}.verification-question{font-size:12px}}
+</style>
+</head>
+<body>
+
+<div id="jsErrorBanner"></div>
+
+<div class="app">
+<header>
+<div class="logo">🧭</div>
+<h1>Карта навыков</h1>
+<div class="subtitle">Оцените свои навыки и получите визуальную карту компетенций</div>
+</header>
+
+<div id="testScreen">
+<div class="card">
+<div class="progress-wrap">
+<div class="progress-info"><span id="progressText">Категория 1</span><span id="progressPercent">0%</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+</div>
+<div class="checklist" id="checklist"></div>
+<div class="section-title">Оценка навыков</div>
+<div class="section-description">Оцените каждый навык от 1 до 5. Для уровней «Продвинутый» и «Профи» система попросит подтвердить профессионализм. Для низких оценок можно зафиксировать, что хотелось бы улучшить.</div>
+<div class="category-box">
+<div class="category-label">КАТЕГОРИЯ</div>
+<select id="categorySelect"></select>
+</div>
+<div class="category-layout">
+<div class="skills-column"><div id="skillsContainer"></div></div>
+<aside class="radar-column">
+<div class="live-radar-header">
+<span class="live-radar-title">Профиль</span>
+<span class="live-radar-percent" id="liveRadarPercent">0%</span>
+</div>
+<div class="live-radar-container"><canvas id="liveSkillRadar"></canvas></div>
+<div class="helper-box">
+<div class="helper-title">Нужна помощь по этой категории?</div>
+<div class="helper-actions">
+<button class="helper-btn" onclick="openPrograms()">
+<span class="helper-btn-icon">🎓</span>
+<span class="helper-btn-body">
+<span class="helper-btn-label">Программа обучения</span>
+<span class="helper-btn-sub">Курсы партнёров</span>
+</span>
+</button>
+<button class="helper-btn" onclick="openConsultation()">
+<span class="helper-btn-icon">💬</span>
+<span class="helper-btn-body">
+<span class="helper-btn-label">Консультация</span>
+<span class="helper-btn-sub">Со специалистом</span>
+</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+<div class="buttons">
+<button class="btn-primary" onclick="saveCategory()">Готово</button>
+</div>
+</div>
+</div>
+
+<div id="decisionScreen" class="hidden">
+<div class="card">
+<div class="decision-top">
+<div class="decision-icon" id="decisionIcon">✓</div>
+<h2 id="decisionTitle">Категория завершена</h2>
+<p id="decisionText">Вы оценили навыки этой категории.</p>
+<div class="decision-badge" id="decisionBadge">
+<div class="decision-badge-value" id="decisionPercent">0%</div>
+<div class="decision-badge-label">средний уровень</div>
+</div>
+</div>
+<div class="skill-radar-wrap">
+<button class="radar-nav-btn" id="radarNavPrev" onclick="navigateDecision(-1)">‹</button>
+<div class="skill-radar-container"><canvas id="skillRadar"></canvas></div>
+<button class="radar-nav-btn" id="radarNavNext" onclick="navigateDecision(1)">›</button>
+</div>
+<div class="radar-dots" id="radarDots"></div>
+<div class="skill-radar-legend">
+<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--danger);"></span>1</span>
+<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--warning);"></span>2</span>
+<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--accent);"></span>3</span>
+<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--good);"></span>4–5</span>
+</div>
+<div class="decision-category-name" id="decisionCategoryName">Категория</div>
+<div id="decisionReflectionsWrap" class="hidden" style="margin-bottom:14px;">
+<div class="section-title" style="font-size:14px;margin-bottom:8px;">💭 Ваши заметки по категории</div>
+<div class="reflections-list" id="decisionReflections"></div>
+</div>
+<div class="helper-box">
+<div class="helper-title">Что дальше?</div>
+<div class="helper-actions">
+<button class="helper-btn" onclick="openPrograms()">
+<span class="helper-btn-icon">🎓</span>
+<span class="helper-btn-body">
+<span class="helper-btn-label">Программа обучения</span>
+<span class="helper-btn-sub" id="programsHint">Подобрать курс</span>
+</span>
+</button>
+<button class="helper-btn" onclick="openConsultation()">
+<span class="helper-btn-icon">💬</span>
+<span class="helper-btn-body">
+<span class="helper-btn-label">Консультация</span>
+<span class="helper-btn-sub">Разбор с экспертом</span>
+</span>
+</button>
+</div>
+</div>
+<div class="choice-buttons">
+<button class="btn-primary" id="mainActionBtn" onclick="continueFullAssessment()">Пройти полную оценку</button>
+<button class="btn-success" onclick="finishAssessment()">Завершить</button>
+</div>
+</div>
+</div>
+
+<div id="nextScreen" class="hidden">
+<div class="card">
+<div style="text-align:center;padding:22px 10px 5px;">
+<div class="decision-icon neutral">→</div>
+<h2>Следующая категория</h2>
+<p id="nextCategoryText" style="color:var(--muted);"></p>
+<div class="buttons"><button class="btn-primary" onclick="goNextCategory()">Далее</button></div>
+</div>
+</div>
+</div>
+
+<div id="resultsScreen" class="hidden">
+<div class="card result-header">
+<div class="section-title">Ваша карта навыков</div>
+<div class="overall-gauge">
+<div class="overall-gauge-ring" id="overallGauge">
+<div class="overall-gauge-inner"><div class="overall-gauge-value" id="overallPercent">0%</div></div>
+</div>
+</div>
+<div class="result-caption">средний уровень <span class="result-caption-strong" id="overallAverage">0.0</span> из 5</div>
+</div>
+<div class="card">
+<div class="section-title">Карта компетенций</div>
+<div class="section-description">Чем дальше область от центра, тем выше средний уровень навыков в соответствующей категории.</div>
+<div class="radar-container"><canvas id="skillsRadar"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Общая статистика</div>
+<div class="stats">
+<div class="stat"><div class="stat-value" id="statAverage">—</div><div class="stat-label">Средний уровень</div></div>
+<div class="stat"><div class="stat-value" id="statMax">—</div><div class="stat-label">Максимум</div></div>
+<div class="stat"><div class="stat-value" id="statMin">—</div><div class="stat-label">Минимум</div></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title">Уровень по категориям</div>
+<div class="section-description">Средняя оценка навыков внутри каждой пройденной категории.</div>
+<div class="category-results" id="categoryResults"></div>
+</div>
+<div class="card">
+<div class="section-title">Сильные навыки</div>
+<div class="section-description">Навыки с наиболее высокой оценкой.</div>
+<div class="skill-list" id="strengthsList"></div>
+</div>
+<div class="card">
+<div class="section-title">Навыки для развития</div>
+<div class="section-description">Навыки, которые могут стать точками роста.</div>
+<div class="skill-list" id="developmentList"></div>
+</div>
+<div class="card" id="allReflectionsCard">
+<div class="section-title">💭 Ваши заметки для улучшения</div>
+<div class="section-description">Мысли, которые вы зафиксировали во время оценки низких навыков. Это — отправная точка для выбора направления развития.</div>
+<div id="allReflectionsList"></div>
+</div>
+<div class="card">
+<div class="section-title">Интерпретация</div>
+<div class="info" id="interpretation"></div>
+</div>
+<div class="card">
+<div class="buttons">
+<button class="btn-secondary" onclick="backToAssessment()">Изменить оценки</button>
+<button class="btn-primary" onclick="exportResults()">Экспорт JSON</button>
+<button class="btn-danger" onclick="resetTest()">Начать заново</button>
+</div>
+</div>
+</div>
+
+<footer>Карта навыков • персональная оценка компетенций</footer>
+</div>
+
+<div class="modal-overlay" id="programsModal">
+<div class="modal-sheet">
+<div class="modal-grabber"></div>
+<div class="modal-header">
+<div class="modal-header-left">
+<div class="modal-header-icon" style="background:rgba(110,168,254,.16);color:var(--partner);">🎓</div>
+<div>
+<div class="modal-title">Программы обучения</div>
+<div class="modal-subtitle" id="programsSubtitle">—</div>
+</div>
+</div>
+<button class="modal-close" onclick="closeModal('programsModal')">×</button>
+</div>
+<div class="modal-body" id="programsBody"></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="consultationModal">
+<div class="modal-sheet">
+<div class="modal-grabber"></div>
+<div class="modal-header">
+<div class="modal-header-left">
+<div class="modal-header-icon" style="background:rgba(156,124,255,.16);color:var(--accent2);">💬</div>
+<div>
+<div class="modal-title">Консультация специалиста</div>
+<div class="modal-subtitle" id="consultationSubtitle">—</div>
+</div>
+</div>
+<button class="modal-close" onclick="closeModal('consultationModal')">×</button>
+</div>
+<div class="modal-body" id="consultationBody"></div>
+</div>
+</div>
+
+<script>
+(function(){var b=document.getElementById('jsErrorBanner');function s(t){if(!b){b=document.createElement('div');b.id='jsErrorBanner';document.body.appendChild(b);}b.textContent=t;b.classList.add('visible');}
+window.addEventListener('error',function(e){s('❌ '+e.message+'\n'+(e.filename||'')+'\nСтрока: '+e.lineno+':'+e.colno);});
+window.addEventListener('unhandledrejection',function(e){s('❌ '+((e.reason&&e.reason.message)||e.reason));});})();
+</script>
+
+<script>
+var tg=null;
+try{if(window.Telegram&&window.Telegram.WebApp){tg=window.Telegram.WebApp;tg.ready();tg.expand();}}catch(e){}
+
+var categories={
+"Цифровые навыки":["Программирование на ПК","Программирование на смартфоне","Веб-разработка (frontend)","Веб-разработка (backend)","Монтаж видео на ПК","Монтаж видео на смартфоне","Графический дизайн на ПК","Графический дизайн на смартфоне","Работа с ИИ-инструментами","Аналитика данных и таблицы","Съёмка фото на смартфон","Съёмка фото на камеру","3D-моделирование и визуализация","SMM и ведение соцсетей","Работа с текстами и редактура"],
+"Аналитические навыки":["Анализ информации и источников","Критическое мышление","Системное мышление","Работа с данными и таблицами","Поиск закономерностей","Решение сложных проблем","Стратегическое планирование","Принятие решений в неопределённости"],
+"Коммуникация":["Устная речь и дикция","Письменная речь и переписка","Публичные выступления","Переговоры и торг","Активное слушание","Работа с конфликтами","Презентация идей и проектов","Нетворкинг и знакомства"],
+"Управленческие":["Организация процессов и задач","Постановка задач команде","Контроль выполнения задач","Распределение ресурсов и бюджета","Работа в команде","Лидерство и мотивация","Делегирование полномочий","Управление проектами"],
+"Творческие":["Рисование на бумаге","Рисование на планшете (digital art)","Игра на музыкальном инструменте","Создание музыки на ПК","Съёмка видео на смартфон","Съёмка видео на камеру","Писательство и проза","Дизайн и композиция","Создание концепций и идей","Креативное мышление"],
+"Ручной труд":["Столярное дело","Плотницкое дело","Шитьё и работа с тканью","Вязание и работа с пряжей","Работа с металлом и сварка","Работа с ручным инструментом","Реставрация и восстановление","Изготовление вещей своими руками"],
+"Строительство и ремонт":["Сантехнические работы","Электромонтажные работы","Бытовой ремонт","Отделочные работы","Малярные работы","Кладка и бетонные работы","Монтаж конструкций","Работа с измерительными инструментами"],
+"Техника и механика":["Ремонт автомобиля","Общая механика","Электроника и пайка","Ремонт бытовой техники","Обслуживание техники","Сборка и разборка техники","Работа с электроинструментом","Диагностика неисправностей"],
+"Транспорт":["Вождение автомобиля","Вождение мотоцикла","Езда на велосипеде","Навигация и работа с картами","Ориентирование на местности","Техническое обслуживание транспорта"],
+"Бытовые":["Приготовление пищи","Уборка и поддержание порядка","Организация пространства","Планирование быта и расписания","Уход за одеждой и вещами","Уход за растениями","Личное финансовое планирование"],
+"Социальные":["Помощь людям","Обучение и преподавание","Наставничество","Эмпатия и понимание людей","Медиация и разрешение споров","Работа с группами","Организация мероприятий","Работа с детьми","Воспитание"],
+"Языки":["Русский язык — владение","Английский язык","Немецкий язык","Другие иностранные языки","Письменный перевод","Разговорная практика"],
+"Предпринимательство":["Поиск и генерация идей","Создание продукта","Продажи","Маркетинг и продвижение","Финансовое планирование бизнеса","Работа с клиентами","Переговоры и партнёрства","Запуск проектов и стартапов"],
+"Саморазвитие":["Самоорганизация","Управление временем","Обучение новым навыкам","Работа с информацией","Концентрация и внимание","Адаптивность к изменениям","Самодисциплина","Постановка целей"]};
+
+var questions={
+"Цифровые навыки":{4:["Применяли ли вы «{skill}» в реальных проектах хотя бы 2–3 раза?"],5:["Есть ли у вас публичное портфолио, GitHub или проекты, которые можно показать?","Выполняли ли вы задачу от начала до конца самостоятельно?","Помогали ли вы другим людям осваивать «{skill}»?"]},
+"Аналитические навыки":{4:["Применяли ли вы «{skill}» для принятия реальных рабочих решений?"],5:["Можете ли вы разобрать сложный кейс и объяснить логику решения?","Применяли ли вы «{skill}» в условиях неопределённости?","Обучали ли вы кого-то «{skill}»?"]},
+"Коммуникация":{4:["Регулярно ли вы применяете «{skill}» в работе или жизни?"],5:["Получали ли вы обратную связь о высоком уровне «{skill}»?","Можете ли вы научить других применять этот навык?","Выступали ли вы публично или вели серьёзные переговоры?"]},
+"Управленческие":{4:["Управляли ли вы командой или проектом, применяя «{skill}»?"],5:["Отвечали ли вы за результат команды от начала до конца?","Есть ли у вас кейсы, где вы улучшили процесс?","Обучали ли вы других управленческим практикам?"]},
+"Творческие":{4:["Создавали ли вы завершённые работы, используя «{skill}»?"],5:["Есть ли у вас публичные работы или портфолио?","Получали ли вы заказы или признание за свои работы?","Обучали ли вы кого-то «{skill}»?"]},
+"Ручной труд":{4:["Изготавливали ли вы изделия самостоятельно, применяя «{skill}»?"],5:["Есть ли у вас работы, которые вы показываете или продаёте?","Работаете ли вы с инструментами профессионального уровня?","Обучали ли вы кого-то «{skill}»?"]},
+"Строительство и ремонт":{4:["Выполняли ли вы работы по «{skill}» самостоятельно?"],5:["Сколько объектов или проектов вы реализовали?","Можете ли вы выполнить работу без контроля?","Обучали ли вы кого-то «{skill}»?"]},
+"Техника и механика":{4:["Ремонтировали или обслуживали технику, применяя «{skill}»?"],5:["Решали ли вы задачи, с которыми не справлялись другие?","Есть ли у вас опыт с техникой разных марок?","Обучали ли вы кого-то «{skill}»?"]},
+"Транспорт":{4:["Регулярно ли вы применяете «{skill}» на практике?"],5:["Есть ли у вас опыт в сложных условиях (дальние поездки, бездорожье)?","Можете ли вы обучить основам «{skill}» другого?"]},
+"Бытовые":{4:["Регулярно ли вы применяете «{skill}» в повседневной жизни?"],5:["Делаете ли вы это заметно лучше большинства знакомых?","Обучали ли вы кого-то «{skill}»?"]},
+"Социальные":{4:["Применяли ли вы «{skill}» в реальных ситуациях?"],5:["Есть ли у вас опыт, когда вы меняли ситуацию к лучшему?","Обучали ли вы других или делились опытом?"]},
+"Языки":{4:["Свободно ли вы используете «{skill}» в рабочей ситуации?"],5:["Ведёте ли вы переговоры или работаете на этом языке?","Есть ли у вас сертификат или подтверждённый уровень?","Обучали ли вы кого-то этому языку?"]},
+"Предпринимательство":{4:["Запускали ли вы проект или продукт, применяя «{skill}»?"],5:["Есть ли у вас кейсы прибыльных проектов?","Привлекали ли вы клиентов или инвестиции?","Обучали ли вы кого-то «{skill}»?"]},
+"Саморазвитие":{4:["Применяете ли вы «{skill}» систематически в последние месяцы?"],5:["Есть ли у вас измеримые результаты благодаря «{skill}»?","Можете ли вы научить других этому подходу?"]}};
+
+var partners={
+"Цифровые навыки":[{partner:"Skillbox",program:"Веб-разработчик с нуля",desc:"HTML, CSS, JavaScript, React, Node.js. Полный стек.",format:"Онлайн",duration:"12 мес",price:"5 500 ₽/мес",skills:["Программирование на ПК","Веб-разработка (frontend)","Веб-разработка (backend)"]},{partner:"GeekBrains",program:"Python-разработчик",desc:"Python, Django, REST API, базы данных.",format:"Онлайн",duration:"9 мес",price:"4 900 ₽/мес",skills:["Программирование на ПК","Аналитика данных и таблицы"]},{partner:"Нетология",program:"Видеомонтаж в Premiere Pro",desc:"Профессиональный монтаж, цветокоррекция, звук.",format:"Онлайн",duration:"4 мес",price:"3 900 ₽/мес",skills:["Монтаж видео на ПК","Съёмка видео на камеру"]},{partner:"Bang Bang Education",program:"Графический дизайн",desc:"Композиция, типографика, Figma, Photoshop.",format:"Онлайн",duration:"8 мес",price:"5 200 ₽/мес",skills:["Графический дизайн на ПК","Графический дизайн на смартфоне"]},{partner:"Skillbox",program:"SMM-менеджер",desc:"Стратегия, контент, таргет, аналитика.",format:"Онлайн",duration:"6 мес",price:"4 400 ₽/мес",skills:["SMM и ведение соцсетей","Работа с текстами и редактура"]}],
+"Аналитические навыки":[{partner:"Яндекс Практикум",program:"Аналитик данных",desc:"SQL, Python, визуализация, A/B-тесты.",format:"Онлайн",duration:"8 мес",price:"6 000 ₽/мес",skills:["Анализ информации и источников","Работа с данными и таблицами","Поиск закономерностей"]},{partner:"Skillbox",program:"Системное мышление",desc:"Инструменты для решения сложных задач.",format:"Онлайн",duration:"2 мес",price:"3 500 ₽/мес",skills:["Системное мышление","Решение сложных проблем"]}],
+"Коммуникация":[{partner:"Школа ораторского мастерства",program:"Публичные выступления",desc:"Голос, подача, работа с залом.",format:"Онлайн",duration:"3 мес",price:"4 200 ₽/мес",skills:["Устная речь и дикция","Публичные выступления","Презентация идей и проектов"]},{partner:"Radical Agreement",program:"Переговоры и работа с конфликтами",desc:"Гарвардская модель, тактики влияния.",format:"Онлайн",duration:"2 мес",price:"5 800 ₽/мес",skills:["Переговоры и торг","Работа с конфликтами","Активное слушание"]}],
+"Управленческие":[{partner:"Академия Eduson",program:"Управление проектами",desc:"Agile, Scrum, Kanban, планирование.",format:"Онлайн",duration:"5 мес",price:"5 400 ₽/мес",skills:["Управление проектами","Организация процессов и задач","Постановка задач команде"]},{partner:"Business Speech",program:"Лидерство и управление командой",desc:"Мотивация, делегирование, обратная связь.",format:"Онлайн",duration:"3 мес",price:"6 200 ₽/мес",skills:["Лидерство и мотивация","Делегирование полномочий","Работа в команде"]}],
+"Творческие":[{partner:"Bang Bang Education",program:"Иллюстрация и digital art",desc:"Procreate, Photoshop, композиция, свет.",format:"Онлайн",duration:"6 мес",price:"4 900 ₽/мес",skills:["Рисование на планшете (digital art)","Рисование на бумаге","Дизайн и композиция"]},{partner:"Music Academy",program:"Создание музыки на ПК",desc:"Ableton, FL Studio, сведение, мастеринг.",format:"Онлайн",duration:"5 мес",price:"5 500 ₽/мес",skills:["Создание музыки на ПК","Игра на музыкальном инструменте"]},{partner:"Creative Writing School",program:"Писательское мастерство",desc:"Структура текста, персонажи, сюжет.",format:"Онлайн",duration:"4 мес",price:"4 300 ₽/мес",skills:["Писательство и проза","Создание концепций и идей","Креативное мышление"]}],
+"Ручной труд":[{partner:"Школа ремёсел",program:"Столярное мастерство",desc:"Работа с деревом, ручной инструмент.",format:"Оффлайн",duration:"6 мес",price:"7 000 ₽/мес",skills:["Столярное дело","Плотницкое дело","Работа с ручным инструментом"]},{partner:"Швейная академия",program:"Шитьё и конструирование",desc:"Основы кроя, работа с тканью.",format:"Онлайн",duration:"5 мес",price:"4 100 ₽/мес",skills:["Шитьё и работа с тканью","Изготовление вещей своими руками"]}],
+"Строительство и ремонт":[{partner:"ПрофШкола",program:"Электромонтаж с нуля",desc:"Схемы, монтаж щитов, проводка.",format:"Оффлайн",duration:"4 мес",price:"6 500 ₽/мес",skills:["Электромонтажные работы","Монтаж конструкций"]},{partner:"Мастер-класс",program:"Сантехника и отопление",desc:"Разводка, пайка труб, монтаж.",format:"Оффлайн",duration:"3 мес",price:"5 900 ₽/мес",skills:["Сантехнические работы","Бытовой ремонт"]}],
+"Техника и механика":[{partner:"АвтоШкола Pro",program:"Ремонт автомобиля",desc:"Двигатель, подвеска, тормоза, электрика.",format:"Оффлайн",duration:"6 мес",price:"8 000 ₽/мес",skills:["Ремонт автомобиля","Общая механика","Диагностика неисправностей"]},{partner:"RoboSkill",program:"Электроника и пайка",desc:"Схемотехника, пайка, микроконтроллеры.",format:"Онлайн",duration:"4 мес",price:"5 600 ₽/мес",skills:["Электроника и пайка","Ремонт бытовой техники"]}],
+"Транспорт":[{partner:"Автошкола №1",program:"Вождение категории B",desc:"Полный курс с инструктором.",format:"Оффлайн",duration:"3 мес",price:"по запросу",skills:["Вождение автомобиля","Техническое обслуживание транспорта"]}],
+"Бытовые":[{partner:"Кулинарная школа",program:"Домашняя кухня",desc:"Основы, техники, супы, выпечка.",format:"Онлайн",duration:"3 мес",price:"3 400 ₽/мес",skills:["Приготовление пищи","Планирование быта и расписания"]},{partner:"ФинГрамотность",program:"Личные финансы",desc:"Бюджет, накопления, инвестиции, подушка.",format:"Онлайн",duration:"2 мес",price:"3 900 ₽/мес",skills:["Личное финансовое планирование","Организация пространства"]}],
+"Социальные":[{partner:"Школа наставников",program:"Наставничество и преподавание",desc:"Методики обучения взрослых, обратная связь.",format:"Онлайн",duration:"3 мес",price:"4 700 ₽/мес",skills:["Обучение и преподавание","Наставничество","Работа с группами"]},{partner:"Медиатор Про",program:"Медиация и разрешение споров",desc:"Техники медиации, работа с конфликтами.",format:"Онлайн",duration:"2 мес",price:"5 100 ₽/мес",skills:["Медиация и разрешение споров","Эмпатия и понимание людей"]},{partner:"Академия родителей",program:"Работа с детьми и воспитание",desc:"Возрастная психология, общение, мягкие навыки.",format:"Онлайн",duration:"3 мес",price:"3 800 ₽/мес",skills:["Работа с детьми","Воспитание","Эмпатия и понимание людей"]}],
+"Языки":[{partner:"Skyeng",program:"Английский язык — с нуля до C1",desc:"Индивидуальные занятия, разговорный клуб.",format:"Онлайн",duration:"гибко",price:"от 1 200 ₽/занятие",skills:["Английский язык","Разговорная практика"]},{partner:"Deutsch Online",program:"Немецкий язык A1–B2",desc:"Курс с носителем, Goethe-Zertifikat.",format:"Онлайн",duration:"8 мес",price:"4 800 ₽/мес",skills:["Немецкий язык","Письменный перевод"]}],
+"Предпринимательство":[{partner:"Акселератор ФРИИ",program:"Запуск стартапа",desc:"Идея, продукт, метрики, инвестиции, питч.",format:"Онлайн + оффлайн",duration:"3 мес",price:"по запросу",skills:["Поиск и генерация идей","Создание продукта","Запуск проектов и стартапов"]},{partner:"Sales Academy",program:"Продажи B2B",desc:"Скрипты, работа с возражениями, воронка, CRM.",format:"Онлайн",duration:"3 мес",price:"5 200 ₽/мес",skills:["Продажи","Работа с клиентами","Переговоры и партнёрства"]}],
+"Саморазвитие":[{partner:"Лайфхакер Академия",program:"Управление временем",desc:"GTD, Pomodoro, приоритизация.",format:"Онлайн",duration:"1 мес",price:"2 900 ₽",skills:["Управление временем","Самоорганизация","Концентрация и внимание"]},{partner:"Нетология",program:"Обучение новым навыкам",desc:"Методики быстрого обучения, метапознание.",format:"Онлайн",duration:"2 мес",price:"3 400 ₽/мес",skills:["Обучение новым навыкам","Работа с информацией","Адаптивность к изменениям"]}]};
+
+var LW={1:"Нет опыта",2:"Начальный",3:"Уверенный",4:"Продвинутый",5:"Профи"};
+var results={},completed={},verifications={},reflections={};
+var curIdx=0,curCat=null,lastCD=null,lastSRD=null;
+var decList=[],decIdx=0;
+var SK="psyToolsSkillsV5",SCK="psyToolsSkillsV5Completed",SVK="psyToolsSkillsV5Verifications",SRK="psyToolsSkillsV5Reflections",SAK="psyToolsSkillsV5Applications";
+var catSel=document.getElementById("categorySelect");
+var skillsCont=document.getElementById("skillsContainer");
+var testScr=document.getElementById("testScreen");
+var decScr=document.getElementById("decisionScreen");
+var nextScr=document.getElementById("nextScreen");
+var resScr=document.getElementById("resultsScreen");
+
+function safeConfirm(m){return new Promise(function(r){if(tg&&typeof tg.showConfirm==="function"){try{tg.showConfirm(m,function(ok){r(!!ok);});return;}catch(e){}}r(window.confirm(m));});}
+function safeAlert(m){if(tg&&typeof tg.showAlert==="function"){try{tg.showAlert(m);return;}catch(e){}}window.alert(m);}
+
+function init(){
+loadRes();
+var names=Object.keys(categories);
+names.forEach(function(n,i){var o=document.createElement("option");o.value=i;o.textContent=n;catSel.appendChild(o);});
+catSel.addEventListener("change",function(){curIdx=Number(catSel.value);loadCat(curIdx);});
+document.querySelectorAll(".modal-overlay").forEach(function(ov){ov.addEventListener("click",function(e){if(e.target===ov)closeModal(ov.id);});});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){document.querySelectorAll(".modal-overlay.open").forEach(function(o){closeModal(o.id);});}});
+loadCat(0);}
+
+function isTouched(n){return !!(results[n]&&Object.keys(results[n]).length>0);}
+function isDone(n){return completed[n]===true;}
+function getV(c,s){return (verifications[c]&&verifications[c][s])||null;}
+function saveV(c,s,l,a){if(!verifications[c])verifications[c]={};verifications[c][s]={level:l,answers:a};saveRes();}
+function getQs(c,l){var d=questions[c];if(!d||!d[l])return [];return d[l];}
+function getR(c,s){return (reflections[c]&&reflections[c][s])||"";}
+function saveR(c,s,t){if(!reflections[c])reflections[c]={};var tr=(t||"").trim();if(tr)reflections[c][s]=tr;else{delete reflections[c][s];if(!Object.keys(reflections[c]).length)delete reflections[c];}saveRes();}
+function countR(){var t=0;Object.keys(reflections).forEach(function(c){t+=Object.keys(reflections[c]).length;});return t;}
+
+function loadCat(i){
+var names=Object.keys(categories);
+if(i<0||i>=names.length)return;
+curIdx=i;curCat=names[i];catSel.value=i;
+skillsCont.innerHTML="";
+var skills=categories[curCat];
+skills.forEach(function(skill,si){
+var sv=(results[curCat]&&results[curCat][skill])||3;
+var w=document.createElement("div");w.className="skill";w.setAttribute("data-skill-idx",si);
+var bh="";
+[1,2,3,4,5].forEach(function(v){bh+='<button type="button" data-value="'+v+'">'+v+'</button>';});
+w.innerHTML='<div class="skill-name-row"><div class="skill-name">'+esc(skill)+'</div><div id="badge-'+si+'"></div></div>'+
+'<div class="segmented" data-idx="'+si+'">'+bh+'</div>'+
+'<div class="skill-level-hint lv-'+sv+'" id="lh-'+si+'">'+LW[sv]+'</div>'+
+'<div id="vslot-'+si+'"></div><div id="rslot-'+si+'"></div>';
+var seg=w.querySelector(".segmented");
+seg.querySelectorAll("button").forEach(function(b){
+if(Number(b.dataset.value)===sv)b.classList.add("active");
+b.addEventListener("click",function(){setV(si,Number(b.dataset.value));});});
+skillsCont.appendChild(w);
+if(sv>=4)rV(si,skill,sv);
+if(sv<=2)rR(si,skill,sv);
+updB(si,skill,sv);});
+updProg();updChk();refSel();
+requestAnimationFrame(function(){updLR();});}
+
+function rV(si,skill,lvl){
+var slot=document.getElementById("vslot-"+si);if(!slot)return;
+var qs=getQs(curCat,lvl);if(!qs.length){slot.innerHTML="";return;}
+var ex=getV(curCat,skill);
+var ans=(ex&&ex.level===lvl&&ex.answers)?ex.answers.slice():new Array(qs.length).fill(false);
+if(!ex||ex.level!==lvl)saveV(curCat,skill,lvl,ans);
+var b=document.createElement("div");b.className="verification-block";
+var h='<div class="verification-title">🔍 Подтверждение уровня «'+LW[lvl]+'»</div>';
+qs.forEach(function(q,qi){
+var t=q.replace(/\{skill\}/g,skill);
+h+='<div class="verification-question'+(ans[qi]?" checked":"")+'" data-qidx="'+qi+'"><div class="verification-checkbox"></div><div>'+esc(t)+'</div></div>';});
+var allY=ans.length&&ans.every(function(a){return a;});
+var cnt=ans.filter(function(a){return a;}).length;
+var sc=allY?"all-yes":(cnt>0&&cnt<ans.length?"some-no":"");
+h+='<div class="verification-hint '+sc+'">'+(allY?"✓ Уровень подтверждён":"Отметьте пункты, которые к вам относятся")+'</div>';
+b.innerHTML=h;slot.innerHTML="";slot.appendChild(b);
+b.querySelectorAll(".verification-question").forEach(function(el){
+el.addEventListener("click",function(){togV(si,skill,lvl,Number(el.dataset.qidx));});});}
+
+function rR(si,skill,lvl){
+var slot=document.getElementById("rslot-"+si);if(!slot)return;
+var cr=getR(curCat,skill);
+var b=document.createElement("div");b.className="reflection-block";
+b.innerHTML='<div class="reflection-title">💭 Что хотелось бы улучшить?</div>'+
+'<textarea class="reflection-input" placeholder="Опишите своими словами — эта мысль поможет позже выбрать направление развития" maxlength="500"></textarea>'+
+'<div class="reflection-hint" id="rh-'+si+'">Ответ сохранится вместе с результатами</div>';
+slot.innerHTML="";slot.appendChild(b);
+var ta=b.querySelector("textarea");ta.value=cr;
+if(cr.trim())updRH(si,true);
+ta.addEventListener("input",function(){saveR(curCat,skill,ta.value);updRH(si,ta.value.trim().length>0);updB(si,skill,lvl);});}
+
+function updRH(si,s){var h=document.getElementById("rh-"+si);if(!h)return;if(s){h.textContent="✓ Сохранено";h.classList.add("saved");}else{h.textContent="Ответ сохранится вместе с результатами";h.classList.remove("saved");}}
+
+function togV(si,skill,lvl,qi){
+var v=getV(curCat,skill);if(!v||v.level!==lvl)return;
+var a=v.answers.slice();a[qi]=!a[qi];saveV(curCat,skill,lvl,a);
+rV(si,skill,lvl);updB(si,skill,lvl);
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.selectionChanged();}catch(e){}}}
+
+function updB(si,skill,lvl){
+var slot=document.getElementById("badge-"+si);
+var card=document.querySelector('.skill[data-skill-idx="'+si+'"]');
+if(!slot)return;slot.innerHTML="";
+if(card)card.classList.remove("verified","unverified","has-reflection");
+if(lvl<=2){var r=getR(curCat,skill);if(r&&r.trim()){slot.innerHTML='<div class="skill-badge reflection">💭 Заметка</div>';if(card)card.classList.add("has-reflection");}return;}
+if(lvl>=4){var v=getV(curCat,skill);if(!v||v.level!==lvl||!v.answers||!v.answers.length)return;
+var an=v.answers.some(function(a){return a;});
+if(!an)return;
+var ay=v.answers.every(function(a){return a;});
+if(ay){slot.innerHTML='<div class="skill-badge verified">✓ Подтверждено</div>';if(card)card.classList.add("verified");}
+else{slot.innerHTML='<div class="skill-badge unverified">⚠ Уточнить</div>';if(card)card.classList.add("unverified");}}}
+
+function setV(si,v){
+var skills=categories[curCat]||[];var skill=skills[si];if(!skill)return;
+if(!results[curCat])results[curCat]={};
+results[curCat][skill]=v;saveRes();
+var seg=document.querySelector('.segmented[data-idx="'+si+'"]');
+if(seg)seg.querySelectorAll("button").forEach(function(b){b.classList.toggle("active",Number(b.dataset.value)===v);});
+var h=document.getElementById("lh-"+si);
+if(h){h.textContent=LW[v]||"";h.className="skill-level-hint lv-"+v;}
+var vs=document.getElementById("vslot-"+si),rs=document.getElementById("rslot-"+si);
+if(v>=4){if(rs)rs.innerHTML="";rV(si,skill,v);}
+else if(v<=2){if(vs)vs.innerHTML="";rR(si,skill,v);}
+else{if(vs)vs.innerHTML="";if(rs)rs.innerHTML="";}
+updB(si,skill,v);updChk();updProg();refSel();updLR();
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred("light");}catch(e){}}}
+
+function updLR(){
+var skills=categories[curCat]||[];var sv=results[curCat]||{};
+var vals=skills.map(function(s){return Number(sv[s])||3;});
+var avg=vals.length?vals.reduce(function(a,b){return a+b;},0)/vals.length:0;
+var p=Math.round((avg/5)*100);
+var pe=document.getElementById("liveRadarPercent");
+if(pe){pe.textContent=p+"%";pe.style.color=colH(avg);}
+drawSR("liveSkillRadar",skills,vals,avg,true);}
+
+function saveCategory(){
+if(!results[curCat])results[curCat]={};
+completed[curCat]=true;saveRes();updChk();updProg();refSel();
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}
+showDec();}
+
+function showDec(){
+testScr.classList.add("hidden");decScr.classList.remove("hidden");nextScr.classList.add("hidden");
+decList=Object.keys(categories);
+decIdx=decList.indexOf(curCat);if(decIdx<0)decIdx=0;
+showDecCat(decList[decIdx]);}
+
+function showDecCat(name){
+if(!name)return;
+var done=isDone(name);
+var skills=categories[name]||[];
+var sv=results[name]||{};
+var vals,avg;
+if(done){
+vals=skills.map(function(s){return Number(sv[s])||3;});
+avg=vals.length?vals.reduce(function(a,b){return a+b;},0)/vals.length:0;
+}else{
+vals=skills.map(function(){return 0;});
+avg=0;}
+var p=Math.round((avg/5)*100);
+var ic=document.getElementById("decisionIcon");
+var ti=document.getElementById("decisionTitle");
+var te=document.getElementById("decisionText");
+var bd=document.getElementById("decisionBadge");
+var pe=document.getElementById("decisionPercent");
+var mb=document.getElementById("mainActionBtn");
+if(done){
+ic.className="decision-icon";ic.textContent="✓";
+ti.textContent="Категория завершена";
+te.textContent="Вы оценили "+skills.length+" навыков";
+bd.classList.remove("hidden");pe.textContent="0%";
+animateNumber(pe,0,p,700,function(v){return Math.round(v)+"%";});
+if(mb)mb.textContent="Пройти полную оценку";
+}else{
+ic.className="decision-icon neutral";ic.textContent="○";
+ti.textContent="Категория не оценена";
+te.textContent="Навыки этой категории ещё не оценены. Пройдите её, чтобы увидеть реальную диаграмму.";
+bd.classList.add("hidden");
+if(mb)mb.textContent="Пройти эту категорию";}
+document.getElementById("decisionCategoryName").textContent=name;
+var wk=done?getWeak(name):[];
+var ht=document.getElementById("programsHint");
+if(ht){
+if(wk.length){var w=plural(wk.length,["навык","навыка","навыков"]);ht.textContent=wk.length+" "+w+" ниже нормы";}
+else ht.textContent="Подобрать курс под ваши цели";}
+if(done){rDR(name);}else{var wp=document.getElementById("decisionReflectionsWrap");if(wp)wp.classList.add("hidden");}
+updDN();
+lastSRD={skills:skills,values:vals,average:avg};
+requestAnimationFrame(function(){drawSR("skillRadar",skills,vals,avg,false);});}
+
+function rDR(name){
+var wp=document.getElementById("decisionReflectionsWrap");
+var list=document.getElementById("decisionReflections");
+if(!wp||!list)return;
+var cr=reflections[name]||{};
+var items=Object.keys(cr).filter(function(s){return cr[s]&&cr[s].trim();});
+if(!items.length){wp.classList.add("hidden");list.innerHTML="";return;}
+wp.classList.remove("hidden");
+var sv=results[name]||{};
+list.innerHTML=items.map(function(s){
+var sc=Number(sv[s])||0;
+return '<div class="reflection-item"><div class="reflection-item-skill"><span>'+esc(s)+'</span><span class="reflection-item-score">'+sc+'/5</span></div><div class="reflection-item-text">'+esc(cr[s])+'</div></div>';}).join("");}
+
+function updDN(){
+var p=document.getElementById("radarNavPrev");
+var n=document.getElementById("radarNavNext");
+if(p)p.disabled=decIdx<=0;
+if(n)n.disabled=decIdx>=decList.length-1;
+var d=document.getElementById("radarDots");if(!d)return;
+d.innerHTML="";
+decList.forEach(function(name,i){
+var dot=document.createElement("div");
+dot.className="radar-dot";
+if(i===decIdx)dot.classList.add("active");
+if(!isDone(name))dot.classList.add("empty");
+dot.title=name+(isDone(name)?"":" — не пройдена");
+dot.addEventListener("click",function(){decIdx=i;showDecCat(decList[i]);if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.selectionChanged();}catch(e){}}});
+d.appendChild(dot);});}
+
+function navigateDecision(delta){
+var ni=decIdx+delta;
+if(ni<0||ni>=decList.length)return;
+decIdx=ni;showDecCat(decList[decIdx]);
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.selectionChanged();}catch(e){}}}
+
+function drawSR(canvasId,skills,values,average,compact){
+var canvas=document.getElementById(canvasId);if(!canvas)return;
+var ctx=canvas.getContext("2d");
+var dpr=window.devicePixelRatio||1;
+var cw=(canvas.parentElement&&canvas.parentElement.clientWidth)||0;
+var mx=compact?520:640;
+var cs=Math.max(280,Math.min(cw||mx,mx));
+canvas.style.width=cs+"px";canvas.style.height=cs+"px";
+canvas.width=Math.round(cs*dpr);canvas.height=Math.round(cs*dpr);
+ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+var width=cs,height=cs;ctx.clearRect(0,0,width,height);
+var count=skills.length;if(!count)return;
+var cx=width/2,cy=height/2;
+var icp=compact||cs<420;
+var rad=Math.min(width,height)*(icp?0.35:0.32);
+var fs,mlw,lo;
+if(cs>=460){fs=13;mlw=100;lo=count>12?62:(count>9?68:76);}
+else if(cs>=360){fs=11.5;mlw=82;lo=count>12?54:(count>9?60:68);}
+else{fs=10;mlw=68;lo=count>12?48:(count>9?54:60);}
+var lr=rad+lo;var as=(Math.PI*2)/count;
+for(var lvl=1;lvl<=5;lvl++){
+var r=rad*lvl/5;ctx.beginPath();
+for(var i=0;i<count;i++){var an=-Math.PI/2+i*as;var x=cx+Math.cos(an)*r;var y=cy+Math.sin(an)*r;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+ctx.closePath();ctx.strokeStyle=lvl===5?"rgba(255,255,255,.22)":"rgba(255,255,255,.08)";ctx.lineWidth=lvl===5?1.6:1;ctx.stroke();}
+for(var k=0;k<count;k++){var a=-Math.PI/2+k*as;var px=cx+Math.cos(a)*rad;var py=cy+Math.sin(a)*rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.strokeStyle="rgba(255,255,255,.07)";ctx.lineWidth=1;ctx.stroke();}
+var pts=values.map(function(v,idx){var ang=-Math.PI/2+idx*as;var r2=rad*v/5;return{x:cx+Math.cos(ang)*r2,y:cy+Math.sin(ang)*r2,value:v};});
+ctx.save();ctx.shadowColor="rgba(124,140,255,.45)";ctx.shadowBlur=icp?18:26;
+ctx.beginPath();pts.forEach(function(p,idx){if(idx===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.closePath();
+ctx.fillStyle="rgba(124,140,255,.20)";ctx.fill();ctx.restore();
+var fg=ctx.createRadialGradient(cx,cy,0,cx,cy,rad);
+fg.addColorStop(0,"rgba(156,124,255,.42)");fg.addColorStop(1,"rgba(124,140,255,.12)");
+ctx.beginPath();pts.forEach(function(p,idx){if(idx===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.closePath();
+ctx.fillStyle=fg;ctx.fill();
+ctx.strokeStyle="#9ca7ff";ctx.lineWidth=icp?2.3:2.6;ctx.lineJoin="round";ctx.stroke();
+pts.forEach(function(p){
+var c=colH(p.value);
+var oR=icp?7:8,iR=icp?4.8:5.8,wR=icp?1.9:2.3;
+ctx.beginPath();ctx.arc(p.x,p.y,oR,0,Math.PI*2);ctx.fillStyle=c;ctx.globalAlpha=0.25;ctx.fill();ctx.globalAlpha=1;
+ctx.beginPath();ctx.arc(p.x,p.y,iR,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();
+ctx.beginPath();ctx.arc(p.x,p.y,wR,0,Math.PI*2);ctx.fillStyle="#ffffff";ctx.fill();});
+ctx.font="700 "+fs+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+ctx.textAlign="center";ctx.textBaseline="middle";
+skills.forEach(function(skill,idx){
+var an=-Math.PI/2+idx*as;var lx=cx+Math.cos(an)*lr;var ly=cy+Math.sin(an)*lr;
+var ws=skill.split(" ");var lines=[];var cur="";
+ws.forEach(function(w){var t=cur?cur+" "+w:w;if(ctx.measureText(t).width>mlw){if(cur)lines.push(cur);cur=w;}else cur=t;});
+if(cur)lines.push(cur);
+var dl=lines.slice(0,3);var lh=fs+3;var th=dl.length*lh;
+ctx.fillStyle="#dfe3ea";
+dl.forEach(function(ln,li){ctx.fillText(ln,lx,ly+(li*lh)-(th-lh)/2);});});
+var iR2=icp?26:30;
+ctx.beginPath();ctx.arc(cx,cy,iR2,0,Math.PI*2);ctx.fillStyle="#0b0d12";ctx.fill();
+ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=1.5;ctx.stroke();
+ctx.font="800 "+(icp?16:18)+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+ctx.fillStyle="#ffffff";ctx.textAlign="center";ctx.textBaseline="middle";
+ctx.fillText(average.toFixed(1),cx,cy-4);
+ctx.font="600 "+(icp?10:11)+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+ctx.fillStyle="#9299a6";ctx.fillText("из 5",cx,cy+(icp?9:10));}
+
+function findNext(){
+var names=Object.keys(categories);var st=curIdx;
+for(var i=st+1;i<names.length;i++)if(!isDone(names[i]))return i;
+for(var j=0;j<=st;j++)if(!isDone(names[j]))return j;
+return -1;}
+
+function continueFullAssessment(){
+var cn=decList[decIdx]||curCat;
+var names=Object.keys(categories);
+var isCurDone=isDone(cn);
+if(!isCurDone){
+decScr.classList.add("hidden");
+nextScr.classList.remove("hidden");
+document.getElementById("nextCategoryText").textContent="Следующая категория: "+cn;
+var btn=nextScr.querySelector("button");
+btn.textContent="Далее";btn.onclick=function(){
+nextScr.classList.add("hidden");testScr.classList.remove("hidden");
+curIdx=names.indexOf(cn);loadCat(curIdx);};
+return;}
+curIdx=names.indexOf(cn);if(curIdx<0)curIdx=0;
+decScr.classList.add("hidden");
+var ni=findNext();
+if(ni===-1){finishAssessment();return;}
+nextScr.classList.remove("hidden");
+document.getElementById("nextCategoryText").textContent="Следующая категория: "+names[ni];
+var b2=nextScr.querySelector("button");
+b2.textContent="Далее";b2.onclick=goNext;}
+
+function goNext(){
+var ni=findNext();
+if(ni===-1){finishAssessment();return;}
+nextScr.classList.add("hidden");testScr.classList.remove("hidden");
+loadCat(ni);}
+
+function finishAssessment(){
+saveRes();
+testScr.classList.add("hidden");decScr.classList.add("hidden");nextScr.classList.add("hidden");
+resScr.classList.remove("hidden");
+renderRes();window.scrollTo({top:0,behavior:"smooth"});}
+
+function colR(a){if(a>=4)return "var(--good)";if(a>=3)return "var(--accent)";if(a>=2)return "var(--warning)";return "var(--danger)";}
+function colH(a){if(a>=4)return "#55d68a";if(a>=3)return "#7c8cff";if(a>=2)return "#ffc857";return "#ff6b6b";}
+function lvlLbl(a){if(a>=4.5)return "профи";if(a>=3.5)return "продвинутый";if(a>=2.5)return "уверенный";if(a>=1.5)return "начальный";return "нет опыта";}
+
+function animateNumber(el,f,t,d,fn){
+var s=performance.now();
+function tick(n){var p=Math.min(1,(n-s)/d);var e=1-Math.pow(1-p,3);el.textContent=fn(f+(t-f)*e);if(p<1)requestAnimationFrame(tick);}
+requestAnimationFrame(tick);}
+
+function animateCssVar(el,n,f,t,d,u){
+var s=performance.now();
+function tick(now){var p=Math.min(1,(now-s)/d);var e=1-Math.pow(1-p,3);el.style.setProperty(n,(f+(t-f)*e)+u);if(p<1)requestAnimationFrame(tick);}
+requestAnimationFrame(tick);}
+
+function renderRes(){
+var all=[],cd=[];
+Object.keys(results).forEach(function(cat){
+var sv=results[cat];var vs=Object.values(sv);if(!vs.length)return;
+var av=vs.reduce(function(a,b){return a+b;},0)/vs.length;
+cd.push({name:cat,average:av,count:vs.length});
+Object.keys(sv).forEach(function(sk){
+var v=getV(cat,sk);
+var ver=v&&v.answers&&v.answers.length&&v.answers.every(function(a){return a;});
+all.push({category:cat,name:sk,value:sv[sk],verified:ver});});});
+if(!all.length){safeAlert("Сначала оцените хотя бы одну категорию.");backToAssessment();return;}
+var av=all.reduce(function(s,i){return s+i.value;},0)/all.length;
+var mx=Math.max.apply(null,all.map(function(i){return i.value;}));
+var mn=Math.min.apply(null,all.map(function(i){return i.value;}));
+var op=(av/5)*100;var opr=Math.round(op);var gc=colR(av);
+document.getElementById("statAverage").textContent=av.toFixed(1);
+document.getElementById("statMax").textContent=mx;
+document.getElementById("statMin").textContent=mn;
+var ge=document.getElementById("overallGauge");
+var pe=document.getElementById("overallPercent");
+var ae=document.getElementById("overallAverage");
+ge.style.setProperty("--gauge-color",gc);ge.style.setProperty("--gauge-percent","0%");
+pe.textContent="0%";ae.textContent="0.0";
+animateNumber(pe,0,opr,900,function(v){return Math.round(v)+"%";});
+animateNumber(ae,0,av,900,function(v){return v.toFixed(1);});
+animateCssVar(ge,"--gauge-percent",0,op,900,"%");
+var cr=document.getElementById("categoryResults");cr.innerHTML="";
+cd.forEach(function(it){
+var p=(it.average/5)*100;var pr=Math.round(p);
+var rc=colR(it.average);var lv=lvlLbl(it.average);
+var c=document.createElement("div");c.className="category-result";
+c.innerHTML='<div class="circle" style="--percent:'+p+'%;--ring-color:'+rc+';"><div><div class="circle-value">'+pr+'%</div><div class="circle-level">'+it.average.toFixed(1)+'/5</div></div></div>'+
+'<div class="category-result-name">'+esc(it.name)+'</div>'+
+'<div class="category-result-count">'+it.count+' навыков · '+lv+'</div>';
+cr.appendChild(c);});
+var st=all.slice().sort(function(a,b){return b.value-a.value;}).slice(0,7);
+var sl=document.getElementById("strengthsList");sl.innerHTML="";
+st.forEach(function(it){
+var r=document.createElement("div");r.className="result-skill";
+var bg=it.verified?' <span style="color:var(--good);font-size:11px;font-weight:800;">✓</span>':"";
+r.innerHTML='<div class="result-skill-name">'+esc(it.name)+bg+'</div><div class="result-skill-value good">'+it.value+'/5</div>';
+sl.appendChild(r);});
+var dv=all.slice().sort(function(a,b){return a.value-b.value;}).slice(0,7);
+var dl=document.getElementById("developmentList");dl.innerHTML="";
+dv.forEach(function(it){
+var r=document.createElement("div");r.className="result-skill";
+var cls=it.value<=2?"danger":"warning";
+r.innerHTML='<div class="result-skill-name">'+esc(it.name)+'</div><div class="result-skill-value '+cls+'">'+it.value+'/5</div>';
+dl.appendChild(r);});
+rAR();renderInterp(av,cd);
+lastCD=cd;drawRadar(cd);}
+
+function rAR(){
+var c=document.getElementById("allReflectionsCard");
+var l=document.getElementById("allReflectionsList");
+if(!c||!l)return;
+var t=countR();
+if(!t){c.classList.add("hidden");return;}
+c.classList.remove("hidden");
+var h="";
+Object.keys(categories).forEach(function(cat){
+var cr=reflections[cat];if(!cr)return;
+var items=Object.keys(cr).filter(function(s){return cr[s]&&cr[s].trim();});
+if(!items.length)return;
+var sv=results[cat]||{};
+items.forEach(function(sk){
+var sc=Number(sv[sk])||0;
+h+='<div class="reflection-item"><div class="reflection-item-cat">'+esc(cat)+'</div><div class="reflection-item-skill"><span>'+esc(sk)+'</span><span class="reflection-item-score">'+sc+'/5</span></div><div class="reflection-item-text">'+esc(cr[sk])+'</div></div>';});});
+l.innerHTML='<div class="reflections-list">'+h+'</div>';}
+
+function renderInterp(av,cd){
+var p=Math.round((av/5)*100);var text="";
+if(av<2)text="Большинство оценённых навыков находятся на начальном уровне. Это не означает отсутствие потенциала — скорее, карта показывает направления, в которых ещё предстоит накопить опыт.";
+else if(av<3)text="У вас формируется набор практических навыков, однако многие из них пока находятся на начальном или переходном уровне.";
+else if(av<4)text="У вас достаточно широкий набор навыков с преимущественно уверенным уровнем владения. Полезно определить несколько сильных направлений и углублять их.";
+else text="Карта показывает высокий средний уровень по оценённым навыкам. Следующий шаг — специализация и создание проектов.";
+text+=" Общий уровень: "+p+"% ("+av.toFixed(1)+" из 5).";
+if(cd.length===1)text+=" Сейчас оценена только одна категория.";
+else text+=" Оценено категорий: "+cd.length+".";
+var rc=countR();
+if(rc){var w=plural(rc,["заметка","заметки","заметок"]);text+=" Вы зафиксировали "+rc+" "+w+" для улучшения — их можно использовать как отправную точку при выборе направления обучения.";}
+document.getElementById("interpretation").textContent=text;}
+
+function drawRadar(cd){
+var canvas=document.getElementById("skillsRadar");if(!canvas)return;
+var ctx=canvas.getContext("2d");var dpr=window.devicePixelRatio||1;
+var cw=(canvas.parentElement&&canvas.parentElement.clientWidth)||0;
+var cs=Math.max(280,Math.min(cw||640,640));
+canvas.style.width=cs+"px";canvas.style.height=cs+"px";
+canvas.width=Math.round(cs*dpr);canvas.height=Math.round(cs*dpr);
+ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+var width=cs,height=cs;ctx.clearRect(0,0,width,height);
+if(!cd.length)return;
+var cx=width/2,cy=height/2;var rad=Math.min(width,height)*0.33;
+var count=cd.length;var lr=rad+62;
+for(var lvl=1;lvl<=5;lvl++){
+var r=rad*lvl/5;ctx.beginPath();
+for(var i=0;i<count;i++){var an=-Math.PI/2+i*2*Math.PI/count;var x=cx+Math.cos(an)*r;var y=cy+Math.sin(an)*r;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+ctx.closePath();ctx.strokeStyle="rgba(255,255,255,.10)";ctx.lineWidth=1;ctx.stroke();}
+for(var j=0;j<count;j++){var a2=-Math.PI/2+j*2*Math.PI/count;var px=cx+Math.cos(a2)*rad;var py=cy+Math.sin(a2)*rad;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.strokeStyle="rgba(255,255,255,.10)";ctx.stroke();}
+ctx.beginPath();
+cd.forEach(function(it,idx){var an=-Math.PI/2+idx*2*Math.PI/count;var r3=rad*it.average/5;var x2=cx+Math.cos(an)*r3;var y2=cy+Math.sin(an)*r3;if(idx===0)ctx.moveTo(x2,y2);else ctx.lineTo(x2,y2);});
+ctx.closePath();ctx.fillStyle="rgba(124,140,255,.22)";ctx.fill();ctx.strokeStyle="#7c8cff";ctx.lineWidth=3;ctx.stroke();
+cd.forEach(function(it,idx){var an=-Math.PI/2+idx*2*Math.PI/count;var r4=rad*it.average/5;var x3=cx+Math.cos(an)*r4;var y3=cy+Math.sin(an)*r4;ctx.beginPath();ctx.arc(x3,y3,5,0,Math.PI*2);ctx.fillStyle="#9ca7ff";ctx.fill();});
+cd.forEach(function(it,idx){
+var an=-Math.PI/2+idx*2*Math.PI/count;var x4=cx+Math.cos(an)*lr;var y4=cy+Math.sin(an)*lr;
+ctx.fillStyle="#dfe3ea";ctx.font="700 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+ctx.textAlign="center";ctx.textBaseline="middle";
+var ws=it.name.split(" ");var lines=[];var cur="";
+ws.forEach(function(w){var t=cur?cur+" "+w:w;if(ctx.measureText(t).width>120){if(cur)lines.push(cur);cur=w;}else cur=t;});
+if(cur)lines.push(cur);
+lines.slice(0,3).forEach(function(ln,li){ctx.fillText(ln,x4,y4+(li-(Math.min(lines.length,3)-1)/2)*16);});});
+ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle="#ffffff";ctx.fill();}
+
+function updProg(){
+var names=Object.keys(categories);var c=names.filter(isDone).length;
+var cur=curIdx+1;var p=Math.round(c/names.length*100);
+document.getElementById("progressText").textContent="Категория "+cur+" из "+names.length;
+document.getElementById("progressPercent").textContent=p+"%";
+document.getElementById("progressBar").style.width=p+"%";}
+
+function updChk(){
+var cont=document.getElementById("checklist");if(!cont)return;
+var names=Object.keys(categories);var c=names.filter(isDone).length;
+cont.innerHTML="";
+var s=document.createElement("div");s.className="checklist-summary";
+s.textContent="Пройдено: "+c+" из "+names.length;cont.appendChild(s);
+names.forEach(function(n,i){
+var d=isDone(n);var t=isTouched(n);var a=i===curIdx;
+var b=document.createElement("button");b.type="button";b.className="checklist-item";
+if(d)b.classList.add("done");else if(t)b.classList.add("partial");
+if(a)b.classList.add("active");
+var m=d?"✓":(t?"◐":"○");
+b.innerHTML='<span class="checklist-check">'+m+'</span><span>'+esc(n)+'</span>';
+b.addEventListener("click",function(){loadCat(i);window.scrollTo({top:0,behavior:"smooth"});});
+cont.appendChild(b);});}
+
+function refSel(){
+var names=Object.keys(categories);var opts=catSel.options;
+for(var i=0;i<opts.length;i++){var n=names[i];var p="";
+if(isDone(n))p="✓ ";else if(isTouched(n))p="◐ ";
+opts[i].textContent=p+n;}}
+
+function backToAssessment(){
+resScr.classList.add("hidden");decScr.classList.add("hidden");nextScr.classList.add("hidden");
+testScr.classList.remove("hidden");loadCat(curIdx);
+window.scrollTo({top:0,behavior:"smooth"});}
+
+async function resetTest(){
+var c=await safeConfirm("Удалить все оценки и начать заново?");if(!c)return;
+results={};completed={};verifications={};reflections={};
+lastCD=null;lastSRD=null;decList=[];decIdx=0;
+try{localStorage.removeItem(SK);localStorage.removeItem(SCK);localStorage.removeItem(SVK);localStorage.removeItem(SRK);}catch(e){}
+curIdx=0;
+resScr.classList.add("hidden");decScr.classList.add("hidden");nextScr.classList.add("hidden");
+testScr.classList.remove("hidden");loadCat(0);updProg();updChk();refSel();
+window.scrollTo({top:0,behavior:"smooth"});}
+
+function saveRes(){
+try{localStorage.setItem(SK,JSON.stringify(results));localStorage.setItem(SCK,JSON.stringify(completed));localStorage.setItem(SVK,JSON.stringify(verifications));localStorage.setItem(SRK,JSON.stringify(reflections));}catch(e){}}
+function loadRes(){
+try{
+var s=localStorage.getItem(SK);if(s)results=JSON.parse(s)||{};
+var sc=localStorage.getItem(SCK);if(sc)completed=JSON.parse(sc)||{};
+var sv=localStorage.getItem(SVK);if(sv)verifications=JSON.parse(sv)||{};
+var sr=localStorage.getItem(SRK);if(sr)reflections=JSON.parse(sr)||{};
+}catch(e){results={};completed={};verifications={};reflections={};}}
+
+function exportResults(){
+var data={title:"Карта навыков",date:new Date().toLocaleString("ru-RU"),results:results,completed:Object.keys(completed),verifications:verifications,reflections:reflections};
+var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+var url=URL.createObjectURL(blob);var a=document.createElement("a");
+a.href=url;a.download="karta-navykov.json";a.click();URL.revokeObjectURL(url);}
+
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function plural(n,f){var m10=n%10,m100=n%100;if(m10===1&&m100!==11)return f[0];if(m10>=2&&m10<=4&&(m100<10||m100>=20))return f[1];return f[2];}
+
+function getWeak(cat){
+var sv=results[cat]||{};
+return Object.keys(sv).filter(function(k){return Number(sv[k])<=2;});}
+
+function openPrograms(){
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred("light");}catch(e){}}
+var cn=curCat||Object.keys(categories)[0];
+var cp=partners[cn]||[];var wk=getWeak(cn);
+var wr=cp.map(function(p){var m=(p.skills||[]).filter(function(s){return wk.indexOf(s)!==-1;});return Object.assign({},p,{recommended:m.length>0,matchedSkills:m});}).sort(function(a,b){if(a.recommended!==b.recommended)return b.recommended?1:-1;return b.matchedSkills.length-a.matchedSkills.length;});
+document.getElementById("programsSubtitle").textContent=cn;
+var body=document.getElementById("programsBody");
+if(!wr.length){
+body.innerHTML='<div class="programs-empty"><div style="font-size:40px;margin-bottom:12px;opacity:.6;">🎓</div><div>Программы партнёров по этой категории скоро появятся.</div></div>'+
+'<button class="btn-primary" style="width:100%;margin-top:14px;" onclick="closeModal(\'programsModal\');openConsultation();">💬 Оставить заявку</button>';
+}else{
+body.innerHTML='<div class="programs-list">'+wr.map(function(p){return rPC(p);}).join("")+'</div>';}
+body.querySelectorAll(".program-cta").forEach(function(b){b.addEventListener("click",function(){handlePC(b.dataset.partner,b.dataset.program);});});
+document.getElementById("programsModal").classList.add("open");document.body.style.overflow="hidden";}
+
+function rPC(p){
+var m='<span>🌐 '+esc(p.format||"Онлайн")+'</span><span>⏱ '+esc(p.duration||"—")+'</span><span>💳 '+esc(p.price||"—")+'</span>';
+return '<div class="program-card '+(p.recommended?"recommended":"")+'"><div class="program-head"><div class="program-partner"><span class="program-partner-dot"></span>'+esc(p.partner)+'</div>'+(p.recommended?'<div class="program-badge">Рекомендуем</div>':"")+'</div><div class="program-title">'+esc(p.program)+'</div><div class="program-desc">'+esc(p.desc)+'</div><div class="program-meta">'+m+'</div><button class="program-cta" data-partner="'+esc(p.partner)+'" data-program="'+esc(p.program)+'">Открыть программу →</button></div>';}
+
+function handlePC(partner,program){
+if(tg&&typeof tg.sendData==="function"){try{tg.sendData(JSON.stringify({type:"program_interest",partner:partner,program:program,category:curCat}));}catch(e){}}
+showToast('Заявка на «'+program+'» от '+partner+' отправлена');
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}}
+
+function openConsultation(){
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred("light");}catch(e){}}
+var cn=curCat||Object.keys(categories)[0];
+var wk=getWeak(cn);
+document.getElementById("consultationSubtitle").textContent=cn;
+var cr=reflections[cn]||{};
+var notes=Object.keys(cr).filter(function(s){return cr[s]&&cr[s].trim();}).map(function(s){return "• "+s+": "+cr[s];});
+var wh=wk.length?"Слабые места: "+wk.slice(0,3).join(", ")+(wk.length>3?" и др."):"Разбор текущего профиля";
+var tt="";
+if(notes.length)tt="Мои заметки:\n"+notes.join("\n");
+else if(wk.length)tt="Хочу разобраться с навыками: "+wk.join(", ");
+var nb="";
+if(notes.length)nb='<br><br><strong>Ваши заметки:</strong><br>'+notes.map(function(n){return esc(n);}).join("<br>");
+document.getElementById("consultationBody").innerHTML=
+'<div class="consult-intro">💬 Специалист поможет разобрать ваши результаты <strong>по категории «'+esc(cn)+'»</strong>.'+(wk.length?'<br><br>Найденные слабые места: <strong>'+esc(wh)+'</strong>':"")+nb+'</div>'+
+'<form class="consult-form" onsubmit="submitConsultation(event)">'+
+'<div class="consult-field"><label>Как к вам обращаться</label><input type="text" id="consultName" placeholder="Имя" required></div>'+
+'<div class="consult-field"><label>Контакт для связи</label><input type="text" id="consultContact" placeholder="@telegram, email или телефон" required></div>'+
+'<div class="consult-field"><label>Что хотите обсудить</label><textarea id="consultTopic" placeholder="Опишите, с чем нужна помощь">'+esc(tt)+'</textarea></div>'+
+'<div class="consult-field"><label>Удобное время (необязательно)</label><input type="text" id="consultTime" placeholder="Например, будни после 18:00"></div>'+
+'<button type="submit" class="consult-submit">Отправить заявку</button></form>';
+document.getElementById("consultationModal").classList.add("open");document.body.style.overflow="hidden";}
+
+function submitConsultation(e){
+e.preventDefault();
+var n=document.getElementById("consultName").value.trim();
+var c=document.getElementById("consultContact").value.trim();
+var t=document.getElementById("consultTopic").value.trim();
+var tm=document.getElementById("consultTime").value.trim();
+if(!n||!c){showToast("Заполните имя и контакт");return;}
+var app={type:"consultation",name:n,contact:c,topic:t,time:tm,category:curCat,date:new Date().toISOString()};
+try{var ex=JSON.parse(localStorage.getItem(SAK)||"[]");ex.push(app);localStorage.setItem(SAK,JSON.stringify(ex));}catch(e){}
+if(tg&&typeof tg.sendData==="function"){try{tg.sendData(JSON.stringify(app));}catch(e){}}
+document.getElementById("consultationBody").innerHTML=
+'<div class="consult-success"><div class="consult-success-icon">✓</div><h3>Заявка отправлена</h3><p>Мы свяжемся с вами по указанному контакту в течение 1 рабочего дня.</p><button class="btn-primary" style="width:100%;margin-top:20px;" onclick="closeModal(\'consultationModal\')">Хорошо</button></div>';
+if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}}
+
+function closeModal(id){var el=document.getElementById(id);if(!el)return;el.classList.remove("open");document.body.style.overflow="";}
+
+var toastTimer=null;
+function showToast(text){
+var t=document.getElementById("appToast");
+if(!t){t=document.createElement("div");t.id="appToast";
+t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:#263653;color:#fff;padding:12px 18px;border-radius:14px;font-size:13px;z-index:3000;opacity:0;transition:all .3s ease;max-width:calc(100vw - 30px);text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4);pointer-events:none;";
+document.body.appendChild(t);}
+t.textContent=text;
+requestAnimationFrame(function(){t.style.opacity="1";t.style.transform="translateX(-50%) translateY(0)";});
+clearTimeout(toastTimer);
+toastTimer=setTimeout(function(){t.style.opacity="0";t.style.transform="translateX(-50%) translateY(80px)";},2800);}
+
+window.addEventListener("resize",function(){
+if(!resScr.classList.contains("hidden")&&lastCD)drawRadar(lastCD);
+if(!decScr.classList.contains("hidden")&&lastSRD)drawSR("skillRadar",lastSRD.skills,lastSRD.values,lastSRD.average,false);
+if(!testScr.classList.contains("hidden"))updLR();});
+
+init();
+</script>
+</body>
+</html>
