@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мотивационный профиль — PSY-TOOLS</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at top, #172033 0%, #0b0f17 45%, #070a10 100%);
+    color: #f2f4f8;
+    min-height: 100vh;
+}
+
+.container {
+    width: min(760px, calc(100% - 28px));
+    margin: 0 auto;
+    padding: 28px 0 50px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 26px;
+}
+
+.logo {
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #aeb7c7;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+.card {
+    background: rgba(20, 27, 40, 0.88);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
+}
+
+.progress-wrap {
+    margin-bottom: 24px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: #aeb7c7;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.progress {
+    width: 100%;
+    height: 8px;
+    background: #252d3b;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6d8cff, #9b7cff);
+    transition: width .3s ease;
+}
+
+.question {
+    font-size: 21px;
+    line-height: 1.45;
+    font-weight: 600;
+    margin: 12px 0 24px;
+}
+
+.scale {
+    display: grid;
+    gap: 10px;
+}
+
+.option {
+    position: relative;
+}
+
+.option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.option label {
+    display: block;
+    padding: 16px 18px;
+    border-radius: 15px;
+    background: #171e2b;
+    border: 1px solid #2a3445;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.option label:hover {
+    border-color: #667cff;
+    transform: translateY(-1px);
+}
+
+.option input:checked + label {
+    border-color: #7c8cff;
+    background: #222b42;
+    box-shadow: 0 0 0 1px #7c8cff inset;
+}
+
+.number {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #303a50;
+    margin-right: 10px;
+    font-weight: 700;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+button {
+    flex: 1;
+    border: 0;
+    border-radius: 14px;
+    padding: 15px 18px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    background: #34415f;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button.primary {
+    background: linear-gradient(135deg, #667cff, #8d72ff);
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.hidden {
+    display: none;
+}
+
+/* RESULTS */
+
+.result-title {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.result-title h2 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+.result-title p {
+    color: #aeb7c7;
+}
+
+.profile-bars {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.profile-row {
+    display: grid;
+    gap: 7px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+}
+
+.profile-name {
+    font-weight: 700;
+}
+
+.profile-score {
+    color: #b9c2d3;
+}
+
+.bar {
+    height: 13px;
+    background: #252d3b;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #667cff, #9b7cff);
+}
+
+.dominant {
+    padding: 20px;
+    border-radius: 18px;
+    background: #182238;
+    border: 1px solid #34446b;
+    margin-bottom: 24px;
+}
+
+.dominant h3 {
+    margin: 0 0 8px;
+}
+
+.dominant p {
+    color: #c3cada;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.section {
+    margin-top: 28px;
+}
+
+.section h3 {
+    margin-bottom: 12px;
+}
+
+.section p {
+    color: #c3cada;
+    line-height: 1.65;
+}
+
+.traits {
+    display: grid;
+    gap: 12px;
+}
+
+.trait {
+    padding: 16px;
+    border-radius: 15px;
+    background: #151d2a;
+    border: 1px solid #273144;
+}
+
+.trait strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.disclaimer {
+    margin-top: 28px;
+    padding: 16px;
+    border-radius: 14px;
+    background: #111722;
+    color: #8f9aac;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.back {
+    margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: min(100% - 18px, 760px);
+        padding-top: 18px;
+    }
+
+    .card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .question {
+        font-size: 19px;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">🎯</div>
+        <h1>Мотивационный профиль</h1>
+        <div class="subtitle">
+            Адаптированный опросник на основе типологии трудовой мотивации В. И. Герчикова
+        </div>
+    </div>
+
+    <!-- TEST -->
+
+    <div id="testScreen" class="card">
+
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span id="questionNumber">Вопрос 1 из 25</span>
+                <span id="percent">4%</span>
+            </div>
+
+            <div class="progress">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+        </div>
+
+        <div id="questionText" class="question"></div>
+
+        <div id="answers" class="scale">
+
+            <div class="option">
+                <input type="radio" name="answer" id="a1" value="1">
+                <label for="a1">
+                    <span class="number">1</span>
+                    Совершенно не согласен
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio" name="answer" id="a2" value="2">
+                <label for="a2">
+                    <span class="number">2</span>
+                    Скорее не согласен
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio" name="answer" id="a3" value="3">
+                <label for="a3">
+                    <span class="number">3</span>
+                    Не уверен / трудно ответить
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio" name="answer" id="a4" value="4">
+                <label for="a4">
+                    <span class="number">4</span>
+                    Скорее согласен
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio" name="answer" id="a5" value="5">
+                <label for="a5">
+                    <span class="number">5</span>
+                    Полностью согласен
+                </label>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button id="backBtn" onclick="previousQuestion()" disabled>
+                ← Назад
+            </button>
+
+            <button id="nextBtn" class="primary" onclick="nextQuestion()">
+                Далее →
+            </button>
+        </div>
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    <div id="resultScreen" class="card hidden">
+
+        <div class="result-title">
+            <h2>Ваш мотивационный профиль</h2>
+            <p>Результат показывает выраженность пяти мотивационных ориентаций.</p>
+        </div>
+
+        <div id="dominantBox" class="dominant"></div>
+
+        <div id="profileBars" class="profile-bars"></div>
+
+        <div class="section">
+            <h3>Интерпретация профиля</h3>
+            <div id="interpretation"></div>
+        </div>
+
+        <div class="section">
+            <h3>Что может поддерживать вашу мотивацию</h3>
+            <div id="motivators" class="traits"></div>
+        </div>
+
+        <div class="section">
+            <h3>Что может снижать мотивацию</h3>
+            <div id="demotivators" class="traits"></div>
+        </div>
+
+        <div class="disclaimer">
+            Тест является адаптированным инструментом самооценки.
+            Он не является медицинской или клинической диагностикой.
+            Полученный профиль следует рассматривать как ориентир для
+            саморефлексии и обсуждения профессиональной мотивации.
+        </div>
+
+        <div class="buttons back">
+            <button onclick="restartTest()">Пройти заново</button>
+            <button class="primary" onclick="goHome()">В меню PSY-TOOLS</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+    {
+        text: "Мне важно понимать, какую конкретную пользу приносит моя работа.",
+        type: "PA"
+    },
+
+    {
+        text: "Я предпочитаю самостоятельно определять способ выполнения поставленной задачи.",
+        type: "HO"
+    },
+
+    {
+        text: "Размер заработка является одним из главных факторов, определяющих мой выбор работы.",
+        type: "IN"
+    },
+
+    {
+        text: "Мне важно постоянно развивать профессиональные навыки и знания.",
+        type: "PR"
+    },
+
+    {
+        text: "Я предпочитаю избегать дополнительных обязанностей, если они не являются необходимыми.",
+        type: "LU"
+    },
+
+    {
+        text: "Мне важно работать в коллективе, где люди поддерживают друг друга.",
+        type: "PA"
+    },
+
+    {
+        text: "Если другая компания предложит мне существенно более высокую зарплату, я серьёзно рассмотрю переход.",
+        type: "IN"
+    },
+
+    {
+        text: "Мне интереснее сложная задача, позволяющая чему-то научиться, чем простая и привычная.",
+        type: "PR"
+    },
+
+    {
+        text: "Я хочу отвечать за результат, а не только выполнять указания руководителя.",
+        type: "HO"
+    },
+
+    {
+        text: "Я предпочитаю выполнять только тот объём работы, который от меня непосредственно требуется.",
+        type: "LU"
+    },
+
+    {
+        text: "Мне важно чувствовать, что мой вклад замечают и ценят в организации.",
+        type: "PA"
+    },
+
+    {
+        text: "Я считаю справедливой оплату, которая соответствует объёму и сложности выполненной работы.",
+        type: "IN"
+    },
+
+    {
+        text: "Профессиональное признание для меня может быть важнее дополнительной денежной выплаты.",
+        type: "PR"
+    },
+
+    {
+        text: "Мне трудно работать эффективно, когда каждое моё действие подробно контролируют.",
+        type: "HO"
+    },
+
+    {
+        text: "Дополнительная ответственность чаще воспринимается мной как нагрузка, чем как возможность.",
+        type: "LU"
+    },
+
+    {
+        text: "Мне важно понимать, что моя работа нужна не только мне, но и общему делу.",
+        type: "PA"
+    },
+
+    {
+        text: "Премии и бонусы существенно повышают мою заинтересованность в результате.",
+        type: "IN"
+    },
+
+    {
+        text: "Я готов взяться за сложную задачу ради профессионального опыта, даже если она не принесёт немедленной выгоды.",
+        type: "PR"
+    },
+
+    {
+        text: "Если мне доверяют самостоятельное направление работы, я обычно стараюсь максимально использовать эту возможность.",
+        type: "HO"
+    },
+
+    {
+        text: "Если можно избежать лишних усилий без серьёзных последствий, я скорее воспользуюсь этой возможностью.",
+        type: "LU"
+    },
+
+    {
+        text: "Для меня важно сохранять хорошие отношения с коллегами и руководителем.",
+        type: "PA"
+    },
+
+    {
+        text: "Я могу сменить место работы, если считаю, что мой труд оплачивается ниже его реальной стоимости.",
+        type: "IN"
+    },
+
+    {
+        text: "Мне важно становиться специалистом, который действительно хорошо разбирается в своей области.",
+        type: "PR"
+    },
+
+    {
+        text: "Мне комфортнее, когда мне обозначают цель, а способ её достижения я выбираю самостоятельно.",
+        type: "HO"
+    },
+
+    {
+        text: "Я не стремлюсь брать на себя новые задачи, если они не дают мне заметной личной выгоды.",
+        type: "LU"
+    }
+
+];
+
+const descriptions = {
+
+    IN: {
+        name: "Инструментальный",
+        short: "Материальное вознаграждение и справедливость оплаты",
+        interpretation:
+            "Для вас существенную роль играет материальная сторона труда. Важны понятная система вознаграждения, соответствие оплаты усилиям и возможность увеличивать доход.",
+        motivators: [
+            "прозрачная система оплаты",
+            "премии и бонусы",
+            "понятная связь результата с вознаграждением"
+        ],
+        demotivators: [
+            "непрозрачная система оплаты",
+            "несоответствие усилий и вознаграждения",
+            "задержки или неопределённость выплат"
+        ]
+    },
+
+    PR: {
+        name: "Профессиональный",
+        short: "Содержание работы, развитие и компетентность",
+        interpretation:
+            "Для вас важна сама профессиональная деятельность. Значимыми факторами могут быть интересные задачи, развитие компетенций, сложность работы и профессиональное признание.",
+        motivators: [
+            "сложные и интересные задачи",
+            "обучение и развитие",
+            "профессиональное признание"
+        ],
+        demotivators: [
+            "однообразная работа",
+            "отсутствие развития",
+            "невозможность применять компетенции"
+        ]
+    },
+
+    PA: {
+        name: "Патриотический",
+        short: "Общее дело, принадлежность и значимость вклада",
+        interpretation:
+            "Для вас может быть важно ощущение собственной полезности и принадлежности к общему делу. Значимую роль способны играть команда, доверие и признание личного вклада.",
+        motivators: [
+            "сильная команда",
+            "ощущение полезности",
+            "признание вклада"
+        ],
+        demotivators: [
+            "изоляция от команды",
+            "отсутствие обратной связи",
+            "ощущение бессмысленности работы"
+        ]
+    },
+
+    HO: {
+        name: "Хозяйский",
+        short: "Самостоятельность, влияние и ответственность",
+        interpretation:
+            "Для вас важна автономия в работе. Вы можете быть особенно заинтересованы в возможности самостоятельно принимать решения, влиять на результат и отвечать за свою зону ответственности.",
+        motivators: [
+            "самостоятельность",
+            "возможность принимать решения",
+            "влияние на результат"
+        ],
+        demotivators: [
+            "микроменеджмент",
+            "избыточный контроль",
+            "отсутствие влияния на результат"
+        ]
+    },
+
+    LU: {
+        name: "Избегательный",
+        short: "Минимизация нагрузки и ответственности",
+        interpretation:
+            "Высокая выраженность этой ориентации указывает на большую значимость предсказуемости, минимизации дополнительной нагрузки и избегания избыточной ответственности. Сам по себе результат не позволяет делать выводы о выгорании или состоянии здоровья.",
+        motivators: [
+            "предсказуемые обязанности",
+            "понятные требования",
+            "разумная нагрузка"
+        ],
+        demotivators: [
+            "постоянное увеличение нагрузки",
+            "неопределённость обязанностей",
+            "избыточное давление"
+        ]
+    }
+
+};
+
+let currentQuestion = 0;
+let answers = new Array(questions.length).fill(null);
+
+function renderQuestion() {
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionText").textContent =
+        q.text;
+
+    document.getElementById("questionNumber").textContent =
+        `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+
+    const percent =
+        Math.round(((currentQuestion + 1) / questions.length) * 100);
+
+    document.getElementById("percent").textContent =
+        `${percent}%`;
+
+    document.getElementById("progressBar").style.width =
+        `${percent}%`;
+
+    document.querySelectorAll('input[name="answer"]').forEach(input => {
+        input.checked = false;
+
+        if (answers[currentQuestion] !== null &&
+            Number(input.value) === answers[currentQuestion]) {
+            input.checked = true;
+        }
+    });
+
+    document.getElementById("backBtn").disabled =
+        currentQuestion === 0;
+
+    document.getElementById("nextBtn").textContent =
+        currentQuestion === questions.length - 1
+            ? "Завершить тест"
+            : "Далее →";
+}
+
+function getSelectedAnswer() {
+
+    const selected =
+        document.querySelector('input[name="answer"]:checked');
+
+    return selected ? Number(selected.value) : null;
+}
+
+function nextQuestion() {
+
+    const answer = getSelectedAnswer();
+
+    if (answer === null) {
+        alert("Выберите один из вариантов ответа.");
+        return;
+    }
+
+    answers[currentQuestion] = answer;
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+        renderQuestion();
+
+    } else {
+
+        showResults();
+
+    }
+}
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+    }
+}
+
+function calculateResults() {
+
+    const scores = {
+        IN: 0,
+        PR: 0,
+        PA: 0,
+        HO: 0,
+        LU: 0
+    };
+
+    questions.forEach((question, index) => {
+
+        const answer = answers[index];
+
+        if (answer !== null) {
+            scores[question.type] += answer;
+        }
+
+    });
+
+    return scores;
+}
+
+function showResults() {
+
+    const scores = calculateResults();
+
+    const sorted =
+        Object.entries(scores)
+            .sort((a,b) => b[1] - a[1]);
+
+    const first = sorted[0];
+    const second = sorted[1];
+
+    const firstType = first[0];
+    const secondType = second[0];
+
+    document.getElementById("testScreen")
+        .classList.add("hidden");
+
+    document.getElementById("resultScreen")
+        .classList.remove("hidden");
+
+    let dominantText =
+        `<h3>Ведущая ориентация: ${descriptions[firstType].name}</h3>
+         <p>${descriptions[firstType].short}.</p>`;
+
+    if (first[1] - second[1] <= 2) {
+
+        dominantText =
+            `<h3>Ведущий профиль: ${descriptions[firstType].name} + ${descriptions[secondType].name}</h3>
+             <p>Две мотивационные ориентации выражены близко друг к другу.</p>`;
+
+    }
+
+    document.getElementById("dominantBox").innerHTML =
+        dominantText;
+
+    const bars = document.getElementById("profileBars");
+
+    bars.innerHTML = "";
+
+    Object.entries(scores)
+        .sort((a,b) => b[1] - a[1])
+        .forEach(([type, score]) => {
+
+            const percent = Math.round((score / 25) * 100);
+
+            bars.innerHTML += `
+                <div class="profile-row">
+
+                    <div class="profile-header">
+                        <span class="profile-name">
+                            ${descriptions[type].name}
+                        </span>
+
+                        <span class="profile-score">
+                            ${score} / 25 · ${percent}%
+                        </span>
+                    </div>
+
+                    <div class="bar">
+                        <div class="bar-fill"
+                             style="width:${percent}%"></div>
+                    </div>
+
+                </div>
+            `;
+        });
+
+    document.getElementById("interpretation").innerHTML =
+        `<div class="trait">
+            <strong>${descriptions[firstType].name}</strong>
+            ${descriptions[firstType].interpretation}
+        </div>`;
+
+    document.getElementById("motivators").innerHTML =
+        descriptions[firstType].motivators
+            .map(item => `<div class="trait">${item}</div>`)
+            .join("");
+
+    document.getElementById("demotivators").innerHTML =
+        descriptions[firstType].demotivators
+            .map(item => `<div class="trait">${item}</div>`)
+            .join("");
+
+    localStorage.setItem(
+        "psytools_gerchikov_result",
+        JSON.stringify({
+            answers,
+            scores,
+            date: new Date().toISOString()
+        })
+    );
+}
+
+function restartTest() {
+
+    answers = new Array(questions.length).fill(null);
+    currentQuestion = 0;
+
+    document.getElementById("resultScreen")
+        .classList.add("hidden");
+
+    document.getElementById("testScreen")
+        .classList.remove("hidden");
+
+    renderQuestion();
+}
+
+function goHome() {
+
+    window.location.href = "../";
+}
+
+renderQuestion();
+
+</script>
+
+</body>
+</html>
