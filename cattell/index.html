@@ -135,7 +135,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
     <div class="card">
         <h2>Профиль в стенах</h2>
         <p class="muted">Стены — стандартная шкала 1–10 со средним значением 5.5. Используется в классическом 16PF.</p>
-        <canvas id="barChart" width="700" height="540"></canvas>
+        <canvas id="barChart" width="720" height="560"></canvas>
     </div>
 
     <div class="card" id="demoCard">
@@ -225,12 +225,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
 </div>
 
 <script>
-/* ⚙️ ВСТАВЬТЕ СВОЙ URL APPS SCRIPT */
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВСТАВЬТЕ_ID/exec";
 
-/* ============================================================
-   ФАКТОРЫ
-============================================================ */
 const factors = [
     {code:"A", name:"Теплота", short:"Теплота", color:"#5eead4",
      desc:"Открытость к людям, контактность, эмоциональная включённость.",
@@ -317,27 +313,18 @@ const Q_SRC = {
     Q4:["Мне трудно бездействовать, когда важный вопрос ещё не решён.",{r:"В ожидании результата я обычно спокоен."},"Мне хочется быстрее перейти от обсуждения к действию.",{r:"Затянувшаяся задача обычно не вызывает у меня желания её ускорить."},"Я могу раздражаться, когда процесс неоправданно медленный.",{r:"После интенсивного дня я легко переключаюсь на отдых."},"Нерешённая проблема может продолжать занимать мои мысли.",{r:"Напряжение переносится легче, когда нет возможности действовать."},"Я склонен активно искать следующий шаг, если текущий уже понятен.",{r:"В период высокой нагрузки мой внутренний темп обычно не меняется."},"Мне бывает сложно терпеливо ждать, когда решение зависит от других.",{r:"Я спокойно переношу длительное отсутствие активности."}]
 };
 
-/* ============================================================
-   РАЗВОРАЧИВАЕМ ВОПРОСЫ
-============================================================ */
 const questions = [];
 let _id = 0;
 for (const factor of Object.keys(Q_SRC)) {
     for (const item of Q_SRC[factor]) {
         _id++;
-        if (typeof item === "string") {
-            questions.push({id:_id, factor:factor, text:item, reverse:false});
-        } else {
-            questions.push({id:_id, factor:factor, text:item.r, reverse:true});
-        }
+        if (typeof item === "string") questions.push({id:_id, factor:factor, text:item, reverse:false});
+        else questions.push({id:_id, factor:factor, text:item.r, reverse:true});
     }
 }
 
 const labels = ["Совсем не похоже на меня","Отчасти похоже на меня","Очень похоже на меня"];
 
-/* ============================================================
-   СОСТОЯНИЕ
-============================================================ */
 let answers = [];
 let idx = 0;
 let factorPositions = [];
@@ -345,19 +332,11 @@ let lastResults = null;
 let demographics = { age:null, gender:"", zodiac:"", education:"" };
 let submitted = false;
 
-/* Новые ключи хранения — сброс старых данных */
 const DONE_KEY = "cattell_done_v2";
 const SAVED_KEY = "cattell_saved_v2";
 
-/* ============================================================
-   УТИЛИТЫ ХРАНЕНИЯ
-============================================================ */
-function isCompleted() {
-    try { return localStorage.getItem(DONE_KEY) === "1"; } catch (e) { return false; }
-}
-function markCompleted() {
-    try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {}
-}
+function isCompleted() { try { return localStorage.getItem(DONE_KEY) === "1"; } catch (e) { return false; } }
+function markCompleted() { try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {} }
 function savedResults() {
     try {
         const raw = localStorage.getItem(SAVED_KEY);
@@ -365,11 +344,7 @@ function savedResults() {
     } catch (e) { return null; }
 }
 
-/* ============================================================
-   СТАРТ
-============================================================ */
 function boot() {
-    /* Чистим старые ключи v1, если остались */
     try {
         localStorage.removeItem('cattell_done_v1');
         localStorage.removeItem('cattell_saved_v1');
@@ -378,9 +353,7 @@ function boot() {
     if (isCompleted()) {
         const saved = savedResults();
         if (saved) showCompletedScreen(saved);
-        else {
-            document.getElementById('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
-        }
+        else document.getElementById('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
         return;
     }
     document.getElementById('intro').classList.remove('hidden');
@@ -398,7 +371,6 @@ function showCompletedScreen(saved) {
 
     answers = saved.answers || [];
 
-    /* Проверяем, что у результатов есть поле sten */
     let res = saved.results;
     let needRecalc = !res || !res.length || (typeof res[0].sten !== 'number');
 
@@ -411,8 +383,7 @@ function showCompletedScreen(saved) {
     }
 
     if (!res || !res.length) {
-        /* Совсем ничего нет — показываем сообщение */
-        document.getElementById('result').innerHTML = '<div class="card"><h2>Не удалось загрузить результат</h2><p class="muted">Пожалуйста, сбросьте данные браузера и пройдите тест заново.</p></div>';
+        document.getElementById('result').innerHTML = '<div class="card"><h2>Не удалось загрузить результат</h2><p class="muted">Сбросьте данные браузера и пройдите тест заново.</p></div>';
         return;
     }
 
@@ -429,9 +400,6 @@ function showCompletedScreen(saved) {
     quality();
 }
 
-/* ============================================================
-   ТЕСТ
-============================================================ */
 function start() {
     document.getElementById('intro').classList.add('hidden');
     document.getElementById('test').classList.remove('hidden');
@@ -445,18 +413,13 @@ function render() {
     document.getElementById('counter').textContent = `${idx + 1} / ${questions.length}`;
     updateProgress();
     updateWalker();
-
     const box = document.getElementById('answers');
     box.innerHTML = '';
     labels.forEach((label, i) => {
         const b = document.createElement('button');
         b.className = 'option' + (answers[idx] === i ? ' selected' : '');
         b.textContent = label;
-        b.onclick = () => {
-            answers[idx] = i;
-            document.getElementById('qerr').textContent = '';
-            render();
-        };
+        b.onclick = () => { answers[idx] = i; document.getElementById('qerr').textContent = ''; render(); };
         box.appendChild(b);
     });
 }
@@ -502,9 +465,6 @@ function prev() {
     }
 }
 
-/* ============================================================
-   ПОДСЧЁТ
-============================================================ */
 function calc() {
     const raw = Object.fromEntries(factors.map(f => [f.code, 0]));
     const cnt = Object.fromEntries(factors.map(f => [f.code, 0]));
@@ -524,48 +484,31 @@ function calc() {
         if (sten < 1) sten = 1;
         if (sten > 10) sten = 10;
         return {
-            code: f.code,
-            name: f.name,
-            short: f.short,
-            color: f.color,
-            desc: f.desc,
-            high: f.high,
-            low: f.low,
-            raw: raw[f.code],
-            score: percent,
-            sten: sten
+            code: f.code, name: f.name, short: f.short, color: f.color,
+            desc: f.desc, high: f.high, low: f.low,
+            raw: raw[f.code], score: percent, sten: sten
         };
     });
 }
 
-/* ============================================================
-   ФИНАЛ
-============================================================ */
 function finish() {
     if (answers.length < questions.length || answers.some(x => x === undefined)) {
         document.getElementById('qerr').textContent = 'Нужно ответить на все задания.';
         return;
     }
     markCompleted();
-
     document.getElementById('test').classList.add('hidden');
     document.getElementById('result').classList.remove('hidden');
     document.getElementById('counter').textContent = 'Готово';
     document.getElementById('bar').style.width = '100%';
     updateWalker();
-
     const res = calc();
     lastResults = res;
-
     try {
         localStorage.setItem(SAVED_KEY, JSON.stringify({
-            answers: answers.slice(),
-            results: res,
-            date: new Date().toISOString(),
-            submitted: false
+            answers: answers.slice(), results: res, date: new Date().toISOString(), submitted: false
         }));
     } catch (e) {}
-
     draw(res);
     drawBars(res);
     renderDescriptions(res);
@@ -595,12 +538,10 @@ function quality() {
     const same = answers.filter((x, i) => i > 0 && x === answers[i - 1]).length;
     const middle = answers.filter(x => x === 1).length;
     const middlePct = Math.round(middle / answers.length * 100);
-
     let note = '';
     if (same > 40) note = '<br>⚠️ Много одинаковых ответов подряд. Часть заданий могла быть пройдена автоматически — это снижает точность.';
     else if (middlePct > 60) note = '<br>⚠️ Больше половины ответов — «Отчасти похоже». Это снижает дифференциацию профиля.';
     else note = '<br>✓ Ответы выглядят достаточно дифференцированными.';
-
     document.getElementById('quality').innerHTML =
         `Заполнено: <b>${answers.length}/${questions.length}</b>. ` +
         `Повтор одинакового ответа подряд: <b>${same}</b>. ` +
@@ -608,7 +549,7 @@ function quality() {
 }
 
 /* ============================================================
-   ДИАГРАММА-РАДАР
+   РАДАР
 ============================================================ */
 function draw(res) {
     const c = document.getElementById('chart');
@@ -621,11 +562,10 @@ function draw(res) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, 700, 620);
 
-    const W = 700, H = 620, cx = 350, cy = 300, R = 190;
+    const cx = 350, cy = 300, R = 190;
     const N = res.length;
     factorPositions = [];
 
-    /* Сетка */
     ctx.strokeStyle = '#263a55';
     for (let ring = 20; ring <= 100; ring += 20) {
         ctx.beginPath();
@@ -639,7 +579,6 @@ function draw(res) {
         ctx.stroke();
     }
 
-    /* Оси */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
         ctx.beginPath();
@@ -649,7 +588,6 @@ function draw(res) {
         ctx.stroke();
     });
 
-    /* Заливка */
     ctx.beginPath();
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
@@ -665,7 +603,6 @@ function draw(res) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    /* Точки + плашки стенов */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
         const v = (typeof r.score === 'number') ? r.score : 0;
@@ -679,11 +616,9 @@ function draw(res) {
 
         factorPositions.push({ x, y, code: r.code, cx, cy, angle: a, R });
 
-        /* Плашка со стеном */
         const labelDist = 22;
         const lx = x + Math.cos(a) * labelDist;
         const ly = y + Math.sin(a) * labelDist;
-
         const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
         const text = stenVal.toString();
 
@@ -716,7 +651,6 @@ function draw(res) {
         ctx.fillText(text, lx, ly + 1);
     });
 
-    /* Подписи */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
         const labelR = R + 34;
@@ -736,110 +670,168 @@ function draw(res) {
 }
 
 /* ============================================================
-   СТУПЕНЧАТЫЙ ГРАФ
+   ВЕРТИКАЛЬНАЯ СТОЛБЧАТАЯ ДИАГРАММА
 ============================================================ */
 function drawBars(res) {
     const c = document.getElementById('barChart');
     if (!c) return;
     const ctx = c.getContext('2d');
     const dpr = devicePixelRatio || 1;
-    const W = 700, H = 540;
+
+    const W = 720, H = 560;
     c.width = W * dpr;
     c.height = H * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, W, H);
 
-    const padL = 130;
-    const padR = 80;
-    const padT = 40;
-    const padB = 20;
+    const padL = 46;      /* отступ слева — под шкалу стенов */
+    const padR = 20;
+    const padT = 46;      /* отступ сверху — под значения и зоны */
+    const padB = 60;      /* отступ снизу — под подписи */
+
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
-    const N = res.length;
-    const rowH = chartH / N;
-    const barH = rowH * 0.62;
 
-    /* Сетка по стенам */
+    const N = res.length;
+    const colGap = chartW / N;
+    const barW = colGap * 0.62;
+
+    /* ---------- Зоны (фон по уровням) ---------- */
+    /* Низкая зона 1-3.5 */
+    const zoneHeight = (sten) => (sten - 1) / 9 * chartH;
+    const yForSten = (sten) => padT + chartH - (sten - 1) / 9 * chartH;
+
+    /* Зона НИЗКО (1-3) */
+    ctx.fillStyle = 'rgba(251,113,133,.05)';
+    ctx.fillRect(padL, yForSten(3.5), chartW, chartH - (yForSten(3.5) - padT));
+
+    /* Зона СРЕДНЕ (4-7) */
+    ctx.fillStyle = 'rgba(148,163,184,.04)';
+    ctx.fillRect(padL, yForSten(7.5), chartW, yForSten(3.5) - yForSten(7.5));
+
+    /* Зона ВЫСОКО (8-10) */
+    ctx.fillStyle = 'rgba(94,234,212,.05)';
+    ctx.fillRect(padL, padT, chartW, yForSten(7.5) - padT);
+
+    /* ---------- Сетка по стенам 1-10 ---------- */
     for (let s = 1; s <= 10; s++) {
-        const x = padL + (s - 1) / 9 * chartW;
+        const y = yForSten(s);
+
         ctx.beginPath();
-        ctx.moveTo(x, padT);
-        ctx.lineTo(x, padT + chartH);
-        ctx.strokeStyle = (s === 5 || s === 6) ? 'rgba(94,234,212,.22)' : 'rgba(255,255,255,.04)';
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL + chartW, y);
+        ctx.strokeStyle = (s === 5) ? 'rgba(94,234,212,.30)' : 'rgba(255,255,255,.06)';
         ctx.lineWidth = s === 5 ? 1.5 : 1;
         ctx.stroke();
 
+        /* Цифра слева */
         ctx.fillStyle = (s === 5) ? '#5eead4' : '#9db0c8';
         ctx.font = (s === 5 ? '700' : '500') + ' 11px system-ui';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillText(s.toString(), x, padT - 10);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(s.toString(), padL - 8, y);
     }
 
-    /* Метки зон */
-    ctx.font = '600 10px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(251,113,133,.75)';
-    ctx.fillText('НИЗКО', padL + chartW * 0.11, padT - 24);
-    ctx.fillStyle = 'rgba(148,163,184,.75)';
-    ctx.fillText('СРЕДНЕ', padL + chartW * 0.5, padT - 24);
-    ctx.fillStyle = 'rgba(94,234,212,.75)';
-    ctx.fillText('ВЫСОКО', padL + chartW * 0.89, padT - 24);
+    /* Средняя линия 5.5 (популяционное среднее) */
+    const yAvg = padT + chartH - (5.5 - 1) / 9 * chartH;
+    ctx.beginPath();
+    ctx.moveTo(padL, yAvg);
+    ctx.lineTo(padL + chartW, yAvg);
+    ctx.strokeStyle = 'rgba(96,165,250,.55)';
+    ctx.setLineDash([5, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
 
-    /* Строки */
+    /* Подпись «среднее 5.5» */
+    ctx.fillStyle = 'rgba(96,165,250,.85)';
+    ctx.font = '600 10px system-ui';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('среднее 5.5', padL + 4, yAvg - 3);
+
+    /* ---------- Метки зон сверху ---------- */
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '600 10px system-ui';
+    ctx.fillStyle = 'rgba(251,113,133,.75)';
+    ctx.fillText('НИЗКО', padL + chartW * 0.11, padT - 26);
+    ctx.fillStyle = 'rgba(148,163,184,.75)';
+    ctx.fillText('СРЕДНЕ', padL + chartW * 0.5, padT - 26);
+    ctx.fillStyle = 'rgba(94,234,212,.75)';
+    ctx.fillText('ВЫСОКО', padL + chartW * 0.89, padT - 26);
+
+    /* ---------- Столбики ---------- */
     res.forEach((r, i) => {
-        const y = padT + i * rowH + (rowH - barH) / 2;
         const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
         const pctVal = (typeof r.score === 'number') ? r.score : 0;
 
-        /* Фон строки */
-        ctx.fillStyle = (i % 2 === 0) ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.005)';
-        ctx.fillRect(padL, y, chartW, barH);
+        const colX = padL + i * colGap + (colGap - barW) / 2;
+        const barH = Math.max(0, yForSten(stenVal) - (padT + chartH));
+        const barY = padT + chartH - barH;
 
-        /* Полоса */
-        const w = (stenVal - 1) / 9 * chartW;
-        if (w > 0) {
-            const grad = ctx.createLinearGradient(padL, 0, padL + w, 0);
-            grad.addColorStop(0, r.color + '66');
-            grad.addColorStop(1, r.color);
-            ctx.fillStyle = grad;
-            ctx.fillRect(padL, y, w, barH);
+        /* Градиент снизу вверх */
+        if (barH > 0) {
+            const grad = ctx.createLinearGradient(0, barY, 0, padT + chartH);
+            grad.addColorStop(0, r.color);
+            grad.addColorStop(1, r.color + '55');
 
-            ctx.strokeStyle = r.color;
-            ctx.lineWidth = 1.5;
+            /* Скруглённый верх столбика */
+            const rad = Math.min(6, barW / 3);
             ctx.beginPath();
-            ctx.moveTo(padL, y);
-            ctx.lineTo(padL + w, y);
-            ctx.lineTo(padL + w, y + barH);
+            ctx.moveTo(colX, padT + chartH);
+            ctx.lineTo(colX, barY + rad);
+            ctx.arcTo(colX, barY, colX + rad, barY, rad);
+            ctx.lineTo(colX + barW - rad, barY);
+            ctx.arcTo(colX + barW, barY, colX + barW, barY + rad, rad);
+            ctx.lineTo(colX + barW, padT + chartH);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            /* Верхняя обводка */
+            ctx.beginPath();
+            ctx.moveTo(colX, barY + rad);
+            ctx.arcTo(colX, barY, colX + rad, barY, rad);
+            ctx.lineTo(colX + barW - rad, barY);
+            ctx.arcTo(colX + barW, barY, colX + barW, barY + rad, rad);
+            ctx.strokeStyle = r.color;
+            ctx.lineWidth = 1.8;
             ctx.stroke();
         }
 
-        /* Слева — код + название */
-        ctx.fillStyle = '#eef5ff';
-        ctx.font = '700 12px system-ui';
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(r.code, padL - 12, y + barH / 2 - 6);
-
-        ctx.fillStyle = '#9db0c8';
-        ctx.font = '10px system-ui';
-        ctx.fillText(r.short, padL - 12, y + barH / 2 + 8);
-
-        /* Справа — стен + процент */
+        /* Значение стена — сверху столбика */
         ctx.fillStyle = r.color;
-        ctx.font = '800 15px system-ui';
-        ctx.textAlign = 'left';
-        ctx.fillText(stenVal.toString(), padL + chartW + 12, y + barH / 2 - 5);
+        ctx.font = '800 13px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(stenVal.toString(), colX + barW / 2, barY - 4);
 
+        /* Код фактора под столбиком */
+        ctx.fillStyle = '#eef5ff';
+        ctx.font = '700 11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(r.code, colX + barW / 2, padT + chartH + 8);
+
+        /* Название — мелко, в 2 строки */
         ctx.fillStyle = '#9db0c8';
-        ctx.font = '11px system-ui';
-        ctx.fillText(pctVal + '%', padL + chartW + 12, y + barH / 2 + 10);
+        ctx.font = '9px system-ui';
+        ctx.textBaseline = 'top';
+        const words = r.short.split(' ');
+        if (words.length <= 1) {
+            ctx.fillText(r.short, colX + barW / 2, padT + chartH + 22);
+        } else {
+            const mid = Math.ceil(words.length / 2);
+            ctx.fillText(words.slice(0, mid).join(' '), colX + barW / 2, padT + chartH + 22);
+            ctx.fillText(words.slice(mid).join(' '), colX + barW / 2, padT + chartH + 33);
+        }
     });
 }
 
 /* ============================================================
-   КЛИК ПО ДИАГРАММЕ
+   КЛИК ПО РАДАРУ
 ============================================================ */
 document.getElementById('chart').addEventListener('click', function (e) {
     if (!factorPositions.length) return;
@@ -871,6 +863,30 @@ document.getElementById('chart').addEventListener('click', function (e) {
     }
 
     if (closest) showFactorModal(closest.code);
+});
+
+/* ============================================================
+   КЛИК ПО СТОЛБЧАТОЙ ДИАГРАММЕ
+============================================================ */
+document.getElementById('barChart').addEventListener('click', function (e) {
+    if (!lastResults || !lastResults.length) return;
+    const rect = this.getBoundingClientRect();
+    const scaleX = 720 / rect.width;
+    const clickX = (e.clientX - rect.left) * scaleX;
+
+    /* Определяем, в какой столбик попал клик */
+    const padL = 46;
+    const padR = 20;
+    const chartW = 720 - padL - padR;
+    const colGap = chartW / lastResults.length;
+
+    const relX = clickX - padL;
+    if (relX < 0 || relX > chartW) return;
+
+    const colIdx = Math.floor(relX / colGap);
+    if (colIdx >= 0 && colIdx < lastResults.length) {
+        showFactorModal(lastResults[colIdx].code);
+    }
 });
 
 /* ============================================================
@@ -916,12 +932,8 @@ genderBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const was = btn.classList.contains('selected');
         genderBtns.forEach(b => b.classList.remove('selected'));
-        if (!was) {
-            btn.classList.add('selected');
-            demographics.gender = btn.dataset.val;
-        } else {
-            demographics.gender = "";
-        }
+        if (!was) { btn.classList.add('selected'); demographics.gender = btn.dataset.val; }
+        else { demographics.gender = ""; }
         updateSubmitState();
     });
 });
@@ -948,27 +960,17 @@ function updateSubmitState() {
     const btn = document.getElementById('demoSubmitBtn');
     const status = document.getElementById('demoStatus');
 
-    if (!consented) {
-        btn.disabled = true;
-        status.textContent = 'Нужно согласие на отправку';
-    } else if (!hasAnyData) {
-        btn.disabled = true;
-        status.textContent = 'Заполните хотя бы одно поле';
-    } else {
-        btn.disabled = false;
-        status.textContent = '';
-    }
+    if (!consented) { btn.disabled = true; status.textContent = 'Нужно согласие на отправку'; }
+    else if (!hasAnyData) { btn.disabled = true; status.textContent = 'Заполните хотя бы одно поле'; }
+    else { btn.disabled = false; status.textContent = ''; }
 }
 
 /* ============================================================
-   ОТПРАВКА В GOOGLE SHEETS
+   ОТПРАВКА
 ============================================================ */
 async function submitDemographics() {
     if (submitted) return;
-    if (!lastResults || !lastResults.length) {
-        alert('Результаты не найдены');
-        return;
-    }
+    if (!lastResults || !lastResults.length) { alert('Результаты не найдены'); return; }
 
     const btn = document.getElementById('demoSubmitBtn');
     const status = document.getElementById('demoStatus');
@@ -976,13 +978,8 @@ async function submitDemographics() {
     btn.textContent = 'Отправляем...';
     status.textContent = '';
 
-    /* Считаем средний стен и средний процент */
-    const avgSten = parseFloat(
-        (lastResults.reduce((s, r) => s + r.sten, 0) / lastResults.length).toFixed(1)
-    );
-    const avgPercent = Math.round(
-        lastResults.reduce((s, r) => s + r.score, 0) / lastResults.length
-    );
+    const avgSten = parseFloat((lastResults.reduce((s, r) => s + r.sten, 0) / lastResults.length).toFixed(1));
+    const avgPercent = Math.round(lastResults.reduce((s, r) => s + r.score, 0) / lastResults.length);
 
     const payload = {
         type: "cattell_16pf",
@@ -995,14 +992,10 @@ async function submitDemographics() {
             education: demographics.education
         },
         results: lastResults.map(r => ({
-            code: r.code,
-            name: r.name,
-            sten: r.sten,
-            score: r.score
+            code: r.code, name: r.name, sten: r.sten, score: r.score
         })),
         averages: {
             avgSten: avgSten,
-            /* Отправляем оба поля — для совместимости со старым и новым Apps Script */
             fillPercent: avgPercent
         }
     };
@@ -1016,19 +1009,15 @@ async function submitDemographics() {
                 body: JSON.stringify(payload)
             });
         }
-
         submitted = true;
-
         try {
             const saved = savedResults() || {};
             saved.submitted = true;
             saved.demographics = demographics;
             localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
         } catch (e) {}
-
         document.getElementById('demoCard').innerHTML =
             '<h2>🙏 Спасибо!</h2><p class="muted">Ваши обезличенные данные отправлены в исследовательскую базу.</p>';
-
     } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Попробовать снова';
@@ -1039,33 +1028,21 @@ async function submitDemographics() {
 function randomId() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let id = "";
-    for (let i = 0; i < 10; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    for (let i = 0; i < 10; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
     return id;
 }
 
-/* ============================================================
-   ЭКСПОРТ JSON
-============================================================ */
 function downloadJSON() {
     const res = lastResults || calc();
     const avgSten = (res.reduce((s, r) => s + r.sten, 0) / res.length).toFixed(1);
-
     const data = {
         test: 'Личностный профиль — 185 заданий',
-        version: '4.0',
+        version: '5.0',
         date: new Date().toISOString(),
         averageSten: parseFloat(avgSten),
         demographics: demographics,
-        results: res.map(r => ({
-            code: r.code,
-            name: r.name,
-            sten: r.sten,
-            percent: r.score
-        }))
+        results: res.map(r => ({ code: r.code, name: r.name, sten: r.sten, percent: r.score }))
     };
-
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1074,9 +1051,6 @@ function downloadJSON() {
     URL.revokeObjectURL(a.href);
 }
 
-/* ============================================================
-   СТАРТ
-============================================================ */
 boot();
 </script>
 </body>
