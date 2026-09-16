@@ -35,7 +35,7 @@ button.main{text-align:center;background:linear-gradient(135deg,#164e63,#1d4ed8)
 button.main.secondary{background:#17263a;border:1px solid var(--line)}
 .error{color:var(--danger);margin-top:10px}
 canvas{width:100%;max-width:650px;display:block;margin:auto;cursor:pointer}
-#barChart{max-width:700px}
+#barChart{max-width:740px}
 .resultgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .factor{background:#0c1829;border:1px solid var(--line);border-radius:16px;padding:15px}
 .factor b{color:var(--accent)}
@@ -135,7 +135,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
     <div class="card">
         <h2>Профиль в стенах</h2>
         <p class="muted">Стены — стандартная шкала 1–10 со средним значением 5.5. Используется в классическом 16PF.</p>
-        <canvas id="barChart" width="720" height="560"></canvas>
+        <canvas id="barChart" width="740" height="560"></canvas>
+        <p class="hint">Нажмите на столбик, чтобы увидеть подробное описание</p>
     </div>
 
     <div class="card" id="demoCard">
@@ -328,6 +329,7 @@ const labels = ["Совсем не похоже на меня","Отчасти �
 let answers = [];
 let idx = 0;
 let factorPositions = [];
+let barPositions = [];
 let lastResults = null;
 let demographics = { age:null, gender:"", zodiac:"", education:"" };
 let submitted = false;
@@ -670,7 +672,8 @@ function draw(res) {
 }
 
 /* ============================================================
-   ВЕРТИКАЛЬНАЯ СТОЛБЧАТАЯ ДИАГРАММА
+   ВЕРТИКАЛЬНАЯ СТОЛБЧАТАЯ ДИАГРАММА (исправлено)
+   Ось Y: 0 → 10 (стен 1 = 10% высоты)
 ============================================================ */
 function drawBars(res) {
     const c = document.getElementById('barChart');
@@ -678,54 +681,55 @@ function drawBars(res) {
     const ctx = c.getContext('2d');
     const dpr = devicePixelRatio || 1;
 
-    const W = 720, H = 560;
+    const W = 740, H = 560;
     c.width = W * dpr;
     c.height = H * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, W, H);
 
-    const padL = 46;      /* отступ слева — под шкалу стенов */
+    const padL = 46;
     const padR = 20;
-    const padT = 46;      /* отступ сверху — под значения и зоны */
-    const padB = 60;      /* отступ снизу — под подписи */
+    const padT = 46;
+    const padB = 70;
 
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
+    const baselineY = padT + chartH;
 
     const N = res.length;
     const colGap = chartW / N;
     const barW = colGap * 0.62;
 
-    /* ---------- Зоны (фон по уровням) ---------- */
-    /* Низкая зона 1-3.5 */
-    const zoneHeight = (sten) => (sten - 1) / 9 * chartH;
-    const yForSten = (sten) => padT + chartH - (sten - 1) / 9 * chartH;
+    /* Функция: стен → Y-координата на canvas (0 внизу, 10 вверху) */
+    const yForSten = (sten) => baselineY - (sten / 10) * chartH;
 
-    /* Зона НИЗКО (1-3) */
-    ctx.fillStyle = 'rgba(251,113,133,.05)';
-    ctx.fillRect(padL, yForSten(3.5), chartW, chartH - (yForSten(3.5) - padT));
+    barPositions = [];
 
-    /* Зона СРЕДНЕ (4-7) */
-    ctx.fillStyle = 'rgba(148,163,184,.04)';
+    /* ---------- Зоны фона ---------- */
+    /* НИЗКО: 0–3.5 */
+    ctx.fillStyle = 'rgba(251,113,133,.06)';
+    ctx.fillRect(padL, yForSten(3.5), chartW, baselineY - yForSten(3.5));
+
+    /* СРЕДНЕ: 3.5–7.5 */
+    ctx.fillStyle = 'rgba(148,163,184,.05)';
     ctx.fillRect(padL, yForSten(7.5), chartW, yForSten(3.5) - yForSten(7.5));
 
-    /* Зона ВЫСОКО (8-10) */
-    ctx.fillStyle = 'rgba(94,234,212,.05)';
+    /* ВЫСОКО: 7.5–10 */
+    ctx.fillStyle = 'rgba(94,234,212,.06)';
     ctx.fillRect(padL, padT, chartW, yForSten(7.5) - padT);
 
-    /* ---------- Сетка по стенам 1-10 ---------- */
-    for (let s = 1; s <= 10; s++) {
+    /* ---------- Сетка по стенам 0-10 ---------- */
+    for (let s = 0; s <= 10; s++) {
         const y = yForSten(s);
 
         ctx.beginPath();
         ctx.moveTo(padL, y);
         ctx.lineTo(padL + chartW, y);
-        ctx.strokeStyle = (s === 5) ? 'rgba(94,234,212,.30)' : 'rgba(255,255,255,.06)';
+        ctx.strokeStyle = (s === 5) ? 'rgba(94,234,212,.28)' : 'rgba(255,255,255,.06)';
         ctx.lineWidth = s === 5 ? 1.5 : 1;
         ctx.stroke();
 
-        /* Цифра слева */
         ctx.fillStyle = (s === 5) ? '#5eead4' : '#9db0c8';
         ctx.font = (s === 5 ? '700' : '500') + ' 11px system-ui';
         ctx.textAlign = 'right';
@@ -734,7 +738,7 @@ function drawBars(res) {
     }
 
     /* Средняя линия 5.5 (популяционное среднее) */
-    const yAvg = padT + chartH - (5.5 - 1) / 9 * chartH;
+    const yAvg = yForSten(5.5);
     ctx.beginPath();
     ctx.moveTo(padL, yAvg);
     ctx.lineTo(padL + chartW, yAvg);
@@ -744,7 +748,6 @@ function drawBars(res) {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    /* Подпись «среднее 5.5» */
     ctx.fillStyle = 'rgba(96,165,250,.85)';
     ctx.font = '600 10px system-ui';
     ctx.textAlign = 'left';
@@ -765,55 +768,64 @@ function drawBars(res) {
     /* ---------- Столбики ---------- */
     res.forEach((r, i) => {
         const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
-        const pctVal = (typeof r.score === 'number') ? r.score : 0;
-
         const colX = padL + i * colGap + (colGap - barW) / 2;
-        const barH = Math.max(0, yForSten(stenVal) - (padT + chartH));
-        const barY = padT + chartH - barH;
 
-        /* Градиент снизу вверх */
+        /* Y верх столбика */
+        const barTopY = yForSten(stenVal);
+        const barH = baselineY - barTopY;
+
+        /* Область для клика */
+        barPositions.push({
+            x: padL + i * colGap,
+            y: padT,
+            w: colGap,
+            h: chartH,
+            code: r.code
+        });
+
+        /* Столбик */
         if (barH > 0) {
-            const grad = ctx.createLinearGradient(0, barY, 0, padT + chartH);
+            const grad = ctx.createLinearGradient(0, barTopY, 0, baselineY);
             grad.addColorStop(0, r.color);
             grad.addColorStop(1, r.color + '55');
 
-            /* Скруглённый верх столбика */
             const rad = Math.min(6, barW / 3);
+
             ctx.beginPath();
-            ctx.moveTo(colX, padT + chartH);
-            ctx.lineTo(colX, barY + rad);
-            ctx.arcTo(colX, barY, colX + rad, barY, rad);
-            ctx.lineTo(colX + barW - rad, barY);
-            ctx.arcTo(colX + barW, barY, colX + barW, barY + rad, rad);
-            ctx.lineTo(colX + barW, padT + chartH);
+            ctx.moveTo(colX, baselineY);
+            ctx.lineTo(colX, barTopY + rad);
+            ctx.arcTo(colX, barTopY, colX + rad, barTopY, rad);
+            ctx.lineTo(colX + barW - rad, barTopY);
+            ctx.arcTo(colX + barW, barTopY, colX + barW, barTopY + rad, rad);
+            ctx.lineTo(colX + barW, baselineY);
             ctx.closePath();
             ctx.fillStyle = grad;
             ctx.fill();
 
-            /* Верхняя обводка */
+            /* Обводка верхушки */
             ctx.beginPath();
-            ctx.moveTo(colX, barY + rad);
-            ctx.arcTo(colX, barY, colX + rad, barY, rad);
-            ctx.lineTo(colX + barW - rad, barY);
-            ctx.arcTo(colX + barW, barY, colX + barW, barY + rad, rad);
+            ctx.moveTo(colX, barTopY + rad);
+            ctx.arcTo(colX, barTopY, colX + rad, barTopY, rad);
+            ctx.lineTo(colX + barW - rad, barTopY);
+            ctx.arcTo(colX + barW, barTopY, colX + barW, barTopY + rad, rad);
             ctx.strokeStyle = r.color;
             ctx.lineWidth = 1.8;
             ctx.stroke();
         }
 
-        /* Значение стена — сверху столбика */
+        /* Значение стена сверху столбика */
         ctx.fillStyle = r.color;
         ctx.font = '800 13px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(stenVal.toString(), colX + barW / 2, barY - 4);
+        ctx.fillText(stenVal.toString(), colX + barW / 2, barTopY - 4);
 
         /* Код фактора под столбиком */
         ctx.fillStyle = '#eef5ff';
         ctx.font = '700 11px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText(r.code, colX + barW / 2, padT + chartH + 8);
+        ctx.fillText(r.code, colX + barW / 2, baselineY + 8);
 
         /* Название — мелко, в 2 строки */
         ctx.fillStyle = '#9db0c8';
@@ -821,11 +833,11 @@ function drawBars(res) {
         ctx.textBaseline = 'top';
         const words = r.short.split(' ');
         if (words.length <= 1) {
-            ctx.fillText(r.short, colX + barW / 2, padT + chartH + 22);
+            ctx.fillText(r.short, colX + barW / 2, baselineY + 22);
         } else {
             const mid = Math.ceil(words.length / 2);
-            ctx.fillText(words.slice(0, mid).join(' '), colX + barW / 2, padT + chartH + 22);
-            ctx.fillText(words.slice(mid).join(' '), colX + barW / 2, padT + chartH + 33);
+            ctx.fillText(words.slice(0, mid).join(' '), colX + barW / 2, baselineY + 22);
+            ctx.fillText(words.slice(mid).join(' '), colX + barW / 2, baselineY + 33);
         }
     });
 }
@@ -869,23 +881,20 @@ document.getElementById('chart').addEventListener('click', function (e) {
    КЛИК ПО СТОЛБЧАТОЙ ДИАГРАММЕ
 ============================================================ */
 document.getElementById('barChart').addEventListener('click', function (e) {
-    if (!lastResults || !lastResults.length) return;
+    if (!barPositions.length) return;
     const rect = this.getBoundingClientRect();
-    const scaleX = 720 / rect.width;
+    const scaleX = 740 / rect.width;
+    const scaleY = 560 / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
 
-    /* Определяем, в какой столбик попал клик */
-    const padL = 46;
-    const padR = 20;
-    const chartW = 720 - padL - padR;
-    const colGap = chartW / lastResults.length;
-
-    const relX = clickX - padL;
-    if (relX < 0 || relX > chartW) return;
-
-    const colIdx = Math.floor(relX / colGap);
-    if (colIdx >= 0 && colIdx < lastResults.length) {
-        showFactorModal(lastResults[colIdx].code);
+    for (let i = 0; i < barPositions.length; i++) {
+        const p = barPositions[i];
+        if (clickX >= p.x && clickX <= p.x + p.w &&
+            clickY >= p.y && clickY <= p.y + p.h) {
+            showFactorModal(p.code);
+            return;
+        }
     }
 });
 
@@ -1037,7 +1046,7 @@ function downloadJSON() {
     const avgSten = (res.reduce((s, r) => s + r.sten, 0) / res.length).toFixed(1);
     const data = {
         test: 'Личностный профиль — 185 заданий',
-        version: '5.0',
+        version: '5.1',
         date: new Date().toISOString(),
         averageSten: parseFloat(avgSten),
         demographics: demographics,
