@@ -3,43 +3,63 @@ function doPost(e) {
         var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
         var d = JSON.parse(e.postData.contents);
 
+        // Заголовки — только если их нет
         if (sheet.getLastRow() === 0) {
-            sheet.appendRow([
+            var headers = [
                 'ID','Дата','Возраст','Пол','ЗнакЗодиака','Образование',
-                'A','B','C','E','F','G','H','I','L','M','N','O','Q1','Q2','Q3','Q4',
-                'Заполненность%'
-            ]);
-            sheet.getRange(1, 1, 1, 23).setFontWeight('bold').setBackground('#e8ecff');
+                'A','B','C','E','F','G','H','I','L','M','N','O',
+                'Q1','Q2','Q3','Q4','Заполненность%'
+            ];
+            sheet.appendRow(headers);
+            sheet.getRange(1, 1, 1, headers.length)
+                .setFontWeight('bold')
+                .setBackground('#e8ecff');
             sheet.setFrozenRows(1);
         }
 
         var resMap = {};
-        (d.results || []).forEach(function (r) { resMap[r.code] = r.score; });
+        (d.results || []).forEach(function(r) { resMap[r.code] = r.score; });
 
-        sheet.appendRow([
+        var dm = d.demographics || {};
+        var row = [
             d.id || '',
             d.date || '',
-            (d.demographics && d.demographics.age) || '',
-            (d.demographics && d.demographics.gender) || '',
-            (d.demographics && d.demographics.zodiac) || '',
-            (d.demographics && d.demographics.education) || '',
+            dm.age || '',
+            dm.gender || '',
+            dm.zodiac || '',
+            dm.education || '',
             resMap.A || '', resMap.B || '', resMap.C || '', resMap.E || '',
             resMap.F || '', resMap.G || '', resMap.H || '', resMap.I || '',
             resMap.L || '', resMap.M || '', resMap.N || '', resMap.O || '',
             resMap.Q1 || '', resMap.Q2 || '', resMap.Q3 || '', resMap.Q4 || '',
             (d.averages && d.averages.fillPercent) || ''
-        ]);
+        ];
+        sheet.appendRow(row);
+
+        var rowNum = sheet.getLastRow();
+        Logger.log('Записана строка ' + rowNum + ' для ID ' + (d.id || '—'));
 
         return ContentService
-            .createTextOutput(JSON.stringify({ ok: true }))
+            .createTextOutput(JSON.stringify({
+                ok: true,
+                id: d.id,
+                row: rowNum
+            }))
             .setMimeType(ContentService.MimeType.JSON);
+
     } catch (err) {
+        Logger.log('ОШИБКА: ' + err.toString());
         return ContentService
-            .createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
+            .createTextOutput(JSON.stringify({
+                ok: false,
+                error: err.toString()
+            }))
             .setMimeType(ContentService.MimeType.JSON);
     }
 }
 
 function doGet() {
-    return ContentService.createTextOutput('Сервис работает. Используйте POST.');
+    return ContentService
+        .createTextOutput('Сервис работает. Используйте POST.')
+        .setMimeType(ContentService.MimeType.TEXT);
 }
