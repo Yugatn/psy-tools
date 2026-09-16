@@ -31,6 +31,12 @@ h1{margin:0;font-size:28px;font-weight:750}
 .scale-num{width:32px;height:32px;border-radius:9px;background:#1b202b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--muted);flex-shrink:0;transition:all .15s}
 .scale-option.selected .scale-num{background:var(--accent);color:#fff}
 .scale-label{flex:1;line-height:1.3}
+@media (min-width:640px){
+    .scale{flex-direction:row;gap:8px}
+    .scale-option{flex-direction:column;align-items:center;text-align:center;padding:14px 6px;gap:8px}
+    .scale-num{width:36px;height:36px;font-size:16px}
+    .scale-label{font-size:11.5px;line-height:1.25}
+}
 .nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .btn{border:none;border-radius:13px;padding:14px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.97)}
@@ -293,10 +299,6 @@ function calculateScores() {
     return scores;
 }
 
-/* Проценты:
-   - share — доля типа в общей сумме баллов (сумма = 100%)
-   - strength — сила типа относительно максимума (5..25 → 20..100%)
-*/
 function scoresToData(scores) {
     var total = 0;
     var keys = Object.keys(scores);
@@ -354,15 +356,26 @@ function drawRadar(data) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, size, size);
 
+    var isSmall = size < 420;
+    var isMedium = size >= 420 && size < 540;
+
     var cx = size / 2;
     var cy = size / 2;
-    var radius = Math.min(size, size) * 0.30;
-    var labelRadius = radius + 82;
+    var radius = Math.min(size, size) * (isSmall ? 0.36 : 0.32);
+    var labelOffset = isSmall ? 52 : (isMedium ? 68 : 82);
+    var labelRadius = radius + labelOffset;
+
+    var labelFont = isSmall ? 10 : (isMedium ? 11.5 : 12.5);
+    var iconFont = isSmall ? 14 : 16;
+    var maxLabelW = isSmall ? 78 : (isMedium ? 95 : 108);
+    var lineHeight = labelFont + 2;
+    var percentFont = isSmall ? 11 : 13;
+
     var order = ["IN", "PR", "PA", "HO", "LU"];
     var count = order.length;
     var angleStep = (Math.PI * 2) / count;
 
-    /* Сетка 20/40/60/80/100 */
+    /* Сетка */
     for (var lvl = 1; lvl <= 5; lvl++) {
         var r = radius * lvl / 5;
         ctx.beginPath();
@@ -389,15 +402,12 @@ function drawRadar(data) {
         ctx.stroke();
     }
 
-    /* Точки данных */
+    /* Точки */
     var points = [];
     for (var p = 0; p < order.length; p++) {
         var code = order[p];
-        var share = data[code] ? data[code].share : 0;
-        /* Шкала радара: share от 0 до 40% (так как при равномерном 20%, а максимум обычно ~35-40%) */
-        /* Используем strength для большей наглядности */
         var strength = data[code] ? data[code].strength : 0;
-        /* Нормализуем strength 20..100 в 0..1 */
+        var share = data[code] ? data[code].share : 0;
         var normVal = (strength - 20) / 80;
         if (normVal < 0) { normVal = 0; }
         if (normVal > 1) { normVal = 1; }
@@ -407,9 +417,9 @@ function drawRadar(data) {
             x: cx + Math.cos(ang2) * r2,
             y: cy + Math.sin(ang2) * r2,
             share: share,
-            strength: strength,
-            count: data[code] ? data[code].count : 0,
-            color: TYPES[code].color
+            color: TYPES[code].color,
+            angle: ang2,
+            normVal: normVal
         });
     }
 
@@ -438,13 +448,12 @@ function drawRadar(data) {
     ctx.fillStyle = fg;
     ctx.fill();
 
-    /* Контур */
     ctx.strokeStyle = "#9ca7ff";
     ctx.lineWidth = 2.5;
     ctx.lineJoin = "round";
     ctx.stroke();
 
-    /* Точки с процентами */
+    /* Точки + указатели + проценты */
     for (var t = 0; t < points.length; t++) {
         var pt = points[t];
 
@@ -465,29 +474,56 @@ function drawRadar(data) {
         ctx.fillStyle = "#ffffff";
         ctx.fill();
 
-        var ang3 = -Math.PI / 2 + t * angleStep;
-        var lx = cx + Math.cos(ang3) * (radius * ((pt.strength - 20) / 80) + 28);
-        var ly = cy + Math.sin(ang3) * (radius * ((pt.strength - 20) / 80) + 28);
-        var text = pt.share + "%";
+        /* Позиция указателя */
+        var ptDist = radius * pt.normVal;
+        var labelDist = ptDist + 42;
+        var lx = cx + Math.cos(pt.angle) * labelDist;
+        var ly = cy + Math.sin(pt.angle) * labelDist;
 
-        ctx.font = "800 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        /* Линия-указатель */
+        ctx.beginPath();
+        ctx.moveTo(pt.x, pt.y);
+        ctx.lineTo(lx, ly);
+        ctx.strokeStyle = pt.color;
+        ctx.globalAlpha = 0.55;
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        /* Кружок на конце указателя */
+        ctx.beginPath();
+        ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fill();
+        ctx.strokeStyle = "#0b0d12";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        /* Плашка с процентом */
+        var text = pt.share + "%";
+        ctx.font = "800 " + percentFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         var metrics = ctx.measureText(text);
         var bw = metrics.width + 16;
-        var bh = 24;
-        ctx.fillStyle = "rgba(11,13,18,.92)";
+        var bh = isSmall ? 20 : 24;
+
+        var boxDist = labelDist + (isSmall ? 18 : 22);
+        var bx = cx + Math.cos(pt.angle) * boxDist;
+        var by = cy + Math.sin(pt.angle) * boxDist;
+
+        ctx.fillStyle = "rgba(11,13,18,.94)";
         ctx.beginPath();
-        var bx = lx - bw / 2;
-        var by = ly - bh / 2;
-        var rr = 7;
-        ctx.moveTo(bx + rr, by);
-        ctx.lineTo(bx + bw - rr, by);
-        ctx.arcTo(bx + bw, by, bx + bw, by + rr, rr);
-        ctx.lineTo(bx + bw, by + bh - rr);
-        ctx.arcTo(bx + bw, by + bh, bx + bw - rr, by + bh, rr);
-        ctx.lineTo(bx + rr, by + bh);
-        ctx.arcTo(bx, by + bh, bx, by + bh - rr, rr);
-        ctx.lineTo(bx, by + rr);
-        ctx.arcTo(bx, by, bx + rr, by, rr);
+        var rectX = bx - bw / 2;
+        var rectY = by - bh / 2;
+        var rr = 6;
+        ctx.moveTo(rectX + rr, rectY);
+        ctx.lineTo(rectX + bw - rr, rectY);
+        ctx.arcTo(rectX + bw, rectY, rectX + bw, rectY + rr, rr);
+        ctx.lineTo(rectX + bw, rectY + bh - rr);
+        ctx.arcTo(rectX + bw, rectY + bh, rectX + bw - rr, rectY + bh, rr);
+        ctx.lineTo(rectX + rr, rectY + bh);
+        ctx.arcTo(rectX, rectY + bh, rectX, rectY + bh - rr, rr);
+        ctx.lineTo(rectX, rectY + rr);
+        ctx.arcTo(rectX, rectY, rectX + rr, rectY, rr);
         ctx.closePath();
         ctx.fill();
         ctx.strokeStyle = pt.color;
@@ -497,7 +533,7 @@ function drawRadar(data) {
         ctx.fillStyle = pt.color;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(text, lx, ly + 1);
+        ctx.fillText(text, bx, by + 1);
     }
 
     /* Подписи осей */
@@ -509,11 +545,12 @@ function drawRadar(data) {
 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.font = "16px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.fillStyle = "#f3f5f7";
-        ctx.fillText(meta.icon, lxLb, lyLb - 16);
 
-        ctx.font = "800 12.5px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.font = iconFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
+        ctx.fillText(meta.icon, lxLb, lyLb - lineHeight - 4);
+
+        ctx.font = "800 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         ctx.fillStyle = meta.color;
 
         var words = meta.name.split(" ");
@@ -521,7 +558,7 @@ function drawRadar(data) {
         var cur = "";
         for (var wi = 0; wi < words.length; wi++) {
             var test = cur ? cur + " " + words[wi] : words[wi];
-            if (ctx.measureText(test).width > 110) {
+            if (ctx.measureText(test).width > maxLabelW) {
                 if (cur) { lines.push(cur); }
                 cur = words[wi];
             } else {
@@ -530,13 +567,13 @@ function drawRadar(data) {
         }
         if (cur) { lines.push(cur); }
 
-        var lineH = 15;
-        var totalH = lines.length * lineH;
+        var totalH = lines.length * lineHeight;
         for (var li = 0; li < lines.length; li++) {
-            ctx.fillText(lines[li], lxLb, lyLb + li * lineH - (totalH - lineH) / 2 + 2);
+            ctx.fillText(lines[li], lxLb, lyLb + li * lineHeight - (totalH - lineHeight) / 2 + 2);
         }
     }
 
+    /* Центр */
     ctx.beginPath();
     ctx.arc(cx, cy, 4, 0, Math.PI * 2);
     ctx.fillStyle = "#ffffff";
@@ -570,9 +607,6 @@ function renderTypesList(ordered) {
     }
 }
 
-/* ============================================================
-   ИНТЕРПРЕТАЦИЯ
-============================================================ */
 function renderInterpretation(ordered) {
     var container = $("interpretation");
     var html = "";
@@ -586,7 +620,6 @@ function renderInterpretation(ordered) {
     var diff1_3 = top.data.count - third.data.count;
     var spread = top.data.count - last.data.count;
 
-    /* ---------- СЦЕНАРИЙ 1: размытый профиль ---------- */
     var allMid = spread <= 4;
     if (allMid && top.data.strength < 60) {
         html += '<p>Ваш профиль <strong>выражен слабо</strong> — нет ни одного ярко доминирующего типа. Это может означать, что:</p>';
@@ -600,7 +633,6 @@ function renderInterpretation(ordered) {
         return;
     }
 
-    /* ---------- СЦЕНАРИЙ 2: явный доминант ---------- */
     if (diff1_2 >= 4 && top.data.strength >= 70) {
         html += '<p>У вас <strong>отчётливо выражен</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.share + '% (' + top.data.count + '/25 баллов).</p>';
         html += '<p>Это означает, что ведущий стимул для вас — ' + getShortPhrase(top.code) + '. ' + getTypeSentence(top.code) + '</p>';
@@ -618,7 +650,6 @@ function renderInterpretation(ordered) {
         return;
     }
 
-    /* ---------- СЦЕНАРИЙ 3: двойной профиль ---------- */
     if (diff1_2 <= 3 && diff1_3 >= 4) {
         html += '<p>С <strong>высокой вероятностью</strong> у вас <strong>смешанный профиль</strong> из двух ведущих типов мотивации — они выражены примерно одинаково:</p>';
         html += '<div class="block">' +
@@ -636,7 +667,6 @@ function renderInterpretation(ordered) {
         return;
     }
 
-    /* ---------- СЦЕНАРИЙ 4: тройной профиль ---------- */
     if (diff1_2 <= 3 && diff1_3 <= 3) {
         html += '<p>Ваш профиль — <strong>множественный</strong>. С высокой вероятностью в вас сочетаются сразу три ведущих типа мотивации:</p>';
         html += '<div class="block">' +
@@ -650,7 +680,6 @@ function renderInterpretation(ordered) {
         return;
     }
 
-    /* ---------- СЦЕНАРИЙ 5: общий (fallback) ---------- */
     html += '<p>Наиболее вероятно у вас <strong>доминирует</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.share + '% (' + top.data.count + '/25 баллов).</p>';
     html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.share + '%). ' + getShortPhrase(second.code) + '.</p>';
     if (third.data.count >= 15) {
@@ -742,8 +771,8 @@ function renderRecommendations(topCode, secondCode) {
 
     html += '</div>';
 
-    html += '<div class="reco-col neg" style="margin-top:10px;background:var(--card2);border-radius:12px;padding:12px 14px">';
-    html += '<div class="reco-col-title" style="color:var(--danger);font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">Что демотивирует</div><ul style="margin:0;padding-left:16px">';
+    html += '<div style="margin-top:10px;background:var(--card2);border-radius:12px;padding:12px 14px">';
+    html += '<div style="color:var(--danger);font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">Что демотивирует</div><ul style="margin:0;padding-left:16px">';
     for (var j = 0; j < negTop.length; j++) {
         html += '<li style="margin-bottom:4px;color:var(--muted)">' + esc(negTop[j]) + '</li>';
     }
@@ -752,9 +781,6 @@ function renderRecommendations(topCode, secondCode) {
     container.innerHTML = html;
 }
 
-/* ============================================================
-   СОХРАНЕНИЕ
-============================================================ */
 function save() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ }));
@@ -776,9 +802,6 @@ function load() {
     } catch (e) {}
 }
 
-/* ============================================================
-   КНОПКИ
-============================================================ */
 function backToTest() {
     $("resultScreen").classList.add("hidden");
     $("testScreen").classList.remove("hidden");
