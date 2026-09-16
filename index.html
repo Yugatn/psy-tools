@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <title>PSY-TOOLS</title>
 
@@ -17,13 +17,17 @@
     padding: 0;
 }
 
-html,
-body {
+html {
     width: 100%;
     min-height: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
 }
 
 body {
+    width: 100%;
+    min-height: 100%;
+
     font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
     color: #e8faff;
     background:
@@ -32,8 +36,14 @@ body {
         radial-gradient(circle at 85% 80%, rgba(100, 0, 255, .05), transparent 30%),
         #020509;
     overflow-x: hidden;
+    overscroll-behavior-x: none;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
 }
+
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
 
 .grid-background {
     position: fixed;
@@ -50,6 +60,10 @@ body {
     mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
     -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
 }
+
+/* =========================================================
+   MAIN
+========================================================= */
 
 .main {
     position: relative;
@@ -69,6 +83,10 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
+/* =========================================================
+   LOGO
+========================================================= */
 
 .logo {
     position: relative;
@@ -107,6 +125,10 @@ body {
     background: linear-gradient(90deg, transparent, rgba(80, 230, 255, .8), transparent);
     box-shadow: 0 0 12px rgba(50, 220, 255, .6);
 }
+
+/* =========================================================
+   SECTION
+========================================================= */
 
 .section {
     width: 100%;
@@ -175,6 +197,10 @@ body {
     box-shadow: 0 0 10px rgba(40, 220, 255, .5);
 }
 
+/* =========================================================
+   CARDS
+========================================================= */
+
 .cards {
     width: 100%;
 
@@ -191,6 +217,10 @@ body {
     margin: 0 auto;
 }
 
+/* =========================================================
+   CARD
+========================================================= */
+
 .card {
     position: relative;
 
@@ -206,11 +236,17 @@ body {
     cursor: pointer;
 
     isolation: isolate;
+
+    touch-action: manipulation;
 }
+
+/* =========================================================
+   DENDRITES
+========================================================= */
 
 .dendrites {
     position: absolute;
-    inset: -60px;
+    inset: -40px;
 
     pointer-events: none;
 
@@ -230,10 +266,14 @@ body {
     box-shadow: 0 0 5px rgba(40, 200, 255, .25);
 }
 
-.dendrites span:nth-child(1) { width: 75px; left: 20%; top: 35%; transform: rotate(-25deg); }
-.dendrites span:nth-child(2) { width: 60px; right: 15%; top: 30%; transform: rotate(24deg); }
-.dendrites span:nth-child(3) { width: 80px; left: 18%; bottom: 28%; transform: rotate(25deg); }
-.dendrites span:nth-child(4) { width: 55px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
+.dendrites span:nth-child(1) { width: 65px; left: 20%; top: 35%; transform: rotate(-25deg); }
+.dendrites span:nth-child(2) { width: 50px; right: 15%; top: 30%; transform: rotate(24deg); }
+.dendrites span:nth-child(3) { width: 70px; left: 18%; bottom: 28%; transform: rotate(25deg); }
+.dendrites span:nth-child(4) { width: 45px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
+
+/* =========================================================
+   NEURON BODY
+========================================================= */
 
 .neuron-body {
     position: absolute;
@@ -281,6 +321,10 @@ body {
 
     pointer-events: none;
 }
+
+/* =========================================================
+   MATRIX CODE
+========================================================= */
 
 .matrix-code {
     position: absolute;
@@ -365,6 +409,10 @@ body {
     opacity: .65;
 }
 
+/* =========================================================
+   SPHERE CONTENT
+========================================================= */
+
 .sphere-content {
     position: relative;
 
@@ -383,6 +431,10 @@ body {
 
     pointer-events: none;
 }
+
+/* =========================================================
+   ICON
+========================================================= */
 
 .icon {
     position: relative;
@@ -429,6 +481,10 @@ body {
         drop-shadow(0 0 18px rgba(30, 180, 255, .55));
 }
 
+/* =========================================================
+   CARD TITLE
+========================================================= */
+
 .card-title {
     display: block;
 
@@ -460,6 +516,10 @@ body {
         0 0 22px rgba(50, 200, 255, .45);
 }
 
+/* =========================================================
+   HOVER — BODY
+========================================================= */
+
 .card:hover .neuron-body,
 .card.active .neuron-body {
     transform: scale(1.075);
@@ -472,6 +532,10 @@ body {
         0 0 100px rgba(0, 150, 255, .18),
         inset 0 0 45px rgba(40, 255, 210, .15);
 }
+
+/* =========================================================
+   DESCRIPTION — desktop tooltip
+========================================================= */
 
 .description {
     position: absolute;
@@ -519,6 +583,18 @@ body {
     transform: translateX(-50%) translateY(0) scale(1);
 }
 
+/* =========================================================
+   MOBILE BOTTOM SHEET (по умолчанию скрыт)
+========================================================= */
+
+.mobile-sheet {
+    display: none;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1050px) {
     .card {
         width: 200px;
@@ -530,6 +606,10 @@ body {
         height: 42px;
     }
 }
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 700px) {
 
@@ -573,7 +653,7 @@ body {
     .cards {
         width: 100%;
 
-        gap: 95px 20px;
+        gap: 80px 20px;
 
         justify-content: center;
         align-items: flex-start;
@@ -603,24 +683,137 @@ body {
         line-height: 1.25;
     }
 
+    /* Скрываем старый tooltip — на мобильных используем bottom sheet */
     .description {
-        top: auto;
-        bottom: 72%;
+        display: none !important;
+    }
 
-        width: 220%;
+    /* ===================================================
+       BOTTOM SHEET — выезжает снизу
+    =================================================== */
 
-        padding: 11px 13px;
+    .mobile-sheet {
+        display: block;
 
-        font-size: 12.5px;
+        position: fixed;
+        left: 12px;
+        right: 12px;
 
-        line-height: 1.4;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+
+        z-index: 100;
+
+        background: rgba(2, 10, 18, .96);
+
+        border: 1px solid rgba(80, 220, 255, .4);
+        border-radius: 18px;
+
+        padding: 18px 18px 16px;
+
+        box-shadow:
+            0 -10px 40px rgba(0, 0, 0, .6),
+            0 0 40px rgba(30, 200, 255, .16),
+            inset 0 0 30px rgba(30, 200, 255, .04);
+
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+
+        transform: translateY(calc(100% + 40px));
+        opacity: 0;
+        pointer-events: none;
+
+        transition:
+            transform .4s cubic-bezier(.2, .8, .2, 1),
+            opacity .3s ease;
+
+        will-change: transform, opacity;
+    }
+
+    .mobile-sheet.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .mobile-sheet-title {
+        font-family: "Unbounded", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        color: #e6fbff;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        text-shadow: 0 0 10px rgba(50, 210, 255, .5);
+    }
+
+    .mobile-sheet-text {
+        font-family: "Manrope", sans-serif;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: #b8e4f5;
+        margin-bottom: 14px;
+    }
+
+    .mobile-sheet-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .mobile-sheet-open,
+    .mobile-sheet-close {
+        flex: 1;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 46px;
+        padding: 12px 14px;
+
+        border-radius: 11px;
+
+        font-family: "Manrope", sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+
+        text-decoration: none;
+        text-align: center;
+
+        cursor: pointer;
+
+        -webkit-appearance: none;
+        appearance: none;
+
+        transition: transform .15s ease, box-shadow .2s ease;
+    }
+
+    .mobile-sheet-open {
+        background: linear-gradient(135deg, #2a7bff, #1a5fd9);
+        border: 1px solid rgba(120, 200, 255, .6);
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(30, 120, 255, .35);
+    }
+
+    .mobile-sheet-close {
+        background: rgba(148, 163, 184, .08);
+        border: 1px solid rgba(148, 163, 184, .25);
+        color: #cfe7f5;
+    }
+
+    .mobile-sheet-open:active,
+    .mobile-sheet-close:active {
+        transform: scale(.97);
     }
 }
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
 
 @media (max-width: 390px) {
 
     .cards {
-        gap: 90px 14px;
+        gap: 75px 14px;
     }
 
     .card {
@@ -643,11 +836,24 @@ body {
         line-height: 1.2;
     }
 
-    .description {
-        width: 240%;
-        font-size: 12px;
+    .mobile-sheet {
+        left: 10px;
+        right: 10px;
+        padding: 16px 16px 14px;
+    }
+
+    .mobile-sheet-title {
+        font-size: 13px;
+    }
+
+    .mobile-sheet-text {
+        font-size: 13px;
     }
 }
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -674,7 +880,7 @@ body {
 
 
     <!-- =====================================================
-         САМОРАЗВИТИЕ — теперь первый раздел
+         01. САМОРАЗВИТИЕ
     ====================================================== -->
 
     <section class="section">
@@ -819,7 +1025,7 @@ body {
 
 
     <!-- =====================================================
-         ПСИХОДИАГНОСТИКА — теперь второй раздел
+         02. ПСИХОДИАГНОСТИКА
     ====================================================== -->
 
     <section class="section">
@@ -831,7 +1037,7 @@ body {
 
         <div class="cards">
 
-            <!-- ОЦЕНКА ЛИЧНОСТНЫХ СВОЙСТВ (бывш. 16 факторов Кеттелла) -->
+            <!-- ОЦЕНКА ЛИЧНОСТНЫХ СВОЙСТВ -->
 
             <a class="card"
                href="./cattell/"
@@ -964,7 +1170,7 @@ body {
 
 
     <!-- =====================================================
-         НАЙТИ РАБОТУ — третий раздел
+         03. НАЙТИ РАБОТУ
     ====================================================== -->
 
     <section class="section">
@@ -1066,6 +1272,27 @@ body {
 </main>
 
 
+<!-- =========================================================
+     MOBILE BOTTOM SHEET
+========================================================== -->
+
+<div class="mobile-sheet" id="mobileSheet" aria-hidden="true">
+
+    <div class="mobile-sheet-title" id="msTitle"></div>
+
+    <div class="mobile-sheet-text" id="msText"></div>
+
+    <div class="mobile-sheet-actions">
+
+        <a class="mobile-sheet-open" id="msOpen" href="#">Открыть</a>
+
+        <button class="mobile-sheet-close" id="msClose" type="button">Закрыть</button>
+
+    </div>
+
+</div>
+
+
 <script>
 
 /* =========================================================
@@ -1117,46 +1344,101 @@ document.querySelectorAll('.card').forEach(createMatrix);
 
 
 /* =========================================================
-   MOBILE TOUCH
+   MOBILE — BOTTOM SHEET
 ========================================================= */
 
 const isTouchDevice =
     window.matchMedia('(hover: none)').matches ||
     'ontouchstart' in window;
 
-if (isTouchDevice) {
+const mobileSheet = document.getElementById('mobileSheet');
+const msTitle     = document.getElementById('msTitle');
+const msText      = document.getElementById('msText');
+const msOpen      = document.getElementById('msOpen');
+const msClose     = document.getElementById('msClose');
 
+let sheetOpenCard = null;
+
+function openSheet(card) {
+
+    const titleEl = card.querySelector('.card-title');
+    const descEl  = card.querySelector('.description');
+    const href    = card.getAttribute('href') || '#';
+
+    msTitle.textContent = titleEl ? titleEl.textContent : '';
+    msText.textContent  = descEl ? descEl.textContent.trim() : '';
+    msOpen.setAttribute('href', href);
+
+    mobileSheet.classList.add('open');
+    mobileSheet.setAttribute('aria-hidden', 'false');
+
+    /* Снимаем active с предыдущих, ставим на текущую */
+    document.querySelectorAll('.card.active').forEach(function(other) {
+        if (other !== card) other.classList.remove('active');
+    });
+    card.classList.add('active');
+
+    sheetOpenCard = card;
+}
+
+function closeSheet() {
+
+    if (!mobileSheet) return;
+
+    mobileSheet.classList.remove('open');
+    mobileSheet.setAttribute('aria-hidden', 'true');
+
+    document.querySelectorAll('.card.active').forEach(function(card) {
+        card.classList.remove('active');
+    });
+
+    sheetOpenCard = null;
+}
+
+if (isTouchDevice && mobileSheet) {
+
+    /* Тап по карточке — открыть панель, НЕ переходить по ссылке */
     document.querySelectorAll('.card').forEach(function(card) {
 
         card.addEventListener('click', function(event) {
-
-            if (!card.classList.contains('active')) {
-
-                event.preventDefault();
-
-                document.querySelectorAll('.card.active').forEach(function(other) {
-                    other.classList.remove('active');
-                });
-
-                card.classList.add('active');
-            }
+            event.preventDefault();
+            openSheet(card);
         });
     });
 
+    /* Кнопка "Закрыть" */
+    msClose.addEventListener('click', function(event) {
+        event.stopPropagation();
+        closeSheet();
+    });
+
+    /* Клик вне карточки и вне панели — закрыть */
     document.addEventListener('click', function(event) {
 
-        if (!event.target.closest('.card')) {
-
-            document.querySelectorAll('.card.active').forEach(function(card) {
-                card.classList.remove('active');
-            });
+        if (!event.target.closest('.card') &&
+            !event.target.closest('.mobile-sheet')) {
+            closeSheet();
         }
+    });
+
+    /* При скролле страницы — закрываем панель, чтобы не мешала */
+    let scrollTimer = null;
+    window.addEventListener('scroll', function() {
+        if (sheetOpenCard) {
+            if (scrollTimer) clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(closeSheet, 80);
+        }
+    }, { passive: true });
+
+    /* При повороте экрана — закрыть */
+    window.addEventListener('orientationchange', function() {
+        closeSheet();
     });
 }
 
 
 /* =========================================================
-   KEYBOARD
+   KEYBOARD (доступность на десктопе)
 ========================================================= */
 
 document.querySelectorAll('.card').forEach(function(card) {
