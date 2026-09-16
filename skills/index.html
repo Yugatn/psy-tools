@@ -107,8 +107,20 @@ button:active{transform:scale(.97)}
 .decision-badge{display:inline-flex;flex-direction:column;align-items:center;margin-top:14px;padding:11px 22px;background:linear-gradient(135deg,rgba(124,140,255,.15),rgba(156,124,255,.15));border:1px solid rgba(124,140,255,.28);border-radius:17px}
 .decision-badge-value{font-size:30px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
 .decision-badge-label{font-size:10.5px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.skill-radar-container{display:flex;justify-content:center;align-items:center;width:100%;padding:4px 0;margin-top:8px}
+
+/* === Навигация по диаграммам === */
+.skill-radar-wrap{display:flex;align-items:center;gap:6px;margin-top:8px;position:relative}
+.skill-radar-container{flex:1;min-width:0;display:flex;justify-content:center;align-items:center;padding:4px 0}
 #skillRadar{display:block;max-width:100%;height:auto}
+.radar-nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(124,140,255,.10);border:1px solid rgba(124,140,255,.28);color:var(--accent);font-size:26px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s ease;padding:0 0 4px;font-family:inherit}
+.radar-nav-btn:hover:not(:disabled){background:rgba(124,140,255,.22);border-color:rgba(124,140,255,.55)}
+.radar-nav-btn:active:not(:disabled){transform:scale(.92)}
+.radar-nav-btn:disabled{opacity:.2;cursor:not-allowed}
+.radar-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 6px;min-height:8px}
+.radar-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .25s ease;cursor:pointer;flex-shrink:0}
+.radar-dot:hover:not(.active){background:rgba(255,255,255,.4)}
+.radar-dot.active{width:24px;border-radius:4px;background:var(--accent)}
+
 .skill-radar-legend{display:flex;justify-content:center;gap:14px;margin:4px 0 14px;font-size:11px;color:var(--muted)}
 .skill-radar-legend-item{display:inline-flex;align-items:center;gap:5px}
 .skill-radar-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
@@ -186,7 +198,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 #jsErrorBanner.visible{display:block}
 @media (max-width:1040px){.category-layout{grid-template-columns:minmax(0,1fr) 440px}.app{max-width:1040px}}
 @media (max-width:900px){.category-layout{grid-template-columns:1fr;gap:12px}.radar-column{position:static;order:-1;padding:12px}#liveSkillRadar{max-width:100%;width:100%;max-height:500px}}
-@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:24px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.category-results{grid-template-columns:1fr 1fr}.circle{width:96px;height:96px}.circle::before{width:70px;height:70px}.circle-value{font-size:19px}.overall-gauge-ring{width:165px;height:165px}.overall-gauge-inner{width:135px;height:135px}.overall-gauge-value{font-size:40px}.stats{grid-template-columns:1fr 1fr 1fr}.stat-value{font-size:20px}.decision-badge-value{font-size:28px}.decision-icon{width:56px;height:56px;font-size:38px}.segmented{max-width:100%}#liveSkillRadar{max-height:440px}.modal-sheet{border-radius:22px 22px 0 0}.modal-body{padding:14px 16px 20px}.modal-header{padding:8px 16px 12px}.helper-actions{grid-template-columns:1fr 1fr}.verification-question{font-size:12px}.skill-badge{font-size:9px;padding:2px 6px}}
+@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:24px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.category-results{grid-template-columns:1fr 1fr}.circle{width:96px;height:96px}.circle::before{width:70px;height:70px}.circle-value{font-size:19px}.overall-gauge-ring{width:165px;height:165px}.overall-gauge-inner{width:135px;height:135px}.overall-gauge-value{font-size:40px}.stats{grid-template-columns:1fr 1fr 1fr}.stat-value{font-size:20px}.decision-badge-value{font-size:28px}.decision-icon{width:56px;height:56px;font-size:38px}.segmented{max-width:100%}#liveSkillRadar{max-height:440px}.modal-sheet{border-radius:22px 22px 0 0}.modal-body{padding:14px 16px 20px}.modal-header{padding:8px 16px 12px}.helper-actions{grid-template-columns:1fr 1fr}.verification-question{font-size:12px}.skill-badge{font-size:9px;padding:2px 6px}.radar-nav-btn{width:36px;height:36px;font-size:22px;padding-bottom:3px}.radar-dot{width:7px;height:7px}.radar-dot.active{width:20px}}
 </style>
 </head>
 <body>
@@ -259,7 +271,14 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
                 <div class="decision-badge-label">средний уровень</div>
             </div>
         </div>
-        <div class="skill-radar-container"><canvas id="skillRadar"></canvas></div>
+
+        <div class="skill-radar-wrap">
+            <button class="radar-nav-btn" id="radarNavPrev" onclick="navigateDecision(-1)" aria-label="Предыдущая">‹</button>
+            <div class="skill-radar-container"><canvas id="skillRadar"></canvas></div>
+            <button class="radar-nav-btn" id="radarNavNext" onclick="navigateDecision(1)" aria-label="Следующая">›</button>
+        </div>
+        <div class="radar-dots" id="radarDots"></div>
+
         <div class="skill-radar-legend">
             <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--danger);"></span>1</span>
             <span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--warning);"></span>2</span>
@@ -466,6 +485,8 @@ var currentCategoryIndex=0;
 var currentCategory=null;
 var lastCategoryData=null;
 var lastSkillRadarData=null;
+var decisionCategoryList=[];
+var decisionIndex=0;
 
 var STORAGE_KEY="psyToolsSkillsV4";
 var STORAGE_COMPLETED_KEY="psyToolsSkillsV4Completed";
@@ -634,28 +655,90 @@ function saveCategory(){
     showDecisionScreen();
 }
 
+/* =========================================================
+   DECISION SCREEN С НАВИГАЦИЕЙ МЕЖДУ ДИАГРАММАМИ
+========================================================= */
 function showDecisionScreen(){
     testScreen.classList.add("hidden");
     decisionScreen.classList.remove("hidden");
     nextScreen.classList.add("hidden");
-    var skills=categories[currentCategory]||[];
-    var skillValues=results[currentCategory]||{};
-    var values=skills.map(function(s){return Number(skillValues[s])||3;});
-    var average=values.length?values.reduce(function(a,b){return a+b;},0)/values.length:0;
-    var percent=Math.round((average/5)*100);
-    document.getElementById("decisionText").textContent="Вы оценили "+values.length+" навыков";
-    document.getElementById("decisionCategoryName").textContent=currentCategory;
-    var percentEl=document.getElementById("decisionPercent");
-    percentEl.textContent="0%";
-    animateNumber(percentEl,0,percent,700,function(v){return Math.round(v)+"%";});
-    var weak=getWeakSkills(currentCategory);
-    var hint=document.getElementById("programsHint");
-    if(hint){
-        if(weak.length){var word=pluralize(weak.length,["навык","навыка","навыков"]);hint.textContent=weak.length+" "+word+" ниже нормы";}
-        else hint.textContent="Подобрать курс под ваши цели";
+
+    decisionCategoryList = Object.keys(categories).filter(isCategoryCompleted);
+    decisionIndex = decisionCategoryList.indexOf(currentCategory);
+    if (decisionIndex < 0) decisionIndex = 0;
+
+    showDecisionCategory(decisionCategoryList[decisionIndex]);
+}
+
+function showDecisionCategory(categoryName){
+    if (!categoryName) return;
+
+    var skills = categories[categoryName] || [];
+    var skillValues = results[categoryName] || {};
+    var values = skills.map(function(s){ return Number(skillValues[s]) || 3; });
+    var average = values.length ? values.reduce(function(a,b){return a+b;},0)/values.length : 0;
+    var percent = Math.round((average/5)*100);
+
+    document.getElementById("decisionText").textContent = "Вы оценили " + values.length + " навыков";
+    document.getElementById("decisionCategoryName").textContent = categoryName;
+
+    var percentEl = document.getElementById("decisionPercent");
+    percentEl.textContent = "0%";
+    animateNumber(percentEl, 0, percent, 700, function(v){ return Math.round(v) + "%"; });
+
+    var weak = getWeakSkills(categoryName);
+    var hint = document.getElementById("programsHint");
+    if (hint) {
+        if (weak.length) {
+            var word = pluralize(weak.length, ["навык", "навыка", "навыков"]);
+            hint.textContent = weak.length + " " + word + " ниже нормы";
+        } else {
+            hint.textContent = "Подобрать курс под ваши цели";
+        }
     }
-    lastSkillRadarData={skills:skills,values:values,average:average};
-    requestAnimationFrame(function(){drawSkillRadar("skillRadar",skills,values,average,false);});
+
+    updateDecisionNav();
+
+    lastSkillRadarData = { skills: skills, values: values, average: average };
+    requestAnimationFrame(function(){
+        drawSkillRadar("skillRadar", skills, values, average, false);
+    });
+}
+
+function updateDecisionNav(){
+    var prevBtn = document.getElementById("radarNavPrev");
+    var nextBtn = document.getElementById("radarNavNext");
+    if (prevBtn) prevBtn.disabled = decisionIndex <= 0;
+    if (nextBtn) nextBtn.disabled = decisionIndex >= decisionCategoryList.length - 1;
+
+    var dots = document.getElementById("radarDots");
+    if (!dots) return;
+    dots.innerHTML = "";
+    if (decisionCategoryList.length <= 1) return;
+
+    decisionCategoryList.forEach(function(name, i){
+        var dot = document.createElement("div");
+        dot.className = "radar-dot" + (i === decisionIndex ? " active" : "");
+        dot.title = name;
+        dot.addEventListener("click", function(){
+            decisionIndex = i;
+            showDecisionCategory(decisionCategoryList[i]);
+            if (tg && tg.HapticFeedback) {
+                try { tg.HapticFeedback.selectionChanged(); } catch(e){}
+            }
+        });
+        dots.appendChild(dot);
+    });
+}
+
+function navigateDecision(delta){
+    var newIndex = decisionIndex + delta;
+    if (newIndex < 0 || newIndex >= decisionCategoryList.length) return;
+    decisionIndex = newIndex;
+    showDecisionCategory(decisionCategoryList[decisionIndex]);
+    if (tg && tg.HapticFeedback) {
+        try { tg.HapticFeedback.selectionChanged(); } catch(e){}
+    }
 }
 
 function drawSkillRadar(canvasId,skills,values,average,compact){
@@ -777,16 +860,24 @@ function findNextUncompletedCategory(){
     for(var j=0;j<=start;j++)if(!isCategoryCompleted(names[j]))return j;
     return -1;
 }
+
 function continueFullAssessment(){
+    /* Ищем следующую непройденную ОТ той категории, которую пользователь сейчас смотрит */
+    var currentName = decisionCategoryList[decisionIndex] || currentCategory;
+    var names = Object.keys(categories);
+    currentCategoryIndex = names.indexOf(currentName);
+    if (currentCategoryIndex < 0) currentCategoryIndex = 0;
+
     decisionScreen.classList.add("hidden");
-    var nextIndex=findNextUncompletedCategory();
-    if(nextIndex===-1){finishAssessment();return;}
-    var names=Object.keys(categories);
+    var nextIndex = findNextUncompletedCategory();
+    if (nextIndex === -1) { finishAssessment(); return; }
     nextScreen.classList.remove("hidden");
-    document.getElementById("nextCategoryText").textContent="Следующая категория: "+names[nextIndex];
-    var btn=nextScreen.querySelector("button");
-    btn.textContent="Далее";btn.onclick=goNextCategory;
+    document.getElementById("nextCategoryText").textContent = "Следующая категория: " + names[nextIndex];
+    var btn = nextScreen.querySelector("button");
+    btn.textContent = "Далее";
+    btn.onclick = goNextCategory;
 }
+
 function goNextCategory(){
     var nextIndex=findNextUncompletedCategory();
     if(nextIndex===-1){finishAssessment();return;}
@@ -794,6 +885,7 @@ function goNextCategory(){
     testScreen.classList.remove("hidden");
     loadCategory(nextIndex);
 }
+
 function finishAssessment(){
     saveResults();
     testScreen.classList.add("hidden");
@@ -1057,6 +1149,7 @@ async function resetTest(){
     if(!confirmed)return;
     results={};completedCategories={};verifications={};
     lastCategoryData=null;lastSkillRadarData=null;
+    decisionCategoryList=[];decisionIndex=0;
     try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(STORAGE_COMPLETED_KEY);localStorage.removeItem(STORAGE_VERIFICATIONS_KEY);}catch(e){}
     currentCategoryIndex=0;
     resultsScreen.classList.add("hidden");
