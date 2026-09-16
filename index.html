@@ -6,12 +6,18 @@
 
     <title>PSY-TOOLS</title>
 
-    <meta name="description" content="Психодиагностика, саморазвитие, профориентация и инструменты для поиска работы.">
+    <meta
+        name="description"
+        content="Психодиагностика, саморазвитие, профориентация и инструменты для поиска работы."
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
 
@@ -32,7 +38,12 @@
         }
 
         body {
-            font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family:
+                "Manrope",
+                -apple-system,
+                BlinkMacSystemFont,
+                sans-serif;
+
             color: #e8faff;
 
             background:
@@ -54,6 +65,7 @@
                 #020509;
 
             overflow-x: hidden;
+
             -webkit-font-smoothing: antialiased;
         }
 
@@ -64,17 +76,24 @@
 
         #neuralCanvas {
             position: fixed;
+
             inset: 0;
+
             width: 100%;
             height: 100%;
+
             z-index: 0;
+
             pointer-events: none;
         }
 
         .grid-background {
             position: fixed;
+
             inset: 0;
+
             z-index: 1;
+
             pointer-events: none;
 
             background-image:
@@ -112,9 +131,11 @@
 
         .main {
             position: relative;
+
             z-index: 5;
 
             width: 100%;
+
             max-width: 1500px;
 
             margin: 0 auto;
@@ -125,7 +146,9 @@
                 110px;
 
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
         }
 
@@ -139,8 +162,13 @@
 
             text-align: center;
 
-            font-family: "Unbounded", sans-serif;
-            font-size: clamp(30px, 4.6vw, 56px);
+            font-family:
+                "Unbounded",
+                sans-serif;
+
+            font-size:
+                clamp(30px, 4.6vw, 56px);
+
             font-weight: 800;
 
             letter-spacing: .18em;
@@ -160,8 +188,12 @@
             background-clip: text;
 
             filter:
-                drop-shadow(0 0 10px rgba(40, 220, 255, .4))
-                drop-shadow(0 0 30px rgba(0, 160, 255, .2));
+                drop-shadow(
+                    0 0 10px rgba(40, 220, 255, .4)
+                )
+                drop-shadow(
+                    0 0 30px rgba(0, 160, 255, .2)
+                );
         }
 
         .logo::after {
@@ -170,12 +202,15 @@
             position: absolute;
 
             left: 50%;
+
             bottom: -15px;
 
             width: 150px;
+
             height: 1px;
 
-            transform: translateX(-50%);
+            transform:
+                translateX(-50%);
 
             background:
                 linear-gradient(
@@ -205,7 +240,9 @@
             position: relative;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             gap: 16px;
@@ -219,14 +256,18 @@
         }
 
         .section-title .num {
-            font-family: "JetBrains Mono", monospace;
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
             font-size: 11px;
+
             font-weight: 500;
 
             letter-spacing: .22em;
 
-            color: rgba(120, 235, 255, .85);
+            color:
+                rgba(120, 235, 255, .85);
 
             padding:
                 5px 13px 5px 15px;
@@ -246,7 +287,9 @@
         }
 
         .section-title .name {
-            font-family: "Unbounded", sans-serif;
+            font-family:
+                "Unbounded",
+                sans-serif;
 
             font-size:
                 clamp(17px, 1.9vw, 24px);
@@ -267,12 +310,15 @@
             position: absolute;
 
             left: 50%;
+
             bottom: -26px;
 
             width: 180px;
+
             height: 1px;
 
-            transform: translateX(-50%);
+            transform:
+                translateX(-50%);
 
             background:
                 linear-gradient(
@@ -288,21 +334,25 @@
 
 
         /* =========================================================
-           TILES GRID
+           MATRIX GRID
         ========================================================= */
 
         .cards {
             width: 100%;
 
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(180px, 200px)
+                );
 
             justify-content: center;
-            align-items: flex-start;
 
             gap:
                 clamp(55px, 5vw, 85px)
-                clamp(28px, 3.5vw, 55px);
+                clamp(25px, 3.5vw, 55px);
 
             margin: 0 auto;
         }
@@ -315,11 +365,14 @@
         .card {
             position: relative;
 
-            width: 300px;
-            height: 190px;
+            width: 200px;
+
+            aspect-ratio: 1 / 1;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             text-decoration: none;
@@ -334,7 +387,8 @@
 
             transition:
                 z-index 0s,
-                transform .45s cubic-bezier(.2, .8, .2, 1);
+                transform .45s
+                cubic-bezier(.2, .8, .2, 1);
         }
 
         .card:hover,
@@ -345,13 +399,13 @@
 
 
         /* =========================================================
-           NEURAL CONNECTIONS AROUND TILE
+           NEURAL CONNECTIONS
         ========================================================= */
 
         .dendrites {
             position: absolute;
 
-            inset: -55px;
+            inset: -50px;
 
             pointer-events: none;
 
@@ -387,9 +441,9 @@
         .tron-ripples {
             position: absolute;
 
-            inset: -45px;
+            inset: -38px;
 
-            border-radius: 24px;
+            border-radius: 30px;
 
             pointer-events: none;
 
@@ -403,12 +457,12 @@
 
             position: absolute;
 
-            inset: 5%;
+            inset: 4%;
 
             border:
                 1px solid rgba(50, 210, 255, .13);
 
-            border-radius: 30px;
+            border-radius: 28px;
 
             box-shadow:
                 0 0 18px rgba(20, 180, 255, .05);
@@ -421,7 +475,7 @@
             top: 50%;
 
             width: 88%;
-            height: 72%;
+            height: 88%;
 
             transform:
                 translate(-50%, -50%)
@@ -430,34 +484,37 @@
             border:
                 1px solid rgba(50, 220, 255, .18);
 
-            border-radius: 28px;
+            border-radius: 25px;
 
             opacity: 0;
         }
 
         .tron-ripples span:nth-child(2) {
             width: 98%;
-            height: 82%;
+            height: 98%;
         }
 
         .tron-ripples span:nth-child(3) {
             width: 108%;
-            height: 92%;
+            height: 108%;
         }
 
         .card:hover .tron-ripples span,
         .card.active .tron-ripples span {
+
             animation:
                 tileRipple 3.8s ease-out infinite;
         }
 
         .card:hover .tron-ripples span:nth-child(2),
         .card.active .tron-ripples span:nth-child(2) {
+
             animation-delay: .55s;
         }
 
         .card:hover .tron-ripples span:nth-child(3),
         .card.active .tron-ripples span:nth-child(3) {
+
             animation-delay: 1.1s;
         }
 
@@ -465,6 +522,7 @@
 
             0% {
                 opacity: 0;
+
                 transform:
                     translate(-50%, -50%)
                     scale(.78);
@@ -476,6 +534,7 @@
 
             100% {
                 opacity: 0;
+
                 transform:
                     translate(-50%, -50%)
                     scale(1.08);
@@ -492,24 +551,24 @@
 
             inset: 0;
 
-            border-radius: 18px;
+            border-radius: 20px;
 
             overflow: hidden;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             background:
 
-                /* верхний блик */
                 linear-gradient(
                     145deg,
                     rgba(100, 230, 255, .10),
                     transparent 28%
                 ),
 
-                /* основной объём */
                 linear-gradient(
                     145deg,
                     rgba(14, 37, 52, .98),
@@ -521,29 +580,33 @@
 
             box-shadow:
 
-                /* внешняя тень */
                 0 18px 45px rgba(0, 0, 0, .48),
 
-                /* голубое свечение */
                 0 0 18px rgba(30, 190, 255, .12),
 
-                /* внутренний объём */
-                inset 0 1px 0 rgba(180, 250, 255, .13),
+                inset 0 1px 0
+                    rgba(180, 250, 255, .13),
 
-                inset 0 -20px 40px rgba(0, 0, 0, .30),
+                inset 0 -20px 40px
+                    rgba(0, 0, 0, .30),
 
-                inset 10px 10px 35px rgba(100, 230, 255, .035);
+                inset 10px 10px 35px
+                    rgba(100, 230, 255, .035);
 
             transition:
-                transform .45s cubic-bezier(.2, .8, .2, 1),
+                transform .45s
+                cubic-bezier(.2, .8, .2, 1),
+
                 box-shadow .45s ease,
+
                 border-color .45s ease,
+
                 background .45s ease;
 
             z-index: 2;
         }
 
-        /* Верхний световой кант */
+        /* верхний световой кант */
 
         .neuron-body::before {
             content: "";
@@ -552,6 +615,7 @@
 
             left: 12px;
             right: 12px;
+
             top: 8px;
 
             height: 1px;
@@ -571,7 +635,7 @@
             z-index: 8;
         }
 
-        /* Нижний внутренний градиент */
+        /* внутренний свет */
 
         .neuron-body::after {
             content: "";
@@ -594,7 +658,7 @@
 
 
         /* =========================================================
-           HOVER TILE
+           TILE HOVER
         ========================================================= */
 
         .card:hover .neuron-body,
@@ -624,16 +688,19 @@
 
                 0 0 60px rgba(30, 180, 255, .14),
 
-                inset 0 1px 0 rgba(180, 255, 255, .22),
+                inset 0 1px 0
+                    rgba(180, 255, 255, .22),
 
-                inset 0 -25px 45px rgba(0, 0, 0, .28),
+                inset 0 -25px 45px
+                    rgba(0, 0, 0, .28),
 
-                inset 0 0 35px rgba(40, 220, 255, .08);
+                inset 0 0 35px
+                    rgba(40, 220, 255, .08);
         }
 
 
         /* =========================================================
-           MATRIX
+           MATRIX CODE
         ========================================================= */
 
         .matrix-code {
@@ -650,7 +717,8 @@
 
             transition:
                 opacity 1s ease,
-                clip-path 1.5s cubic-bezier(.15, .75, .15, 1);
+                clip-path 1.5s
+                cubic-bezier(.15, .75, .15, 1);
 
             z-index: 3;
 
@@ -676,7 +744,7 @@
 
             background:
                 radial-gradient(
-                    circle at center,
+                    circle,
                     rgba(0, 255, 160, .12),
                     rgba(0, 0, 0, .05) 55%,
                     rgba(0, 0, 0, .48)
@@ -726,6 +794,7 @@
         .card:hover .matrix-swirl,
         .card.active .matrix-swirl,
         .card:focus-visible .matrix-swirl {
+
             animation-play-state: running;
         }
 
@@ -764,7 +833,7 @@
 
 
         /* =========================================================
-           TILE CONTENT
+           CONTENT
         ========================================================= */
 
         .sphere-content {
@@ -775,9 +844,11 @@
             width: 84%;
 
             display: flex;
+
             flex-direction: column;
 
             align-items: center;
+
             justify-content: center;
 
             gap: 11px;
@@ -796,7 +867,9 @@
             flex-shrink: 0;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             color: #bdf7ff;
@@ -847,7 +920,7 @@
 
 
         /* =========================================================
-           TITLE
+           CARD TITLE
         ========================================================= */
 
         .card-title {
@@ -861,7 +934,7 @@
                 BlinkMacSystemFont,
                 sans-serif;
 
-            font-size: 15px;
+            font-size: 14px;
 
             font-weight: 600;
 
@@ -884,7 +957,8 @@
         .card.active .card-title,
         .card:focus-visible .card-title {
 
-            transform: scale(1.035);
+            transform:
+                scale(1.035);
 
             color: #ffffff;
 
@@ -902,9 +976,11 @@
             position: absolute;
 
             left: 50%;
-            top: -18px;
 
-            width: min(360px, 32vw);
+            top: -15px;
+
+            width:
+                min(350px, 30vw);
 
             padding:
                 14px 18px;
@@ -921,8 +997,11 @@
                     rgba(2, 9, 16, .97)
                 );
 
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter:
+                blur(14px);
+
+            -webkit-backdrop-filter:
+                blur(14px);
 
             color: #dffaff;
 
@@ -944,21 +1023,26 @@
                 translate3d(-50%, -100%, 0)
                 scale(.95);
 
-            transform-origin: center bottom;
+            transform-origin:
+                center bottom;
 
             z-index: 9999;
 
             box-shadow:
 
-                0 14px 35px rgba(0, 0, 0, .5),
+                0 14px 35px
+                    rgba(0, 0, 0, .5),
 
-                0 0 18px rgba(20, 190, 255, .15),
+                0 0 18px
+                    rgba(20, 190, 255, .15),
 
-                inset 0 1px 0 rgba(170, 250, 255, .12);
+                inset 0 1px 0
+                    rgba(170, 250, 255, .12);
 
             transition:
                 opacity .25s ease,
-                transform .25s cubic-bezier(.2, .8, .2, 1);
+                transform .25s
+                cubic-bezier(.2, .8, .2, 1);
 
             will-change:
                 opacity,
@@ -971,6 +1055,7 @@
             position: absolute;
 
             left: 50%;
+
             bottom: -6px;
 
             width: 10px;
@@ -997,7 +1082,11 @@
             opacity: 1;
 
             transform:
-                translate3d(-50%, calc(-100% - 12px), 0)
+                translate3d(
+                    -50%,
+                    calc(-100% - 12px),
+                    0
+                )
                 scale(1);
         }
 
@@ -1032,9 +1121,7 @@
 
             .main {
                 padding:
-                    35px
-                    14px
-                    90px;
+                    35px 10px 90px;
             }
 
             .logo {
@@ -1044,7 +1131,7 @@
             }
 
             .section {
-                margin-top: 75px;
+                margin-top: 70px;
             }
 
             .section-title {
@@ -1053,7 +1140,7 @@
 
                 gap: 12px;
 
-                margin-bottom: 48px;
+                margin-bottom: 45px;
             }
 
             .section-title .num {
@@ -1075,80 +1162,121 @@
                 width: 140px;
             }
 
+
+            /* =====================================================
+               TWO SQUARE TILES PER ROW
+            ===================================================== */
+
             .cards {
+
+                width: 100%;
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                justify-content: center;
+
                 gap:
-                    55px 18px;
+                    48px 12px;
+
+                padding:
+                    0 2px;
             }
 
             .card {
-                width:
-                    min(340px, 92vw);
 
-                height: 175px;
+                width: 100%;
+
+                aspect-ratio: 1 / 1;
+
+                height: auto;
+
+                min-width: 0;
+            }
+
+            .neuron-body {
+                border-radius: 17px;
             }
 
             .icon {
-                width: 43px;
-                height: 43px;
+                width: 36px;
+                height: 36px;
             }
 
             .sphere-content {
-                gap: 9px;
+                width: 88%;
+
+                gap: 7px;
             }
 
             .card-title {
-                font-size: 14px;
+                font-size: 11.5px;
+
+                line-height: 1.25;
             }
 
             .description {
 
-                top: -12px;
+                top: -10px;
 
                 width:
-                    min(340px, 88vw);
+                    min(330px, 88vw);
 
                 padding:
-                    12px 15px;
+                    11px 13px;
 
-                font-size: 13px;
+                font-size: 12px;
 
-                line-height: 1.45;
+                line-height: 1.4;
+            }
+
+            .tron-ripples {
+                inset: -25px;
+            }
+
+            .dendrites {
+                inset: -35px;
             }
         }
 
 
         /* =========================================================
-           SMALL PHONES
+           VERY SMALL PHONES
         ========================================================= */
 
         @media (max-width: 390px) {
 
             .main {
-                padding-left: 10px;
-                padding-right: 10px;
+                padding-left: 8px;
+                padding-right: 8px;
             }
 
             .logo {
-                font-size: 27px;
+                font-size: 26px;
+            }
+
+            .cards {
+                gap:
+                    42px 9px;
             }
 
             .card {
-                width: 94vw;
-                height: 165px;
+                width: 100%;
             }
 
             .icon {
-                width: 40px;
-                height: 40px;
+                width: 32px;
+                height: 32px;
             }
 
             .card-title {
-                font-size: 13px;
+                font-size: 10.5px;
             }
 
             .description {
-                width: 90vw;
-                font-size: 12.5px;
+                width: 91vw;
+
+                font-size: 11.5px;
             }
         }
 
@@ -1162,13 +1290,20 @@
         }
 
         .card:focus-visible .neuron-body {
+
             border-color:
                 rgba(130, 250, 255, .95);
 
             box-shadow:
-                0 0 0 2px rgba(50, 220, 255, .18),
-                0 20px 50px rgba(0, 0, 0, .55),
-                0 0 35px rgba(30, 210, 255, .25);
+
+                0 0 0 2px
+                    rgba(50, 220, 255, .18),
+
+                0 20px 50px
+                    rgba(0, 0, 0, .55),
+
+                0 0 35px
+                    rgba(30, 210, 255, .25);
         }
 
 
@@ -1177,12 +1312,6 @@
         ========================================================= */
 
         @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                scroll-behavior: auto !important;
-            }
 
             .matrix-swirl,
             .tron-ripples span {
@@ -1203,6 +1332,7 @@
 
 <body>
 
+
     <!-- =========================================================
          STATIC NEURAL BACKGROUND
     ========================================================= -->
@@ -1214,11 +1344,14 @@
 
     <main class="main">
 
+
         <!-- =====================================================
              LOGO
         ====================================================== -->
 
-        <h1 class="logo">PSY-TOOLS</h1>
+        <h1 class="logo">
+            PSY-TOOLS
+        </h1>
 
 
         <!-- =====================================================
@@ -1235,7 +1368,10 @@
 
             <div class="cards">
 
-                <!-- Колесо баланса -->
+
+                <!-- =================================================
+                     КОЛЕСО БАЛАНСА
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1244,11 +1380,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:120px; left:5%; top:20%; transform:rotate(25deg)"></span>
-                        <span style="width:100px; left:72%; top:15%; transform:rotate(145deg)"></span>
-                        <span style="width:130px; left:70%; top:75%; transform:rotate(-25deg)"></span>
-                        <span style="width:90px; left:8%; top:78%; transform:rotate(-145deg)"></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:5%;
+                                top:20%;
+                                transform:rotate(25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:72%;
+                                top:15%;
+                                transform:rotate(145deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:130px;
+                                left:70%;
+                                top:75%;
+                                transform:rotate(-25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:90px;
+                                left:8%;
+                                top:78%;
+                                transform:rotate(-145deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1256,27 +1426,56 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <circle cx="24" cy="24" r="16"></circle>
-                                    <circle cx="24" cy="24" r="5"></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="16"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="5"
+                                    ></circle>
+
                                     <path d="M24 8v11"></path>
                                     <path d="M24 29v11"></path>
+
                                     <path d="M8 24h11"></path>
                                     <path d="M29 24h11"></path>
-                                    <path d="M12.7 12.7l7.8 7.8"></path>
-                                    <path d="M27.5 27.5l7.8 7.8"></path>
-                                    <path d="M35.3 12.7l-7.8 7.8"></path>
-                                    <path d="M20.5 27.5l-7.8 7.8"></path>
+
+                                    <path
+                                        d="M12.7 12.7l7.8 7.8"
+                                    ></path>
+
+                                    <path
+                                        d="M27.5 27.5l7.8 7.8"
+                                    ></path>
+
+                                    <path
+                                        d="M35.3 12.7l-7.8 7.8"
+                                    ></path>
+
+                                    <path
+                                        d="M20.5 27.5l-7.8 7.8"
+                                    ></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1287,6 +1486,7 @@
 
                     </div>
 
+
                     <div class="description">
                         Инструмент для оценки основных сфер жизни и поиска точек для развития.
                     </div>
@@ -1294,7 +1494,9 @@
                 </a>
 
 
-                <!-- Рефлексия навыков -->
+                <!-- =================================================
+                     РЕФЛЕКСИЯ НАВЫКОВ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1303,11 +1505,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:100px; left:0; top:22%; transform:rotate(30deg)"></span>
-                        <span style="width:125px; left:70%; top:18%; transform:rotate(150deg)"></span>
-                        <span style="width:115px; left:72%; top:76%; transform:rotate(-30deg)"></span>
-                        <span style="width:100px; left:5%; top:78%; transform:rotate(-145deg)"></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:0;
+                                top:22%;
+                                transform:rotate(30deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:125px;
+                                left:70%;
+                                top:18%;
+                                transform:rotate(150deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:72%;
+                                top:76%;
+                                transform:rotate(-30deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:5%;
+                                top:78%;
+                                transform:rotate(-145deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1315,24 +1551,42 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
+
                                     <path d="M17 29h14"></path>
                                     <path d="M18 34h12"></path>
                                     <path d="M20 39h8"></path>
-                                    <path d="M16 25c-3-2-5-5-5-9a13 13 0 0 1 26 0c0 4-2 7-5 9-2 2-3 4-3 5H20c0-1-2-3-4-5Z"></path>
+
+                                    <path
+                                        d="
+                                            M16 25
+                                            c-3-2-5-5-5-9
+                                            a13 13 0 0 1 26 0
+                                            c0 4-2 7-5 9
+                                            -2 2-3 4-3 5
+                                            H20
+                                            c0-1-2-3-4-5Z
+                                        "
+                                    ></path>
+
                                     <path d="M24 3v4"></path>
                                     <path d="m8 9 3 2"></path>
                                     <path d="m40 9-3 2"></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1343,6 +1597,7 @@
 
                     </div>
 
+
                     <div class="description">
                         Помогает увидеть свои навыки, опыт и сильные стороны через структурированную рефлексию.
                     </div>
@@ -1350,7 +1605,9 @@
                 </a>
 
 
-                <!-- Профориентация -->
+                <!-- =================================================
+                     ПРОФОРИЕНТАЦИЯ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1359,11 +1616,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:120px; left:3%; top:18%; transform:rotate(28deg)"></span>
-                        <span style="width:105px; left:73%; top:17%; transform:rotate(145deg)"></span>
-                        <span style="width:120px; left:73%; top:75%; transform:rotate(-28deg)"></span>
-                        <span style="width:105px; left:4%; top:77%; transform:rotate(-145deg)"></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:3%;
+                                top:18%;
+                                transform:rotate(28deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:105px;
+                                left:73%;
+                                top:17%;
+                                transform:rotate(145deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:73%;
+                                top:75%;
+                                transform:rotate(-28deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:105px;
+                                left:4%;
+                                top:77%;
+                                transform:rotate(-145deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1371,27 +1662,46 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <circle cx="24" cy="24" r="17"></circle>
-                                    <circle cx="24" cy="24" r="3"></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="17"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="3"
+                                    ></circle>
+
                                     <path d="M24 7v9"></path>
                                     <path d="M24 32v9"></path>
+
                                     <path d="M7 24h9"></path>
                                     <path d="M32 24h9"></path>
+
                                     <path d="m12 12 6 6"></path>
                                     <path d="m30 30 6 6"></path>
+
                                     <path d="m36 12-6 6"></path>
                                     <path d="m18 30-6 6"></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1401,6 +1711,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Анализ интересов, навыков и особенностей личности для поиска подходящих профессиональных направлений.
@@ -1427,7 +1738,10 @@
 
             <div class="cards">
 
-                <!-- Кеттел -->
+
+                <!-- =================================================
+                     КЕТТЕЛ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1436,11 +1750,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:115px; left:2%; top:20%; transform:rotate(28deg)"></span>
-                        <span style="width:125px; left:72%; top:16%; transform:rotate(150deg)"></span>
-                        <span style="width:120px; left:74%; top:75%; transform:rotate(-25deg)"></span>
-                        <span style="width:100px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:2%;
+                                top:20%;
+                                transform:rotate(28deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:125px;
+                                left:72%;
+                                top:16%;
+                                transform:rotate(150deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:74%;
+                                top:75%;
+                                transform:rotate(-25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:3%;
+                                top:80%;
+                                transform:rotate(-150deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1448,30 +1796,71 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <circle cx="24" cy="24" r="5"></circle>
-                                    <circle cx="10" cy="12" r="3"></circle>
-                                    <circle cx="38" cy="12" r="3"></circle>
-                                    <circle cx="9" cy="36" r="3"></circle>
-                                    <circle cx="39" cy="36" r="3"></circle>
-                                    <circle cx="24" cy="8" r="3"></circle>
-                                    <circle cx="24" cy="40" r="3"></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="10"
+                                        cy="12"
+                                        r="3"
+                                    ></circle>
+
+                                    <circle
+                                        cx="38"
+                                        cy="12"
+                                        r="3"
+                                    ></circle>
+
+                                    <circle
+                                        cx="9"
+                                        cy="36"
+                                        r="3"
+                                    ></circle>
+
+                                    <circle
+                                        cx="39"
+                                        cy="36"
+                                        r="3"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="8"
+                                        r="3"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="40"
+                                        r="3"
+                                    ></circle>
+
                                     <path d="m21 21-9-7"></path>
                                     <path d="m27 21 9-7"></path>
                                     <path d="m21 27-9 7"></path>
                                     <path d="m27 27 9 7"></path>
                                     <path d="M24 19v-8"></path>
                                     <path d="M24 29v8"></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1482,6 +1871,7 @@
 
                     </div>
 
+
                     <div class="description">
                         Многофакторная оценка личностных характеристик и индивидуальных особенностей.
                     </div>
@@ -1489,7 +1879,9 @@
                 </a>
 
 
-                <!-- ЛЮШЕР -->
+                <!-- =================================================
+                     ЛЮШЕР
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1498,11 +1890,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:105px; left:0; top:18%; transform:rotate(30deg)"></span>
-                        <span style="width:125px; left:73%; top:18%; transform:rotate(150deg)"></span>
-                        <span style="width:115px; left:74%; top:76%; transform:rotate(-30deg)"></span>
-                        <span style="width:100px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+
+                        <span
+                            style="
+                                width:105px;
+                                left:0;
+                                top:18%;
+                                transform:rotate(30deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:125px;
+                                left:73%;
+                                top:18%;
+                                transform:rotate(150deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:74%;
+                                top:76%;
+                                transform:rotate(-30deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:3%;
+                                top:80%;
+                                transform:rotate(-150deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1510,27 +1936,82 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <circle cx="24" cy="24" r="17"></circle>
-                                    <circle cx="24" cy="24" r="4"></circle>
-                                    <circle cx="24" cy="9" r="2.5"></circle>
-                                    <circle cx="34.6" cy="13.4" r="2.5"></circle>
-                                    <circle cx="39" cy="24" r="2.5"></circle>
-                                    <circle cx="34.6" cy="34.6" r="2.5"></circle>
-                                    <circle cx="24" cy="39" r="2.5"></circle>
-                                    <circle cx="13.4" cy="34.6" r="2.5"></circle>
-                                    <circle cx="9" cy="24" r="2.5"></circle>
-                                    <circle cx="13.4" cy="13.4" r="2.5"></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="17"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="24"
+                                        r="4"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="9"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="34.6"
+                                        cy="13.4"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="39"
+                                        cy="24"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="34.6"
+                                        cy="34.6"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="24"
+                                        cy="39"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="13.4"
+                                        cy="34.6"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="9"
+                                        cy="24"
+                                        r="2.5"
+                                    ></circle>
+
+                                    <circle
+                                        cx="13.4"
+                                        cy="13.4"
+                                        r="2.5"
+                                    ></circle>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1541,6 +2022,7 @@
 
                     </div>
 
+
                     <div class="description">
                         Цветовой психодиагностический тест для анализа актуального психологического состояния.
                     </div>
@@ -1548,7 +2030,9 @@
                 </a>
 
 
-                <!-- ГЕРЧИКОВ -->
+                <!-- =================================================
+                     ГЕРЧИКОВ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1557,11 +2041,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:120px; left:3%; top:20%; transform:rotate(25deg)"></span>
-                        <span style="width:110px; left:74%; top:17%; transform:rotate(150deg)"></span>
-                        <span style="width:125px; left:72%; top:77%; transform:rotate(-25deg)"></span>
-                        <span style="width:100px; left:4%; top:80%; transform:rotate(-150deg)"></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:3%;
+                                top:20%;
+                                transform:rotate(25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:110px;
+                                left:74%;
+                                top:17%;
+                                transform:rotate(150deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:125px;
+                                left:72%;
+                                top:77%;
+                                transform:rotate(-25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:100px;
+                                left:4%;
+                                top:80%;
+                                transform:rotate(-150deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1569,18 +2087,34 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <path d="M27 4 12 25h11l-2 19 15-23H25z"></path>
+
+                                    <path
+                                        d="
+                                            M27 4
+                                            12 25
+                                            h11
+                                            l-2 19
+                                            15-23
+                                            H25
+                                            z
+                                        "
+                                    ></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1590,6 +2124,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Диагностика структуры трудовой мотивации и ведущих мотивационных типов.
@@ -1616,7 +2151,10 @@
 
             <div class="cards">
 
-                <!-- ВАКАНСИИ -->
+
+                <!-- =================================================
+                     ВАКАНСИИ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1625,11 +2163,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:120px; left:2%; top:20%; transform:rotate(25deg)"></span>
-                        <span style="width:115px; left:73%; top:17%; transform:rotate(150deg)"></span>
-                        <span style="width:120px; left:73%; top:78%; transform:rotate(-25deg)"></span>
-                        <span style="width:105px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:2%;
+                                top:20%;
+                                transform:rotate(25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:73%;
+                                top:17%;
+                                transform:rotate(150deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:73%;
+                                top:78%;
+                                transform:rotate(-25deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:105px;
+                                left:3%;
+                                top:80%;
+                                transform:rotate(-150deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1637,21 +2209,42 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <rect x="7" y="14" width="34" height="25" rx="3"></rect>
-                                    <path d="M17 14v-4h14v4"></path>
-                                    <path d="M7 23h34"></path>
-                                    <path d="M20 23v4h8v-4"></path>
+
+                                    <rect
+                                        x="7"
+                                        y="14"
+                                        width="34"
+                                        height="25"
+                                        rx="3"
+                                    ></rect>
+
+                                    <path
+                                        d="M17 14v-4h14v4"
+                                    ></path>
+
+                                    <path
+                                        d="M7 23h34"
+                                    ></path>
+
+                                    <path
+                                        d="M20 23v4h8v-4"
+                                    ></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1662,6 +2255,7 @@
 
                     </div>
 
+
                     <div class="description">
                         Поиск и анализ вакансий с учётом профессиональных интересов и навыков.
                     </div>
@@ -1669,7 +2263,9 @@
                 </a>
 
 
-                <!-- МОЁ РЕЗЮМЕ -->
+                <!-- =================================================
+                     МОЁ РЕЗЮМЕ
+                ================================================== -->
 
                 <a
                     class="card"
@@ -1678,11 +2274,45 @@
                 >
 
                     <div class="dendrites">
-                        <span style="width:115px; left:2%; top:20%; transform:rotate(28deg)"></span>
-                        <span style="width:120px; left:73%; top:18%; transform:rotate(148deg)"></span>
-                        <span style="width:115px; left:73%; top:77%; transform:rotate(-28deg)"></span>
-                        <span style="width:105px; left:3%; top:80%; transform:rotate(-148deg)"></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:2%;
+                                top:20%;
+                                transform:rotate(28deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:120px;
+                                left:73%;
+                                top:18%;
+                                transform:rotate(148deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:115px;
+                                left:73%;
+                                top:77%;
+                                transform:rotate(-28deg)
+                            "
+                        ></span>
+
+                        <span
+                            style="
+                                width:105px;
+                                left:3%;
+                                top:80%;
+                                transform:rotate(-148deg)
+                            "
+                        ></span>
+
                     </div>
+
 
                     <div class="tron-ripples">
                         <span></span>
@@ -1690,21 +2320,44 @@
                         <span></span>
                     </div>
 
+
                     <div class="neuron-body">
 
                         <div class="matrix-code">
                             <div class="matrix-swirl"></div>
                         </div>
 
+
                         <div class="sphere-content">
 
                             <div class="icon">
+
                                 <svg viewBox="0 0 48 48">
-                                    <rect x="10" y="5" width="28" height="38" rx="3"></rect>
-                                    <path d="M17 5v6h14V5"></path>
-                                    <circle cx="24" cy="20" r="4"></circle>
-                                    <path d="M17 32c1.5-5 12.5-5 14 0"></path>
+
+                                    <rect
+                                        x="10"
+                                        y="5"
+                                        width="28"
+                                        height="38"
+                                        rx="3"
+                                    ></rect>
+
+                                    <path
+                                        d="M17 5v6h14V5"
+                                    ></path>
+
+                                    <circle
+                                        cx="24"
+                                        cy="20"
+                                        r="4"
+                                    ></circle>
+
+                                    <path
+                                        d="M17 32c1.5-5 12.5-5 14 0"
+                                    ></path>
+
                                 </svg>
+
                             </div>
 
                             <span class="card-title">
@@ -1714,6 +2367,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Создание и структурирование профессионального профиля на основе результатов инструментов PSY-TOOLS.
@@ -1748,6 +2402,7 @@
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
             "ΨΣΔΩΦΛ";
 
+
         document
             .querySelectorAll(".matrix-swirl")
             .forEach(swirl => {
@@ -1765,21 +2420,26 @@
                     char.className =
                         "matrix-char";
 
+
                     const angle =
                         i * 0.55 +
                         Math.random() * 0.7;
+
 
                     const radius =
                         8 +
                         Math.random() * 72;
 
+
                     const x =
                         50 +
                         Math.cos(angle) * radius;
 
+
                     const y =
                         50 +
                         Math.sin(angle) * radius;
+
 
                     char.textContent =
                         matrixChars[
@@ -1789,15 +2449,21 @@
                             )
                         ];
 
+
                     char.style.left =
                         x + "%";
+
 
                     char.style.top =
                         y + "%";
 
+
                     char.style.fontSize =
-                        (8 + Math.random() * 5) +
-                        "px";
+                        (
+                            8 +
+                            Math.random() * 5
+                        ) + "px";
+
 
                     char.style.opacity =
                         (
@@ -1805,101 +2471,137 @@
                             Math.random() * .52
                         ).toFixed(2);
 
+
                     char.style.transform =
                         `rotate(${
                             angle * 180 / Math.PI + 90
                         }deg)`;
 
+
                     fragment.appendChild(char);
+
                 }
 
+
                 swirl.appendChild(fragment);
+
             });
 
 
         /* =========================================================
-           MOBILE TAP BEHAVIOUR
+           MOBILE TAP
         ========================================================= */
 
         const cards =
             [...document.querySelectorAll(".card")];
 
+
         const isTouchDevice =
             window.matchMedia("(hover: none)").matches ||
             "ontouchstart" in window;
 
+
         cards.forEach(card => {
 
-            card.addEventListener("click", event => {
+            card.addEventListener(
+                "click",
+                event => {
 
-                if (!isTouchDevice) {
-                    return;
+                    if (!isTouchDevice) {
+                        return;
+                    }
+
+
+                    /*
+                     * Первое касание:
+                     * показываем описание.
+                     *
+                     * Второе касание:
+                     * переходим по ссылке.
+                     */
+
+                    if (
+                        !card.classList.contains(
+                            "active"
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+
+                        cards.forEach(item => {
+                            item.classList.remove(
+                                "active"
+                            );
+                        });
+
+
+                        card.classList.add(
+                            "active"
+                        );
+
+                    }
+
                 }
+            );
 
-                /*
-                 * Первое нажатие:
-                 * показываем описание.
-                 *
-                 * Второе:
-                 * обычный переход по ссылке.
-                 */
 
-                if (!card.classList.contains("active")) {
-
-                    event.preventDefault();
-
-                    cards.forEach(item => {
-                        item.classList.remove("active");
-                    });
-
+            card.addEventListener(
+                "focus",
+                () => {
                     card.classList.add("active");
                 }
+            );
 
-            });
 
-
-            card.addEventListener("focus", () => {
-                card.classList.add("active");
-            });
-
-            card.addEventListener("blur", () => {
-                card.classList.remove("active");
-            });
+            card.addEventListener(
+                "blur",
+                () => {
+                    card.classList.remove("active");
+                }
+            );
 
         });
 
 
         /* =========================================================
-           CLOSE ACTIVE CARD WHEN CLICKING OUTSIDE
+           CLOSE ACTIVE CARD
         ========================================================= */
 
-        document.addEventListener("click", event => {
+        document.addEventListener(
+            "click",
+            event => {
 
-            if (
-                isTouchDevice &&
-                !event.target.closest(".card")
-            ) {
+                if (
+                    isTouchDevice &&
+                    !event.target.closest(".card")
+                ) {
 
-                cards.forEach(card => {
-                    card.classList.remove("active");
-                });
+                    cards.forEach(card => {
+                        card.classList.remove(
+                            "active"
+                        );
+                    });
+
+                }
 
             }
-
-        });
+        );
 
 
         /* =========================================================
            STATIC NEURAL NETWORK
-           No animation loop.
-           Redraw only on resize/scroll.
         ========================================================= */
 
         const canvas =
-            document.getElementById("neuralCanvas");
+            document.getElementById(
+                "neuralCanvas"
+            );
+
 
         const ctx =
             canvas.getContext("2d");
+
 
         let backgroundNodes = [];
 
@@ -1908,18 +2610,23 @@
 
             backgroundNodes = [];
 
+
             const area =
                 window.innerWidth *
                 window.innerHeight;
+
 
             const count =
                 Math.min(
                     65,
                     Math.max(
                         30,
-                        Math.floor(area / 26000)
+                        Math.floor(
+                            area / 26000
+                        )
                     )
                 );
+
 
             for (let i = 0; i < count; i++) {
 
@@ -1952,6 +2659,7 @@
 
                     const rect =
                         card.getBoundingClientRect();
+
 
                     return {
 
@@ -1992,17 +2700,22 @@
                     2
                 );
 
+
             canvas.width =
                 window.innerWidth * dpr;
+
 
             canvas.height =
                 window.innerHeight * dpr;
 
+
             canvas.style.width =
                 window.innerWidth + "px";
 
+
             canvas.style.height =
                 window.innerHeight + "px";
+
 
             ctx.setTransform(
                 dpr,
@@ -2012,6 +2725,7 @@
                 0,
                 0
             );
+
 
             ctx.clearRect(
                 0,
@@ -2024,6 +2738,7 @@
             const cardNodes =
                 getCardCenters();
 
+
             const nodes =
                 [
                     ...backgroundNodes,
@@ -2032,26 +2747,38 @@
 
 
             /* -----------------------------------------------------
-               Connections
+               CONNECTIONS
             ----------------------------------------------------- */
 
-            for (let i = 0; i < nodes.length; i++) {
+            for (
+                let i = 0;
+                i < nodes.length;
+                i++
+            ) {
 
                 let nearest = [];
 
-                for (let j = 0; j < nodes.length; j++) {
+
+                for (
+                    let j = 0;
+                    j < nodes.length;
+                    j++
+                ) {
 
                     if (i === j) {
                         continue;
                     }
 
+
                     const dx =
                         nodes[i].x -
                         nodes[j].x;
 
+
                     const dy =
                         nodes[i].y -
                         nodes[j].y;
+
 
                     const distance =
                         Math.sqrt(
@@ -2059,16 +2786,22 @@
                             dy * dy
                         );
 
+
                     if (distance < 250) {
 
                         nearest.push({
-                            node: nodes[j],
+
+                            node:
+                                nodes[j],
+
                             distance
+
                         });
 
                     }
 
                 }
+
 
                 nearest.sort(
                     (a, b) =>
@@ -2076,56 +2809,73 @@
                         b.distance
                 );
 
+
                 nearest =
                     nearest.slice(0, 2);
 
 
-                nearest.forEach(connection => {
+                nearest.forEach(
+                    connection => {
 
-                    const target =
-                        connection.node;
+                        const target =
+                            connection.node;
 
-                    const distance =
-                        connection.distance;
 
-                    const alpha =
-                        Math.max(
-                            0.025,
-                            0.10 -
-                            distance / 3000
+                        const distance =
+                            connection.distance;
+
+
+                        const alpha =
+                            Math.max(
+                                .025,
+                                .10 -
+                                distance / 3000
+                            );
+
+
+                        ctx.beginPath();
+
+
+                        ctx.moveTo(
+                            nodes[i].x,
+                            nodes[i].y
                         );
 
-                    ctx.beginPath();
 
-                    ctx.moveTo(
-                        nodes[i].x,
-                        nodes[i].y
-                    );
+                        ctx.lineTo(
+                            target.x,
+                            target.y
+                        );
 
-                    ctx.lineTo(
-                        target.x,
-                        target.y
-                    );
 
-                    ctx.strokeStyle =
-                        `rgba(45,190,230,${alpha})`;
+                        ctx.strokeStyle =
+                            `rgba(
+                                45,
+                                190,
+                                230,
+                                ${alpha}
+                            )`;
 
-                    ctx.lineWidth = .7;
 
-                    ctx.stroke();
+                        ctx.lineWidth = .7;
 
-                });
+
+                        ctx.stroke();
+
+                    }
+                );
 
             }
 
 
             /* -----------------------------------------------------
-               Nodes
+               NODES
             ----------------------------------------------------- */
 
             nodes.forEach(node => {
 
                 ctx.beginPath();
+
 
                 ctx.arc(
                     node.x,
@@ -2135,8 +2885,10 @@
                     Math.PI * 2
                 );
 
+
                 ctx.fillStyle =
                     "rgba(65,205,240,.24)";
+
 
                 ctx.fill();
 
@@ -2159,10 +2911,13 @@
             refreshNetwork
         );
 
+
         window.addEventListener(
             "scroll",
             drawNetwork,
-            { passive: true }
+            {
+                passive: true
+            }
         );
 
 
