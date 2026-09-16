@@ -64,16 +64,8 @@ body {
 
     background-size: 70px 70px;
 
-    mask-image: radial-gradient(
-        circle at center,
-        black 20%,
-        transparent 85%
-    );
-    -webkit-mask-image: radial-gradient(
-        circle at center,
-        black 20%,
-        transparent 85%
-    );
+    mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
 }
 
 /* =========================================================
@@ -116,13 +108,7 @@ body {
     color: transparent;
 
     background:
-        linear-gradient(
-            90deg,
-            #63f5ff,
-            #8cffff,
-            #56aaff,
-            #72ffd9
-        );
+        linear-gradient(90deg, #63f5ff, #8cffff, #56aaff, #72ffd9);
 
     -webkit-background-clip: text;
     background-clip: text;
@@ -138,7 +124,6 @@ body {
     content: "";
 
     position: absolute;
-
     left: 50%;
     bottom: -15px;
 
@@ -147,13 +132,7 @@ body {
 
     transform: translateX(-50%);
 
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(80, 230, 255, .8),
-        transparent
-    );
-
+    background: linear-gradient(90deg, transparent, rgba(80, 230, 255, .8), transparent);
     box-shadow: 0 0 12px rgba(50, 220, 255, .6);
 }
 
@@ -229,14 +208,7 @@ body {
     width: 180px;
     height: 1px;
 
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(55, 220, 255, .8),
-            transparent
-        );
-
+    background: linear-gradient(90deg, transparent, rgba(55, 220, 255, .8), transparent);
     box-shadow: 0 0 10px rgba(40, 220, 255, .5);
 }
 
@@ -252,12 +224,11 @@ body {
     grid-template-columns: repeat(auto-fit, 215px);
 
     justify-content: center;
-
     justify-items: center;
-    align-items: center;
+    align-items: start;
 
     gap:
-        clamp(90px, 8vw, 140px)
+        clamp(105px, 9vw, 150px)
         clamp(35px, 5vw, 80px);
 
     margin: 0 auto;
@@ -325,8 +296,7 @@ body {
         0 0 8px rgba(30, 190, 255, .18),
         inset 0 0 8px rgba(30, 190, 255, .06);
 
-    animation:
-        rippleExpand 5.5s ease-out infinite;
+    animation: rippleExpand 5.5s ease-out infinite;
 }
 
 .ripple:nth-child(2) { animation-delay: 1.8s; }
@@ -356,9 +326,7 @@ body {
         opacity: .5;
         border-color: rgba(50, 230, 255, .55);
     }
-    65% {
-        opacity: .22;
-    }
+    65% { opacity: .22; }
     100% {
         width: 245%;
         height: 245%;
@@ -422,21 +390,8 @@ body {
             transparent 316deg
         );
 
-    mask:
-        radial-gradient(
-            circle,
-            transparent 0 47%,
-            black 48% 49%,
-            transparent 50%
-        );
-
-    -webkit-mask:
-        radial-gradient(
-            circle,
-            transparent 0 47%,
-            black 48% 49%,
-            transparent 50%
-        );
+    mask: radial-gradient(circle, transparent 0 47%, black 48% 49%, transparent 50%);
+    -webkit-mask: radial-gradient(circle, transparent 0 47%, black 48% 49%, transparent 50%);
 
     animation: cyberPulse 4.5s ease-in-out infinite;
 }
@@ -512,34 +467,14 @@ body {
 
     transform-origin: left center;
 
-    background:
-        linear-gradient(
-            90deg,
-            rgba(50, 215, 255, .45),
-            rgba(50, 215, 255, .08),
-            transparent
-        );
-
-    box-shadow:
-        0 0 5px rgba(40, 200, 255, .25);
+    background: linear-gradient(90deg, rgba(50, 215, 255, .45), rgba(50, 215, 255, .08), transparent);
+    box-shadow: 0 0 5px rgba(40, 200, 255, .25);
 }
 
-.dendrites span:nth-child(1) {
-    width: 90px; left: 20%; top: 35%;
-    transform: rotate(-25deg);
-}
-.dendrites span:nth-child(2) {
-    width: 75px; right: 15%; top: 30%;
-    transform: rotate(24deg);
-}
-.dendrites span:nth-child(3) {
-    width: 95px; left: 18%; bottom: 28%;
-    transform: rotate(25deg);
-}
-.dendrites span:nth-child(4) {
-    width: 70px; right: 18%; bottom: 32%;
-    transform: rotate(-27deg);
-}
+.dendrites span:nth-child(1) { width: 90px; left: 20%; top: 35%; transform: rotate(-25deg); }
+.dendrites span:nth-child(2) { width: 75px; right: 15%; top: 30%; transform: rotate(24deg); }
+.dendrites span:nth-child(3) { width: 95px; left: 18%; bottom: 28%; transform: rotate(25deg); }
+.dendrites span:nth-child(4) { width: 70px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
 
 /* =========================================================
    NEURON BODY
@@ -554,19 +489,10 @@ body {
     overflow: hidden;
 
     background:
-        radial-gradient(
-            circle at 32% 27%,
-            rgba(255, 255, 255, .18),
-            transparent 12%
-        ),
-        radial-gradient(
-            circle at 50% 50%,
-            rgba(30, 150, 210, .3),
-            rgba(4, 15, 27, .96) 67%
-        );
+        radial-gradient(circle at 32% 27%, rgba(255, 255, 255, .18), transparent 12%),
+        radial-gradient(circle at 50% 50%, rgba(30, 150, 210, .3), rgba(4, 15, 27, .96) 67%);
 
-    border:
-        1px solid rgba(100, 235, 255, .65);
+    border: 1px solid rgba(100, 235, 255, .65);
 
     box-shadow:
         0 0 15px rgba(30, 210, 255, .35),
@@ -590,11 +516,9 @@ body {
 
     border-radius: 50%;
 
-    border:
-        1px solid rgba(75, 210, 255, .22);
+    border: 1px solid rgba(75, 210, 255, .22);
 
-    box-shadow:
-        inset 0 0 25px rgba(30, 220, 255, .08);
+    box-shadow: inset 0 0 25px rgba(30, 220, 255, .08);
 
     pointer-events: none;
 }
@@ -636,13 +560,7 @@ body {
     position: absolute;
     inset: 0;
 
-    background:
-        radial-gradient(
-            circle,
-            rgba(0, 255, 160, .14),
-            rgba(0, 0, 0, .08) 55%,
-            rgba(0, 0, 0, .45)
-        );
+    background: radial-gradient(circle, rgba(0, 255, 160, .14), rgba(0, 0, 0, .08) 55%, rgba(0, 0, 0, .45));
 
     z-index: 1;
 }
@@ -658,8 +576,7 @@ body {
 
     transform-origin: center;
 
-    animation:
-        matrixSlowSpin 15s linear infinite;
+    animation: matrixSlowSpin 15s linear infinite;
 
     animation-play-state: paused;
 }
@@ -694,39 +611,6 @@ body {
 }
 
 /* =========================================================
-   CIRCLE TITLE (SVG-текст по дуге)
-========================================================= */
-
-.circle-title {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
-
-    z-index: 5;
-
-    overflow: visible;
-}
-
-.circle-title text {
-    font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 600;
-    fill: #dff7ff;
-
-    letter-spacing: 0.02em;
-
-    text-shadow: 0 0 8px rgba(50, 210, 255, .45);
-}
-
-.card:hover .circle-title text,
-.card.active .circle-title text {
-    fill: #ffffff;
-}
-
-/* =========================================================
    ICON
 ========================================================= */
 
@@ -744,8 +628,7 @@ body {
 
     color: #bdf7ff;
 
-    filter:
-        drop-shadow(0 0 7px rgba(70, 220, 255, .35));
+    filter: drop-shadow(0 0 7px rgba(70, 220, 255, .35));
 
     transition:
         transform .8s ease,
@@ -777,29 +660,54 @@ body {
 }
 
 /* =========================================================
-   HIDDEN CARD TITLE (для accessibility)
+   CARD TITLE — ПО ЦЕНТРУ ПОД СФЕРОЙ
 ========================================================= */
 
 .card-title {
     position: absolute;
 
-    width: 1px;
-    height: 1px;
+    left: 50%;
+    top: 100%;
 
-    padding: 0;
-    margin: -1px;
+    width: 200%;
 
-    overflow: hidden;
+    transform: translate(-50%, 20px) scale(1);
+    transform-origin: center top;
 
-    clip: rect(0, 0, 0, 0);
+    display: block;
 
-    white-space: nowrap;
+    z-index: 7;
 
-    border: 0;
+    text-align: center;
+
+    color: #e6fbff;
+
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .01em;
+
+    line-height: 1.35;
+
+    text-shadow: 0 0 8px rgba(50, 210, 255, .45);
+
+    transition:
+        transform .5s cubic-bezier(.2, .8, .2, 1),
+        color .4s ease,
+        text-shadow .4s ease;
+}
+
+.card:hover .card-title,
+.card.active .card-title {
+    transform: translate(-50%, 20px) scale(1.12);
+    color: #ffffff;
+    text-shadow:
+        0 0 12px rgba(90, 230, 255, .8),
+        0 0 24px rgba(50, 200, 255, .4);
 }
 
 /* =========================================================
-   HOVER
+   HOVER — BODY
 ========================================================= */
 
 .card:hover .neuron-body,
@@ -827,26 +735,17 @@ body {
 
     width: 300px;
 
-    transform:
-        translateX(-50%)
-        translateY(8px)
-        scale(.96);
+    transform: translateX(-50%) translateY(8px) scale(.96);
 
     padding: 13px 17px;
 
-    border:
-        1px solid rgba(80, 220, 255, .4);
-
+    border: 1px solid rgba(80, 220, 255, .4);
     border-radius: 12px;
 
-    background:
-        rgba(2, 10, 18, .92);
+    background: rgba(2, 10, 18, .92);
 
-    backdrop-filter:
-        blur(12px);
-
-    -webkit-backdrop-filter:
-        blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
     color: #dffaff;
 
@@ -863,22 +762,15 @@ body {
 
     z-index: 30;
 
-    box-shadow:
-        0 0 18px rgba(20, 190, 255, .12);
+    box-shadow: 0 0 18px rgba(20, 190, 255, .12);
 
-    transition:
-        opacity .3s ease,
-        transform .3s ease;
+    transition: opacity .3s ease, transform .3s ease;
 }
 
 .card:hover .description,
 .card.active .description {
     opacity: 1;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 
 /* =========================================================
@@ -888,67 +780,74 @@ body {
 @media (max-width: 1050px) {
     .cards {
         grid-template-columns: repeat(auto-fit, 200px);
-        gap:
-            100px
-            30px;
+        gap: 110px 30px;
     }
 }
 
 /* =========================================================
-   MOBILE
+   MOBILE — ВСЁ ПО ЦЕНТРУ
 ========================================================= */
 
 @media (max-width: 700px) {
 
     .main {
-        padding:
-            35px 14px
-            80px;
+        padding: 35px 14px 90px;
     }
 
     .logo {
         font-size: 30px;
         letter-spacing: .14em;
+        text-align: center;
     }
 
     .section {
         margin-top: 70px;
+        text-align: center;
     }
 
+    /* Заголовок раздела — по центру */
     .section-title {
-        gap: 10px;
-        margin-bottom: 42px;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 46px;
+        text-align: center;
     }
 
     .section-title .num {
         font-size: 10px;
-        padding: 4px 10px 4px 12px;
+        padding: 4px 12px 4px 14px;
     }
 
     .section-title .name {
-        font-size: 15px;
-        letter-spacing: .04em;
+        font-size: 16px;
+        letter-spacing: .05em;
     }
 
     .section-title::after {
-        bottom: -20px;
+        bottom: -22px;
         width: 140px;
     }
 
+    /* Сетка — всегда 2 колонки по центру */
     .cards {
         width: 100%;
 
         grid-template-columns: repeat(2, minmax(0, 1fr));
 
-        column-gap: 15px;
-        row-gap: 105px;
+        column-gap: 18px;
+        row-gap: 120px;
 
+        justify-content: center;
         justify-items: center;
+
+        margin: 0 auto;
     }
 
     .card {
         width: min(155px, 42vw);
         height: min(155px, 42vw);
+
+        margin: 0 auto;
     }
 
     .icon {
@@ -956,17 +855,29 @@ body {
         height: 58px;
     }
 
+    /* Название по центру под сферой */
+    .card-title {
+        width: 220%;
+        font-size: 12.5px;
+        transform: translate(-50%, 16px) scale(1);
+    }
+
+    .card:hover .card-title,
+    .card.active .card-title {
+        transform: translate(-50%, 16px) scale(1.08);
+    }
+
     .description {
         top: auto;
-        bottom: 70%;
+        bottom: 72%;
 
-        width: 92%;
+        width: 96%;
 
-        padding: 11px 12px;
+        padding: 11px 13px;
 
         font-size: 13px;
 
-        line-height: 1.4;
+        line-height: 1.45;
     }
 
     .cyber-ring {
@@ -986,8 +897,8 @@ body {
 @media (max-width: 390px) {
 
     .cards {
-        column-gap: 8px;
-        row-gap: 100px;
+        column-gap: 12px;
+        row-gap: 110px;
     }
 
     .card {
@@ -1000,9 +911,20 @@ body {
         height: 52px;
     }
 
+    .card-title {
+        font-size: 11.5px;
+        transform: translate(-50%, 14px) scale(1);
+        width: 230%;
+    }
+
+    .card:hover .card-title,
+    .card.active .card-title {
+        transform: translate(-50%, 14px) scale(1.06);
+    }
+
     .description {
         font-size: 12px;
-        width: 94%;
+        width: 96%;
     }
 }
 
@@ -1509,83 +1431,6 @@ body {
 <script>
 
 /* =========================================================
-   CIRCULAR TITLES — Текст по верхней дуге внутри сферы
-   ========================================================= */
-
-function initCircularTitles() {
-
-    const SVG_NS = 'http://www.w3.org/2000/svg';
-    const XLINK_NS = 'http://www.w3.org/1999/xlink';
-
-    const isMobile =
-        window.innerWidth < 700 ||
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    document.querySelectorAll('.card').forEach(function(card, idx) {
-
-        const body = card.querySelector('.neuron-body');
-        const titleEl = card.querySelector('.card-title');
-
-        if (!body || !titleEl) return;
-
-        const text = titleEl.textContent.replace(/\s+/g, ' ').trim();
-        if (!text) return;
-
-        /* Базовая высота шрифта в единицах viewBox (200×200) */
-        let fontSize = isMobile ? 16 : 14;
-
-        /* Уменьшаем для длинных названий */
-        if (text.length > 16) fontSize -= 1;
-        if (text.length > 20) fontSize -= 1;
-        if (text.length > 24) fontSize -= 1;
-
-        /* --- SVG --- */
-        const svg = document.createElementNS(SVG_NS, 'svg');
-        svg.setAttribute('viewBox', '0 0 200 200');
-        svg.setAttribute('class', 'circle-title');
-        svg.setAttribute('aria-hidden', 'true');
-        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-        /* --- Defs + path --- */
-        const defs = document.createElementNS(SVG_NS, 'defs');
-        const pathId = 'circ-title-path-' + idx + '-' + Math.floor(Math.random() * 1e6);
-        const path = document.createElementNS(SVG_NS, 'path');
-
-        path.setAttribute('id', pathId);
-        /* Дуга от левой точки через верх к правой:
-           M (22,100) — старт слева
-           A rx ry rotation large-arc sweep x y
-           r = 78 → верхняя дуга, проходящая через (100,22) */
-        path.setAttribute('d', 'M 22,100 A 78,78 0 0 1 178,100');
-        defs.appendChild(path);
-
-        /* --- Text on path --- */
-        const textEl = document.createElementNS(SVG_NS, 'text');
-        textEl.setAttribute('font-size', String(fontSize));
-        textEl.setAttribute('font-family', '"Manrope", -apple-system, BlinkMacSystemFont, sans-serif');
-        textEl.setAttribute('font-weight', '600');
-        textEl.setAttribute('fill', '#dff7ff');
-        textEl.setAttribute('letter-spacing', '0.5');
-
-        const textPath = document.createElementNS(SVG_NS, 'textPath');
-        textPath.setAttribute('startOffset', '50%');
-        textPath.setAttribute('text-anchor', 'middle');
-
-        /* Двойная установка href — для старых Safari и современных браузеров */
-        textPath.setAttributeNS(XLINK_NS, 'xlink:href', '#' + pathId);
-        textPath.setAttribute('href', '#' + pathId);
-
-        textPath.textContent = text;
-
-        textEl.appendChild(textPath);
-        svg.appendChild(defs);
-        svg.appendChild(textEl);
-
-        body.appendChild(svg);
-    });
-}
-
-/* =========================================================
    MATRIX CHARACTERS
 ========================================================= */
 
@@ -1609,8 +1454,7 @@ function createMatrix(card) {
         const char = document.createElement('span');
         char.className = 'matrix-char';
 
-        char.textContent =
-            matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        char.textContent = matrixChars[Math.floor(Math.random() * matrixChars.length)];
 
         const angle = i * 0.55 + Math.random() * .7;
         const radius = 5 + i * 1.45;
@@ -1631,13 +1475,7 @@ function createMatrix(card) {
     }
 }
 
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
 document.querySelectorAll('.card').forEach(createMatrix);
-initCircularTitles();
 
 
 /* =========================================================
@@ -1717,11 +1555,7 @@ function resizeCanvas() {
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerHeight + 'px';
 
-    ctx.setTransform(
-        window.devicePixelRatio, 0,
-        0, window.devicePixelRatio,
-        0, 0
-    );
+    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
 
     createBackgroundNodes();
 }
@@ -1764,8 +1598,7 @@ function distance(a, b) {
 
 function createPulse(a, b) {
     pulses.push({
-        a: a,
-        b: b,
+        a: a, b: b,
         progress: 0,
         speed: .0015 + Math.random() * .0018,
         life: 1
@@ -1778,9 +1611,6 @@ function drawNetwork(time) {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     const cardCenters = getCardCenters();
-
-
-    /* --- BACKGROUND NEURONS --- */
 
     for (let i = 0; i < nodes.length; i++) {
 
@@ -1800,9 +1630,7 @@ function drawNetwork(time) {
             const dist = distance(node, other);
 
             if (dist < 170) {
-
                 const alpha = (1 - dist / 170) * .13;
-
                 ctx.beginPath();
                 ctx.moveTo(node.x, node.y);
                 ctx.lineTo(other.x, other.y);
@@ -1813,11 +1641,7 @@ function drawNetwork(time) {
         }
     }
 
-
-    /* --- SPHERE CONNECTIONS --- */
-
     for (let i = 0; i < cardCenters.length; i++) {
-
         for (let j = i + 1; j < cardCenters.length; j++) {
 
             const a = cardCenters[i];
@@ -1843,25 +1667,16 @@ function drawNetwork(time) {
 
                 const bend = Math.sin(time * .0004 + i * 2 + j) * 12;
 
-                ctx.quadraticCurveTo(
-                    midX + nx * bend,
-                    midY + ny * bend,
-                    b.x, b.y
-                );
+                ctx.quadraticCurveTo(midX + nx * bend, midY + ny * bend, b.x, b.y);
 
                 ctx.strokeStyle = 'rgba(50,205,245,' + alpha + ')';
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
-                if (Math.random() < .0008) {
-                    createPulse(a, b);
-                }
+                if (Math.random() < .0008) createPulse(a, b);
             }
         }
     }
-
-
-    /* --- PULSES --- */
 
     for (let i = pulses.length - 1; i >= 0; i--) {
 
@@ -1886,9 +1701,6 @@ function drawNetwork(time) {
         ctx.fill();
     }
 
-
-    /* --- SMALL SYNAPTIC PARTICLES --- */
-
     for (let i = 0; i < cardCenters.length; i++) {
 
         const p = cardCenters[i];
@@ -1903,20 +1715,11 @@ function drawNetwork(time) {
         ctx.shadowBlur = 0;
     }
 
-
     requestAnimationFrame(drawNetwork);
 }
 
 
-window.addEventListener('resize', function() {
-    resizeCanvas();
-    /* При изменении размера пересобираем заголовки (для корректного
-       размера шрифта при переходе mobile/desktop) */
-    document.querySelectorAll('.circle-title').forEach(function(svg) {
-        svg.remove();
-    });
-    initCircularTitles();
-});
+window.addEventListener('resize', resizeCanvas);
 
 resizeCanvas();
 requestAnimationFrame(drawNetwork);
