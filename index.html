@@ -1,2998 +1,1488 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
-<title>PSY-TOOLS</title>
-
-<meta
-    name="description"
-    content="Психодиагностика, саморазвитие, профориентация и инструменты для поиска работы."
->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap"
-    rel="stylesheet"
->
-
-<style>
-
-/* =========================================================
-   RESET / GLOBAL
-========================================================= */
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-html,
-body {
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-
-    overflow-x: hidden;
-
-    overscroll-behavior-x: none;
-}
-
-body {
-    min-height: 100vh;
-
-    background:
-        radial-gradient(
-            circle at 50% 42%,
-            rgba(0, 150, 255, .08),
-            transparent 34%
-        ),
-        radial-gradient(
-            circle at 15% 20%,
-            rgba(0, 255, 180, .035),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 85% 80%,
-            rgba(100, 0, 255, .045),
-            transparent 30%
-        ),
-        #020509;
-
-    color: #e8faff;
-
-    font-family:
-        "Manrope",
-        -apple-system,
-        BlinkMacSystemFont,
-        sans-serif;
-
-    -webkit-font-smoothing: antialiased;
-}
-
-@supports (overflow: clip) {
-    html,
-    body {
-        overflow-x: clip;
-    }
-}
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-#neuralCanvas {
-    position: fixed;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    z-index: 0;
-
-    pointer-events: none;
-}
-
-.grid-background {
-    position: fixed;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    z-index: 1;
-
-    pointer-events: none;
-
-    background-image:
-        linear-gradient(
-            rgba(50, 150, 190, .028) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(50, 150, 190, .028) 1px,
-            transparent 1px
-        );
-
-    background-size: 70px 70px;
-
-    mask-image:
-        radial-gradient(
-            circle at center,
-            black 20%,
-            transparent 85%
-        );
-
-    -webkit-mask-image:
-        radial-gradient(
-            circle at center,
-            black 20%,
-            transparent 85%
-        );
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-.main {
-    position: relative;
-
-    z-index: 5;
-
-    width: 100%;
-    max-width: 1500px;
-
-    margin: 0 auto;
-
-    padding:
-        clamp(35px, 6vw, 75px)
-        24px
-        110px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-
-/* =========================================================
-   LOGO
-========================================================= */
-
-.logo {
-    position: relative;
-
-    width: 100%;
-
-    margin: 0;
-
-    text-align: center;
-
-    font-family:
-        "Unbounded",
-        sans-serif;
-
-    font-size:
-        clamp(30px, 4.6vw, 56px);
-
-    font-weight: 800;
-
-    letter-spacing: .18em;
-
-    color: transparent;
-
-    background:
-        linear-gradient(
-            90deg,
-            #63f5ff,
-            #8cffff,
-            #56aaff,
-            #72ffd9
-        );
-
-    -webkit-background-clip: text;
-    background-clip: text;
-
-    filter:
-        drop-shadow(
-            0 0 10px rgba(40, 220, 255, .4)
-        )
-        drop-shadow(
-            0 0 30px rgba(0, 160, 255, .2)
-        );
-}
-
-.logo::after {
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
-    bottom: -15px;
-
-    width: 150px;
-    height: 1px;
-
-    transform: translateX(-50%);
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(80, 230, 255, .8),
-            transparent
-        );
-
-    box-shadow:
-        0 0 12px rgba(50, 220, 255, .6);
-}
-
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.section {
-    width: 100%;
-
-    margin-top:
-        clamp(75px, 8vw, 110px);
-}
-
-.section-title {
-    position: relative;
-
-    width: 100%;
-
-    margin:
-        0 auto 55px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 16px;
-
-    text-align: center;
-}
-
-.section-title .num {
-    flex-shrink: 0;
-
-    padding:
-        5px 13px 5px 15px;
-
-    border:
-        1px solid rgba(80, 220, 255, .35);
-
-    border-radius: 100px;
-
-    background:
-        rgba(80, 220, 255, .05);
-
-    color:
-        rgba(120, 235, 255, .85);
-
-    font-family:
-        "JetBrains Mono",
-        monospace;
-
-    font-size: 11px;
-
-    font-weight: 500;
-
-    letter-spacing: .22em;
-
-    text-shadow:
-        0 0 8px rgba(80, 220, 255, .6);
-}
-
-.section-title .name {
-    font-family:
-        "Unbounded",
-        sans-serif;
-
-    font-size:
-        clamp(17px, 1.9vw, 24px);
-
-    font-weight: 600;
-
-    letter-spacing: .06em;
-
-    color: #d9faff;
-
-    text-shadow:
-        0 0 12px rgba(50, 210, 255, .5);
-}
-
-.section-title::after {
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
-    bottom: -26px;
-
-    width: 180px;
-    height: 1px;
-
-    transform: translateX(-50%);
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(55, 220, 255, .8),
-            transparent
-        );
-
-    box-shadow:
-        0 0 10px rgba(40, 220, 255, .5);
-}
-
-
-/* =========================================================
-   CARDS
-   DESKTOP = TRUE CENTERED GRID
-========================================================= */
-
-.cards {
-    --tile-size: 220px;
-    --tile-gap: 55px;
-
-    width: max-content;
-    max-width: 100%;
-
-    margin: 0 auto;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, var(--tile-size));
-
-    grid-auto-rows:
-        var(--tile-size);
-
-    gap:
-        var(--tile-gap);
-
-    justify-content: center;
-    align-content: start;
-
-    overflow: visible;
-}
-
-
-/*
-   Когда в разделе меньше четырёх плиток,
-   grid всё равно сохраняет общую геометрию.
-*/
-
-
-/* =========================================================
-   CARD
-========================================================= */
-
-.card {
-    position: relative;
-
-    width: var(--tile-size);
-    height: var(--tile-size);
-
-    min-width: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    text-decoration: none;
-
-    cursor: pointer;
-
-    isolation: isolate;
-
-    overflow: visible;
-
-    z-index: 1;
-
-    -webkit-tap-highlight-color: transparent;
-
-    transition:
-        transform .45s cubic-bezier(.2, .8, .2, 1),
-        z-index 0s;
-}
-
-.card:hover,
-.card.active,
-.card:focus-visible {
-    z-index: 100;
-}
-
-
-/* =========================================================
-   DENDRITES
-========================================================= */
-
-.dendrites {
-    position: absolute;
-
-    inset: -45px;
-
-    pointer-events: none;
-
-    z-index: 0;
-
-    opacity: .28;
-}
-
-.dendrites span {
-    position: absolute;
-
-    height: 1px;
-
-    transform-origin: left center;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(50, 215, 255, .42),
-            rgba(50, 215, 255, .08),
-            transparent
-        );
-
-    box-shadow:
-        0 0 5px rgba(40, 200, 255, .18);
-}
-
-
-/* =========================================================
-   TRON RIPPLES
-========================================================= */
-
-.tron-ripples {
-    position: absolute;
-
-    inset: -38px;
-
-    pointer-events: none;
-
-    z-index: 0;
-
-    opacity: .4;
-}
-
-.tron-ripples::before {
-    content: "";
-
-    position: absolute;
-
-    inset: 5%;
-
-    border:
-        1px solid rgba(50, 210, 255, .13);
-
-    border-radius: 26px;
-}
-
-.tron-ripples span {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 86%;
-    height: 86%;
-
-    transform:
-        translate(-50%, -50%)
-        scale(.82);
-
-    border:
-        1px solid rgba(50, 220, 255, .18);
-
-    border-radius: 26px;
-
-    opacity: 0;
-}
-
-.tron-ripples span:nth-child(2) {
-    width: 98%;
-    height: 98%;
-}
-
-.tron-ripples span:nth-child(3) {
-    width: 110%;
-    height: 110%;
-}
-
-.card:hover .tron-ripples span,
-.card.active .tron-ripples span {
-    animation:
-        tileRipple 3.8s ease-out infinite;
-}
-
-.card:hover .tron-ripples span:nth-child(2),
-.card.active .tron-ripples span:nth-child(2) {
-    animation-delay: .55s;
-}
-
-.card:hover .tron-ripples span:nth-child(3),
-.card.active .tron-ripples span:nth-child(3) {
-    animation-delay: 1.1s;
-}
-
-@keyframes tileRipple {
-
-    0% {
-        opacity: 0;
-
-        transform:
-            translate(-50%, -50%)
-            scale(.78);
-    }
-
-    18% {
-        opacity: .55;
-    }
-
-    100% {
-        opacity: 0;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.08);
-    }
-}
-
-
-/* =========================================================
-   TILE BODY
-========================================================= */
-
-.neuron-body {
-    position: absolute;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(100, 230, 255, .10),
-            transparent 28%
-        ),
-        linear-gradient(
-            145deg,
-            rgba(14, 37, 52, .98),
-            rgba(3, 12, 21, .98)
-        );
-
-    border:
-        1px solid rgba(90, 220, 255, .42);
-
-    box-shadow:
-
-        0 18px 45px rgba(0, 0, 0, .48),
-
-        0 0 18px rgba(30, 190, 255, .12),
-
-        inset 0 1px 0 rgba(180, 250, 255, .13),
-
-        inset 0 -20px 40px rgba(0, 0, 0, .30),
-
-        inset 10px 10px 35px rgba(100, 230, 255, .035);
-
-    transition:
-        transform .45s cubic-bezier(.2, .8, .2, 1),
-        box-shadow .45s ease,
-        border-color .45s ease,
-        background .45s ease;
-
-    z-index: 2;
-}
-
-.neuron-body::before {
-    content: "";
-
-    position: absolute;
-
-    left: 12px;
-    right: 12px;
-    top: 8px;
-
-    height: 1px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(130, 240, 255, .5),
-            transparent
-        );
-
-    opacity: .55;
-
-    pointer-events: none;
-
-    z-index: 8;
-}
-
-.neuron-body::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(60, 220, 255, .07),
-            transparent 38%
-        );
-
-    pointer-events: none;
-
-    z-index: 7;
-}
-
-
-/* =========================================================
-   HOVER
-========================================================= */
-
-.card:hover .neuron-body,
-.card.active .neuron-body,
-.card:focus-visible .neuron-body {
-
-    transform:
-        translateY(-7px)
-        scale(1.025);
-
-    border-color:
-        rgba(115, 245, 255, .82);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(20, 55, 70, .98),
-            rgba(3, 13, 22, .98)
-        );
-
-    box-shadow:
-
-        0 25px 55px rgba(0, 0, 0, .55),
-
-        0 0 22px rgba(30, 220, 255, .28),
-
-        0 0 60px rgba(30, 180, 255, .14),
-
-        inset 0 1px 0 rgba(180, 255, 255, .22),
-
-        inset 0 -25px 45px rgba(0, 0, 0, .28),
-
-        inset 0 0 35px rgba(40, 220, 255, .08);
-}
-
-
-/* =========================================================
-   MATRIX
-========================================================= */
-
-.matrix-code {
-    position: absolute;
-
-    inset: 0;
-
-    overflow: hidden;
-
-    opacity: 0;
-
-    clip-path:
-        circle(0% at 50% 50%);
-
-    transition:
-        opacity 1s ease,
-        clip-path 1.5s cubic-bezier(.15, .75, .15, 1);
-
-    z-index: 3;
-
-    pointer-events: none;
-}
-
-.card:hover .matrix-code,
-.card.active .matrix-code,
-.card:focus-visible .matrix-code {
-
-    opacity: .9;
-
-    clip-path:
-        circle(72% at 50% 50%);
-}
-
-.matrix-code::before {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(0, 255, 160, .14),
-            rgba(0, 0, 0, .08) 55%,
-            rgba(0, 0, 0, .45)
-        );
-
-    z-index: 1;
-}
-
-.matrix-code::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0, 255, 160, .04),
-            transparent 35%,
-            transparent 65%,
-            rgba(0, 255, 160, .04)
-        );
-
-    z-index: 2;
-}
-
-.matrix-swirl {
-    position: absolute;
-
-    left: -45%;
-    top: -45%;
-
-    width: 190%;
-    height: 190%;
-
-    transform-origin: center;
-
-    animation:
-        matrixSlowSpin 18s linear infinite;
-
-    animation-play-state: paused;
-
-    will-change: transform;
-}
-
-.card:hover .matrix-swirl,
-.card.active .matrix-swirl,
-.card:focus-visible .matrix-swirl {
-    animation-play-state: running;
-}
-
-@keyframes matrixSlowSpin {
-
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.matrix-char {
-    position: absolute;
-
-    color: #48ffc4;
-
-    font-family:
-        "JetBrains Mono",
-        monospace;
-
-    font-weight: 700;
-
-    line-height: 1;
-
-    text-shadow:
-        0 0 4px rgba(50, 255, 180, .8),
-        0 0 9px rgba(0, 255, 140, .4);
-
-    user-select: none;
-
-    opacity: .65;
-}
-
-
-/* =========================================================
-   CARD CONTENT
-========================================================= */
-
-.sphere-content {
-    position: relative;
-
-    z-index: 6;
-
-    width: 82%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 11px;
-
-    text-align: center;
-
-    pointer-events: none;
-}
-
-.icon {
-    width: 46px;
-    height: 46px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    color: #bdf7ff;
-
-    filter:
-        drop-shadow(
-            0 0 6px rgba(70, 220, 255, .4)
-        );
-
-    transition:
-        transform .45s ease,
-        filter .45s ease,
-        color .45s ease;
-}
-
-.icon svg {
-    width: 100%;
-    height: 100%;
-
-    stroke: currentColor;
-
-    fill: none;
-
-    stroke-width: 1.6;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.card:hover .icon,
-.card.active .icon,
-.card:focus-visible .icon {
-
-    transform:
-        translateY(-2px)
-        scale(1.08);
-
-    color: #eaffff;
-
-    filter:
-        drop-shadow(
-            0 0 8px rgba(80, 235, 255, .9)
-        )
-        drop-shadow(
-            0 0 18px rgba(30, 180, 255, .55)
-        );
-}
-
-
-/* =========================================================
-   TITLE
-========================================================= */
-
-.card-title {
-    display: block;
-
-    max-width: 100%;
-
-    color: #e6fbff;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    letter-spacing: .01em;
-
-    line-height: 1.3;
-
-    text-align: center;
-
-    text-shadow:
-        0 0 8px rgba(50, 210, 255, .5);
-
-    transition:
-        transform .4s ease,
-        color .3s ease,
-        text-shadow .3s ease;
-}
-
-.card:hover .card-title,
-.card.active .card-title,
-.card:focus-visible .card-title {
-
-    transform: scale(1.035);
-
-    color: #ffffff;
-
-    text-shadow:
-        0 0 12px rgba(90, 230, 255, .9),
-        0 0 22px rgba(50, 200, 255, .45);
-}
-
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
-
-.description {
-
-    --description-shift: 0px;
-
-    position: absolute;
-
-    left: 50%;
-    top: -14px;
-
-    width:
-        min(340px, calc(100vw - 24px));
-
-    max-width:
-        calc(100vw - 24px);
-
-    padding:
-        13px 17px;
-
-    border:
-        1px solid rgba(80, 220, 255, .45);
-
-    border-radius: 13px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(8, 24, 34, .97),
-            rgba(2, 9, 16, .97)
-        );
-
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-
-    color: #dffaff;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-
-    text-align: center;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transform:
-        translate3d(
-            calc(-50% + var(--description-shift)),
-            -100%,
-            0
-        )
-        scale(.95);
-
-    transform-origin:
-        center bottom;
-
-    z-index: 9999;
-
-    box-shadow:
-
-        0 14px 35px rgba(0, 0, 0, .5),
-
-        0 0 18px rgba(20, 190, 255, .15),
-
-        inset 0 1px 0 rgba(170, 250, 255, .12);
-
-    transition:
-        opacity .25s ease,
-        transform .25s cubic-bezier(.2, .8, .2, 1);
-}
-
-.description::after {
-
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
-    bottom: -6px;
-
-    width: 10px;
-    height: 10px;
-
-    transform:
-        translateX(-50%)
-        rotate(45deg);
-
-    background:
-        #07151f;
-
-    border-right:
-        1px solid rgba(80, 220, 255, .35);
-
-    border-bottom:
-        1px solid rgba(80, 220, 255, .35);
-}
-
-.card:hover .description,
-.card.active .description,
-.card:focus-visible .description {
-
-    opacity: 1;
-
-    transform:
-        translate3d(
-            calc(-50% + var(--description-shift)),
-            calc(-100% - 12px),
-            0
-        )
-        scale(1);
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    width: 100%;
-
-    margin-top: 110px;
-
-    text-align: center;
-
-    color:
-        rgba(170, 225, 240, .42);
-
-    font-family:
-        "JetBrains Mono",
-        monospace;
-
-    font-size: 10px;
-
-    letter-spacing: .16em;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 760px) {
-
-    .main {
-
-        width: 100%;
-
-        padding:
-            32px 10px 80px;
-    }
-
-
-    .logo {
-
-        padding: 0 8px;
-
-        font-size: 27px;
-
-        letter-spacing: .11em;
-    }
-
-
-    .section {
-
-        width: 100%;
-
-        margin-top: 65px;
-    }
-
-
-    .section-title {
-
-        flex-direction: column;
-
-        gap: 10px;
-
-        margin-bottom: 48px;
-
-        padding: 0 8px;
-    }
-
-
-    .section-title .num {
-
-        font-size: 9px;
-
-        padding:
-            4px 11px 4px 13px;
-    }
-
-
-    .section-title .name {
-
-        max-width: 100%;
-
-        font-size: 15px;
-
-        line-height: 1.3;
-
-        letter-spacing: .035em;
-
-        white-space: normal;
-    }
-
-
-    .section-title::after {
-
-        bottom: -20px;
-
-        width: 130px;
-    }
-
-
-    /*
-       ======================================================
-       МОБИЛЬНАЯ КИРПИЧНАЯ СЕТКА
-
-       Размер плитки одинаковый.
-       Расстояние между колонками и рядами одинаковое.
-       ======================================================
-    */
-
-    .cards {
-
-        --mobile-gap: 12px;
-
-        width: 100%;
-        max-width: 390px;
-
-        margin:
-            0 auto;
-
-        padding: 0;
-
-        display: grid;
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        grid-auto-rows:
-            auto;
-
-        gap:
-            var(--mobile-gap);
-
-        justify-content: center;
-        align-items: start;
-    }
-
-
-    .card {
-
-        width: 100%;
-        height: auto;
-
-        aspect-ratio: 1 / 1;
-
-        min-width: 0;
-    }
-
-
-    /*
-       ТРЕТЬЯ ПЛИТКА
-
-       Если в разделе три элемента,
-       последний занимает обе колонки,
-       но сам остаётся ровно такого же размера.
-
-       Получаем:
-
-          □  □
-           □
-
-       и он находится точно на оси экрана.
-    */
-
-    .card:last-child:nth-child(odd) {
-
-        grid-column:
-            1 / -1;
-
-        justify-self: center;
-
-        width:
-            calc(
-                (100% - var(--mobile-gap)) / 2
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>PSY-TOOLS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #02050a;
+            --text: #eef7f5;
+            --muted: #91a7a7;
+            --accent: #45f0c3;
+            --accent-soft: rgba(69, 240, 195, .16);
+            --line: rgba(69, 240, 195, .14);
+            --tile-bg: rgba(5, 12, 17, .78);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background:
+                radial-gradient(circle at 50% 10%, rgba(69, 240, 195, .055), transparent 30%),
+                radial-gradient(circle at 15% 80%, rgba(0, 180, 255, .035), transparent 28%),
+                var(--bg);
+            color: var(--text);
+            font-family: "Manrope", sans-serif;
+            position: relative;
+        }
+
+        /* =========================================================
+           BACKGROUND
+        ========================================================= */
+
+        #neuralCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: .48;
+        }
+
+        .grid-background {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: .17;
+            background-image:
+                linear-gradient(rgba(69, 240, 195, .055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(69, 240, 195, .055) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 18%,
+                black 80%,
+                transparent 100%
             );
-    }
+        }
 
+        /* =========================================================
+           MAIN
+        ========================================================= */
 
-    .neuron-body {
+        .main {
+            position: relative;
+            z-index: 5;
 
-        border-radius: 16px;
-    }
+            width: 100%;
+            max-width: 1500px;
 
+            margin-left: auto;
+            margin-right: auto;
 
-    .sphere-content {
+            padding: clamp(35px, 6vw, 75px) 0 110px;
 
-        width: 82%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        gap: 8px;
-    }
+        /* =========================================================
+           HEADER
+        ========================================================= */
 
+        .header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-    .icon {
+        .logo {
+            font-family: "Unbounded", sans-serif;
+            font-size: clamp(26px, 4vw, 48px);
+            font-weight: 600;
+            letter-spacing: .16em;
+            color: var(--text);
 
-        width: 35px;
-        height: 35px;
-    }
+            text-shadow:
+                0 0 15px rgba(69, 240, 195, .18),
+                0 0 35px rgba(69, 240, 195, .08);
+        }
 
+        .logo span {
+            color: var(--accent);
+        }
 
-    .card-title {
+        .subtitle {
+            margin-top: 13px;
 
-        font-size: 10.5px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: clamp(10px, 1.3vw, 13px);
+            letter-spacing: .22em;
+            text-transform: uppercase;
 
-        line-height: 1.25;
-    }
+            color: var(--muted);
+        }
 
+        .header-line {
+            width: min(650px, 72vw);
+            height: 1px;
 
-    /*
-       Описание:
-       базовая ширина — максимум 330 px,
-       но никогда больше viewport.
-    */
+            margin-top: 28px;
 
-    .description {
-
-        width:
-            min(
-                330px,
-                calc(100vw - 16px)
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(69, 240, 195, .4),
+                transparent
             );
 
-        max-width:
-            calc(100vw - 16px);
+            box-shadow: 0 0 15px rgba(69, 240, 195, .08);
+        }
 
-        padding:
-            11px 13px;
+        /* =========================================================
+           SECTIONS
+        ========================================================= */
 
-        font-size: 11.5px;
+        .section {
+            width: 100%;
 
-        line-height: 1.4;
-    }
+            margin-top: clamp(75px, 8vw, 110px);
 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
-    .tron-ripples {
+            text-align: center;
+        }
 
-        inset: -27px;
-    }
+        .section:first-of-type {
+            margin-top: clamp(60px, 7vw, 85px);
+        }
 
+        .section-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
-    .dendrites {
+            margin-bottom: 34px;
+        }
 
-        inset: -30px;
-    }
+        .section-number {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            letter-spacing: .18em;
 
+            color: rgba(69, 240, 195, .55);
 
-    .footer {
+            margin-bottom: 10px;
+        }
 
-        margin-top: 80px;
+        .section-title h2 {
+            font-family: "Unbounded", sans-serif;
+            font-size: clamp(16px, 2vw, 22px);
+            font-weight: 500;
+            letter-spacing: .03em;
+        }
 
-        padding:
-            0 8px;
+        .section-title::after {
+            content: "";
 
-        font-size: 9px;
+            width: 48px;
+            height: 1px;
 
-        line-height: 1.5;
-    }
-}
+            margin-top: 13px;
 
+            background: var(--accent);
 
-/* =========================================================
-   VERY SMALL PHONES
-========================================================= */
+            opacity: .5;
 
-@media (max-width: 360px) {
+            box-shadow:
+                0 0 8px rgba(69, 240, 195, .35);
+        }
 
-    .main {
+        /* =========================================================
+           CARDS
+        ========================================================= */
 
-        padding-left: 8px;
-        padding-right: 8px;
-    }
+        .cards {
+            --tile-size: 220px;
+            --tile-gap: 55px;
 
+            width: 100%;
+            max-width: 100%;
 
-    .cards {
+            margin: 0 auto;
 
-        max-width: 330px;
+            display: grid;
 
-        --mobile-gap: 10px;
-    }
+            grid-template-columns: repeat(3, var(--tile-size));
+            grid-auto-rows: var(--tile-size);
 
+            gap: var(--tile-gap);
 
-    .card-title {
+            justify-content: center;
+            align-content: start;
 
-        font-size: 9.5px;
-    }
+            overflow: visible;
+        }
 
+        /* 2 карточки */
 
-    .icon {
+        .cards:has(.card:nth-child(2)):not(:has(.card:nth-child(3))) {
+            grid-template-columns: repeat(2, var(--tile-size));
+        }
 
-        width: 32px;
-        height: 32px;
-    }
+        /* 1 карточка */
 
+        .cards:has(.card:nth-child(1)):not(:has(.card:nth-child(2))) {
+            grid-template-columns: var(--tile-size);
+        }
 
-    .description {
+        /* 4 карточки */
 
-        width:
-            calc(100vw - 12px);
+        .cards:has(.card:nth-child(4)) {
+            grid-template-columns: repeat(4, var(--tile-size));
+        }
 
-        max-width:
-            calc(100vw - 12px);
+        /* =========================================================
+           CARD
+        ========================================================= */
 
-        padding:
-            10px 11px;
+        .card {
+            position: relative;
 
-        font-size: 11px;
-    }
-}
+            width: var(--tile-size);
+            height: var(--tile-size);
 
+            min-width: 0;
 
-/* =========================================================
-   ACCESSIBILITY
-========================================================= */
+            text-decoration: none;
+            color: var(--text);
 
-.card:focus-visible {
-    outline: none;
-}
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 22, 28, .92),
+                    rgba(3, 8, 12, .86)
+                );
 
-.card:focus-visible .neuron-body {
+            border: 1px solid rgba(69, 240, 195, .14);
 
-    border-color:
-        rgba(130, 250, 255, .95);
+            border-radius: 22px;
 
-    box-shadow:
+            overflow: visible;
 
-        0 0 0 2px rgba(50, 220, 255, .18),
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
 
-        0 20px 50px rgba(0, 0, 0, .55),
+            text-align: center;
 
-        0 0 35px rgba(30, 210, 255, .25);
-}
+            isolation: isolate;
 
+            transition:
+                transform .35s ease,
+                border-color .35s ease,
+                box-shadow .35s ease,
+                background .35s ease;
+        }
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
+        .card::before {
+            content: "";
 
-@media (prefers-reduced-motion: reduce) {
+            position: absolute;
+            inset: 0;
 
-    .matrix-swirl,
-    .tron-ripples span {
+            border-radius: inherit;
 
-        animation: none !important;
-    }
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(69, 240, 195, .08),
+                    transparent 58%
+                );
 
-    .neuron-body,
-    .icon,
-    .card-title,
-    .description {
+            opacity: .45;
 
-        transition: none !important;
-    }
-}
+            pointer-events: none;
 
-</style>
+            z-index: -1;
+        }
+
+        .card::after {
+            content: "";
+
+            position: absolute;
+            inset: 1px;
+
+            border-radius: 21px;
+
+            border: 1px solid rgba(255,255,255,.025);
+
+            pointer-events: none;
+        }
+
+        .card:hover,
+        .card.active,
+        .card:focus-visible {
+            transform: translateY(-5px);
+
+            border-color: rgba(69, 240, 195, .48);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 26, 30, .97),
+                    rgba(3, 10, 14, .94)
+                );
+
+            box-shadow:
+                0 0 0 1px rgba(69, 240, 195, .05),
+                0 15px 45px rgba(0, 0, 0, .35),
+                0 0 28px rgba(69, 240, 195, .08);
+        }
+
+        .card:focus-visible {
+            outline: 2px solid rgba(69, 240, 195, .65);
+            outline-offset: 4px;
+        }
+
+        /* =========================================================
+           MATRIX
+        ========================================================= */
+
+        .matrix-swirl {
+            position: absolute;
+            inset: 0;
+
+            border-radius: inherit;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            z-index: 0;
+
+            mask-image: radial-gradient(
+                circle at center,
+                black 0%,
+                rgba(0,0,0,.85) 42%,
+                transparent 78%
+            );
+        }
+
+        .card:hover .matrix-swirl,
+        .card.active .matrix-swirl,
+        .card:focus-visible .matrix-swirl {
+            opacity: .24;
+        }
+
+        .matrix-ring {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 155%;
+            height: 155%;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(0deg);
+
+            animation: matrixRotate 18s linear infinite;
+
+            animation-play-state: paused;
+
+            font-family: "JetBrains Mono", monospace;
+
+            color: rgba(69, 240, 195, .8);
+
+            font-size: 9px;
+
+            letter-spacing: 3px;
+
+            word-break: break-all;
+
+            line-height: 1.45;
+
+            text-align: center;
+        }
+
+        .card:hover .matrix-ring,
+        .card.active .matrix-ring,
+        .card:focus-visible .matrix-ring {
+            animation-play-state: running;
+        }
+
+        @keyframes matrixRotate {
+            from {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(0deg);
+            }
+
+            to {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(360deg);
+            }
+        }
+
+        /* =========================================================
+           CARD CONTENT
+        ========================================================= */
+
+        .card-content {
+            position: relative;
+            z-index: 3;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            padding: 20px;
+
+            pointer-events: none;
+        }
+
+        .icon {
+            width: 54px;
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 16px;
+
+            border-radius: 16px;
+
+            border: 1px solid rgba(69, 240, 195, .18);
+
+            background: rgba(69, 240, 195, .035);
+
+            color: var(--accent);
+
+            font-size: 24px;
+
+            box-shadow:
+                inset 0 0 20px rgba(69, 240, 195, .025),
+                0 0 20px rgba(69, 240, 195, .025);
+
+            transition:
+                transform .35s ease,
+                border-color .35s ease,
+                box-shadow .35s ease;
+        }
+
+        .card:hover .icon,
+        .card.active .icon,
+        .card:focus-visible .icon {
+            transform: scale(1.07);
+
+            border-color: rgba(69, 240, 195, .42);
+
+            box-shadow:
+                0 0 18px rgba(69, 240, 195, .1),
+                inset 0 0 20px rgba(69, 240, 195, .05);
+        }
+
+        .card-title {
+            font-family: "Manrope", sans-serif;
+
+            font-size: 15px;
+            line-height: 1.3;
+
+            font-weight: 600;
+
+            max-width: 175px;
+        }
+
+        .card-index {
+            margin-top: 9px;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 9px;
+            letter-spacing: .12em;
+
+            color: rgba(145, 167, 167, .55);
+        }
+
+        /* =========================================================
+           DESCRIPTION POPUP
+        ========================================================= */
+
+        .description {
+            --description-shift: 0px;
+
+            position: absolute;
+
+            left: 50%;
+            top: -14px;
+
+            width: min(340px, calc(100vw - 24px));
+            max-width: calc(100vw - 24px);
+
+            padding: 15px 17px;
+
+            border-radius: 14px;
+
+            border: 1px solid rgba(69, 240, 195, .22);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(5, 15, 20, .98),
+                    rgba(2, 8, 12, .98)
+                );
+
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, .45),
+                0 0 20px rgba(69, 240, 195, .04);
+
+            color: #b8c9c8;
+
+            font-size: 12px;
+            line-height: 1.55;
+
+            text-align: left;
+
+            opacity: 0;
+            visibility: hidden;
+
+            pointer-events: none;
+
+            transform:
+                translate3d(
+                    calc(-50% + var(--description-shift)),
+                    -100%,
+                    0
+                )
+                scale(.95);
+
+            transform-origin: bottom center;
+
+            transition:
+                opacity .25s ease,
+                transform .25s ease,
+                visibility .25s ease;
+
+            z-index: 100;
+        }
+
+        .description::after {
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            bottom: -6px;
+
+            width: 11px;
+            height: 11px;
+
+            transform: translateX(-50%) rotate(45deg);
+
+            background: #061016;
+
+            border-right: 1px solid rgba(69, 240, 195, .22);
+            border-bottom: 1px solid rgba(69, 240, 195, .22);
+        }
+
+        .card:hover .description,
+        .card.active .description,
+        .card:focus-visible .description {
+            opacity: 1;
+            visibility: visible;
+
+            transform:
+                translate3d(
+                    calc(-50% + var(--description-shift)),
+                    calc(-100% - 12px),
+                    0
+                )
+                scale(1);
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .footer {
+            width: 100%;
+
+            margin-top: 105px;
+
+            display: flex;
+            justify-content: center;
+
+            text-align: center;
+
+            font-family: "JetBrains Mono", monospace;
+
+            font-size: 9px;
+            letter-spacing: .12em;
+
+            color: rgba(145, 167, 167, .4);
+        }
+
+        /* =========================================================
+           TABLET
+        ========================================================= */
+
+        @media (max-width: 1150px) and (min-width: 761px) {
+
+            .cards {
+                --tile-size: min(200px, 25vw);
+                --tile-gap: clamp(25px, 4vw, 45px);
+            }
+
+            .cards:has(.card:nth-child(4)) {
+                grid-template-columns: repeat(3, var(--tile-size));
+            }
+        }
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 760px) {
+
+            .main {
+                width: 100%;
+
+                padding:
+                    30px
+                    12px
+                    75px;
+            }
+
+            .logo {
+                font-size: 24px;
+                letter-spacing: .11em;
+            }
+
+            .subtitle {
+                font-size: 9px;
+                letter-spacing: .14em;
+            }
+
+            .header-line {
+                width: 78vw;
+                margin-top: 22px;
+            }
+
+            .section {
+                width: 100%;
+
+                margin-top: 65px;
+            }
+
+            .section:first-of-type {
+                margin-top: 50px;
+            }
+
+            .section-title {
+                margin-bottom: 25px;
+            }
+
+            .section-title h2 {
+                font-size: 15px;
+            }
+
+            .cards {
+                --mobile-gap: 12px;
+
+                width: 100%;
+                max-width: 390px;
+
+                margin: 0 auto;
+                padding: 0;
+
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                grid-auto-rows: auto;
+
+                gap: var(--mobile-gap);
+
+                justify-content: center;
+                align-items: start;
+            }
+
+            .card {
+                width: 100%;
+                height: auto;
+
+                aspect-ratio: 1 / 1;
+
+                min-width: 0;
+
+                border-radius: 18px;
+            }
+
+            .card:last-child:nth-child(odd) {
+                grid-column: 1 / -1;
+
+                justify-self: center;
+
+                width:
+                    calc(
+                        (100% - var(--mobile-gap)) / 2
+                    );
+            }
+
+            .card-content {
+                padding: 12px;
+            }
+
+            .icon {
+                width: 44px;
+                height: 44px;
+
+                margin-bottom: 12px;
+
+                border-radius: 13px;
+
+                font-size: 20px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                line-height: 1.25;
+
+                max-width: 120px;
+            }
+
+            .card-index {
+                font-size: 8px;
+                margin-top: 7px;
+            }
+
+            .description {
+                width: min(
+                    310px,
+                    calc(100vw - 20px)
+                );
+
+                max-width:
+                    calc(100vw - 20px);
+
+                padding: 13px 14px;
+
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            .footer {
+                margin-top: 75px;
+            }
+        }
+
+        /* =========================================================
+           VERY SMALL PHONES
+        ========================================================= */
+
+        @media (max-width: 390px) {
+
+            .main {
+                padding-left: 9px;
+                padding-right: 9px;
+            }
+
+            .cards {
+                max-width: 360px;
+                --mobile-gap: 10px;
+            }
+
+            .card-title {
+                font-size: 11px;
+            }
+
+            .icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+
+        /* =========================================================
+           REDUCE MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-<canvas id="neuralCanvas"></canvas>
+    <canvas id="neuralCanvas"></canvas>
 
-<div class="grid-background"></div>
+    <div class="grid-background"></div>
 
+    <main class="main">
 
-<main class="main">
+        <!-- HEADER -->
 
+        <header class="header">
 
-<!-- =========================================================
-     LOGO
-========================================================= -->
-
-<h1 class="logo">
-    PSY-TOOLS
-</h1>
-
-
-<!-- =========================================================
-     01 — САМОРАЗВИТИЕ
-========================================================= -->
-
-<section class="section">
-
-    <div class="section-title">
-
-        <span class="num">
-            01
-        </span>
-
-        <span class="name">
-            Саморазвитие
-        </span>
-
-    </div>
-
-
-    <div class="cards">
-
-
-        <!-- КОЛЕСО БАЛАНСА -->
-
-        <a
-            class="card"
-            href="./wheel/"
-            aria-label="Колесо баланса"
-        >
-
-            <div class="dendrites">
-
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:18%;
-                    transform:rotate(25deg)">
-                </span>
-
-                <span
-                    style="
-                    width:90px;
-                    left:75%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-25deg)">
-                </span>
-
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-150deg)">
-                </span>
-
+            <div class="logo">
+                PSY<span>-</span>TOOLS
             </div>
 
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
+            <div class="subtitle">
+                инструменты самопознания и развития
             </div>
 
+            <div class="header-line"></div>
 
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
+        </header>
 
 
-                <div class="sphere-content">
+        <!-- =====================================================
+             САМОРАЗВИТИЕ
+        ====================================================== -->
 
-                    <div class="icon">
+        <section class="section">
 
-                        <svg viewBox="0 0 48 48">
+            <div class="section-title">
+                <div class="section-number">01 / DEVELOPMENT</div>
+                <h2>Саморазвитие</h2>
+            </div>
 
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="16">
-                            </circle>
+            <div class="cards">
 
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="5">
-                            </circle>
+                <!-- Колесо баланса -->
 
-                            <path d="M24 8v11"></path>
-                            <path d="M24 29v11"></path>
+                <a class="card" href="./wheel/" data-card="wheel">
 
-                            <path d="M8 24h11"></path>
-                            <path d="M29 24h11"></path>
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
-                            <path d="M12.7 12.7l7.8 7.8"></path>
-                            <path d="M27.5 27.5l7.8 7.8"></path>
+                    <div class="card-content">
 
-                            <path d="M35.3 12.7l-7.8 7.8"></path>
-                            <path d="M20.5 27.5l-7.8 7.8"></path>
+                        <div class="icon">◉</div>
 
-                        </svg>
+                        <div class="card-title">
+                            Колесо баланса
+                        </div>
+
+                        <div class="card-index">
+                            SELF / 01
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Оцените основные сферы своей жизни,
+                        определите зоны внимания и сформируйте
+                        направление дальнейшего развития.
+                    </div>
 
-                    <span class="card-title">
-                        Колесо баланса
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Инструмент для оценки основных сфер жизни
-                и поиска точек для развития.
-
-            </div>
-
-        </a>
+                </a>
 
 
-        <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
+                <!-- Рефлексия навыков -->
 
-        <a
-            class="card"
-            href="./skills/"
-            aria-label="Рефлексия навыков"
-        >
+                <a class="card" href="./skills/" data-card="skills">
 
-            <div class="dendrites">
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
-                <span
-                    style="
-                    width:100px;
-                    left:0;
-                    top:20%;
-                    transform:rotate(30deg)">
-                </span>
+                    <div class="card-content">
 
-                <span
-                    style="
-                    width:100px;
-                    left:75%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
+                        <div class="icon">◇</div>
 
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-30deg)">
-                </span>
+                        <div class="card-title">
+                            Рефлексия навыков
+                        </div>
 
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-145deg)">
-                </span>
-
-            </div>
-
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <path d="M17 29h14"></path>
-                            <path d="M18 34h12"></path>
-                            <path d="M20 39h8"></path>
-
-                            <path
-                                d="
-                                M16 25
-                                c-3-2-5-5-5-9
-                                a13 13 0 0 1 26 0
-                                c0 4-2 7-5 9
-                                c-2 2-3 4-3 5
-                                H20
-                                c0-1-2-3-4-5Z">
-                            </path>
-
-                            <path d="M24 3v4"></path>
-                            <path d="m8 9 3 2"></path>
-                            <path d="m40 9-3 2"></path>
-
-                        </svg>
+                        <div class="card-index">
+                            SELF / 02
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Проанализируйте свои знания, навыки,
+                        опыт и сильные стороны. Результат можно
+                        использовать для формирования
+                        профессионального профиля.
+                    </div>
 
-                    <span class="card-title">
-                        Рефлексия навыков
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Помогает увидеть свои навыки, опыт
-                и сильные стороны через структурированную рефлексию.
-
-            </div>
-
-        </a>
+                </a>
 
 
-        <!-- ПРОФОРИЕНТАЦИЯ -->
+                <!-- Профориентация -->
 
-        <a
-            class="card"
-            href="./career/"
-            aria-label="Профориентация"
-        >
+                <a class="card" href="./career/" data-card="career">
 
-            <div class="dendrites">
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:18%;
-                    transform:rotate(28deg)">
-                </span>
+                    <div class="card-content">
 
-                <span
-                    style="
-                    width:100px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(145deg)">
-                </span>
+                        <div class="icon">⌘</div>
 
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-28deg)">
-                </span>
+                        <div class="card-title">
+                            Профориентация
+                        </div>
 
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-145deg)">
-                </span>
-
-            </div>
-
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="17">
-                            </circle>
-
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="3">
-                            </circle>
-
-                            <path d="M24 7v9"></path>
-                            <path d="M24 32v9"></path>
-
-                            <path d="M7 24h9"></path>
-                            <path d="M32 24h9"></path>
-
-                            <path d="m12 12 6 6"></path>
-                            <path d="m30 30 6 6"></path>
-
-                            <path d="m36 12-6 6"></path>
-                            <path d="m18 30-6 6"></path>
-
-                        </svg>
+                        <div class="card-index">
+                            SELF / 03
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Исследуйте интересы, способности,
+                        профессиональные склонности и возможные
+                        направления развития карьеры.
+                    </div>
 
-                    <span class="card-title">
-                        Профориентация
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Анализ интересов, навыков и особенностей личности
-                для поиска подходящих профессиональных направлений.
+                </a>
 
             </div>
 
-        </a>
-
-    </div>
-
-</section>
+        </section>
 
 
-<!-- =========================================================
-     02 — ПСИХОДИАГНОСТИКА
-========================================================= -->
+        <!-- =====================================================
+             ПСИХОДИАГНОСТИКА
+        ====================================================== -->
 
-<section class="section">
+        <section class="section">
 
-    <div class="section-title">
-
-        <span class="num">
-            02
-        </span>
-
-        <span class="name">
-            Психодиагностика
-        </span>
-
-    </div>
-
-
-    <div class="cards">
-
-
-        <!-- КЕТТЕЛ -->
-
-        <a
-            class="card"
-            href="./cattell/"
-            aria-label="Оценка личностных свойств"
-        >
-
-            <div class="dendrites">
-
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:20%;
-                    transform:rotate(28deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-25deg)">
-                </span>
-
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-150deg)">
-                </span>
-
+            <div class="section-title">
+                <div class="section-number">02 / DIAGNOSTICS</div>
+                <h2>Психодиагностика</h2>
             </div>
 
+            <div class="cards">
 
-            <div class="tron-ripples">
+                <!-- Кеттелл -->
 
-                <span></span>
-                <span></span>
-                <span></span>
+                <a class="card" href="./cattell/" data-card="cattell">
 
-            </div>
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
+                    <div class="card-content">
 
-            <div class="neuron-body">
+                        <div class="icon">Ψ</div>
 
-                <div class="matrix-code">
+                        <div class="card-title">
+                            Оценка личностных свойств
+                        </div>
 
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <circle cx="24" cy="24" r="5"></circle>
-
-                            <circle cx="10" cy="12" r="3"></circle>
-                            <circle cx="38" cy="12" r="3"></circle>
-
-                            <circle cx="9" cy="36" r="3"></circle>
-                            <circle cx="39" cy="36" r="3"></circle>
-
-                            <circle cx="24" cy="8" r="3"></circle>
-                            <circle cx="24" cy="40" r="3"></circle>
-
-                            <path d="m21 21-9-7"></path>
-                            <path d="m27 21 9-7"></path>
-
-                            <path d="m21 27-9 7"></path>
-                            <path d="m27 27 9 7"></path>
-
-                            <path d="M24 19v-8"></path>
-                            <path d="M24 29v8"></path>
-
-                        </svg>
+                        <div class="card-index">
+                            PSY / 01
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Исследование личностных особенностей
+                        с использованием многомерного
+                        психодиагностического подхода.
+                    </div>
 
-                    <span class="card-title">
-                        Оценка личностных свойств
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Многофакторная оценка личностных характеристик
-                и индивидуальных особенностей.
-
-            </div>
-
-        </a>
+                </a>
 
 
-        <!-- ЛЮШЕР -->
+                <!-- Люшер -->
 
-        <a
-            class="card"
-            href="./luscher/"
-            aria-label="Тест Люшера"
-        >
+                <a class="card" href="./luscher/" data-card="luscher">
 
-            <div class="dendrites">
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:20%;
-                    transform:rotate(30deg)">
-                </span>
+                    <div class="card-content">
 
-                <span
-                    style="
-                    width:105px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
+                        <div class="icon">◈</div>
 
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-30deg)">
-                </span>
+                        <div class="card-title">
+                            Тест Люшера
+                        </div>
 
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-150deg)">
-                </span>
-
-            </div>
-
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="17">
-                            </circle>
-
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="4">
-                            </circle>
-
-                            <circle cx="24" cy="9" r="2.5"></circle>
-                            <circle cx="34.6" cy="13.4" r="2.5"></circle>
-                            <circle cx="39" cy="24" r="2.5"></circle>
-                            <circle cx="34.6" cy="34.6" r="2.5"></circle>
-                            <circle cx="24" cy="39" r="2.5"></circle>
-                            <circle cx="13.4" cy="34.6" r="2.5"></circle>
-                            <circle cx="9" cy="24" r="2.5"></circle>
-                            <circle cx="13.4" cy="13.4" r="2.5"></circle>
-
-                        </svg>
+                        <div class="card-index">
+                            PSY / 02
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Цветовой тест для исследования
+                        субъективного отношения к цветам
+                        и особенностей актуального состояния.
+                    </div>
 
-                    <span class="card-title">
-                        Тест Люшера
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Цветовой психодиагностический тест
-                для анализа актуального психологического состояния.
-
-            </div>
-
-        </a>
+                </a>
 
 
-        <!-- ГЕРЧИКОВ -->
+                <!-- Герчиков -->
 
-        <a
-            class="card"
-            href="./gerchikov/"
-            aria-label="Мотивация по Герчикову"
-        >
+                <a class="card" href="./gerchikov/" data-card="gerchikov">
 
-            <div class="dendrites">
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:20%;
-                    transform:rotate(25deg)">
-                </span>
+                    <div class="card-content">
 
-                <span
-                    style="
-                    width:105px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
+                        <div class="icon">△</div>
 
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-25deg)">
-                </span>
+                        <div class="card-title">
+                            Мотивация по Герчикову
+                        </div>
 
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-150deg)">
-                </span>
-
-            </div>
-
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <path
-                                d="
-                                M27 4
-                                L12 25
-                                H23
-                                L21 44
-                                L36 21
-                                H25
-                                Z">
-                            </path>
-
-                        </svg>
+                        <div class="card-index">
+                            PSY / 03
+                        </div>
 
                     </div>
 
+                    <div class="description">
+                        Исследование ведущего типа трудовой
+                        мотивации и особенностей отношения
+                        человека к профессиональной деятельности.
+                    </div>
 
-                    <span class="card-title">
-                        Мотивация по Герчикову
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Диагностика структуры трудовой мотивации
-                и ведущих мотивационных типов.
+                </a>
 
             </div>
 
-        </a>
-
-    </div>
-
-</section>
+        </section>
 
 
-<!-- =========================================================
-     03 — НАЙТИ РАБОТУ
-========================================================= -->
+        <!-- =====================================================
+             РАБОТА
+        ====================================================== -->
 
-<section class="section">
+        <section class="section">
 
-    <div class="section-title">
-
-        <span class="num">
-            03
-        </span>
-
-        <span class="name">
-            Найти работу
-        </span>
-
-    </div>
-
-
-    <div class="cards">
-
-
-        <!-- ВАКАНСИИ -->
-
-        <a
-            class="card"
-            href="./work/vacancies/"
-            aria-label="Вакансии"
-        >
-
-            <div class="dendrites">
-
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:20%;
-                    transform:rotate(25deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(150deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-25deg)">
-                </span>
-
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-150deg)">
-                </span>
-
+            <div class="section-title">
+                <div class="section-number">03 / CAREER</div>
+                <h2>Работа</h2>
             </div>
 
+            <div class="cards">
 
-            <div class="tron-ripples">
+                <!-- Составить резюме -->
 
-                <span></span>
-                <span></span>
-                <span></span>
+                <a class="card" href="./work/resume/" data-card="resume">
 
-            </div>
+                    <div class="matrix-swirl">
+                        <div class="matrix-ring"></div>
+                    </div>
 
+                    <div class="card-content">
 
-            <div class="neuron-body">
+                        <div class="icon">▣</div>
 
-                <div class="matrix-code">
+                        <div class="card-title">
+                            Составить резюме
+                        </div>
 
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <rect
-                                x="7"
-                                y="14"
-                                width="34"
-                                height="25"
-                                rx="3">
-                            </rect>
-
-                            <path d="M17 14v-4h14v4"></path>
-
-                            <path d="M7 23h34"></path>
-
-                            <path d="M20 23v4h8v-4"></path>
-
-                        </svg>
+                        <div class="card-index">
+                            CAREER / 01
+                        </div>
 
                     </div>
 
-
-                    <span class="card-title">
-                        Вакансии
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="description">
-
-                Поиск и анализ вакансий с учётом
-                профессиональных интересов и навыков.
-
-            </div>
-
-        </a>
-
-
-        <!-- МОЁ РЕЗЮМЕ -->
-
-        <a
-            class="card"
-            href="./work/resume/"
-            aria-label="Моё резюме"
-        >
-
-            <div class="dendrites">
-
-                <span
-                    style="
-                    width:100px;
-                    left:2%;
-                    top:20%;
-                    transform:rotate(28deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:74%;
-                    top:18%;
-                    transform:rotate(148deg)">
-                </span>
-
-                <span
-                    style="
-                    width:105px;
-                    left:73%;
-                    top:80%;
-                    transform:rotate(-28deg)">
-                </span>
-
-                <span
-                    style="
-                    width:90px;
-                    left:4%;
-                    top:82%;
-                    transform:rotate(-148deg)">
-                </span>
-
-            </div>
-
-
-            <div class="tron-ripples">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-            <div class="neuron-body">
-
-                <div class="matrix-code">
-
-                    <div class="matrix-swirl"></div>
-
-                </div>
-
-
-                <div class="sphere-content">
-
-                    <div class="icon">
-
-                        <svg viewBox="0 0 48 48">
-
-                            <rect
-                                x="10"
-                                y="5"
-                                width="28"
-                                height="38"
-                                rx="3">
-                            </rect>
-
-                            <path d="M17 5v6h14V5"></path>
-
-                            <circle
-                                cx="24"
-                                cy="20"
-                                r="4">
-                            </circle>
-
-                            <path
-                                d="M17 32c1.5-5 12.5-5 14 0">
-                            </path>
-
-                        </svg>
-
+                    <div class="description">
+                        Создайте структурированное
+                        профессиональное резюме для отправки
+                        работодателю. В дальнейшем результат
+                        оценки навыков можно использовать
+                        при формировании профессионального профиля.
                     </div>
 
-
-                    <span class="card-title">
-                        Моё резюме
-                    </span>
-
-                </div>
+                </a>
 
             </div>
 
+        </section>
 
-            <div class="description">
 
-                Создание и структурирование профессионального профиля
-                на основе результатов инструментов PSY-TOOLS.
+        <footer class="footer">
+            PSY-TOOLS · SELF KNOWLEDGE · DEVELOPMENT
+        </footer>
 
-            </div>
+    </main>
 
-        </a>
 
-    </div>
+    <script>
 
-</section>
+        /* =========================================================
+           MATRIX CODE
+        ========================================================= */
 
+        const matrixCharacters =
+            "01アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZΨΣΔΩΦΛ";
 
-<div class="footer">
+        const cards =
+            document.querySelectorAll(".card");
 
-    PSY-TOOLS · DIGITAL PSYCHOLOGY
 
-</div>
-
-
-</main>
-
-
-<script>
-
-/* =========================================================
-   MATRIX CHARACTERS
-========================================================= */
-
-const matrixChars =
-    "01アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-    "ΨΣΔΩΦΛ";
-
-
-document
-    .querySelectorAll(".matrix-swirl")
-    .forEach(swirl => {
-
-        const fragment =
-            document.createDocumentFragment();
-
-        const count = 85;
-
-
-        for (
-            let i = 0;
-            i < count;
-            i++
-        ) {
-
-            const char =
-                document.createElement("span");
-
-            char.className =
-                "matrix-char";
-
-
-            const angle =
-                i * .55 +
-                Math.random() * .7;
-
-
-            const radius =
-                8 +
-                Math.random() * 72;
-
-
-            const x =
-                50 +
-                Math.cos(angle) * radius;
-
-
-            const y =
-                50 +
-                Math.sin(angle) * radius;
-
-
-            char.textContent =
-                matrixChars[
-                    Math.floor(
-                        Math.random() *
-                        matrixChars.length
-                    )
-                ];
-
-
-            char.style.left =
-                x + "%";
-
-
-            char.style.top =
-                y + "%";
-
-
-            char.style.fontSize =
-                (
-                    8 +
-                    Math.random() * 5
-                ) + "px";
-
-
-            char.style.opacity =
-                (
-                    .22 +
-                    Math.random() * .52
-                ).toFixed(2);
-
-
-            char.style.transform =
-                `rotate(${
-                    angle * 180 / Math.PI + 90
-                }deg)`;
-
-
-            fragment.appendChild(char);
-
-        }
-
-
-        swirl.appendChild(fragment);
-
-    });
-
-
-/* =========================================================
-   TOUCH
-========================================================= */
-
-const cards =
-    [...document.querySelectorAll(".card")];
-
-const isTouchDevice =
-    window.matchMedia("(hover: none)").matches ||
-    "ontouchstart" in window;
-
-
-cards.forEach(card => {
-
-    card.addEventListener(
-        "click",
-        event => {
-
-            if (!isTouchDevice) {
-                return;
-            }
-
-
-            if (
-                !card.classList.contains("active")
-            ) {
-
-                event.preventDefault();
-
-
-                cards.forEach(item => {
-
-                    item.classList.remove(
-                        "active"
-                    );
-
-                });
-
-
-                card.classList.add("active");
-
-
-                /*
-                   После открытия описания
-                   пересчитываем его положение.
-                */
-
-                requestAnimationFrame(
-                    updateDescriptionPositions
-                );
-
-            }
-
-        }
-    );
-
-
-    card.addEventListener(
-        "focus",
-        () => {
-
-            card.classList.add("active");
-
-            requestAnimationFrame(
-                updateDescriptionPositions
-            );
-
-        }
-    );
-
-
-    card.addEventListener(
-        "blur",
-        () => {
-
-            card.classList.remove("active");
-
-        }
-    );
-
-});
-
-
-document.addEventListener(
-    "click",
-    event => {
-
-        if (
-            isTouchDevice &&
-            !event.target.closest(".card")
-        ) {
+        function createMatrix() {
 
             cards.forEach(card => {
 
-                card.classList.remove(
-                    "active"
+                const ring =
+                    card.querySelector(".matrix-ring");
+
+                if (!ring) return;
+
+                ring.textContent = "";
+
+                let result = "";
+
+                for (let i = 0; i < 85; i++) {
+
+                    result +=
+                        matrixCharacters[
+                            Math.floor(
+                                Math.random() *
+                                matrixCharacters.length
+                            )
+                        ];
+
+                    if (i % 8 === 0) {
+                        result += " ";
+                    }
+                }
+
+                ring.textContent = result;
+
+            });
+
+        }
+
+        createMatrix();
+
+
+        /* =========================================================
+           DESCRIPTION POSITIONING
+        ========================================================= */
+
+        function updateDescriptionPositions() {
+
+            const viewportWidth =
+                document.documentElement.clientWidth;
+
+            const edge =
+                window.innerWidth <= 760
+                    ? 8
+                    : 12;
+
+
+            cards.forEach(card => {
+
+                const description =
+                    card.querySelector(".description");
+
+                if (!description) return;
+
+
+                card.style.setProperty(
+                    "--description-shift",
+                    "0px"
+                );
+
+
+                const cardRect =
+                    card.getBoundingClientRect();
+
+                const descriptionRect =
+                    description.getBoundingClientRect();
+
+
+                const cardCenter =
+                    cardRect.left +
+                    cardRect.width / 2;
+
+
+                const descriptionWidth =
+                    Math.min(
+                        descriptionRect.width,
+                        viewportWidth - edge * 2
+                    );
+
+
+                const idealLeft =
+                    cardCenter -
+                    descriptionWidth / 2;
+
+
+                const minimumLeft =
+                    edge;
+
+
+                const maximumLeft =
+                    viewportWidth -
+                    edge -
+                    descriptionWidth;
+
+
+                const safeLeft =
+                    Math.max(
+                        minimumLeft,
+                        Math.min(
+                            idealLeft,
+                            maximumLeft
+                        )
+                    );
+
+
+                const shift =
+                    safeLeft -
+                    idealLeft;
+
+
+                card.style.setProperty(
+                    "--description-shift",
+                    shift + "px"
                 );
 
             });
 
         }
 
-    }
-);
+
+        window.addEventListener(
+            "resize",
+            updateDescriptionPositions
+        );
+
+        window.addEventListener(
+            "orientationchange",
+            updateDescriptionPositions
+        );
+
+        window.addEventListener(
+            "load",
+            updateDescriptionPositions
+        );
 
 
-/* =========================================================
-   DESCRIPTION POSITIONING
-========================================================= */
-
-/*
-   Эта функция не меняет геометрию плиток.
-
-   Она только вычисляет, насколько нужно
-   сдвинуть всплывающий блок, чтобы он
-   полностью находился внутри viewport.
-*/
-
-function updateDescriptionPositions() {
-
-    const viewportWidth =
-        document.documentElement.clientWidth;
+        setTimeout(
+            updateDescriptionPositions,
+            100
+        );
 
 
-    const edge =
-        window.innerWidth <= 760
-            ? 8
-            : 12;
+        /* =========================================================
+           TOUCH INTERACTION
+        ========================================================= */
+
+        let activeCard = null;
 
 
-    cards.forEach(card => {
+        cards.forEach(card => {
 
-        const description =
-            card.querySelector(
-                ".description"
+            card.addEventListener(
+                "touchstart",
+                function(event) {
+
+                    if (
+                        activeCard !== this
+                    ) {
+
+                        event.preventDefault();
+
+                        if (activeCard) {
+                            activeCard.classList.remove(
+                                "active"
+                            );
+                        }
+
+                        activeCard = this;
+
+                        this.classList.add(
+                            "active"
+                        );
+
+                        updateDescriptionPositions();
+
+                    } else {
+
+                        this.classList.remove(
+                            "active"
+                        );
+
+                        activeCard = null;
+
+                    }
+
+                },
+                {
+                    passive: false
+                }
             );
 
+        });
 
-        if (!description) {
-            return;
+
+        document.addEventListener(
+            "touchstart",
+            function(event) {
+
+                if (
+                    activeCard &&
+                    !activeCard.contains(event.target)
+                ) {
+
+                    activeCard.classList.remove(
+                        "active"
+                    );
+
+                    activeCard = null;
+
+                }
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =========================================================
+           NEURAL NETWORK BACKGROUND
+        ========================================================= */
+
+        const canvas =
+            document.getElementById(
+                "neuralCanvas"
+            );
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        let nodes = [];
+
+
+        function resizeCanvas() {
+
+            const dpr =
+                Math.min(
+                    window.devicePixelRatio || 1,
+                    2
+                );
+
+            canvas.width =
+                window.innerWidth * dpr;
+
+            canvas.height =
+                window.innerHeight * dpr;
+
+            canvas.style.width =
+                window.innerWidth + "px";
+
+            canvas.style.height =
+                window.innerHeight + "px";
+
+            ctx.setTransform(
+                dpr,
+                0,
+                0,
+                dpr,
+                0,
+                0
+            );
+
+            createNodes();
+
+            drawNetwork();
+
         }
 
 
-        /*
-           Сбрасываем старое значение,
-           чтобы корректно измерить блок.
-        */
+        function createNodes() {
 
-        card.style.setProperty(
-            "--description-shift",
-            "0px"
-        );
+            const width =
+                window.innerWidth;
 
+            const height =
+                window.innerHeight;
 
-        const cardRect =
-            card.getBoundingClientRect();
 
+            const count =
+                width < 760
+                    ? 24
+                    : Math.min(
+                        48,
+                        Math.floor(
+                            width * height / 26000
+                        )
+                    );
 
-        const descriptionRect =
-            description.getBoundingClientRect();
 
+            nodes = [];
 
-        const cardCenter =
-            cardRect.left +
-            cardRect.width / 2;
 
+            for (
+                let i = 0;
+                i < count;
+                i++
+            ) {
 
-        const descriptionWidth =
-            Math.min(
-                descriptionRect.width,
-                viewportWidth - edge * 2
-            );
+                nodes.push({
 
+                    x:
+                        Math.random() *
+                        width,
 
-        const idealLeft =
-            cardCenter -
-            descriptionWidth / 2;
+                    y:
+                        Math.random() *
+                        height,
 
-
-        const minimumLeft =
-            edge;
-
-
-        const maximumLeft =
-            viewportWidth -
-            edge -
-            descriptionWidth;
-
-
-        const safeLeft =
-            Math.max(
-                minimumLeft,
-                Math.min(
-                    idealLeft,
-                    maximumLeft
-                )
-            );
-
-
-        const shift =
-            safeLeft -
-            idealLeft;
-
-
-        card.style.setProperty(
-            "--description-shift",
-            shift + "px"
-        );
-
-    });
-
-}
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-let resizeTimer = null;
-
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        clearTimeout(resizeTimer);
-
-
-        resizeTimer =
-            setTimeout(
-                () => {
-
-                    updateDescriptionPositions();
-
-                    refreshNetwork();
-
-                },
-                80
-            );
-
-    },
-    {
-        passive: true
-    }
-);
-
-
-/* =========================================================
-   NEURAL BACKGROUND
-========================================================= */
-
-const canvas =
-    document.getElementById(
-        "neuralCanvas"
-    );
-
-const ctx =
-    canvas.getContext("2d");
-
-let backgroundNodes = [];
-
-
-function createBackgroundNodes() {
-
-    backgroundNodes = [];
-
-
-    const area =
-        window.innerWidth *
-        window.innerHeight;
-
-
-    const count =
-        Math.min(
-            65,
-            Math.max(
-                30,
-                Math.floor(
-                    area / 26000
-                )
-            )
-        );
-
-
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
-
-        backgroundNodes.push({
-
-            x:
-                Math.random() *
-                window.innerWidth,
-
-            y:
-                Math.random() *
-                window.innerHeight,
-
-            r:
-                Math.random() *
-                1.6 +
-                .6
-
-        });
-
-    }
-
-}
-
-
-function getCardCenters() {
-
-    return cards
-
-        .map(card => {
-
-            const rect =
-                card.getBoundingClientRect();
-
-
-            return {
-
-                x:
-                    rect.left +
-                    rect.width / 2,
-
-                y:
-                    rect.top +
-                    rect.height / 2,
-
-                r: 2
-
-            };
-
-        })
-
-        .filter(node => {
-
-            return (
-                node.x > -350 &&
-                node.x <
-                    window.innerWidth + 350 &&
-                node.y > -350 &&
-                node.y <
-                    window.innerHeight + 350
-            );
-
-        });
-
-}
-
-
-function drawNetwork() {
-
-    const dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-
-    canvas.width =
-        window.innerWidth * dpr;
-
-    canvas.height =
-        window.innerHeight * dpr;
-
-
-    canvas.style.width =
-        window.innerWidth + "px";
-
-    canvas.style.height =
-        window.innerHeight + "px";
-
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-
-    ctx.clearRect(
-        0,
-        0,
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    const cardNodes =
-        getCardCenters();
-
-
-    const nodes = [
-        ...backgroundNodes,
-        ...cardNodes
-    ];
-
-
-    /* CONNECTIONS */
-
-    for (
-        let i = 0;
-        i < nodes.length;
-        i++
-    ) {
-
-        let nearest = [];
-
-
-        for (
-            let j = 0;
-            j < nodes.length;
-            j++
-        ) {
-
-            if (i === j) {
-                continue;
-            }
-
-
-            const dx =
-                nodes[i].x -
-                nodes[j].x;
-
-
-            const dy =
-                nodes[i].y -
-                nodes[j].y;
-
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
-
-
-            if (distance < 250) {
-
-                nearest.push({
-
-                    node:
-                        nodes[j],
-
-                    distance
+                    radius:
+                        Math.random() *
+                        1.4 + .45
 
                 });
 
@@ -3001,142 +1491,164 @@ function drawNetwork() {
         }
 
 
-        nearest.sort(
-            (a, b) =>
-                a.distance -
-                b.distance
-        );
+        function drawNetwork() {
+
+            const width =
+                window.innerWidth;
+
+            const height =
+                window.innerHeight;
 
 
-        nearest =
-            nearest.slice(0, 2);
+            ctx.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
 
 
-        nearest.forEach(
-            connection => {
+            /* линии */
 
-                const target =
-                    connection.node;
+            for (
+                let i = 0;
+                i < nodes.length;
+                i++
+            ) {
+
+                const distances = [];
 
 
-                const distance =
-                    connection.distance;
+                for (
+                    let j = 0;
+                    j < nodes.length;
+                    j++
+                ) {
+
+                    if (i === j) continue;
 
 
-                const alpha =
-                    Math.max(
-                        .025,
-                        .10 -
-                        distance / 3000
+                    const dx =
+                        nodes[i].x -
+                        nodes[j].x;
+
+                    const dy =
+                        nodes[i].y -
+                        nodes[j].y;
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    distances.push({
+                        index: j,
+                        distance
+                    });
+
+                }
+
+
+                distances.sort(
+                    (a, b) =>
+                        a.distance -
+                        b.distance
+                );
+
+
+                const nearest =
+                    distances.slice(0, 2);
+
+
+                nearest.forEach(item => {
+
+                    if (
+                        item.distance > 240
+                    ) return;
+
+
+                    const node =
+                        nodes[item.index];
+
+
+                    const alpha =
+                        Math.max(
+                            0,
+                            .085 -
+                            item.distance /
+                            4000
+                        );
+
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        nodes[i].x,
+                        nodes[i].y
+                    );
+
+                    ctx.lineTo(
+                        node.x,
+                        node.y
                     );
 
 
+                    ctx.strokeStyle =
+                        `rgba(69,240,195,${alpha})`;
+
+                    ctx.lineWidth = .55;
+
+                    ctx.stroke();
+
+                });
+
+            }
+
+
+            /* точки */
+
+            nodes.forEach(node => {
+
                 ctx.beginPath();
 
-
-                ctx.moveTo(
-                    nodes[i].x,
-                    nodes[i].y
+                ctx.arc(
+                    node.x,
+                    node.y,
+                    node.radius,
+                    0,
+                    Math.PI * 2
                 );
 
+                ctx.fillStyle =
+                    "rgba(69,240,195,.28)";
 
-                ctx.lineTo(
-                    target.x,
-                    target.y
-                );
+                ctx.fill();
 
+            });
 
-                ctx.strokeStyle =
-                    `rgba(
-                        45,
-                        190,
-                        230,
-                        ${alpha}
-                    )`;
+        }
 
 
-                ctx.lineWidth =
-                    .7;
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
 
 
-                ctx.stroke();
-
+        window.addEventListener(
+            "scroll",
+            drawNetwork,
+            {
+                passive: true
             }
         );
 
-    }
 
+        resizeCanvas();
 
-    /* NODES */
-
-    nodes.forEach(node => {
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-            node.x,
-            node.y,
-            node.r,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.fillStyle =
-            "rgba(65,205,240,.24)";
-
-
-        ctx.fill();
-
-    });
-
-}
-
-
-function refreshNetwork() {
-
-    createBackgroundNodes();
-
-    drawNetwork();
-
-    updateDescriptionPositions();
-
-}
-
-
-window.addEventListener(
-    "scroll",
-    () => {
-
-        drawNetwork();
-
-        updateDescriptionPositions();
-
-    },
-    {
-        passive: true
-    }
-);
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-window.addEventListener(
-    "load",
-    () => {
-
-        refreshNetwork();
-
-    }
-);
-
-
-refreshNetwork();
-
-</script>
+    </script>
 
 </body>
 </html>
