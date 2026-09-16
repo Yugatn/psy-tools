@@ -1,2652 +1,2180 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PSY-TOOLS</title>
+
+    <meta name="description" content="Психодиагностика, саморазвитие, профориентация и инструменты для поиска работы.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* =========================================================
+           BASE
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #e8faff;
+
+            background:
+                radial-gradient(
+                    circle at 50% 42%,
+                    rgba(0, 150, 255, .08),
+                    transparent 34%
+                ),
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(0, 255, 180, .035),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(100, 0, 255, .045),
+                    transparent 30%
+                ),
+                #020509;
+
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+
+        /* =========================================================
+           STATIC BACKGROUND
+        ========================================================= */
+
+        #neuralCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .grid-background {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(50, 150, 190, .028) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(50, 150, 190, .028) 1px,
+                    transparent 1px
+                );
+
+            background-size: 70px 70px;
+
+            mask-image:
+                radial-gradient(
+                    circle at center,
+                    black 20%,
+                    transparent 85%
+                );
+
+            -webkit-mask-image:
+                radial-gradient(
+                    circle at center,
+                    black 20%,
+                    transparent 85%
+                );
+        }
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
 
-<title>PSY-TOOLS</title>
+        /* =========================================================
+           MAIN
+        ========================================================= */
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        .main {
+            position: relative;
+            z-index: 5;
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
-    rel="stylesheet"
->
+            width: 100%;
+            max-width: 1500px;
 
-<style>
+            margin: 0 auto;
 
-/* =========================================================
-   BASE
-========================================================= */
+            padding:
+                clamp(35px, 6vw, 75px)
+                clamp(18px, 5vw, 70px)
+                110px;
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-html,
-body {
-    width: 100%;
-    min-height: 100%;
-}
 
-body {
-    font-family:
-        "Manrope",
-        -apple-system,
-        BlinkMacSystemFont,
-        sans-serif;
+        /* =========================================================
+           LOGO
+        ========================================================= */
 
-    color: #e8faff;
+        .logo {
+            position: relative;
 
-    background:
-        radial-gradient(
-            circle at 50% 45%,
-            rgba(0, 150, 255, .08),
-            transparent 32%
-        ),
+            text-align: center;
 
-        radial-gradient(
-            circle at 15% 20%,
-            rgba(0, 255, 180, .04),
-            transparent 30%
-        ),
+            font-family: "Unbounded", sans-serif;
+            font-size: clamp(30px, 4.6vw, 56px);
+            font-weight: 800;
 
-        radial-gradient(
-            circle at 85% 80%,
-            rgba(100, 0, 255, .05),
-            transparent 30%
-        ),
+            letter-spacing: .18em;
 
-        #020509;
+            color: transparent;
 
-    overflow-x: hidden;
+            background:
+                linear-gradient(
+                    90deg,
+                    #63f5ff,
+                    #8cffff,
+                    #56aaff,
+                    #72ffd9
+                );
 
-    -webkit-font-smoothing: antialiased;
-}
+            -webkit-background-clip: text;
+            background-clip: text;
 
+            filter:
+                drop-shadow(0 0 10px rgba(40, 220, 255, .4))
+                drop-shadow(0 0 30px rgba(0, 160, 255, .2));
+        }
 
-/* =========================================================
-   GRID
-========================================================= */
+        .logo::after {
+            content: "";
 
-.grid-background {
+            position: absolute;
 
-    position: fixed;
-    inset: 0;
+            left: 50%;
+            bottom: -15px;
 
-    z-index: 1;
+            width: 150px;
+            height: 1px;
 
-    pointer-events: none;
+            transform: translateX(-50%);
 
-    background-image:
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(80, 230, 255, .8),
+                    transparent
+                );
 
-        linear-gradient(
-            rgba(50, 150, 190, .035) 1px,
-            transparent 1px
-        ),
+            box-shadow:
+                0 0 12px rgba(50, 220, 255, .6);
+        }
 
-        linear-gradient(
-            90deg,
-            rgba(50, 150, 190, .035) 1px,
-            transparent 1px
-        );
 
-    background-size: 70px 70px;
+        /* =========================================================
+           SECTIONS
+        ========================================================= */
 
-    mask-image:
-        radial-gradient(
-            circle at center,
-            black 20%,
-            transparent 85%
-        );
+        .section {
+            width: 100%;
 
-    -webkit-mask-image:
-        radial-gradient(
-            circle at center,
-            black 20%,
-            transparent 85%
-        );
-}
+            margin-top:
+                clamp(75px, 8vw, 110px);
+        }
 
+        .section-title {
+            position: relative;
 
-/* =========================================================
-   MAIN
-========================================================= */
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-.main {
+            gap: 16px;
 
-    position: relative;
+            width: 100%;
 
-    z-index: 5;
+            margin:
+                0 auto 55px;
 
-    width: 100%;
+            text-align: center;
+        }
 
-    max-width: 1500px;
+        .section-title .num {
+            font-family: "JetBrains Mono", monospace;
 
-    margin: 0 auto;
+            font-size: 11px;
+            font-weight: 500;
 
-    padding:
-        clamp(35px, 6vw, 75px)
-        clamp(18px, 5vw, 70px)
-        100px;
+            letter-spacing: .22em;
 
-    display: flex;
+            color: rgba(120, 235, 255, .85);
 
-    flex-direction: column;
+            padding:
+                5px 13px 5px 15px;
 
-    align-items: center;
-}
+            border:
+                1px solid rgba(80, 220, 255, .35);
 
+            border-radius: 100px;
 
-/* =========================================================
-   LOGO
-========================================================= */
+            background:
+                rgba(80, 220, 255, .05);
 
-.logo {
+            text-shadow:
+                0 0 8px rgba(80, 220, 255, .6);
 
-    position: relative;
+            flex-shrink: 0;
+        }
 
-    text-align: center;
+        .section-title .name {
+            font-family: "Unbounded", sans-serif;
 
-    font-family:
-        "Unbounded",
-        sans-serif;
+            font-size:
+                clamp(17px, 1.9vw, 24px);
 
-    font-size:
-        clamp(30px, 4.6vw, 56px);
+            font-weight: 600;
 
-    font-weight: 800;
+            letter-spacing: .06em;
 
-    letter-spacing: .18em;
+            color: #d9faff;
 
-    color: transparent;
+            text-shadow:
+                0 0 12px rgba(50, 210, 255, .5);
+        }
 
-    background:
-        linear-gradient(
-            90deg,
-            #63f5ff,
-            #8cffff,
-            #56aaff,
-            #72ffd9
-        );
+        .section-title::after {
+            content: "";
 
-    -webkit-background-clip: text;
-    background-clip: text;
+            position: absolute;
 
-    filter:
-        drop-shadow(
-            0 0 10px rgba(40, 220, 255, .4)
-        )
+            left: 50%;
+            bottom: -26px;
 
-        drop-shadow(
-            0 0 30px rgba(0, 160, 255, .2)
-        );
-}
+            width: 180px;
+            height: 1px;
 
-.logo::after {
+            transform: translateX(-50%);
 
-    content: "";
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(55, 220, 255, .8),
+                    transparent
+                );
 
-    position: absolute;
+            box-shadow:
+                0 0 10px rgba(40, 220, 255, .5);
+        }
 
-    left: 50%;
-    bottom: -15px;
 
-    width: 150px;
-    height: 1px;
+        /* =========================================================
+           TILES GRID
+        ========================================================= */
 
-    transform:
-        translateX(-50%);
+        .cards {
+            width: 100%;
 
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(80, 230, 255, .8),
-            transparent
-        );
+            display: flex;
+            flex-wrap: wrap;
 
-    box-shadow:
-        0 0 12px rgba(50, 220, 255, .6);
-}
+            justify-content: center;
+            align-items: flex-start;
 
+            gap:
+                clamp(55px, 5vw, 85px)
+                clamp(28px, 3.5vw, 55px);
 
-/* =========================================================
-   SECTION
-========================================================= */
+            margin: 0 auto;
+        }
 
-.section {
 
-    width: 100%;
+        /* =========================================================
+           CARD
+        ========================================================= */
 
-    margin-top:
-        clamp(70px, 8vw, 110px);
-}
+        .card {
+            position: relative;
 
-.section-title {
+            width: 300px;
+            height: 190px;
 
-    position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    display: flex;
+            text-decoration: none;
 
-    align-items: center;
+            cursor: pointer;
 
-    justify-content: center;
+            isolation: isolate;
 
-    gap: 16px;
+            z-index: 1;
 
-    margin:
-        0 auto 55px;
+            overflow: visible;
 
-    width: 100%;
+            transition:
+                z-index 0s,
+                transform .45s cubic-bezier(.2, .8, .2, 1);
+        }
 
-    text-align: center;
-}
+        .card:hover,
+        .card.active,
+        .card:focus-visible {
+            z-index: 100;
+        }
 
-.section-title .num {
 
-    font-family:
-        "JetBrains Mono",
-        monospace;
+        /* =========================================================
+           NEURAL CONNECTIONS AROUND TILE
+        ========================================================= */
 
-    font-size: 11px;
+        .dendrites {
+            position: absolute;
 
-    font-weight: 500;
+            inset: -55px;
 
-    letter-spacing: .22em;
+            pointer-events: none;
 
-    color:
-        rgba(120, 235, 255, .85);
+            z-index: 0;
 
-    padding:
-        5px 13px 5px 15px;
+            opacity: .28;
+        }
 
-    border:
-        1px solid rgba(80, 220, 255, .35);
+        .dendrites span {
+            position: absolute;
 
-    border-radius: 100px;
+            height: 1px;
 
-    background:
-        rgba(80, 220, 255, .05);
+            transform-origin: left center;
 
-    text-shadow:
-        0 0 8px rgba(80, 220, 255, .6);
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(50, 215, 255, .42),
+                    rgba(50, 215, 255, .08),
+                    transparent
+                );
 
-    flex-shrink: 0;
-}
+            box-shadow:
+                0 0 5px rgba(40, 200, 255, .18);
+        }
 
-.section-title .name {
 
-    font-family:
-        "Unbounded",
-        sans-serif;
+        /* =========================================================
+           CYBER RIPPLES
+        ========================================================= */
 
-    font-size:
-        clamp(17px, 1.9vw, 24px);
+        .tron-ripples {
+            position: absolute;
 
-    font-weight: 600;
+            inset: -45px;
 
-    letter-spacing: .06em;
+            border-radius: 24px;
 
-    color: #d9faff;
+            pointer-events: none;
 
-    text-shadow:
-        0 0 12px rgba(50, 210, 255, .5);
-}
+            z-index: 0;
 
-.section-title::after {
+            opacity: .4;
+        }
 
-    content: "";
+        .tron-ripples::before {
+            content: "";
 
-    position: absolute;
+            position: absolute;
 
-    left: 50%;
+            inset: 5%;
 
-    bottom: -26px;
+            border:
+                1px solid rgba(50, 210, 255, .13);
 
-    transform:
-        translateX(-50%);
+            border-radius: 30px;
 
-    width: 180px;
+            box-shadow:
+                0 0 18px rgba(20, 180, 255, .05);
+        }
 
-    height: 1px;
+        .tron-ripples span {
+            position: absolute;
 
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(55, 220, 255, .8),
-            transparent
-        );
+            left: 50%;
+            top: 50%;
 
-    box-shadow:
-        0 0 10px rgba(40, 220, 255, .5);
-}
+            width: 88%;
+            height: 72%;
 
+            transform:
+                translate(-50%, -50%)
+                scale(.82);
 
-/* =========================================================
-   CARDS
-========================================================= */
+            border:
+                1px solid rgba(50, 220, 255, .18);
 
-.cards {
+            border-radius: 28px;
 
-    width: 100%;
+            opacity: 0;
+        }
 
-    display: flex;
+        .tron-ripples span:nth-child(2) {
+            width: 98%;
+            height: 82%;
+        }
 
-    flex-wrap: wrap;
+        .tron-ripples span:nth-child(3) {
+            width: 108%;
+            height: 92%;
+        }
 
-    justify-content: center;
+        .card:hover .tron-ripples span,
+        .card.active .tron-ripples span {
+            animation:
+                tileRipple 3.8s ease-out infinite;
+        }
 
-    align-items: flex-start;
+        .card:hover .tron-ripples span:nth-child(2),
+        .card.active .tron-ripples span:nth-child(2) {
+            animation-delay: .55s;
+        }
 
-    gap:
-        clamp(100px, 9vw, 145px)
-        clamp(35px, 4.5vw, 75px);
+        .card:hover .tron-ripples span:nth-child(3),
+        .card.active .tron-ripples span:nth-child(3) {
+            animation-delay: 1.1s;
+        }
 
-    margin:
-        0 auto;
-}
+        @keyframes tileRipple {
 
+            0% {
+                opacity: 0;
+                transform:
+                    translate(-50%, -50%)
+                    scale(.78);
+            }
 
-/* =========================================================
-   CARD
-========================================================= */
+            18% {
+                opacity: .55;
+            }
 
-.card {
+            100% {
+                opacity: 0;
+                transform:
+                    translate(-50%, -50%)
+                    scale(1.08);
+            }
+        }
 
-    position: relative;
 
-    width: 215px;
-    height: 215px;
+        /* =========================================================
+           TILE BODY
+        ========================================================= */
 
-    display: flex;
+        .neuron-body {
+            position: absolute;
 
-    align-items: center;
-    justify-content: center;
+            inset: 0;
 
-    text-decoration: none;
+            border-radius: 18px;
 
-    cursor: pointer;
+            overflow: hidden;
 
-    isolation: isolate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    /*
-     * Обычное состояние.
-     * Сфера находится выше фоновых линий,
-     * но ниже активной карточки.
-     */
-    z-index: 10;
-}
+            background:
 
+                /* верхний блик */
+                linear-gradient(
+                    145deg,
+                    rgba(100, 230, 255, .10),
+                    transparent 28%
+                ),
 
-/*
- * При наведении / нажатии вся карточка
- * становится верхним слоем.
- */
-.card:hover,
-.card.active {
+                /* основной объём */
+                linear-gradient(
+                    145deg,
+                    rgba(14, 37, 52, .98),
+                    rgba(3, 12, 21, .98)
+                );
 
-    z-index: 500;
-}
+            border:
+                1px solid rgba(90, 220, 255, .42);
 
+            box-shadow:
 
-/* =========================================================
-   DENDRITES
-========================================================= */
+                /* внешняя тень */
+                0 18px 45px rgba(0, 0, 0, .48),
 
-.dendrites {
+                /* голубое свечение */
+                0 0 18px rgba(30, 190, 255, .12),
 
-    position: absolute;
+                /* внутренний объём */
+                inset 0 1px 0 rgba(180, 250, 255, .13),
 
-    inset: -60px;
+                inset 0 -20px 40px rgba(0, 0, 0, .30),
 
-    pointer-events: none;
+                inset 10px 10px 35px rgba(100, 230, 255, .035);
 
-    z-index: -4;
+            transition:
+                transform .45s cubic-bezier(.2, .8, .2, 1),
+                box-shadow .45s ease,
+                border-color .45s ease,
+                background .45s ease;
 
-    opacity: .35;
-}
+            z-index: 2;
+        }
 
-.dendrites span {
+        /* Верхний световой кант */
 
-    position: absolute;
+        .neuron-body::before {
+            content: "";
 
-    height: 1px;
+            position: absolute;
 
-    transform-origin: left center;
+            left: 12px;
+            right: 12px;
+            top: 8px;
 
-    background:
-        linear-gradient(
-            90deg,
-            rgba(50, 215, 255, .45),
-            rgba(50, 215, 255, .08),
-            transparent
-        );
+            height: 1px;
 
-    box-shadow:
-        0 0 5px rgba(40, 200, 255, .25);
-}
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(130, 240, 255, .5),
+                    transparent
+                );
 
-.dendrites span:nth-child(1) {
+            opacity: .55;
 
-    width: 75px;
+            pointer-events: none;
 
-    left: 20%;
-    top: 35%;
+            z-index: 8;
+        }
 
-    transform:
-        rotate(-25deg);
-}
+        /* Нижний внутренний градиент */
 
-.dendrites span:nth-child(2) {
+        .neuron-body::after {
+            content: "";
 
-    width: 60px;
+            position: absolute;
 
-    right: 15%;
-    top: 30%;
+            inset: 0;
 
-    transform:
-        rotate(24deg);
-}
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(60, 220, 255, .07),
+                    transparent 38%
+                );
 
-.dendrites span:nth-child(3) {
+            pointer-events: none;
 
-    width: 80px;
+            z-index: 7;
+        }
 
-    left: 18%;
-    bottom: 28%;
 
-    transform:
-        rotate(25deg);
-}
+        /* =========================================================
+           HOVER TILE
+        ========================================================= */
 
-.dendrites span:nth-child(4) {
+        .card:hover .neuron-body,
+        .card.active .neuron-body,
+        .card:focus-visible .neuron-body {
 
-    width: 55px;
+            transform:
+                translateY(-7px)
+                scale(1.025);
 
-    right: 18%;
-    bottom: 32%;
+            border-color:
+                rgba(115, 245, 255, .82);
 
-    transform:
-        rotate(-27deg);
-}
+            background:
 
+                linear-gradient(
+                    145deg,
+                    rgba(20, 55, 70, .98),
+                    rgba(3, 13, 22, .98)
+                );
 
-/* =========================================================
-   CYBERPUNK RIPPLES
-   В обычном состоянии полностью статичны.
-========================================================= */
+            box-shadow:
 
-.ripples {
+                0 25px 55px rgba(0, 0, 0, .55),
 
-    position: absolute;
+                0 0 22px rgba(30, 220, 255, .28),
 
-    left: 50%;
-    top: 50%;
+                0 0 60px rgba(30, 180, 255, .14),
 
-    width: 100%;
-    height: 100%;
+                inset 0 1px 0 rgba(180, 255, 255, .22),
 
-    transform:
-        translate(-50%, -50%);
+                inset 0 -25px 45px rgba(0, 0, 0, .28),
 
-    pointer-events: none;
+                inset 0 0 35px rgba(40, 220, 255, .08);
+        }
 
-    z-index: -3;
-}
 
-.ripple {
+        /* =========================================================
+           MATRIX
+        ========================================================= */
 
-    position: absolute;
+        .matrix-code {
+            position: absolute;
 
-    left: 50%;
-    top: 50%;
+            inset: 0;
 
-    width: 125%;
-    height: 125%;
+            overflow: hidden;
 
-    transform:
-        translate(-50%, -50%);
+            opacity: 0;
 
-    border:
-        1px solid rgba(62, 220, 255, .22);
+            clip-path:
+                inset(0 100% 0 0);
 
-    border-radius:
-        48% 52% 51% 49%;
+            transition:
+                opacity 1s ease,
+                clip-path 1.5s cubic-bezier(.15, .75, .15, 1);
 
-    opacity: .28;
+            z-index: 3;
 
-    box-shadow:
-        0 0 7px rgba(30, 190, 255, .10);
-}
+            pointer-events: none;
+        }
 
+        .card:hover .matrix-code,
+        .card.active .matrix-code,
+        .card:focus-visible .matrix-code {
 
-/*
- * Анимация ряби включается ТОЛЬКО
- * при наведении или нажатии.
- */
+            opacity: .82;
 
-.card:hover .ripple,
-.card.active .ripple {
+            clip-path:
+                inset(0 0 0 0);
+        }
 
-    animation:
-        ripplePulse 3.8s ease-out infinite;
-}
+        .matrix-code::before {
+            content: "";
 
-.card:hover .ripple:nth-child(2),
-.card.active .ripple:nth-child(2) {
+            position: absolute;
 
-    animation-delay: 1.25s;
-}
+            inset: 0;
 
-.card:hover .ripple:nth-child(3),
-.card.active .ripple:nth-child(3) {
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0, 255, 160, .12),
+                    rgba(0, 0, 0, .05) 55%,
+                    rgba(0, 0, 0, .48)
+                );
 
-    animation-delay: 2.5s;
-}
+            z-index: 1;
+        }
 
-@keyframes ripplePulse {
+        .matrix-code::after {
+            content: "";
 
-    0% {
+            position: absolute;
 
-        width: 95%;
-        height: 95%;
+            inset: 0;
 
-        opacity: 0;
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0, 255, 160, .05),
+                    transparent 35%,
+                    transparent 65%,
+                    rgba(0, 255, 160, .04)
+                );
 
-        border-color:
-            rgba(50, 230, 255, 0);
-    }
+            z-index: 2;
+        }
 
-    25% {
+        .matrix-swirl {
+            position: absolute;
 
-        opacity: .45;
+            left: -45%;
+            top: -45%;
 
-        border-color:
-            rgba(50, 230, 255, .5);
-    }
+            width: 190%;
+            height: 190%;
 
-    70% {
+            transform-origin: center;
 
-        opacity: .18;
-    }
+            animation:
+                matrixSlowSpin 18s linear infinite;
 
-    100% {
+            animation-play-state: paused;
 
-        width: 235%;
-        height: 235%;
+            will-change: transform;
+        }
 
-        opacity: 0;
+        .card:hover .matrix-swirl,
+        .card.active .matrix-swirl,
+        .card:focus-visible .matrix-swirl {
+            animation-play-state: running;
+        }
 
-        border-color:
-            rgba(50, 190, 255, 0);
-    }
-}
+        @keyframes matrixSlowSpin {
 
+            from {
+                transform: rotate(0deg);
+            }
 
-/* =========================================================
-   CYBER RING
-   Тоже статичен до взаимодействия.
-========================================================= */
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-.cyber-ring {
+        .matrix-char {
+            position: absolute;
 
-    position: absolute;
+            color: #48ffc4;
 
-    left: 50%;
-    top: 50%;
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
-    width: 145%;
-    height: 145%;
+            font-weight: 700;
 
-    transform:
-        translate(-50%, -50%);
+            line-height: 1;
 
-    border-radius: 50%;
+            text-shadow:
+                0 0 4px rgba(50, 255, 180, .75),
+                0 0 9px rgba(0, 255, 140, .35);
 
-    pointer-events: none;
+            user-select: none;
 
-    opacity: .30;
+            opacity: .65;
+        }
 
-    z-index: -2;
-}
 
-.cyber-ring::before {
+        /* =========================================================
+           TILE CONTENT
+        ========================================================= */
 
-    content: "";
+        .sphere-content {
+            position: relative;
 
-    position: absolute;
+            z-index: 6;
 
-    inset: 0;
+            width: 84%;
 
-    border-radius: 50%;
+            display: flex;
+            flex-direction: column;
 
-    background:
-        conic-gradient(
-            from 0deg,
+            align-items: center;
+            justify-content: center;
 
-            transparent 0deg 14deg,
+            gap: 11px;
 
-            rgba(62, 226, 255, .8)
-                14deg 15deg,
+            text-align: center;
 
-            transparent 15deg 42deg,
+            pointer-events: none;
+        }
 
-            rgba(68, 190, 255, .55)
-                42deg 43deg,
+        .icon {
+            position: relative;
 
-            transparent 43deg 76deg,
+            width: 48px;
+            height: 48px;
 
-            rgba(100, 255, 215, .7)
-                76deg 77deg,
+            flex-shrink: 0;
 
-            transparent 77deg 112deg,
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-            rgba(60, 190, 255, .55)
-                112deg 113deg,
+            color: #bdf7ff;
 
-            transparent 113deg 156deg,
+            filter:
+                drop-shadow(
+                    0 0 6px rgba(70, 220, 255, .38)
+                );
 
-            rgba(65, 225, 255, .75)
-                156deg 157deg,
+            transition:
+                transform .45s ease,
+                filter .45s ease,
+                color .45s ease;
+        }
 
-            transparent 157deg 210deg,
+        .icon svg {
+            width: 100%;
+            height: 100%;
 
-            rgba(70, 190, 255, .5)
-                210deg 211deg,
+            stroke: currentColor;
 
-            transparent 211deg 270deg,
+            fill: none;
 
-            rgba(65, 230, 255, .8)
-                270deg 271deg,
+            stroke-width: 1.55;
 
-            transparent 271deg 315deg,
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-            rgba(90, 255, 220, .55)
-                315deg 316deg,
+        .card:hover .icon,
+        .card.active .icon,
+        .card:focus-visible .icon {
 
-            transparent 316deg
-        );
+            transform:
+                translateY(-2px)
+                scale(1.08);
 
-    mask:
-        radial-gradient(
-            circle,
-            transparent 0 47%,
-            black 48% 49%,
-            transparent 50%
-        );
+            color: #eaffff;
 
-    -webkit-mask:
-        radial-gradient(
-            circle,
-            transparent 0 47%,
-            black 48% 49%,
-            transparent 50%
-        );
-}
+            filter:
+                drop-shadow(
+                    0 0 8px rgba(80, 235, 255, .9)
+                )
+                drop-shadow(
+                    0 0 18px rgba(30, 180, 255, .45)
+                );
+        }
 
 
-/*
- * Кольцо оживает только при взаимодействии.
- */
+        /* =========================================================
+           TITLE
+        ========================================================= */
 
-.card:hover .cyber-ring::before,
-.card.active .cyber-ring::before {
+        .card-title {
+            display: block;
 
-    animation:
-        cyberRingPulse 3.5s ease-in-out infinite;
-}
+            color: #e6fbff;
 
-@keyframes cyberRingPulse {
+            font-family:
+                "Manrope",
+                -apple-system,
+                BlinkMacSystemFont,
+                sans-serif;
 
-    0%,
-    100% {
+            font-size: 15px;
 
-        transform:
-            scale(.97);
+            font-weight: 600;
 
-        opacity: .35;
-    }
+            letter-spacing: .01em;
 
-    50% {
+            line-height: 1.3;
 
-        transform:
-            scale(1.03);
+            text-align: center;
 
-        opacity: .75;
-    }
-}
+            text-shadow:
+                0 0 8px rgba(50, 210, 255, .38);
 
+            transition:
+                transform .4s ease,
+                color .3s ease,
+                text-shadow .3s ease;
+        }
 
-/* =========================================================
-   NEURON BODY
-========================================================= */
+        .card:hover .card-title,
+        .card.active .card-title,
+        .card:focus-visible .card-title {
 
-.neuron-body {
+            transform: scale(1.035);
 
-    position: absolute;
+            color: #ffffff;
 
-    inset: 0;
+            text-shadow:
+                0 0 12px rgba(90, 230, 255, .9),
+                0 0 22px rgba(50, 200, 255, .35);
+        }
 
-    border-radius: 50%;
 
-    overflow: hidden;
+        /* =========================================================
+           DESCRIPTION
+        ========================================================= */
 
-    display: flex;
+        .description {
+            position: absolute;
 
-    align-items: center;
-    justify-content: center;
+            left: 50%;
+            top: -18px;
 
-    background:
+            width: min(360px, 32vw);
 
-        radial-gradient(
-            circle at 32% 27%,
-            rgba(255, 255, 255, .18),
-            transparent 12%
-        ),
+            padding:
+                14px 18px;
 
-        radial-gradient(
-            circle at 50% 50%,
-            rgba(30, 150, 210, .3),
-            rgba(4, 15, 27, .96) 67%
-        );
+            border:
+                1px solid rgba(80, 220, 255, .45);
 
-    border:
-        1px solid rgba(100, 235, 255, .65);
+            border-radius: 13px;
 
-    box-shadow:
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(8, 24, 34, .97),
+                    rgba(2, 9, 16, .97)
+                );
 
-        0 0 15px
-            rgba(30, 210, 255, .35),
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
 
-        0 0 40px
-            rgba(30, 180, 255, .2),
+            color: #dffaff;
 
-        inset 0 0 35px
-            rgba(20, 170, 230, .18),
+            font-family:
+                "Manrope",
+                sans-serif;
 
-        inset 12px 12px 30px
-            rgba(130, 245, 255, .07);
+            font-size: 13px;
 
-    transition:
+            line-height: 1.5;
 
-        transform .65s
-            cubic-bezier(.2, .8, .2, 1),
+            text-align: center;
 
-        box-shadow .65s ease,
+            opacity: 0;
 
-        border-color .65s ease;
+            pointer-events: none;
 
-    z-index: 1;
-}
+            transform:
+                translate3d(-50%, -100%, 0)
+                scale(.95);
 
+            transform-origin: center bottom;
 
-/* =========================================================
-   INNER MEMBRANE
-========================================================= */
+            z-index: 9999;
 
-.neuron-body::before {
+            box-shadow:
 
-    content: "";
+                0 14px 35px rgba(0, 0, 0, .5),
 
-    position: absolute;
+                0 0 18px rgba(20, 190, 255, .15),
 
-    inset: 7px;
+                inset 0 1px 0 rgba(170, 250, 255, .12);
 
-    border-radius: 50%;
+            transition:
+                opacity .25s ease,
+                transform .25s cubic-bezier(.2, .8, .2, 1);
 
-    border:
-        1px solid rgba(75, 210, 255, .22);
+            will-change:
+                opacity,
+                transform;
+        }
 
-    box-shadow:
-        inset 0 0 25px
-            rgba(30, 220, 255, .08);
+        .description::after {
+            content: "";
 
-    pointer-events: none;
+            position: absolute;
 
-    z-index: 5;
-}
+            left: 50%;
+            bottom: -6px;
 
+            width: 10px;
+            height: 10px;
 
-/* =========================================================
-   MATRIX
-========================================================= */
+            transform:
+                translateX(-50%)
+                rotate(45deg);
 
-.matrix-code {
+            background:
+                #07151f;
 
-    position: absolute;
+            border-right:
+                1px solid rgba(80, 220, 255, .35);
 
-    inset: 0;
+            border-bottom:
+                1px solid rgba(80, 220, 255, .35);
+        }
 
-    border-radius: 50%;
+        .card:hover .description,
+        .card.active .description,
+        .card:focus-visible .description {
 
-    overflow: hidden;
+            opacity: 1;
 
-    opacity: 0;
+            transform:
+                translate3d(-50%, calc(-100% - 12px), 0)
+                scale(1);
+        }
 
-    clip-path:
-        circle(0% at 50% 50%);
 
-    transition:
+        /* =========================================================
+           FOOTER
+        ========================================================= */
 
-        opacity 1s ease,
+        .footer {
+            margin-top: 110px;
 
-        clip-path
-            1.5s cubic-bezier(.15, .75, .15, 1);
+            text-align: center;
 
-    z-index: 3;
+            color:
+                rgba(170, 225, 240, .42);
 
-    pointer-events: none;
-}
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
-.card:hover .matrix-code,
-.card.active .matrix-code {
+            font-size: 10px;
 
-    opacity: .9;
+            letter-spacing: .16em;
+        }
 
-    clip-path:
-        circle(72% at 50% 50%);
-}
 
-.matrix-code::before {
+        /* =========================================================
+           MOBILE
+        ========================================================= */
 
-    content: "";
+        @media (max-width: 760px) {
 
-    position: absolute;
+            .main {
+                padding:
+                    35px
+                    14px
+                    90px;
+            }
 
-    inset: 0;
+            .logo {
+                font-size: 30px;
 
-    background:
+                letter-spacing: .14em;
+            }
 
-        radial-gradient(
-            circle,
-            rgba(0, 255, 160, .14),
-            rgba(0, 0, 0, .08) 55%,
-            rgba(0, 0, 0, .45)
-        );
+            .section {
+                margin-top: 75px;
+            }
 
-    z-index: 1;
-}
+            .section-title {
 
+                flex-direction: column;
 
-/* =========================================================
-   MATRIX VORTEX
-========================================================= */
+                gap: 12px;
 
-.matrix-swirl {
+                margin-bottom: 48px;
+            }
 
-    position: absolute;
+            .section-title .num {
+                font-size: 10px;
 
-    left: -45%;
-    top: -45%;
+                padding:
+                    4px 12px 4px 14px;
+            }
 
-    width: 190%;
-    height: 190%;
+            .section-title .name {
+                font-size: 16px;
 
-    transform-origin: center;
+                letter-spacing: .05em;
+            }
 
-    /*
-     * Медленная анимация.
-     */
-    animation:
-        matrixSlowSpin 15s linear infinite;
+            .section-title::after {
+                bottom: -22px;
 
-    animation-play-state: paused;
-}
+                width: 140px;
+            }
 
-.card:hover .matrix-swirl,
-.card.active .matrix-swirl {
+            .cards {
+                gap:
+                    55px 18px;
+            }
 
-    animation-play-state: running;
-}
+            .card {
+                width:
+                    min(340px, 92vw);
 
-@keyframes matrixSlowSpin {
+                height: 175px;
+            }
 
-    from {
+            .icon {
+                width: 43px;
+                height: 43px;
+            }
 
-        transform:
-            rotate(0deg);
-    }
+            .sphere-content {
+                gap: 9px;
+            }
 
-    to {
+            .card-title {
+                font-size: 14px;
+            }
 
-        transform:
-            rotate(360deg);
-    }
-}
+            .description {
 
+                top: -12px;
 
-/* =========================================================
-   MATRIX CHARACTERS
-========================================================= */
+                width:
+                    min(340px, 88vw);
 
-.matrix-char {
+                padding:
+                    12px 15px;
 
-    position: absolute;
+                font-size: 13px;
 
-    color: #48ffc4;
+                line-height: 1.45;
+            }
+        }
 
-    font-family:
-        "JetBrains Mono",
-        monospace;
 
-    font-weight: 700;
+        /* =========================================================
+           SMALL PHONES
+        ========================================================= */
 
-    line-height: 1;
+        @media (max-width: 390px) {
 
-    text-shadow:
+            .main {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
 
-        0 0 4px
-            rgba(50, 255, 180, .8),
+            .logo {
+                font-size: 27px;
+            }
 
-        0 0 9px
-            rgba(0, 255, 140, .4);
+            .card {
+                width: 94vw;
+                height: 165px;
+            }
 
-    user-select: none;
+            .icon {
+                width: 40px;
+                height: 40px;
+            }
 
-    opacity: .65;
-}
+            .card-title {
+                font-size: 13px;
+            }
 
+            .description {
+                width: 90vw;
+                font-size: 12.5px;
+            }
+        }
 
-/* =========================================================
-   SPHERE CONTENT
-========================================================= */
 
-.sphere-content {
+        /* =========================================================
+           ACCESSIBILITY
+        ========================================================= */
 
-    position: relative;
+        .card:focus-visible {
+            outline: none;
+        }
 
-    z-index: 6;
+        .card:focus-visible .neuron-body {
+            border-color:
+                rgba(130, 250, 255, .95);
 
-    width: 82%;
+            box-shadow:
+                0 0 0 2px rgba(50, 220, 255, .18),
+                0 20px 50px rgba(0, 0, 0, .55),
+                0 0 35px rgba(30, 210, 255, .25);
+        }
 
-    display: flex;
 
-    flex-direction: column;
+        /* =========================================================
+           REDUCED MOTION
+        ========================================================= */
 
-    align-items: center;
+        @media (prefers-reduced-motion: reduce) {
 
-    justify-content: center;
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+            }
 
-    gap: 8px;
+            .matrix-swirl,
+            .tron-ripples span {
+                animation: none !important;
+            }
 
-    text-align: center;
+            .neuron-body,
+            .icon,
+            .card-title,
+            .description {
+                transition: none !important;
+            }
+        }
 
-    pointer-events: none;
-}
-
-
-/* =========================================================
-   ICONS
-========================================================= */
-
-.icon {
-
-    position: relative;
-
-    width: 44px;
-    height: 44px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    color: #bdf7ff;
-
-    filter:
-        drop-shadow(
-            0 0 6px
-            rgba(70, 220, 255, .4)
-        );
-
-    transition:
-
-        transform .55s ease,
-
-        filter .55s ease,
-
-        color .55s ease;
-}
-
-.icon svg {
-
-    width: 100%;
-    height: 100%;
-
-    stroke:
-        currentColor;
-
-    fill: none;
-
-    stroke-width: 1.6;
-
-    stroke-linecap: round;
-
-    stroke-linejoin: round;
-}
-
-.card:hover .icon,
-.card.active .icon {
-
-    transform:
-        scale(1.1);
-
-    color: #eaffff;
-
-    filter:
-
-        drop-shadow(
-            0 0 8px
-            rgba(80, 235, 255, .9)
-        )
-
-        drop-shadow(
-            0 0 18px
-            rgba(30, 180, 255, .55)
-        );
-}
-
-
-/* =========================================================
-   CARD TITLE
-========================================================= */
-
-.card-title {
-
-    display: block;
-
-    color: #e6fbff;
-
-    font-family:
-        "Manrope",
-        -apple-system,
-        BlinkMacSystemFont,
-        sans-serif;
-
-    font-size: 12.5px;
-
-    font-weight: 600;
-
-    letter-spacing: .01em;
-
-    line-height: 1.28;
-
-    text-align: center;
-
-    text-shadow:
-        0 0 8px
-        rgba(50, 210, 255, .5);
-
-    transition:
-
-        transform .4s
-            cubic-bezier(.2, .8, .2, 1),
-
-        color .3s ease,
-
-        text-shadow .3s ease;
-}
-
-.card:hover .card-title,
-.card.active .card-title {
-
-    transform:
-        scale(1.08);
-
-    color: #ffffff;
-
-    text-shadow:
-
-        0 0 12px
-            rgba(90, 230, 255, .9),
-
-        0 0 22px
-            rgba(50, 200, 255, .45);
-}
-
-
-/* =========================================================
-   ACTIVE SPHERE
-========================================================= */
-
-.card:hover .neuron-body,
-.card.active .neuron-body {
-
-    transform:
-        scale(1.075);
-
-    border-color:
-        rgba(120, 255, 245, .9);
-
-    box-shadow:
-
-        0 0 20px
-            rgba(30, 230, 255, .6),
-
-        0 0 55px
-            rgba(30, 190, 255, .4),
-
-        0 0 100px
-            rgba(0, 150, 255, .18),
-
-        inset 0 0 45px
-            rgba(40, 255, 210, .15);
-}
-
-
-/* =========================================================
-   DESCRIPTION
-   САМЫЙ ВЫСОКИЙ СЛОЙ
-========================================================= */
-
-.description {
-
-    position: absolute;
-
-    left: 50%;
-
-    top: -78px;
-
-    width: 300px;
-
-    transform:
-        translateX(-50%)
-        translateY(10px)
-        scale(.96);
-
-    padding:
-        14px 18px;
-
-    border:
-        1px solid rgba(80, 220, 255, .45);
-
-    border-radius: 12px;
-
-    background:
-        rgba(2, 10, 18, .97);
-
-    backdrop-filter:
-        blur(14px);
-
-    -webkit-backdrop-filter:
-        blur(14px);
-
-    color: #dffaff;
-
-    font-family:
-        "Manrope",
-        sans-serif;
-
-    font-size: 13px;
-
-    font-weight: 500;
-
-    line-height: 1.5;
-
-    text-align: center;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    /*
-     * Выше самой сферы.
-     */
-    z-index: 1000;
-
-    isolation: isolate;
-
-    box-shadow:
-
-        0 0 18px
-            rgba(20, 190, 255, .18),
-
-        0 0 35px
-            rgba(20, 150, 255, .08);
-
-    transition:
-
-        opacity .25s ease,
-
-        transform .25s ease;
-}
-
-.card:hover .description,
-.card.active .description {
-
-    opacity: 1;
-
-    transform:
-        translateX(-50%)
-        translateY(0)
-        scale(1);
-
-    z-index: 1000;
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1050px) {
-
-    .card {
-
-        width: 200px;
-        height: 200px;
-    }
-
-    .icon {
-
-        width: 42px;
-        height: 42px;
-    }
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
-
-    .main {
-
-        padding:
-            35px 14px 90px;
-    }
-
-    .logo {
-
-        font-size: 30px;
-
-        letter-spacing: .14em;
-
-        text-align: center;
-    }
-
-    .section {
-
-        margin-top: 70px;
-
-        text-align: center;
-    }
-
-    .section-title {
-
-        flex-direction: column;
-
-        gap: 12px;
-
-        margin-bottom: 46px;
-
-        text-align: center;
-    }
-
-    .section-title .num {
-
-        font-size: 10px;
-
-        padding:
-            4px 12px 4px 14px;
-    }
-
-    .section-title .name {
-
-        font-size: 16px;
-
-        letter-spacing: .05em;
-    }
-
-    .section-title::after {
-
-        bottom: -22px;
-
-        width: 140px;
-    }
-
-    .cards {
-
-        width: 100%;
-
-        gap:
-            95px 20px;
-
-        justify-content: center;
-
-        align-items: flex-start;
-
-        margin: 0 auto;
-    }
-
-    .card {
-
-        width:
-            min(155px, 42vw);
-
-        height:
-            min(155px, 42vw);
-
-        flex-shrink: 0;
-    }
-
-    .icon {
-
-        width: 36px;
-        height: 36px;
-    }
-
-    .sphere-content {
-
-        gap: 6px;
-
-        width: 84%;
-    }
-
-    .card-title {
-
-        font-size: 11px;
-
-        line-height: 1.25;
-    }
-
-
-    /*
-     * Описание находится выше сферы
-     * и поверх соседних элементов.
-     */
-
-    .description {
-
-        top: auto;
-
-        bottom: 72%;
-
-        width: 220%;
-
-        padding:
-            12px 15px;
-
-        font-size: 13px;
-
-        font-weight: 500;
-
-        line-height: 1.45;
-
-        z-index: 1000;
-
-        background:
-            rgba(2, 10, 18, .97);
-
-        border-color:
-            rgba(80, 220, 255, .5);
-
-        box-shadow:
-
-            0 0 20px
-                rgba(20, 190, 255, .2),
-
-            0 0 40px
-                rgba(20, 150, 255, .08);
-    }
-
-    .card.active {
-
-        z-index: 500;
-    }
-
-    .card.active .description {
-
-        z-index: 1000;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-========================================================= */
-
-@media (max-width: 390px) {
-
-    .cards {
-
-        gap:
-            90px 14px;
-    }
-
-    .card {
-
-        width:
-            min(140px, 44vw);
-
-        height:
-            min(140px, 44vw);
-    }
-
-    .icon {
-
-        width: 32px;
-        height: 32px;
-    }
-
-    .sphere-content {
-
-        gap: 5px;
-
-        width: 86%;
-    }
-
-    .card-title {
-
-        font-size: 10.5px;
-
-        line-height: 1.2;
-    }
-
-    .description {
-
-        width: 240%;
-
-        font-size: 12px;
-
-        z-index: 1000;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation-duration: .01ms !important;
-
-        animation-iteration-count: 1 !important;
-
-        transition-duration: .01ms !important;
-    }
-}
-
-</style>
+    </style>
 </head>
 
 
 <body>
 
-<div class="grid-background"></div>
+    <!-- =========================================================
+         STATIC NEURAL BACKGROUND
+    ========================================================= -->
+
+    <canvas id="neuralCanvas"></canvas>
+
+    <div class="grid-background"></div>
 
 
-<main class="main">
+    <main class="main">
 
-    <!-- =====================================================
-         LOGO
-    ====================================================== -->
+        <!-- =====================================================
+             LOGO
+        ====================================================== -->
 
-    <div class="logo">
-        PSY-TOOLS
-    </div>
+        <h1 class="logo">PSY-TOOLS</h1>
 
 
-    <!-- =====================================================
-         САМОРАЗВИТИЕ
-    ====================================================== -->
+        <!-- =====================================================
+             01. САМОРАЗВИТИЕ
+        ====================================================== -->
 
-    <section class="section">
+        <section class="section">
 
-        <h2 class="section-title">
-
-            <span class="num">
-                01
-            </span>
-
-            <span class="name">
-                Саморазвитие
-            </span>
-
-        </h2>
+            <div class="section-title">
+                <span class="num">01</span>
+                <span class="name">Саморазвитие</span>
+            </div>
 
 
-        <div class="cards">
+            <div class="cards">
 
+                <!-- Колесо баланса -->
 
-            <!-- КОЛЕСО БАЛАНСА -->
+                <a
+                    class="card"
+                    href="./wheel/"
+                    aria-label="Колесо баланса"
+                >
 
-            <a
-                class="card"
-                href="./wheel/"
-                aria-label="Колесо баланса"
-                data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
+                    <div class="dendrites">
+                        <span style="width:120px; left:5%; top:20%; transform:rotate(25deg)"></span>
+                        <span style="width:100px; left:72%; top:15%; transform:rotate(145deg)"></span>
+                        <span style="width:130px; left:70%; top:75%; transform:rotate(-25deg)"></span>
+                        <span style="width:90px; left:8%; top:78%; transform:rotate(-145deg)"></span>
                     </div>
 
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
 
-                    <div class="sphere-content">
+                    <div class="neuron-body">
 
-                        <div class="icon">
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
 
-                            <svg viewBox="0 0 64 64">
+                        <div class="sphere-content">
 
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="22"
-                                />
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <circle cx="24" cy="24" r="16"></circle>
+                                    <circle cx="24" cy="24" r="5"></circle>
+                                    <path d="M24 8v11"></path>
+                                    <path d="M24 29v11"></path>
+                                    <path d="M8 24h11"></path>
+                                    <path d="M29 24h11"></path>
+                                    <path d="M12.7 12.7l7.8 7.8"></path>
+                                    <path d="M27.5 27.5l7.8 7.8"></path>
+                                    <path d="M35.3 12.7l-7.8 7.8"></path>
+                                    <path d="M20.5 27.5l-7.8 7.8"></path>
+                                </svg>
+                            </div>
 
-                                <line
-                                    x1="32"
-                                    y1="10"
-                                    x2="32"
-                                    y2="54"
-                                />
-
-                                <line
-                                    x1="10"
-                                    y1="32"
-                                    x2="54"
-                                    y2="32"
-                                />
-
-                                <line
-                                    x1="16.5"
-                                    y1="16.5"
-                                    x2="47.5"
-                                    y2="47.5"
-                                />
-
-                                <line
-                                    x1="47.5"
-                                    y1="16.5"
-                                    x2="16.5"
-                                    y2="47.5"
-                                />
-
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="5"
-                                />
-
-                            </svg>
+                            <span class="card-title">
+                                Колесо баланса
+                            </span>
 
                         </div>
 
-
-                        <span class="card-title">
-                            Колесо баланса
-                        </span>
-
                     </div>
 
-                </div>
-
-
-                <div class="description">
-                    Оценка удовлетворённости основными сферами жизни и поиск зон для развития.
-                </div>
-
-            </a>
-
-
-
-            <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
-
-            <a
-                class="card"
-                href="./skills/"
-                aria-label="Рефлексия навыков"
-                data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
+                    <div class="description">
+                        Инструмент для оценки основных сфер жизни и поиска точек для развития.
                     </div>
 
+                </a>
 
-                    <div class="sphere-content">
 
-                        <div class="icon">
+                <!-- Рефлексия навыков -->
 
-                            <svg viewBox="0 0 64 64">
+                <a
+                    class="card"
+                    href="./skills/"
+                    aria-label="Рефлексия навыков"
+                >
 
-                                <path
-                                    d="
-                                        M32 8
-                                        C22 8 14 16 14 26
-                                        C14 33 18 38 22 42
-                                        L22 48
-                                        L42 48
-                                        L42 42
-                                        C46 38 50 33 50 26
-                                        C50 16 42 8 32 8 Z
-                                    "
-                                />
+                    <div class="dendrites">
+                        <span style="width:100px; left:0; top:22%; transform:rotate(30deg)"></span>
+                        <span style="width:125px; left:70%; top:18%; transform:rotate(150deg)"></span>
+                        <span style="width:115px; left:72%; top:76%; transform:rotate(-30deg)"></span>
+                        <span style="width:100px; left:5%; top:78%; transform:rotate(-145deg)"></span>
+                    </div>
 
-                                <line
-                                    x1="24"
-                                    y1="52"
-                                    x2="40"
-                                    y2="52"
-                                />
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
 
-                                <line
-                                    x1="27"
-                                    y1="56"
-                                    x2="37"
-                                    y2="56"
-                                />
+                    <div class="neuron-body">
 
-                            </svg>
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <path d="M17 29h14"></path>
+                                    <path d="M18 34h12"></path>
+                                    <path d="M20 39h8"></path>
+                                    <path d="M16 25c-3-2-5-5-5-9a13 13 0 0 1 26 0c0 4-2 7-5 9-2 2-3 4-3 5H20c0-1-2-3-4-5Z"></path>
+                                    <path d="M24 3v4"></path>
+                                    <path d="m8 9 3 2"></path>
+                                    <path d="m40 9-3 2"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Рефлексия навыков
+                            </span>
 
                         </div>
 
-
-                        <span class="card-title">
-                            Рефлексия навыков
-                        </span>
-
                     </div>
 
-                </div>
-
-
-                <div class="description">
-                    Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.
-                </div>
-
-            </a>
-
-
-
-            <!-- ПРОФОРИЕНТАЦИЯ -->
-
-            <a
-                class="card"
-                href="./career/"
-                aria-label="Профориентация"
-                data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
+                    <div class="description">
+                        Помогает увидеть свои навыки, опыт и сильные стороны через структурированную рефлексию.
                     </div>
 
+                </a>
 
-                    <div class="sphere-content">
 
-                        <div class="icon">
+                <!-- Профориентация -->
 
-                            <svg viewBox="0 0 64 64">
+                <a
+                    class="card"
+                    href="./career/"
+                    aria-label="Профориентация"
+                >
 
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="22"
-                                />
+                    <div class="dendrites">
+                        <span style="width:120px; left:3%; top:18%; transform:rotate(28deg)"></span>
+                        <span style="width:105px; left:73%; top:17%; transform:rotate(145deg)"></span>
+                        <span style="width:120px; left:73%; top:75%; transform:rotate(-28deg)"></span>
+                        <span style="width:105px; left:4%; top:77%; transform:rotate(-145deg)"></span>
+                    </div>
 
-                                <polygon
-                                    points="
-                                        32,14
-                                        38,32
-                                        32,50
-                                        26,32
-                                    "
-                                />
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
 
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="2.5"
-                                    fill="currentColor"
-                                    stroke="none"
-                                />
+                    <div class="neuron-body">
 
-                            </svg>
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <circle cx="24" cy="24" r="17"></circle>
+                                    <circle cx="24" cy="24" r="3"></circle>
+                                    <path d="M24 7v9"></path>
+                                    <path d="M24 32v9"></path>
+                                    <path d="M7 24h9"></path>
+                                    <path d="M32 24h9"></path>
+                                    <path d="m12 12 6 6"></path>
+                                    <path d="m30 30 6 6"></path>
+                                    <path d="m36 12-6 6"></path>
+                                    <path d="m18 30-6 6"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Профориентация
+                            </span>
 
                         </div>
 
+                    </div>
 
-                        <span class="card-title">
-                            Профориентация
-                        </span>
+                    <div class="description">
+                        Анализ интересов, навыков и особенностей личности для поиска подходящих профессиональных направлений.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             02. ПСИХОДИАГНОСТИКА
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="num">02</span>
+                <span class="name">Психодиагностика</span>
+            </div>
+
+
+            <div class="cards">
+
+                <!-- Кеттел -->
+
+                <a
+                    class="card"
+                    href="./cattell/"
+                    aria-label="Оценка личностных свойств"
+                >
+
+                    <div class="dendrites">
+                        <span style="width:115px; left:2%; top:20%; transform:rotate(28deg)"></span>
+                        <span style="width:125px; left:72%; top:16%; transform:rotate(150deg)"></span>
+                        <span style="width:120px; left:74%; top:75%; transform:rotate(-25deg)"></span>
+                        <span style="width:100px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+                    </div>
+
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="neuron-body">
+
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <circle cx="24" cy="24" r="5"></circle>
+                                    <circle cx="10" cy="12" r="3"></circle>
+                                    <circle cx="38" cy="12" r="3"></circle>
+                                    <circle cx="9" cy="36" r="3"></circle>
+                                    <circle cx="39" cy="36" r="3"></circle>
+                                    <circle cx="24" cy="8" r="3"></circle>
+                                    <circle cx="24" cy="40" r="3"></circle>
+                                    <path d="m21 21-9-7"></path>
+                                    <path d="m27 21 9-7"></path>
+                                    <path d="m21 27-9 7"></path>
+                                    <path d="m27 27 9 7"></path>
+                                    <path d="M24 19v-8"></path>
+                                    <path d="M24 29v8"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Оценка личностных свойств
+                            </span>
+
+                        </div>
 
                     </div>
 
-                </div>
+                    <div class="description">
+                        Многофакторная оценка личностных характеристик и индивидуальных особенностей.
+                    </div>
+
+                </a>
 
 
-                <div class="description">
-                    Исследование интересов и склонностей для поиска подходящих профессиональных направлений.
-                </div>
+                <!-- ЛЮШЕР -->
 
-            </a>
+                <a
+                    class="card"
+                    href="./luscher/"
+                    aria-label="Тест Люшера"
+                >
 
+                    <div class="dendrites">
+                        <span style="width:105px; left:0; top:18%; transform:rotate(30deg)"></span>
+                        <span style="width:125px; left:73%; top:18%; transform:rotate(150deg)"></span>
+                        <span style="width:115px; left:74%; top:76%; transform:rotate(-30deg)"></span>
+                        <span style="width:100px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+                    </div>
+
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="neuron-body">
+
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <circle cx="24" cy="24" r="17"></circle>
+                                    <circle cx="24" cy="24" r="4"></circle>
+                                    <circle cx="24" cy="9" r="2.5"></circle>
+                                    <circle cx="34.6" cy="13.4" r="2.5"></circle>
+                                    <circle cx="39" cy="24" r="2.5"></circle>
+                                    <circle cx="34.6" cy="34.6" r="2.5"></circle>
+                                    <circle cx="24" cy="39" r="2.5"></circle>
+                                    <circle cx="13.4" cy="34.6" r="2.5"></circle>
+                                    <circle cx="9" cy="24" r="2.5"></circle>
+                                    <circle cx="13.4" cy="13.4" r="2.5"></circle>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Тест Люшера
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="description">
+                        Цветовой психодиагностический тест для анализа актуального психологического состояния.
+                    </div>
+
+                </a>
+
+
+                <!-- ГЕРЧИКОВ -->
+
+                <a
+                    class="card"
+                    href="./gerchikov/"
+                    aria-label="Мотивация по Герчикову"
+                >
+
+                    <div class="dendrites">
+                        <span style="width:120px; left:3%; top:20%; transform:rotate(25deg)"></span>
+                        <span style="width:110px; left:74%; top:17%; transform:rotate(150deg)"></span>
+                        <span style="width:125px; left:72%; top:77%; transform:rotate(-25deg)"></span>
+                        <span style="width:100px; left:4%; top:80%; transform:rotate(-150deg)"></span>
+                    </div>
+
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="neuron-body">
+
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <path d="M27 4 12 25h11l-2 19 15-23H25z"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Мотивация по Герчикову
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="description">
+                        Диагностика структуры трудовой мотивации и ведущих мотивационных типов.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             03. НАЙТИ РАБОТУ
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="num">03</span>
+                <span class="name">Найти работу</span>
+            </div>
+
+
+            <div class="cards">
+
+                <!-- ВАКАНСИИ -->
+
+                <a
+                    class="card"
+                    href="./work/vacancies/"
+                    aria-label="Вакансии"
+                >
+
+                    <div class="dendrites">
+                        <span style="width:120px; left:2%; top:20%; transform:rotate(25deg)"></span>
+                        <span style="width:115px; left:73%; top:17%; transform:rotate(150deg)"></span>
+                        <span style="width:120px; left:73%; top:78%; transform:rotate(-25deg)"></span>
+                        <span style="width:105px; left:3%; top:80%; transform:rotate(-150deg)"></span>
+                    </div>
+
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="neuron-body">
+
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <rect x="7" y="14" width="34" height="25" rx="3"></rect>
+                                    <path d="M17 14v-4h14v4"></path>
+                                    <path d="M7 23h34"></path>
+                                    <path d="M20 23v4h8v-4"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Вакансии
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="description">
+                        Поиск и анализ вакансий с учётом профессиональных интересов и навыков.
+                    </div>
+
+                </a>
+
+
+                <!-- МОЁ РЕЗЮМЕ -->
+
+                <a
+                    class="card"
+                    href="./work/resume/"
+                    aria-label="Моё резюме"
+                >
+
+                    <div class="dendrites">
+                        <span style="width:115px; left:2%; top:20%; transform:rotate(28deg)"></span>
+                        <span style="width:120px; left:73%; top:18%; transform:rotate(148deg)"></span>
+                        <span style="width:115px; left:73%; top:77%; transform:rotate(-28deg)"></span>
+                        <span style="width:105px; left:3%; top:80%; transform:rotate(-148deg)"></span>
+                    </div>
+
+                    <div class="tron-ripples">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="neuron-body">
+
+                        <div class="matrix-code">
+                            <div class="matrix-swirl"></div>
+                        </div>
+
+                        <div class="sphere-content">
+
+                            <div class="icon">
+                                <svg viewBox="0 0 48 48">
+                                    <rect x="10" y="5" width="28" height="38" rx="3"></rect>
+                                    <path d="M17 5v6h14V5"></path>
+                                    <circle cx="24" cy="20" r="4"></circle>
+                                    <path d="M17 32c1.5-5 12.5-5 14 0"></path>
+                                </svg>
+                            </div>
+
+                            <span class="card-title">
+                                Моё резюме
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="description">
+                        Создание и структурирование профессионального профиля на основе результатов инструментов PSY-TOOLS.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <div class="footer">
+            PSY-TOOLS · DIGITAL PSYCHOLOGY
         </div>
 
-    </section>
+    </main>
 
 
+    <script>
 
-    <!-- =====================================================
-         ПСИХОДИАГНОСТИКА
-    ====================================================== -->
+        /* =========================================================
+           MATRIX CHARACTERS
+        ========================================================= */
 
-    <section class="section">
+        const matrixChars =
+            "01アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "ΨΣΔΩΦΛ";
 
-        <h2 class="section-title">
+        document
+            .querySelectorAll(".matrix-swirl")
+            .forEach(swirl => {
 
-            <span class="num">
-                02
-            </span>
+                const fragment =
+                    document.createDocumentFragment();
 
-            <span class="name">
-                Психодиагностика
-            </span>
+                const count = 85;
 
-        </h2>
+                for (let i = 0; i < count; i++) {
 
+                    const char =
+                        document.createElement("span");
 
-        <div class="cards">
+                    char.className =
+                        "matrix-char";
 
+                    const angle =
+                        i * 0.55 +
+                        Math.random() * 0.7;
 
-            <!-- КЕТТЕЛЛ -->
+                    const radius =
+                        8 +
+                        Math.random() * 72;
 
-            <a
-                class="card"
-                href="./cattell/"
-                aria-label="Оценка личностных свойств"
-                data-description="Исследование структуры личности по 16 личностным факторам."
-            >
+                    const x =
+                        50 +
+                        Math.cos(angle) * radius;
 
-                <div class="dendrites">
+                    const y =
+                        50 +
+                        Math.sin(angle) * radius;
 
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
-                    </div>
-
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-
-                            <svg viewBox="0 0 64 64">
-
-                                <polygon
-                                    points="
-                                        32,8
-                                        54,20
-                                        54,44
-                                        32,56
-                                        10,44
-                                        10,20
-                                    "
-                                />
-
-                                <polygon
-                                    points="
-                                        32,20
-                                        44,26
-                                        44,38
-                                        32,44
-                                        20,38
-                                        20,26
-                                    "
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="32"
-                                    y2="8"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="54"
-                                    y2="20"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="54"
-                                    y2="44"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="32"
-                                    y2="56"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="10"
-                                    y2="44"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="32"
-                                    x2="10"
-                                    y2="20"
-                                />
-
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="2.5"
-                                />
-
-                            </svg>
-
-                        </div>
-
-
-                        <span class="card-title">
-                            Оценка личностных свойств
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="description">
-                    Исследование структуры личности по 16 личностным факторам.
-                </div>
-
-            </a>
-
-
-
-            <!-- ЛЮШЕР -->
-
-            <a
-                class="card"
-                href="./luscher/"
-                aria-label="Тест Люшера"
-                data-description="Исследование предпочтений цвета и связанных с ними психологических состояний."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
-                    </div>
-
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-
-                            <svg viewBox="0 0 64 64">
-
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="22"
-                                />
-
-                                <line
-                                    x1="32"
-                                    y1="10"
-                                    x2="32"
-                                    y2="54"
-                                />
-
-                                <line
-                                    x1="10"
-                                    y1="32"
-                                    x2="54"
-                                    y2="32"
-                                />
-
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="7"
-                                />
-
-                                <path
-                                    d="
-                                        M32 10
-                                        L38 26
-                                        L54 32
-                                        L38 38
-                                        L32 54
-                                        L26 38
-                                        L10 32
-                                        L26 26
-                                        Z
-                                    "
-                                />
-
-                            </svg>
-
-                        </div>
-
-
-                        <span class="card-title">
-                            Тест Люшера
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="description">
-                    Исследование предпочтений цвета и связанных с ними психологических состояний.
-                </div>
-
-            </a>
-
-
-
-            <!-- ГЕРЧИКОВ -->
-
-            <a
-                class="card"
-                href="./gerchikov/"
-                aria-label="Мотивация по Герчикову"
-                data-description="Исследование структуры трудовой мотивации и ведущих мотивационных типов."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
-                    </div>
-
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-
-                            <svg viewBox="0 0 64 64">
-
-                                <path
-                                    d="
-                                        M32 7
-                                        L38 25
-                                        L57 25
-                                        L42 36
-                                        L47 55
-                                        L32 43
-                                        L17 55
-                                        L22 36
-                                        L7 25
-                                        L26 25
-                                        Z
-                                    "
-                                />
-
-                                <circle
-                                    cx="32"
-                                    cy="32"
-                                    r="5"
-                                />
-
-                            </svg>
-
-                        </div>
-
-
-                        <span class="card-title">
-                            Мотивация по Герчикову
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="description">
-                    Исследование структуры трудовой мотивации и ведущих мотивационных типов.
-                </div>
-
-            </a>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         РАБОТА
-    ====================================================== -->
-
-    <section class="section">
-
-        <h2 class="section-title">
-
-            <span class="num">
-                03
-            </span>
-
-            <span class="name">
-                Найти работу
-            </span>
-
-        </h2>
-
-
-        <div class="cards">
-
-
-            <!-- ВАКАНСИИ -->
-
-            <a
-                class="card"
-                href="./work/vacancies/"
-                aria-label="Вакансии"
-                data-description="Поиск и просмотр подходящих предложений о работе."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
-                    </div>
-
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-
-                            <svg viewBox="0 0 64 64">
-
-                                <rect
-                                    x="10"
-                                    y="18"
-                                    width="44"
-                                    height="34"
-                                    rx="5"
-                                />
-
-                                <path
-                                    d="
-                                        M23 18
-                                        V13
-                                        C23 10 26 8 32 8
-                                        C38 8 41 10 41 13
-                                        V18
-                                    "
-                                />
-
-                                <path
-                                    d="M10 31H54"
-                                />
-
-                                <path
-                                    d="
-                                        M27 31
-                                        V37
-                                        H37
-                                        V31
-                                    "
-                                />
-
-                            </svg>
-
-                        </div>
-
-
-                        <span class="card-title">
-                            Вакансии
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="description">
-                    Поиск и просмотр подходящих предложений о работе.
-                </div>
-
-            </a>
-
-
-
-            <!-- РЕЗЮМЕ -->
-
-            <a
-                class="card"
-                href="./work/resume/"
-                aria-label="Моё резюме"
-                data-description="Создание и ведение собственного профессионального профиля."
-            >
-
-                <div class="dendrites">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-
-                <div class="ripples">
-
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-                    <span class="ripple"></span>
-
-                </div>
-
-
-                <div class="cyber-ring"></div>
-
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-
-                        <div class="matrix-swirl"></div>
-
-                    </div>
-
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-
-                            <svg viewBox="0 0 64 64">
-
-                                <rect
-                                    x="15"
-                                    y="8"
-                                    width="34"
-                                    height="48"
-                                    rx="4"
-                                />
-
-                                <circle
-                                    cx="32"
-                                    cy="24"
-                                    r="7"
-                                />
-
-                                <path
-                                    d="
-                                        M22 39
-                                        C22 34 42 34 42 39
-                                    "
-                                />
-
-                                <path
-                                    d="M23 47H41"
-                                />
-
-                            </svg>
-
-                        </div>
-
-
-                        <span class="card-title">
-                            Моё резюме
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="description">
-                    Создание и ведение собственного профессионального профиля.
-                </div>
-
-            </a>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-
-<script>
-
-/* =========================================================
-   MATRIX CHARACTERS
-========================================================= */
-
-const matrixChars =
-    "アイウエオカキクケコサシスセソ" +
-    "タチツテトナニヌネノ" +
-    "0123456789" +
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-    "ΨΦΩΣΔΓΛ";
-
-
-/* =========================================================
-   CREATE MATRIX
-========================================================= */
-
-function createMatrix(card) {
-
-    const container =
-        card.querySelector(
-            ".matrix-swirl"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    /*
-     * Немного меньше символов,
-     * чтобы анимация была легче.
-     */
-
-    const count = 72;
-
-    for (let i = 0; i < count; i++) {
-
-        const char =
-            document.createElement("span");
-
-        char.className =
-            "matrix-char";
-
-        char.textContent =
-            matrixChars[
-                Math.floor(
-                    Math.random() *
-                    matrixChars.length
-                )
-            ];
-
-        /*
-         * Спиральное распределение.
-         */
-
-        const angle =
-            i * .55 +
-            Math.random() * .7;
-
-        const radius =
-            5 +
-            i * 1.45;
-
-        const x =
-            50 +
-            Math.cos(angle) *
-            radius;
-
-        const y =
-            50 +
-            Math.sin(angle) *
-            radius;
-
-        const size =
-            8 +
-            Math.random() * 6;
-
-        const opacity =
-            .25 +
-            Math.random() * .7;
-
-        char.style.left =
-            x + "%";
-
-        char.style.top =
-            y + "%";
-
-        char.style.fontSize =
-            size + "px";
-
-        char.style.opacity =
-            opacity;
-
-        char.style.transform =
-            `rotate(${angle * 57.3 + 90}deg)`;
-
-        container.appendChild(char);
-    }
-}
-
-
-/* =========================================================
-   INITIALIZE MATRIX
-========================================================= */
-
-document
-    .querySelectorAll(".card")
-    .forEach(createMatrix);
-
-
-/* =========================================================
-   TOUCH
-========================================================= */
-
-const isTouchDevice =
-    window.matchMedia(
-        "(hover: none)"
-    ).matches ||
-    "ontouchstart" in window;
-
-
-if (isTouchDevice) {
-
-    document
-        .querySelectorAll(".card")
-        .forEach(card => {
-
-            card.addEventListener(
-                "click",
-                function(event) {
-
-                    /*
-                     * Первое касание:
-                     * только активируем сферу.
-                     */
-
-                    if (
-                        !card.classList.contains(
-                            "active"
-                        )
-                    ) {
-
-                        event.preventDefault();
-
-                        document
-                            .querySelectorAll(
-                                ".card.active"
+                    char.textContent =
+                        matrixChars[
+                            Math.floor(
+                                Math.random() *
+                                matrixChars.length
                             )
-                            .forEach(other => {
+                        ];
 
-                                other.classList.remove(
-                                    "active"
-                                );
+                    char.style.left =
+                        x + "%";
 
-                            });
+                    char.style.top =
+                        y + "%";
 
-                        card.classList.add(
-                            "active"
-                        );
+                    char.style.fontSize =
+                        (8 + Math.random() * 5) +
+                        "px";
 
-                        return;
-                    }
+                    char.style.opacity =
+                        (
+                            .22 +
+                            Math.random() * .52
+                        ).toFixed(2);
 
-                    /*
-                     * Второе касание:
-                     * переход по ссылке.
-                     */
+                    char.style.transform =
+                        `rotate(${
+                            angle * 180 / Math.PI + 90
+                        }deg)`;
+
+                    fragment.appendChild(char);
                 }
-            );
+
+                swirl.appendChild(fragment);
+            });
+
+
+        /* =========================================================
+           MOBILE TAP BEHAVIOUR
+        ========================================================= */
+
+        const cards =
+            [...document.querySelectorAll(".card")];
+
+        const isTouchDevice =
+            window.matchMedia("(hover: none)").matches ||
+            "ontouchstart" in window;
+
+        cards.forEach(card => {
+
+            card.addEventListener("click", event => {
+
+                if (!isTouchDevice) {
+                    return;
+                }
+
+                /*
+                 * Первое нажатие:
+                 * показываем описание.
+                 *
+                 * Второе:
+                 * обычный переход по ссылке.
+                 */
+
+                if (!card.classList.contains("active")) {
+
+                    event.preventDefault();
+
+                    cards.forEach(item => {
+                        item.classList.remove("active");
+                    });
+
+                    card.classList.add("active");
+                }
+
+            });
+
+
+            card.addEventListener("focus", () => {
+                card.classList.add("active");
+            });
+
+            card.addEventListener("blur", () => {
+                card.classList.remove("active");
+            });
+
         });
 
 
-    /*
-     * Нажатие вне сфер закрывает описание.
-     */
+        /* =========================================================
+           CLOSE ACTIVE CARD WHEN CLICKING OUTSIDE
+        ========================================================= */
 
-    document.addEventListener(
-        "click",
-        function(event) {
+        document.addEventListener("click", event => {
 
             if (
-                !event.target.closest(
-                    ".card"
-                )
+                isTouchDevice &&
+                !event.target.closest(".card")
             ) {
 
-                document
-                    .querySelectorAll(
-                        ".card.active"
-                    )
-                    .forEach(card => {
+                cards.forEach(card => {
+                    card.classList.remove("active");
+                });
 
-                        card.classList.remove(
-                            "active"
+            }
+
+        });
+
+
+        /* =========================================================
+           STATIC NEURAL NETWORK
+           No animation loop.
+           Redraw only on resize/scroll.
+        ========================================================= */
+
+        const canvas =
+            document.getElementById("neuralCanvas");
+
+        const ctx =
+            canvas.getContext("2d");
+
+        let backgroundNodes = [];
+
+
+        function createBackgroundNodes() {
+
+            backgroundNodes = [];
+
+            const area =
+                window.innerWidth *
+                window.innerHeight;
+
+            const count =
+                Math.min(
+                    65,
+                    Math.max(
+                        30,
+                        Math.floor(area / 26000)
+                    )
+                );
+
+            for (let i = 0; i < count; i++) {
+
+                backgroundNodes.push({
+
+                    x:
+                        Math.random() *
+                        window.innerWidth,
+
+                    y:
+                        Math.random() *
+                        window.innerHeight,
+
+                    r:
+                        Math.random() *
+                        1.6 +
+                        .6
+
+                });
+
+            }
+
+        }
+
+
+        function getCardCenters() {
+
+            return cards
+                .map(card => {
+
+                    const rect =
+                        card.getBoundingClientRect();
+
+                    return {
+
+                        x:
+                            rect.left +
+                            rect.width / 2,
+
+                        y:
+                            rect.top +
+                            rect.height / 2,
+
+                        r: 2
+
+                    };
+
+                })
+                .filter(node => {
+
+                    return (
+                        node.x > -350 &&
+                        node.x <
+                            window.innerWidth + 350 &&
+                        node.y > -350 &&
+                        node.y <
+                            window.innerHeight + 350
+                    );
+
+                });
+
+        }
+
+
+        function drawNetwork() {
+
+            const dpr =
+                Math.min(
+                    window.devicePixelRatio || 1,
+                    2
+                );
+
+            canvas.width =
+                window.innerWidth * dpr;
+
+            canvas.height =
+                window.innerHeight * dpr;
+
+            canvas.style.width =
+                window.innerWidth + "px";
+
+            canvas.style.height =
+                window.innerHeight + "px";
+
+            ctx.setTransform(
+                dpr,
+                0,
+                0,
+                dpr,
+                0,
+                0
+            );
+
+            ctx.clearRect(
+                0,
+                0,
+                window.innerWidth,
+                window.innerHeight
+            );
+
+
+            const cardNodes =
+                getCardCenters();
+
+            const nodes =
+                [
+                    ...backgroundNodes,
+                    ...cardNodes
+                ];
+
+
+            /* -----------------------------------------------------
+               Connections
+            ----------------------------------------------------- */
+
+            for (let i = 0; i < nodes.length; i++) {
+
+                let nearest = [];
+
+                for (let j = 0; j < nodes.length; j++) {
+
+                    if (i === j) {
+                        continue;
+                    }
+
+                    const dx =
+                        nodes[i].x -
+                        nodes[j].x;
+
+                    const dy =
+                        nodes[i].y -
+                        nodes[j].y;
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
                         );
 
-                    });
+                    if (distance < 250) {
+
+                        nearest.push({
+                            node: nodes[j],
+                            distance
+                        });
+
+                    }
+
+                }
+
+                nearest.sort(
+                    (a, b) =>
+                        a.distance -
+                        b.distance
+                );
+
+                nearest =
+                    nearest.slice(0, 2);
+
+
+                nearest.forEach(connection => {
+
+                    const target =
+                        connection.node;
+
+                    const distance =
+                        connection.distance;
+
+                    const alpha =
+                        Math.max(
+                            0.025,
+                            0.10 -
+                            distance / 3000
+                        );
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        nodes[i].x,
+                        nodes[i].y
+                    );
+
+                    ctx.lineTo(
+                        target.x,
+                        target.y
+                    );
+
+                    ctx.strokeStyle =
+                        `rgba(45,190,230,${alpha})`;
+
+                    ctx.lineWidth = .7;
+
+                    ctx.stroke();
+
+                });
+
             }
+
+
+            /* -----------------------------------------------------
+               Nodes
+            ----------------------------------------------------- */
+
+            nodes.forEach(node => {
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    node.x,
+                    node.y,
+                    node.r,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fillStyle =
+                    "rgba(65,205,240,.24)";
+
+                ctx.fill();
+
+            });
+
         }
-    );
-}
 
 
-/* =========================================================
-   KEYBOARD
-========================================================= */
+        function refreshNetwork() {
 
-document
-    .querySelectorAll(".card")
-    .forEach(card => {
+            createBackgroundNodes();
 
-        card.addEventListener(
-            "focus",
-            () => {
+            drawNetwork();
 
-                card.classList.add(
-                    "active"
-                );
+        }
 
-            }
+
+        window.addEventListener(
+            "resize",
+            refreshNetwork
+        );
+
+        window.addEventListener(
+            "scroll",
+            drawNetwork,
+            { passive: true }
         );
 
 
-        card.addEventListener(
-            "blur",
-            () => {
-
-                card.classList.remove(
-                    "active"
-                );
-
-            }
+        window.addEventListener(
+            "load",
+            refreshNetwork
         );
 
-    });
 
-</script>
+        refreshNetwork();
+
+    </script>
 
 </body>
 </html>
