@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>16-факторный тест Кеттелла</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+    --bg:#0b0d12;
+    --card-top:#1c2230;
+    --card-bottom:#131821;
+    --block-top:#19202c;
+    --block-bottom:#141a24;
+    --border:rgba(255,255,255,.08);
+    --border-top:rgba(255,255,255,.14);
+    --text:#f3f5f7;
+    --muted:#9299a6;
+    --accent:#7c8cff;
+    --accent2:#9c7cff;
+    --good:#55d68a;
+    --warning:#ffc857;
+    --danger:#ff6b6b;
+}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{padding:20px 14px 50px;background:radial-gradient(1200px 600px at 50% -100px,#131826 0%,#0b0d12 60%,#0b0d12 100%)}
+.app{width:100%;max-width:900px;margin:0 auto}
+header{text-align:center;margin-bottom:22px}
+.logo{font-size:44px;margin-bottom:6px}
+h1{margin:0;font-size:28px;font-weight:750;letter-spacing:-.01em}
+.subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+
+/* ============ ОБЪЁМНЫЙ ПРЯМОУГОЛЬНЫЙ БЛОК ============ */
+.card{
+    background:linear-gradient(180deg,var(--card-top) 0%,var(--card-bottom) 100%);
+    border:1px solid var(--border);
+    border-top-color:var(--border-top);
+    border-radius:10px;
+    padding:18px;
+    margin-bottom:12px;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,.05) inset,
+        0 14px 30px rgba(0,0,0,.35),
+        0 4px 10px rgba(0,0,0,.25);
+    position:relative;
+}
+.card::after{
+    content:"";
+    position:absolute;left:12px;right:12px;bottom:-1px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(0,0,0,.5),transparent);
+    pointer-events:none;
+}
+
+.hidden{display:none!important}
+.section-title{font-size:19px;font-weight:700;margin-bottom:5px;letter-spacing:-.005em}
+.section-description{color:var(--muted);font-size:13px;line-height:1.45;margin-bottom:14px}
+
+.progress-wrap{margin-bottom:16px}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
+.progress{
+    width:100%;height:8px;background:#0a0d14;border-radius:4px;overflow:hidden;
+    border:1px solid rgba(0,0,0,.6);
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 -1px 0 rgba(0,0,0,.3) inset;
+}
+.progress-bar{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border-radius:3px;transition:width .3s;
+    box-shadow:0 0 12px rgba(124,140,255,.5);
+}
+
+.q-number{color:var(--muted);font-size:11.5px;text-align:center;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase}
+.q-text{
+    font-size:16.5px;line-height:1.5;color:var(--text);margin-bottom:18px;
+    text-align:center;font-weight:600;min-height:50px;
+    display:flex;align-items:center;justify-content:center;
+}
+
+/* ============ ВАРИАНТЫ ОТВЕТА ============ */
+.scale{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.scale-option{
+    display:flex;align-items:center;gap:11px;
+    background:linear-gradient(180deg,#141a24 0%,#10141c 100%);
+    border:1px solid rgba(255,255,255,.07);
+    border-top-color:rgba(255,255,255,.11);
+    border-radius:7px;
+    padding:12px 14px;cursor:pointer;
+    transition:transform .1s,border-color .15s,background .15s,box-shadow .15s;
+    font-size:13.5px;color:var(--text);font-family:inherit;text-align:left;width:100%;
+    box-shadow:0 2px 6px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.03) inset;
+}
+.scale-option:hover{
+    border-color:rgba(124,140,255,.35);
+    background:linear-gradient(180deg,#181f2e 0%,#12161f 100%);
+    box-shadow:0 3px 10px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.05) inset;
+}
+.scale-option:active{transform:translateY(1px)}
+.scale-option.selected{
+    border-color:var(--accent);
+    background:linear-gradient(180deg,rgba(124,140,255,.18) 0%,rgba(124,140,255,.08) 100%);
+    box-shadow:
+        0 0 0 1px rgba(124,140,255,.35) inset,
+        0 4px 12px rgba(124,140,255,.25),
+        0 1px 0 rgba(255,255,255,.06) inset;
+}
+.scale-label{flex:1;line-height:1.35}
+@media (min-width:640px){
+    .scale{flex-direction:row;gap:8px}
+    .scale-option{flex-direction:column;align-items:center;text-align:center;padding:14px 8px;gap:6px;border-radius:7px}
+    .scale-label{font-size:11.5px;line-height:1.3}
+}
+
+/* ============ КНОПКИ ============ */
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{
+    border:none;border-radius:8px;
+    padding:13px 16px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .1s,box-shadow .15s,opacity .15s;
+    box-shadow:0 4px 10px rgba(0,0,0,.30),0 1px 0 rgba(255,255,255,.08) inset;
+}
+.btn:active{
+    transform:translateY(1px);
+    box-shadow:0 2px 6px rgba(0,0,0,.30),0 1px 0 rgba(255,255,255,.08) inset;
+}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;box-shadow:none}
+.btn-primary{
+    background:linear-gradient(180deg,#8f9cff 0%,#6a78f0 100%);
+    color:#fff;
+}
+.btn-primary:hover{background:linear-gradient(180deg,#9ba7ff 0%,#7583f5 100%)}
+.btn-secondary{
+    background:linear-gradient(180deg,#2c333f 0%,#232934 100%);
+    color:#fff;
+}
+.btn-secondary:hover{background:linear-gradient(180deg,#353c48 0%,#2a303b 100%)}
+.btn-success{
+    background:linear-gradient(180deg,#64e29a 0%,#43bd78 100%);
+    color:#08130d;
+}
+.btn-danger{
+    background:linear-gradient(180deg,rgba(255,107,107,.22) 0%,rgba(255,107,107,.12) 100%);
+    color:var(--danger);
+    border:1px solid rgba(255,107,107,.3);
+    box-shadow:0 3px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.05) inset;
+}
+
+/* ============ ДЕМОГРАФИЯ ============ */
+.demo-field{margin-bottom:16px}
+.demo-field label{
+    display:block;font-size:12px;font-weight:700;color:var(--muted);
+    margin-bottom:8px;letter-spacing:.4px;text-transform:uppercase;
+}
+.demo-field select,.demo-field input[type=number]{
+    width:100%;background:linear-gradient(180deg,#10141c 0%,#0d1017 100%);
+    color:var(--text);border:1px solid rgba(255,255,255,.08);
+    border-top-color:rgba(255,255,255,.12);
+    border-radius:7px;padding:12px 14px;font-size:14px;outline:none;
+    font-family:inherit;
+    box-shadow:0 2px 6px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.03) inset;
+    transition:border-color .15s;
+}
+.demo-field select:focus,.demo-field input[type=number]:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(124,140,255,.35) inset,0 2px 8px rgba(124,140,255,.15);
+}
+.demo-field input[type=number]::-webkit-inner-spin-button,
+.demo-field input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.demo-field input[type=number]{-moz-appearance:textfield}
+.demo-options{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.demo-opt{
+    background:linear-gradient(180deg,#141a24 0%,#10141c 100%);
+    border:1px solid rgba(255,255,255,.07);border-top-color:rgba(255,255,255,.11);
+    border-radius:7px;padding:11px 10px;font-size:13px;font-weight:600;
+    color:var(--text);font-family:inherit;cursor:pointer;
+    transition:transform .1s,border-color .15s,background .15s,box-shadow .15s;
+    box-shadow:0 2px 6px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.03) inset;
+}
+.demo-opt:hover{border-color:rgba(124,140,255,.35)}
+.demo-opt:active{transform:translateY(1px)}
+.demo-opt.selected{
+    border-color:var(--accent);
+    background:linear-gradient(180deg,rgba(124,140,255,.18) 0%,rgba(124,140,255,.08) 100%);
+    box-shadow:0 0 0 1px rgba(124,140,255,.35) inset,0 4px 12px rgba(124,140,255,.25);
+}
+@media (max-width:560px){
+    .demo-options{grid-template-columns:1fr 1fr}
+}
+
+/* ============ РАДАР ============ */
+.radar-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:8px 0;margin-top:8px}
+#radar{display:block;max-width:100%;height:auto;cursor:pointer}
+.radar-hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px;font-style:italic}
+
+/* ============ СПИСОК ТИПОВ ============ */
+.types-list{display:flex;flex-direction:column;gap:10px}
+.type-item{
+    background:linear-gradient(180deg,var(--block-top) 0%,var(--block-bottom) 100%);
+    border:1px solid rgba(255,255,255,.06);
+    border-top-color:rgba(255,255,255,.10);
+    border-left:4px solid;
+    border-radius:8px;
+    padding:14px 16px;
+    box-shadow:0 4px 10px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.03) inset;
+    cursor:pointer;
+    transition:transform .12s,box-shadow .15s;
+}
+.type-item:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 16px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.05) inset;
+}
+.type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.type-name{font-size:14.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.type-score{font-size:15px;font-weight:800;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.type-score-main{font-size:16px}
+.type-score-sub{font-size:10.5px;color:var(--muted);font-weight:600}
+.type-bar{
+    width:100%;height:7px;background:#0a0d14;border-radius:4px;overflow:hidden;
+    border:1px solid rgba(0,0,0,.5);
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+}
+.type-bar-fill{
+    height:100%;border-radius:3px;
+    transition:width .8s cubic-bezier(.2,.9,.3,1);
+    box-shadow:0 0 8px rgba(124,140,255,.3);
+}
+.type-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:9px}
+
+/* ============ ИНТЕРПРЕТАЦИЯ ============ */
+.interp p{margin:0 0 11px;font-size:14px;line-height:1.6;color:var(--text)}
+.interp p:last-child{margin-bottom:0}
+.interp strong{color:#fff}
+.interp .hl{color:var(--accent);font-weight:700}
+.interp .block{
+    background:linear-gradient(180deg,rgba(124,140,255,.08) 0%,rgba(124,140,255,.04) 100%);
+    border:1px solid rgba(124,140,255,.20);
+    border-top-color:rgba(124,140,255,.30);
+    border-radius:8px;
+    padding:14px 16px;margin:12px 0;
+    font-size:13.5px;line-height:1.6;
+    box-shadow:0 3px 8px rgba(0,0,0,.20),0 1px 0 rgba(255,255,255,.03) inset;
+}
+.interp .block strong{color:var(--text)}
+
+/* ============ ПОПАП ============ */
+.popup-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.80);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.popup-overlay.open{opacity:1;pointer-events:auto}
+.popup-sheet{
+    background:linear-gradient(180deg,var(--card-top) 0%,var(--card-bottom) 100%);
+    border:1px solid var(--border);
+    border-top-color:var(--border-top);
+    border-radius:12px;
+    padding:26px 22px 22px;
+    max-width:440px;width:100%;position:relative;
+    transform:scale(.94);transition:transform .22s;
+    text-align:center;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.6),
+        0 1px 0 rgba(255,255,255,.06) inset;
+}
+.popup-overlay.open .popup-sheet{transform:scale(1)}
+.popup-close{
+    position:absolute;top:12px;right:12px;
+    width:34px;height:34px;border-radius:6px;
+    background:linear-gradient(180deg,#2a3140 0%,#202633 100%);
+    color:var(--muted);font-size:18px;border:1px solid rgba(255,255,255,.08);
+    cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit;
+    box-shadow:0 3px 6px rgba(0,0,0,.3);
+}
+.popup-close:hover{color:var(--text);background:linear-gradient(180deg,#333b4b 0%,#262d3a 100%)}
+.popup-icon{font-size:54px;margin-bottom:10px;line-height:1}
+.popup-title{font-size:20px;font-weight:800;margin-bottom:5px;padding:0 30px}
+.popup-score{font-size:13.5px;color:var(--muted);margin-bottom:16px;font-weight:600}
+.popup-score strong{font-size:17px;font-weight:800}
+.popup-desc{
+    font-size:13.5px;line-height:1.6;color:var(--text);
+    margin-bottom:18px;text-align:left;
+    background:linear-gradient(180deg,#151b26 0%,#10141c 100%);
+    border-radius:8px;padding:14px 16px;
+    border:1px solid rgba(255,255,255,.05);
+    box-shadow:0 2px 6px rgba(0,0,0,.2) inset;
+}
+.popup-btn{
+    width:100%;padding:14px;
+    background:linear-gradient(180deg,#8f9cff 0%,#6a78f0 100%);
+    color:#fff;border:none;border-radius:8px;
+    font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.1) inset;
+}
+.popup-btn:active{transform:translateY(1px);box-shadow:0 2px 6px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.1) inset}
+
+@media (max-width:560px){
+    body{padding:14px 10px 35px}
+    h1{font-size:23px}
+    .logo{font-size:38px}
+    .card{padding:14px;border-radius:8px}
+    .q-text{font-size:15px}
+    .scale-option{padding:11px 12px;font-size:13px}
+    .type-item{padding:12px 13px}
+    .popup-sheet{padding:22px 18px 18px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+<header>
+    <div class="logo">🧩</div>
+    <h1>16-факторный тест Кеттелла</h1>
+    <div class="subtitle">185 утверждений · оценка 16 первичных черт личности</div>
+</header>
+
+<!-- ============ ЭКРАН ДЕМОГРАФИИ ============ -->
+<div id="demographicsScreen">
+    <div class="card">
+        <div class="section-title">Немного о вас</div>
+        <div class="section-description">Эта информация используется <strong>анонимно</strong> для статистического анализа. Все поля необязательны — можно пропустить.</div>
+
+        <div class="demo-field">
+            <label>Знак зодиака</label>
+            <select id="demoZodiac">
+                <option value="">— Не выбрано —</option>
+                <option value="Овен">Овен (21.03 – 19.04)</option>
+                <option value="Телец">Телец (20.04 – 20.05)</option>
+                <option value="Близнецы">Близнецы (21.05 – 20.06)</option>
+                <option value="Рак">Рак (21.06 – 22.07)</option>
+                <option value="Лев">Лев (23.07 – 22.08)</option>
+                <option value="Дева">Дева (23.08 – 22.09)</option>
+                <option value="Весы">Весы (23.09 – 22.10)</option>
+                <option value="Скорпион">Скорпион (23.10 – 21.11)</option>
+                <option value="Стрелец">Стрелец (22.11 – 21.12)</option>
+                <option value="Козерог">Козерог (22.12 – 19.01)</option>
+                <option value="Водолей">Водолей (20.01 – 18.02)</option>
+                <option value="Рыбы">Рыбы (19.02 – 20.03)</option>
+                <option value="Не знаю">Не знаю / не верю в это</option>
+            </select>
+        </div>
+
+        <div class="demo-field">
+            <label>Пол</label>
+            <div class="demo-options" id="demoGender">
+                <button type="button" class="demo-opt" data-val="Мужской">Мужской</button>
+                <button type="button" class="demo-opt" data-val="Женский">Женский</button>
+                <button type="button" class="demo-opt" data-val="Другой">Другой</button>
+                <button type="button" class="demo-opt" data-val="Не указан">Не указывать</button>
+            </div>
+        </div>
+
+        <div class="demo-field">
+            <label>Возраст</label>
+            <input type="number" id="demoAge" min="14" max="99" placeholder="Например: 27">
+        </div>
+
+        <div class="demo-field">
+            <label>Уровень образования</label>
+            <select id="demoEducation">
+                <option value="">— Не выбрано —</option>
+                <option value="Среднее">Среднее</option>
+                <option value="Среднее специальное">Среднее специальное (колледж, техникум)</option>
+                <option value="Незаконченное высшее">Незаконченное высшее</option>
+                <option value="Высшее (бакалавр)">Высшее (бакалавр)</option>
+                <option value="Высшее (магистр/специалист)">Высшее (магистр, специалист)</option>
+                <option value="Учёная степень">Учёная степень (кандидат/доктор наук)</option>
+                <option value="Не указано">Не указывать</option>
+            </select>
+        </div>
+
+        <div class="nav" style="margin-top:20px">
+            <button class="btn btn-secondary" onclick="skipDemographics()">Пропустить</button>
+            <button class="btn btn-success" onclick="startTest()">Начать тест →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ ЭКРАН ТЕСТА ============ -->
+<div id="testScreen" class="hidden">
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span id="progressText">Утверждение 1 из 185</span>
+                <span id="progressPercent">1%</span>
+            </div>
+            <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+        <div class="q-number" id="qNumber">УТВЕРЖДЕНИЕ 1</div>
+        <div class="q-text" id="qText">Загрузка...</div>
+        <div class="scale" id="scale"></div>
+        <div class="nav">
+            <button class="btn btn-secondary" id="backBtn" onclick="prevQuestion()">← Назад</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Далее →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ ЭКРАН РЕЗУЛЬТАТОВ ============ -->
+<div id="resultScreen" class="hidden">
+    <div class="card result-header" style="text-align:center">
+        <div class="section-title">Ваш профиль по 16 факторам</div>
+        <div class="section-description">Чем дальше вершина от центра, тем сильнее выражен фактор</div>
+        <div class="radar-wrap"><canvas id="radar"></canvas></div>
+        <div class="radar-hint">Нажмите на вершину, чтобы увидеть описание фактора</div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Профиль по факторам</div>
+        <div class="section-description">От наиболее выраженного к наименее выраженному</div>
+        <div class="types-list" id="typesList"></div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Интерпретация</div>
+        <div class="interp" id="interpretation"></div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">📊 Ваши демографические данные</div>
+        <div class="section-description">Указаны для статистического анализа. Можно изменить на старте.</div>
+        <div id="demoSummary" style="font-size:13.5px;color:var(--muted);line-height:1.7"></div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="backToTest()">Изменить ответы</button>
+            <button class="btn btn-primary" onclick="exportResults()">📥 Экспорт JSON</button>
+            <button class="btn btn-danger" onclick="resetAll()">Начать заново</button>
+        </div>
+    </div>
+</div>
+
+<footer style="text-align:center;color:#656c78;font-size:12px;margin-top:22px">
+    16-факторный опросник Кеттелла · адаптированная версия
+</footer>
+</div>
+
+<div class="popup-overlay" id="factorPopup">
+    <div class="popup-sheet">
+        <button class="popup-close" onclick="closePopup()">×</button>
+        <div class="popup-icon" id="popupIcon">🙂</div>
+        <div class="popup-title" id="popupTitle">Фактор A</div>
+        <div class="popup-score" id="popupScore">—</div>
+        <div class="popup-desc" id="popupDesc">—</div>
+        <button class="popup-btn" onclick="closePopup()">Понятно</button>
+    </div>
+</div>
+
+<script>
+window.onerror = function(msg, url, line, col) {
+    var b = document.getElementById('jsErrorBanner');
+    if (!b) {
+        b = document.createElement('div');
+        b.id = 'jsErrorBanner';
+        b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;';
+        document.body.appendChild(b);
+    }
+    b.textContent = 'Ошибка: ' + msg + ' (строка ' + line + ', колонка ' + col + ')';
+};
+</script>
+
+<script>
+var FACTORS = {
+    A: { name: "Замкнутость – Общительность", icon: "🙂", color: "#7c8cff",
+         low: "Замкнутый, отстранённый, критичный",
+         high: "Общительный, тёплый, внимательный к людям",
+         desc: "Описывает, насколько человек ориентирован на взаимодействие с другими." },
+    B: { name: "Конкретное – Абстрактное мышление", icon: "🧠", color: "#55d68a",
+         low: "Конкретное мышление, ниже среднего",
+         high: "Абстрактное мышление, высокий интеллект",
+         desc: "Отражает способность к абстрактным рассуждениям и обобщениям." },
+    C: { name: "Эмоциональная неустойчивость – Устойчивость", icon: "🛡", color: "#9c7cff",
+         low: "Реактивный, легко расстраивается",
+         high: "Эмоционально зрелый, стабильный",
+         desc: "Показывает, насколько человек устойчив к стрессу и эмоциональным нагрузкам." },
+    E: { name: "Подчинение – Доминантность", icon: "⚡", color: "#ffc857",
+         low: "Уступчивый, склонный подчиняться",
+         high: "Напористый, независимый, склонный доминировать",
+         desc: "Характеризует стремление влиять на других и отстаивать свою позицию." },
+    F: { name: "Сдержанность – Экспрессивность", icon: "🎭", color: "#ff8a65",
+         low: "Серьёзный, сдержанный, осторожный",
+         high: "Жизнерадостный, импульсивный, экспрессивный",
+         desc: "Отражает уровень энергичности и спонтанности в поведении." },
+    G: { name: "Низкая – Высокая нормативность", icon: "📏", color: "#4db6ac",
+         low: "Склонный к непостоянству, игнорирующий правила",
+         high: "Обязательный, соблюдающий нормы и правила",
+         desc: "Показывает, насколько человек привержен правилам и социальным нормам." },
+    H: { name: "Робость – Смелость", icon: "🦁", color: "#f06292",
+         low: "Застенчивый, осторожный в социальных контактах",
+         high: "Смелый, социально активный, склонный к риску",
+         desc: "Характеризует уверенность в социальных ситуациях и готовность к риску." },
+    I: { name: "Жёсткость – Мягкость", icon: "🌸", color: "#ba68c8",
+         low: "Реалистичный, жёсткий, практичный",
+         high: "Чувствительный, эстетичный, мечтательный",
+         desc: "Отражает чувствительность к эстетике и эмоциональную тонкость." },
+    L: { name: "Доверчивость – Подозрительность", icon: "🔍", color: "#ffb74d",
+         low: "Доверчивый, принимающий других",
+         high: "Подозрительный, настороженный, скептичный",
+         desc: "Показывает уровень настороженности в отношениях с другими людьми." },
+    M: { name: "Практичность – Мечтательность", icon: "🌙", color: "#9575cd",
+         low: "Практичный, приземлённый, реалистичный",
+         high: "Мечтательный, творческий, абстрактный",
+         desc: "Характеризует склонность к воображению и отвлечённым идеям." },
+    N: { name: "Прямота – Дипломатичность", icon: "🎩", color: "#7986cb",
+         low: "Прямой, бесхитростный, естественный",
+         high: "Дипломатичный, расчётливый, сдержанный",
+         desc: "Отражает склонность к дипломатии и контролю самопрезентации." },
+    O: { name: "Спокойствие – Тревожность", icon: "😰", color: "#e57373",
+         low: "Спокойный, уверенный в себе",
+         high: "Тревожный, склонный к самообвинениям",
+         desc: "Показывает уровень тревожности и беспокойства." },
+    Q1: { name: "Консерватизм – Радикализм", icon: "🔄", color: "#64b5f6",
+         low: "Консервативный, приверженный традициям",
+         high: "Радикальный, открытый к изменениям",
+         desc: "Характеризует готовность к переменам и новым идеям." },
+    Q2: { name: "Зависимость – Самостоятельность", icon: "🧭", color: "#81c784",
+         low: "Зависимый от группы, нуждающийся в поддержке",
+         high: "Самостоятельный, независимый в решениях",
+         desc: "Отражает степень опоры на собственное мнение, а не на группу." },
+    Q3: { name: "Низкий – Высокий самоконтроль", icon: "🎯", color: "#4dd0e1",
+         low: "Неорганизованный, импульсивный",
+         high: "Организованный, контролирующий себя",
+         desc: "Показывает уровень самодисциплины и контроля поведения." },
+    Q4: { name: "Расслабленность – Напряжённость", icon: "🔥", color: "#ff7043",
+         low: "Расслабленный, спокойный",
+         high: "Напряжённый, фрустрированный, возбуждённый",
+         desc: "Характеризует уровень внутреннего напряжения и возбуждения." }
+};
+
+var ITEMS = [];
+(function build() {
+    var F = ["A","B","C","E","F","G","H","I","L","M","N","O","Q1","Q2","Q3","Q4"];
+    var templates = {
+        A: [
+            ["Я предпочитаю проводить свободное время в одиночестве", "Иногда мне нравится быть с людьми, иногда одному", "Я люблю быть в компании и легко знакомлюсь с новыми людьми", "c"],
+            ["В новых компаниях я чувствую себя неуютно", "В новых компаниях я чувствую себя нормально", "В новых компаниях я быстро нахожу общий язык со всеми", "c"],
+            ["Я редко делюсь своими переживаниями с другими", "Я делюсь переживаниями только с близкими", "Я легко делюсь своими переживаниями с окружающими", "c"],
+            ["Мне сложно поддерживать долгие разговоры", "Я поддерживаю разговоры, если тема интересна", "Я люблю долгие разговоры на разные темы", "c"],
+            ["Я предпочитаю работать один", "Мне подходит и командная, и индивидуальная работа", "Я предпочитаю работать в команде", "c"],
+            ["Я редко проявляю инициативу в общении", "Я иногда проявляю инициативу в общении", "Я часто проявляю инициативу в общении", "c"],
+            ["Я держусь на расстоянии с малознакомыми людьми", "Я соблюдаю дистанцию, но могу её сократить", "Я легко сокращаю дистанцию с новыми людьми", "c"],
+            ["Мне сложно выражать свои эмоции", "Я выражаю эмоции, но сдержанно", "Я открыто выражаю свои эмоции", "c"],
+            ["Я предпочитаю уединённый отдых", "Мне подходит и уединённый, и активный отдых", "Я предпочитаю активный отдых в компании", "c"],
+            ["Я редко первым начинаю разговор", "Я иногда начинаю разговор первым", "Я часто первым начинаю разговор", "c"],
+            ["Мне важно сохранять личное пространство", "Я соблюдаю баланс между личным и общим", "Я легко делюсь личным пространством с другими", "c"],
+            ["Я чувствую себя лучше в узком кругу", "Я комфортно чувствую себя в разных компаниях", "Я чувствую себя лучше в широком кругу общения", "c"]
+        ],
+        B: [
+            ["Что означает слово «эволюция»?", "Быстрое изменение", "Постепенное развитие", "Резкий скачок", "b"],
+            ["Что такое «парадокс»?", "Утверждение, противоречащее здравому смыслу", "Общепринятое мнение", "Научный факт", "a"],
+            ["Какой из предметов лишний: яблоко, груша, морковь, банан?", "Яблоко", "Морковь", "Груша", "b"],
+            ["Продолжите ряд: 2, 4, 8, 16…", "20", "32", "24", "b"],
+            ["Что означает «аналогия»?", "Сходство", "Различие", "Противоположность", "a"],
+            ["Что такое «гипотеза»?", "Предположение", "Доказательство", "Вывод", "a"],
+            ["Какой из предметов лишний: молоток, пила, гвоздь, отвёртка?", "Молоток", "Гвоздь", "Пила", "b"],
+            ["Продолжите ряд: 1, 1, 2, 3, 5, 8…", "11", "13", "12", "b"],
+            ["Что означает «синтез»?", "Соединение", "Разделение", "Изменение", "a"],
+            ["Что такое «абстракция»?", "Отвлечённое понятие", "Конкретный предмет", "Реальный объект", "a"],
+            ["Какой из предметов лишний: роза, тюльпан, берёза, ромашка?", "Роза", "Берёза", "Тюльпан", "b"],
+            ["Продолжите ряд: 1, 4, 9, 16…", "20", "25", "24", "b"]
+        ],
+        C: [
+            ["Я часто переживаю из-за мелочей", "Иногда я переживаю, но быстро успокаиваюсь", "Я редко переживаю из-за мелочей", "c"],
+            ["Моё настроение часто меняется без причины", "Моё настроение иногда меняется", "Моё настроение обычно стабильно", "c"],
+            ["Я легко выхожу из себя", "Я могу разозлиться, но быстро остываю", "Мне трудно вывести меня из себя", "c"],
+            ["Я часто чувствую себя уставшим без причины", "Иногда я чувствую усталость", "Я обычно бодр и полон сил", "c"],
+            ["В стрессовых ситуациях я теряюсь", "В стрессовых ситуациях я стараюсь сохранять спокойствие", "В стрессовых ситуациях я действую чётко", "c"],
+            ["Меня легко расстроить критикой", "Я реагирую на критику, но не сильно", "Я спокойно воспринимаю критику", "c"],
+            ["Я часто беспокоюсь о будущем", "Я иногда беспокоюсь о будущем", "Я обычно не беспокоюсь о будущем", "c"],
+            ["Мне трудно расслабиться", "Мне иногда трудно расслабиться", "Я легко расслабляюсь", "c"],
+            ["Я часто чувствую раздражение", "Я иногда чувствую раздражение", "Я редко чувствую раздражение", "c"],
+            ["Я склонен к перепадам настроения", "Моё настроение относительно ровное", "Моё настроение стабильно и предсказуемо", "c"],
+            ["Я тяжело переношу неудачи", "Я переживаю неудачи, но справляюсь", "Я спокойно переношу неудачи", "c"],
+            ["Я часто чувствую себя напряжённым", "Иногда я чувствую напряжение", "Я обычно расслаблен", "c"]
+        ],
+        E: [
+            ["Я предпочитаю, чтобы решения принимали другие", "Я могу принимать решения, но не всегда", "Я предпочитаю принимать решения сам", "c"],
+            ["Я редко отстаиваю свою точку зрения", "Я отстаиваю свою точку зрения, если уверен", "Я всегда отстаиваю свою точку зрения", "c"],
+            ["Мне сложно критиковать других", "Я критикую, если это необходимо", "Я легко критикую других", "c"],
+            ["Я обычно уступаю в спорах", "Я уступаю, если аргументы сильнее", "Я редко уступаю в спорах", "c"],
+            ["Я предпочитаю следовать за лидером", "Я могу быть и лидером, и последователем", "Я предпочитаю быть лидером", "c"],
+            ["Я не люблю привлекать к себе внимание", "Иногда я привлекаю внимание", "Я люблю быть в центре внимания", "c"],
+            ["Я редко настаиваю на своём", "Я настаиваю на своём, если уверен в правоте", "Я всегда настаиваю на своём", "c"],
+            ["Я легко подчиняюсь правилам", "Я подчиняюсь правилам, но могу их оспорить", "Я часто оспариваю правила", "c"],
+            ["Я предпочитаю не брать на себя ответственность", "Я беру ответственность, когда нужно", "Я охотно беру ответственность на себя", "c"],
+            ["Мне трудно влиять на других", "Я могу влиять на других", "Я легко влияю на других", "c"],
+            ["Я обычно соглашаюсь с мнением группы", "Я могу согласиться, но могу и возразить", "Я редко соглашаюсь с мнением группы", "c"],
+            ["Я предпочитаю не выделяться", "Я иногда выделяюсь", "Я люблю выделяться", "c"]
+        ],
+        F: [
+            ["Я обычно серьёзен и сдержан", "Я могу быть серьёзным и весёлым", "Я обычно весел и импульсивен", "c"],
+            ["Я редко шучу", "Я шучу, когда есть повод", "Я часто шучу и смеюсь", "c"],
+            ["Я предпочитаю спокойные занятия", "Я люблю и спокойные, и активные занятия", "Я предпочитаю активные и шумные занятия", "c"],
+            ["Я сдержан в выражении эмоций", "Я выражаю эмоции умеренно", "Я открыто выражаю эмоции", "c"],
+            ["Я редко проявляю энтузиазм", "Я проявляю энтузиазм, когда увлечён", "Я часто проявляю энтузиазм", "c"],
+            ["Я предпочитаю размеренность", "Я могу быть и размеренным, и спонтанным", "Я предпочитаю спонтанность", "c"],
+            ["Я редко смеюсь громко", "Иногда я смеюсь громко", "Я часто смеюсь громко", "c"],
+            ["Я обычно осторожен в высказываниях", "Я могу быть осторожным, но иногда говорю прямо", "Я говорю то, что думаю, не задумываясь", "c"],
+            ["Я предпочитаю тихие компании", "Мне подходят разные компании", "Я предпочитаю шумные компании", "c"],
+            ["Я редко проявляю восторг", "Я могу проявить восторг", "Я часто проявляю восторг", "c"],
+            ["Я сдержан в жестах", "Я использую жесты умеренно", "Я активно жестикулирую", "c"],
+            ["Я предпочитаю предсказуемость", "Я могу адаптироваться к изменениям", "Я люблю неожиданности", "c"]
+        ],
+        G: [
+            ["Я часто нарушаю правила, если они мне мешают", "Я соблюдаю правила, но могу сделать исключение", "Я всегда соблюдаю правила", "c"],
+            ["Я не всегда выполняю обещания", "Я стараюсь выполнять обещания", "Я всегда выполняю обещания", "c"],
+            ["Я могу быть необязательным", "Я обычно обязателен", "Я всегда обязателен", "c"],
+            ["Я редко следую установленным нормам", "Я следую нормам, если они разумны", "Я всегда следую установленным нормам", "c"],
+            ["Я могу опаздывать", "Я стараюсь не опаздывать", "Я никогда не опаздываю", "c"],
+            ["Я не всегда довожу дела до конца", "Я обычно довожу дела до конца", "Я всегда довожу дела до конца", "c"],
+            ["Я могу пренебречь обязанностями", "Я обычно выполняю обязанности", "Я всегда выполняю обязанности", "c"],
+            ["Я не всегда пунктуален", "Я обычно пунктуален", "Я всегда пунктуален", "c"],
+            ["Я могу нарушить договорённость", "Я стараюсь не нарушать договорённости", "Я никогда не нарушаю договорённости", "c"],
+            ["Я не всегда следую инструкциям", "Я обычно следую инструкциям", "Я всегда следую инструкциям", "c"],
+            ["Я могу быть безответственным", "Я обычно ответственный", "Я всегда ответственный", "c"],
+            ["Я не всегда соблюдаю дисциплину", "Я обычно соблюдаю дисциплину", "Я всегда соблюдаю дисциплину", "c"]
+        ],
+        H: [
+            ["Я застенчив в общении с новыми людьми", "Я могу быть застенчив, но не всегда", "Я смел и инициативен в общении", "c"],
+            ["Я избегаю больших компаний", "Я могу быть в больших компаниях", "Я люблю большие компании", "c"],
+            ["Я редко рискую", "Я иногда рискую", "Я часто рискую", "c"],
+            ["Я предпочитаю не выделяться в группе", "Я могу быть активным в группе", "Я всегда активен в группе", "c"],
+            ["Я чувствую себя неуверенно с незнакомыми", "Я чувствую себя нормально с незнакомыми", "Я чувствую себя уверенно с незнакомыми", "c"],
+            ["Я избегаю публичных выступлений", "Я могу выступать публично", "Я люблю публичные выступления", "c"],
+            ["Я редко беру на себя инициативу", "Я иногда беру на себя инициативу", "Я часто беру на себя инициативу", "c"],
+            ["Я предпочитаю оставаться в тени", "Я могу быть на виду", "Я люблю быть на виду", "c"],
+            ["Я осторожен в новых ситуациях", "Я адаптируюсь к новым ситуациям", "Я легко осваиваюсь в новых ситуациях", "c"],
+            ["Я редко проявляю смелость", "Я могу проявить смелость", "Я часто проявляю смелость", "c"],
+            ["Я избегаю ответственности", "Я беру ответственность, когда нужно", "Я охотно беру ответственность", "c"],
+            ["Я предпочитаю не рисковать", "Я могу рискнуть, если есть смысл", "Я люблю риск", "c"]
+        ],
+        I: [
+            ["Я предпочитаю практичные решения", "Я могу выбирать между практичным и эстетичным", "Я ценю эстетику и красоту", "c"],
+            ["Я редко обращаю внимание на детали", "Я иногда замечаю детали", "Я всегда замечаю детали", "c"],
+            ["Я не склонен к мечтательности", "Я иногда мечтаю", "Я часто мечтаю", "c"],
+            ["Я предпочитаю реалистичные подходы", "Я могу быть и реалистом, и мечтателем", "Я часто витаю в облаках", "c"],
+            ["Я редко испытываю сильные эмоции от искусства", "Я иногда испытываю эмоции от искусства", "Я часто испытываю сильные эмоции от искусства", "c"],
+            ["Я не обращаю внимания на атмосферу", "Я иногда замечаю атмосферу", "Я очень чувствителен к атмосфере", "c"],
+            ["Я предпочитаю конкретные задачи", "Мне подходят и конкретные, и абстрактные задачи", "Я предпочитаю абстрактные задачи", "c"],
+            ["Я редко задумываюсь о смысле вещей", "Я иногда задумываюсь о смысле", "Я часто задумываюсь о смысле", "c"],
+            ["Я не склонен к сентиментальности", "Я могу быть сентиментальным", "Я очень сентиментален", "c"],
+            ["Я предпочитаю практичность", "Я могу быть и практичным, и чувствительным", "Я предпочитаю чувствительность", "c"],
+            ["Я редко восхищаюсь красотой", "Я иногда восхищаюсь красотой", "Я часто восхищаюсь красотой", "c"],
+            ["Я не люблю отвлечённые темы", "Я могу обсуждать отвлечённые темы", "Я люблю отвлечённые темы", "c"]
+        ],
+        L: [
+            ["Я доверяю людям", "Я доверяю, но проверяю", "Я подозрителен к людям", "c"],
+            ["Я редко сомневаюсь в других", "Иногда я сомневаюсь в других", "Я часто сомневаюсь в других", "c"],
+            ["Я не склонен к ревности", "Я иногда ревную", "Я часто ревную", "c"],
+            ["Я верю, что люди в основном хорошие", "Я считаю, что люди разные", "Я считаю, что людям нельзя доверять", "c"],
+            ["Я редко подозреваю других в плохом", "Иногда я подозреваю других", "Я часто подозреваю других", "c"],
+            ["Я не обращаю внимания на скрытые мотивы", "Я иногда замечаю скрытые мотивы", "Я всегда ищу скрытые мотивы", "c"],
+            ["Я доверяю коллегам", "Я доверяю коллегам, но не всем", "Я не доверяю коллегам", "c"],
+            ["Я редко чувствую угрозу от других", "Иногда я чувствую угрозу", "Я часто чувствую угрозу от других", "c"],
+            ["Я не склонен к зависти", "Я иногда завидую", "Я часто завидую", "c"],
+            ["Я считаю людей честными", "Я считаю людей разными", "Я считаю людей нечестными", "c"],
+            ["Я редко обижаюсь", "Иногда я обижаюсь", "Я часто обижаюсь", "c"],
+            ["Я не подозреваю других в обмане", "Иногда я подозреваю других", "Я часто подозреваю других в обмане", "c"]
+        ],
+        M: [
+            ["Я предпочитаю практичные занятия", "Я могу быть и практичным, и творческим", "Я предпочитаю творческие занятия", "c"],
+            ["Я редко фантазирую", "Я иногда фантазирую", "Я часто фантазирую", "c"],
+            ["Я предпочитаю конкретные цели", "Мне подходят и конкретные, и абстрактные цели", "Я предпочитаю абстрактные цели", "c"],
+            ["Я не склонен к воображению", "Я иногда воображаю", "Я часто воображаю", "c"],
+            ["Я предпочитаю реальность", "Я могу балансировать между реальностью и мечтами", "Я предпочитаю мечты", "c"],
+            ["Я редко задумываюсь о будущем", "Я иногда задумываюсь о будущем", "Я часто задумываюсь о будущем", "c"],
+            ["Я предпочитаю конкретные задачи", "Мне подходят и конкретные, и абстрактные задачи", "Я предпочитаю абстрактные задачи", "c"],
+            ["Я не люблю теоретизировать", "Я могу теоретизировать", "Я люблю теоретизировать", "c"],
+            ["Я предпочитаю ясность", "Я могу работать с неясными вещами", "Я люблю неясность", "c"],
+            ["Я редко мечтаю", "Я иногда мечтаю", "Я часто мечтаю", "c"],
+            ["Я предпочитаю факты", "Я могу работать и с фактами, и с идеями", "Я предпочитаю идеи", "c"],
+            ["Я не склонен к абстракциям", "Я могу работать с абстракциями", "Я люблю абстракции", "c"]
+        ],
+        N: [
+            ["Я прямолинеен в общении", "Я могу быть и прямым, и дипломатичным", "Я всегда дипломатичен", "c"],
+            ["Я редко скрываю свои мысли", "Я иногда скрываю мысли", "Я часто скрываю свои мысли", "c"],
+            ["Я не склонен к расчёту", "Я могу быть расчётливым", "Я всегда рассчитываю свои шаги", "c"],
+            ["Я говорю то, что думаю", "Я иногда фильтрую свои слова", "Я всегда фильтрую свои слова", "c"],
+            ["Я не умею лукавить", "Я могу лукавить, если нужно", "Я часто лукавлю", "c"],
+            ["Я открыт в общении", "Я могу быть и открытым, и закрытым", "Я закрыт в общении", "c"],
+            ["Я не склонен к манипуляциям", "Я иногда манипулирую", "Я часто манипулирую", "c"],
+            ["Я прост в общении", "Я могу быть сложным в общении", "Я сложен в общении", "c"],
+            ["Я не умею хитрить", "Я могу хитрить, если нужно", "Я часто хитрю", "c"],
+            ["Я предпочитаю прямоту", "Я могу выбирать между прямотой и дипломатией", "Я предпочитаю дипломатию", "c"],
+            ["Я редко скрываю эмоции", "Я иногда скрываю эмоции", "Я часто скрываю эмоции", "c"],
+            ["Я не люблю интриги", "Я могу участвовать в интригах", "Я люблю интриги", "c"]
+        ],
+        O: [
+            ["Я обычно спокоен", "Я иногда тревожусь", "Я часто тревожусь", "c"],
+            ["Я редко чувствую вину", "Я иногда чувствую вину", "Я часто чувствую вину", "c"],
+            ["Я уверен в себе", "Я иногда сомневаюсь в себе", "Я часто сомневаюсь в себе", "c"],
+            ["Я не склонен к беспокойству", "Я иногда беспокоюсь", "Я часто беспокоюсь", "c"],
+            ["Я редко переживаю о будущем", "Я иногда переживаю о будущем", "Я часто переживаю о будущем", "c"],
+            ["Я чувствую себя в безопасности", "Я иногда чувствую угрозу", "Я часто чувствую угрозу", "c"],
+            ["Я не склонен к самообвинениям", "Я иногда обвиняю себя", "Я часто обвиняю себя", "c"],
+            ["Я спокоен в трудных ситуациях", "Я иногда теряюсь в трудных ситуациях", "Я часто теряюсь в трудных ситуациях", "c"],
+            ["Я редко чувствую напряжение", "Я иногда чувствую напряжение", "Я часто чувствую напряжение", "c"],
+            ["Я уверен в своих силах", "Я иногда сомневаюсь в силах", "Я часто сомневаюсь в силах", "c"],
+            ["Я не склонен к переживаниям", "Я иногда переживаю", "Я часто переживаю", "c"],
+            ["Я чувствую себя комфортно", "Я иногда чувствую дискомфорт", "Я часто чувствую дискомфорт", "c"]
+        ],
+        Q1: [
+            ["Я предпочитаю традиции", "Я могу сочетать традиции и новое", "Я предпочитаю новое", "c"],
+            ["Я консервативен во взглядах", "Я умерен во взглядах", "Я радикален во взглядах", "c"],
+            ["Я редко меняю свои привычки", "Я иногда меняю привычки", "Я часто меняю привычки", "c"],
+            ["Я предпочитаю стабильность", "Я могу адаптироваться к изменениям", "Я люблю перемены", "c"],
+            ["Я не люблю новшества", "Я отношусь к новшествам нейтрально", "Я люблю новшества", "c"],
+            ["Я придерживаюсь проверенных методов", "Я могу использовать и новые методы", "Я люблю экспериментировать", "c"],
+            ["Я не склонен к переменам", "Я иногда меняю что-то", "Я часто меняю что-то", "c"],
+            ["Я предпочитаю известное", "Я могу выбирать между известным и новым", "Я предпочитаю неизвестное", "c"],
+            ["Я уважаю традиции", "Я уважаю традиции, но не слепо", "Я не придаю значения традициям", "c"],
+            ["Я редко предлагаю новые идеи", "Я иногда предлагаю новые идеи", "Я часто предлагаю новые идеи", "c"],
+            ["Я предпочитаю старые порядки", "Я могу принять и новые порядки", "Я предпочитаю новые порядки", "c"],
+            ["Я не люблю риск", "Я могу рискнуть", "Я люблю риск", "c"]
+        ],
+        Q2: [
+            ["Я предпочитаю работать в группе", "Мне подходит и групповая, и индивидуальная работа", "Я предпочитаю работать один", "c"],
+            ["Я завишу от мнения группы", "Я могу учитывать мнение группы, но решаю сам", "Я не завишу от мнения группы", "c"],
+            ["Я редко принимаю решения сам", "Я иногда принимаю решения сам", "Я всегда принимаю решения сам", "c"],
+            ["Я нуждаюсь в поддержке других", "Я иногда нуждаюсь в поддержке", "Я не нуждаюсь в поддержке", "c"],
+            ["Я предпочитаю следовать за группой", "Я могу быть и в группе, и вне её", "Я предпочитаю быть вне группы", "c"],
+            ["Я редко полагаюсь на себя", "Я иногда полагаюсь на себя", "Я всегда полагаюсь на себя", "c"],
+            ["Я не люблю одиночество", "Я могу быть и один, и с людьми", "Я люблю одиночество", "c"],
+            ["Я завишу от чужого мнения", "Я иногда завишу от чужого мнения", "Я не завишу от чужого мнения", "c"],
+            ["Я предпочитаю коллективные решения", "Я могу принимать и коллективные, и личные решения", "Я предпочитаю личные решения", "c"],
+            ["Я редко действую самостоятельно", "Я иногда действую самостоятельно", "Я всегда действую самостоятельно", "c"],
+            ["Я нуждаюсь в одобрении", "Я иногда нуждаюсь в одобрении", "Я не нуждаюсь в одобрении", "c"],
+            ["Я предпочитаю быть как все", "Я могу быть и как все, и не как все", "Я предпочитаю быть не как все", "c"]
+        ],
+        Q3: [
+            ["Я неорганизован", "Я иногда организован", "Я всегда организован", "c"],
+            ["Я часто действую импульсивно", "Я иногда действую импульсивно", "Я редко действую импульсивно", "c"],
+            ["Я не контролирую себя", "Я иногда контролирую себя", "Я всегда контролирую себя", "c"],
+            ["Я не люблю планировать", "Я иногда планирую", "Я всегда планирую", "c"],
+            ["Я не дисциплинирован", "Я иногда дисциплинирован", "Я всегда дисциплинирован", "c"],
+            ["Я часто отвлекаюсь", "Я иногда отвлекаюсь", "Я редко отвлекаюсь", "c"],
+            ["Я не следую распорядку", "Я иногда следую распорядку", "Я всегда следую распорядку", "c"],
+            ["Я не умею контролировать эмоции", "Я иногда контролирую эмоции", "Я всегда контролирую эмоции", "c"],
+            ["Я неорганизован в делах", "Я иногда организован в делах", "Я всегда организован в делах", "c"],
+            ["Я не люблю порядок", "Я иногда поддерживаю порядок", "Я всегда поддерживаю порядок", "c"],
+            ["Я не контролирую время", "Я иногда контролирую время", "Я всегда контролирую время", "c"],
+            ["Я не умею сосредоточиться", "Я иногда могу сосредоточиться", "Я всегда могу сосредоточиться", "c"]
+        ],
+        Q4: [
+            ["Я обычно расслаблен", "Я иногда напряжён", "Я часто напряжён", "c"],
+            ["Я редко чувствую раздражение", "Я иногда чувствую раздражение", "Я часто чувствую раздражение", "c"],
+            ["Я спокоен", "Я иногда бываю взволнован", "Я часто взволнован", "c"],
+            ["Я не склонен к фрустрации", "Я иногда фрустрирован", "Я часто фрустрирован", "c"],
+            ["Я редко нервничаю", "Я иногда нервничаю", "Я часто нервничаю", "c"],
+            ["Я чувствую себя расслабленно", "Я иногда чувствую напряжение", "Я часто чувствую напряжение", "c"],
+            ["Я не склонен к возбуждению", "Я иногда возбуждён", "Я часто возбуждён", "c"],
+            ["Я спокоен в ожидании", "Я иногда нервничаю в ожидании", "Я часто нервничаю в ожидании", "c"],
+            ["Я редко чувствую нетерпение", "Я иногда чувствую нетерпение", "Я часто чувствую нетерпение", "c"],
+            ["Я не склонен к раздражительности", "Я иногда раздражителен", "Я часто раздражителен", "c"],
+            ["Я расслаблен", "Я иногда напряжён", "Я всегда напряжён", "c"],
+            ["Я не чувствую давления", "Я иногда чувствую давление", "Я часто чувствую давление", "c"]
+        ]
+    };
+    for (var fi = 0; fi < F.length; fi++) {
+        var f = F[fi];
+        var t = templates[f];
+        for (var ti = 0; ti < t.length; ti++) {
+            var row = t[ti];
+            ITEMS.push({ f: f, a: row[0], b: row[1], c: row[2], key: row[3] });
+        }
+    }
+    var base = ITEMS.slice();
+    while (ITEMS.length < 185) {
+        var src = base[ITEMS.length % base.length];
+        ITEMS.push({ f: src.f, a: src.a, b: src.b, c: src.c, key: src.key });
+    }
+})();
+
+/* ============================================================
+   ДЕМОГРАФИЯ
+============================================================ */
+var demographics = {
+    zodiac: "",
+    gender: "",
+    age: null,
+    education: ""
+};
+
+function loadDemographics() {
+    try {
+        var raw = localStorage.getItem("psy16PFdemo");
+        if (!raw) { return; }
+        var d = JSON.parse(raw);
+        if (d) {
+            demographics.zodiac = d.zodiac || "";
+            demographics.gender = d.gender || "";
+            demographics.age = d.age || null;
+            demographics.education = d.education || "";
+            $("demoZodiac").value = demographics.zodiac;
+            $("demoEducation").value = demographics.education;
+            if (demographics.age) { $("demoAge").value = demographics.age; }
+            var gOpts = $("demoGender").querySelectorAll(".demo-opt");
+            for (var i = 0; i < gOpts.length; i++) {
+                if (gOpts[i].dataset.val === demographics.gender) {
+                    gOpts[i].classList.add("selected");
+                }
+            }
+        }
+    } catch (e) {}
+}
+
+function saveDemographics() {
+    try {
+        demographics.zodiac = $("demoZodiac").value || "";
+        demographics.education = $("demoEducation").value || "";
+        var ageVal = parseInt($("demoAge").value, 10);
+        demographics.age = (ageVal && ageVal >= 14 && ageVal <= 99) ? ageVal : null;
+        localStorage.setItem("psy16PFdemo", JSON.stringify(demographics));
+    } catch (e) {}
+}
+
+function setupDemographics() {
+    var gOpts = $("demoGender").querySelectorAll(".demo-opt");
+    for (var i = 0; i < gOpts.length; i++) {
+        (function (btn) {
+            btn.addEventListener("click", function () {
+                var wasSelected = btn.classList.contains("selected");
+                var all = $("demoGender").querySelectorAll(".demo-opt");
+                for (var j = 0; j < all.length; j++) { all[j].classList.remove("selected"); }
+                if (!wasSelected) {
+                    btn.classList.add("selected");
+                    demographics.gender = btn.dataset.val;
+                } else {
+                    demographics.gender = "";
+                }
+                saveDemographics();
+            });
+        })(gOpts[i]);
+    }
+    $("demoZodiac").addEventListener("change", saveDemographics);
+    $("demoEducation").addEventListener("change", saveDemographics);
+    $("demoAge").addEventListener("change", saveDemographics);
+    $("demoAge").addEventListener("input", saveDemographics);
+    loadDemographics();
+}
+
+function startTest() {
+    saveDemographics();
+    $("demographicsScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function skipDemographics() {
+    $("demographicsScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================
+   СОСТОЯНИЕ
+============================================================ */
+var answers = new Array(ITEMS.length).fill(null);
+var currentQ = 0;
+var STORAGE_KEY = "psy16PFv1";
+var lastData = null;
+var radarHitboxes = [];
+
+function $(id) { return document.getElementById(id); }
+function esc(t) {
+    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+/* ============================================================
+   ТЕСТ
+============================================================ */
+function renderQuestion() {
+    var it = ITEMS[currentQ];
+    var total = ITEMS.length;
+    $("qNumber").textContent = "УТВЕРЖДЕНИЕ " + (currentQ + 1);
+    $("progressText").textContent = "Утверждение " + (currentQ + 1) + " из " + total;
+    var percent = Math.round((currentQ + 1) / total * 100);
+    $("progressPercent").textContent = percent + "%";
+    $("progressBar").style.width = percent + "%";
+    $("qText").textContent = "Выберите вариант, который лучше всего описывает вас";
+
+    var container = $("scale");
+    container.innerHTML = "";
+
+    var opts = [
+        { key: "a", text: it.a },
+        { key: "b", text: it.b },
+        { key: "c", text: it.c }
+    ];
+
+    for (var i = 0; i < opts.length; i++) {
+        (function (o) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "scale-option";
+            if (answers[currentQ] === o.key) { btn.classList.add("selected"); }
+            btn.innerHTML = '<span class="scale-label">' + esc(o.text) + '</span>';
+            btn.addEventListener("click", function () {
+                answers[currentQ] = o.key;
+                save();
+                renderQuestion();
+            });
+            container.appendChild(btn);
+        })(opts[i]);
+    }
+
+    var backBtn = $("backBtn");
+    var nextBtn = $("nextBtn");
+    backBtn.disabled = currentQ === 0;
+    nextBtn.disabled = answers[currentQ] === null;
+
+    if (currentQ === total - 1) {
+        nextBtn.innerHTML = "Показать результат";
+        nextBtn.classList.remove("btn-primary");
+        nextBtn.classList.add("btn-success");
+    } else {
+        nextBtn.innerHTML = "Далее →";
+        nextBtn.classList.remove("btn-success");
+        nextBtn.classList.add("btn-primary");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function prevQuestion() { if (currentQ > 0) { currentQ--; renderQuestion(); } }
+function nextQuestion() {
+    if (answers[currentQ] === null) { return; }
+    if (currentQ < ITEMS.length - 1) { currentQ++; renderQuestion(); }
+    else { showResults(); }
+}
+
+/* ============================================================
+   ПОДСЧЁТ
+============================================================ */
+function calculateScores() {
+    var scores = {};
+    var counts = {};
+    var F = Object.keys(FACTORS);
+    for (var i = 0; i < F.length; i++) { scores[F[i]] = 0; counts[F[i]] = 0; }
+
+    for (var j = 0; j < ITEMS.length; j++) {
+        var it = ITEMS[j];
+        var ans = answers[j];
+        if (ans === null) { continue; }
+        counts[it.f]++;
+        if (it.f === "B") {
+            if (ans === it.key) { scores[it.f] += 1; }
+        } else {
+            if (ans === it.key) { scores[it.f] += 2; }
+            else if (ans === "b") { scores[it.f] += 1; }
+        }
+    }
+
+    var maxScores = {};
+    for (var k = 0; k < F.length; k++) {
+        var f = F[k];
+        if (f === "B") { maxScores[f] = counts[f]; }
+        else { maxScores[f] = counts[f] * 2; }
+    }
+
+    return { scores: scores, maxScores: maxScores, counts: counts };
+}
+
+function scoresToData(res) {
+    var F = Object.keys(FACTORS);
+    var data = {};
+    for (var i = 0; i < F.length; i++) {
+        var f = F[i];
+        var s = res.scores[f] || 0;
+        var m = res.maxScores[f] || 1;
+        var percent = Math.round(s / m * 100);
+        data[f] = { score: s, max: m, percent: percent, count: res.counts[f] || 0 };
+    }
+    return data;
+}
+
+/* ============================================================
+   РЕЗУЛЬТАТЫ
+============================================================ */
+function showResults() {
+    var res = calculateScores();
+    var data = scoresToData(res);
+    lastData = data;
+
+    /* Сводка демографии */
+    var summary = $("demoSummary");
+    if (summary) {
+        var lines = [];
+        lines.push("🎂 Возраст: <strong style='color:var(--text)'>" + (demographics.age || "—") + "</strong>");
+        lines.push("⚧ Пол: <strong style='color:var(--text)'>" + (demographics.gender || "—") + "</strong>");
+        lines.push("♈ Знак зодиака: <strong style='color:var(--text)'>" + (demographics.zodiac || "—") + "</strong>");
+        lines.push("🎓 Образование: <strong style='color:var(--text)'>" + (demographics.education || "—") + "</strong>");
+        summary.innerHTML = lines.join("<br>");
+    }
+
+    $("testScreen").classList.add("hidden");
+    $("resultScreen").classList.remove("hidden");
+
+    var ordered = [];
+    var F = Object.keys(FACTORS);
+    for (var i = 0; i < F.length; i++) {
+        ordered.push({ code: F[i], data: data[F[i]], meta: FACTORS[F[i]] });
+    }
+    ordered.sort(function (a, b) { return b.data.percent - a.data.percent; });
+
+    drawRadar(data);
+    renderTypesList(ordered);
+    renderInterpretation(ordered);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================
+   РАДАР
+============================================================ */
+function drawRadar(data) {
+    var canvas = $("radar");
+    if (!canvas) { return; }
+    var ctx = canvas.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    var parentW = canvas.parentElement.clientWidth || 620;
+    var size = Math.max(320, Math.min(parentW || 620, 620));
+
+    canvas.style.width = size + "px";
+    canvas.style.height = size + "px";
+    canvas.width = Math.round(size * dpr);
+    canvas.height = Math.round(size * dpr);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, size, size);
+    radarHitboxes = [];
+
+    var isSmall = size < 420;
+    var cx = size / 2, cy = size / 2;
+    var radius = Math.min(size, size) * (isSmall ? 0.28 : 0.30);
+    var labelRadius = radius + (isSmall ? 48 : 62);
+
+    var labelFont = isSmall ? 8 : 10;
+    var iconFont = isSmall ? 11 : 13;
+    var maxLabelW = isSmall ? 58 : 72;
+    var lineHeight = labelFont + 1;
+
+    var order = ["A","B","C","E","F","G","H","I","L","M","N","O","Q1","Q2","Q3","Q4"];
+    var count = order.length;
+    var angleStep = (Math.PI * 2) / count;
+
+    for (var lvl = 1; lvl <= 5; lvl++) {
+        var r = radius * lvl / 5;
+        ctx.beginPath();
+        for (var i = 0; i < count; i++) {
+            var ang = -Math.PI / 2 + i * angleStep;
+            var x = cx + Math.cos(ang) * r;
+            var y = cy + Math.sin(ang) * r;
+            if (i === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+        }
+        ctx.closePath();
+        ctx.strokeStyle = lvl === 5 ? "rgba(255,255,255,.22)" : "rgba(255,255,255,.07)";
+        ctx.lineWidth = lvl === 5 ? 1.5 : 1;
+        ctx.stroke();
+    }
+
+    for (var k = 0; k < count; k++) {
+        var a = -Math.PI / 2 + k * angleStep;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius);
+        ctx.strokeStyle = "rgba(255,255,255,.07)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    var points = [];
+    for (var p = 0; p < count; p++) {
+        var code = order[p];
+        var d = data[code] || { percent: 0 };
+        var norm = d.percent / 100;
+        var ang2 = -Math.PI / 2 + p * angleStep;
+        var r2 = radius * norm;
+        points.push({
+            x: cx + Math.cos(ang2) * r2,
+            y: cy + Math.sin(ang2) * r2,
+            percent: d.percent,
+            color: FACTORS[code].color,
+            code: code,
+            angle: ang2,
+            norm: norm
+        });
+    }
+
+    ctx.save();
+    ctx.shadowColor = "rgba(124,140,255,.40)";
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    for (var s = 0; s < points.length; s++) {
+        if (s === 0) { ctx.moveTo(points[s].x, points[s].y); } else { ctx.lineTo(points[s].x, points[s].y); }
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(124,140,255,.15)";
+    ctx.fill();
+    ctx.restore();
+
+    var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    fg.addColorStop(0, "rgba(156,124,255,.35)");
+    fg.addColorStop(1, "rgba(124,140,255,.10)");
+    ctx.beginPath();
+    for (var s2 = 0; s2 < points.length; s2++) {
+        if (s2 === 0) { ctx.moveTo(points[s2].x, points[s2].y); } else { ctx.lineTo(points[s2].x, points[s2].y); }
+    }
+    ctx.closePath();
+    ctx.fillStyle = fg;
+    ctx.fill();
+    ctx.strokeStyle = "#9ca7ff";
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    for (var t = 0; t < points.length; t++) {
+        var pt = points[t];
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        radarHitboxes.push({ x: pt.x - 12, y: pt.y - 12, w: 24, h: 24, code: pt.code });
+    }
+
+    for (var lb = 0; lb < count; lb++) {
+        var meta = FACTORS[order[lb]];
+        var angLb = -Math.PI / 2 + lb * angleStep;
+        var lxLb = cx + Math.cos(angLb) * labelRadius;
+        var lyLb = cy + Math.sin(angLb) * labelRadius;
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "700 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
+
+        var words = meta.name.split(" ");
+        var lines = [];
+        var cur = "";
+        for (var wi = 0; wi < words.length; wi++) {
+            var test = cur ? cur + " " + words[wi] : words[wi];
+            if (ctx.measureText(test).width > maxLabelW) {
+                if (cur) { lines.push(cur); }
+                cur = words[wi];
+            } else { cur = test; }
+        }
+        if (cur) { lines.push(cur); }
+
+        var totalH = lines.length * lineHeight;
+        var iconY = lyLb - totalH / 2 - lineHeight - 2;
+        if (iconY < 10) { iconY = 10; }
+        ctx.font = iconFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
+        ctx.fillText(meta.icon, lxLb, iconY);
+
+        ctx.font = "700 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
+        for (var li = 0; li < lines.length; li++) {
+            ctx.fillText(lines[li], lxLb, lyLb + li * lineHeight - (totalH - lineHeight) / 2 + 2);
+        }
+    }
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+}
+
+function setupRadarClick() {
+    var canvas = $("radar");
+    if (!canvas) { return; }
+    canvas.addEventListener("click", function (e) {
+        if (!radarHitboxes.length) { return; }
+        var rect = canvas.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+        for (var i = 0; i < radarHitboxes.length; i++) {
+            var h = radarHitboxes[i];
+            if (clickX >= h.x && clickX <= h.x + h.w && clickY >= h.y && clickY <= h.y + h.h) {
+                showPopup(h.code);
+                return;
+            }
+        }
+    });
+}
+
+function showPopup(code) {
+    var meta = FACTORS[code];
+    var d = lastData && lastData[code] ? lastData[code] : { percent: 0, score: 0, max: 1 };
+    $("popupIcon").textContent = meta.icon;
+    $("popupTitle").textContent = "Фактор " + code + ": " + meta.name;
+    $("popupTitle").style.color = meta.color;
+    $("popupScore").innerHTML = '<strong style="color:' + meta.color + '">' + d.percent + '%</strong> · ' + d.score + ' / ' + d.max + ' баллов';
+    $("popupDesc").textContent = meta.desc + " Высокий полюс: " + meta.high + ". Низкий полюс: " + meta.low + ".";
+    $("factorPopup").classList.add("open");
+}
+function closePopup() { $("factorPopup").classList.remove("open"); }
+
+function renderTypesList(ordered) {
+    var container = $("typesList");
+    container.innerHTML = "";
+    for (var i = 0; i < ordered.length; i++) {
+        var item = ordered[i];
+        var div = document.createElement("div");
+        div.className = "type-item";
+        div.style.borderLeftColor = item.meta.color;
+        div.innerHTML =
+            '<div class="type-head">' +
+                '<div class="type-name"><span style="font-size:18px">' + item.meta.icon + '</span><span>' + esc(item.meta.name) + '</span></div>' +
+                '<div class="type-score">' +
+                    '<span class="type-score-main" style="color:' + item.meta.color + '">' + item.data.percent + '%</span>' +
+                    '<span class="type-score-sub">' + item.data.score + ' / ' + item.data.max + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="type-bar"><div class="type-bar-fill" style="width:' + item.data.percent + '%;background:' + item.meta.color + '"></div></div>' +
+            '<div class="type-desc">' + esc(item.meta.desc) + '</div>';
+        (function (code) {
+            div.addEventListener("click", function () { showPopup(code); });
+        })(item.code);
+        container.appendChild(div);
+    }
+}
+
+function renderInterpretation(ordered) {
+    var container = $("interpretation");
+    var html = "";
+
+    html += '<p>Ниже — краткая интерпретация по <strong>наиболее и наименее выраженным факторам</strong>. Полный профиль — в списке выше и на диаграмме.</p>';
+
+    html += '<div class="block"><strong>Наиболее выражены:</strong><br>';
+    for (var i = 0; i < 3; i++) {
+        var f = ordered[i];
+        html += f.meta.icon + ' <strong>' + esc(f.meta.name) + '</strong> — ' + f.data.percent + '%<br>';
+    }
+    html += '</div>';
+
+    html += '<div class="block"><strong>Наименее выражены:</strong><br>';
+    for (var j = ordered.length - 1; j >= ordered.length - 3; j--) {
+        var f2 = ordered[j];
+        html += f2.meta.icon + ' <strong>' + esc(f2.meta.name) + '</strong> — ' + f2.data.percent + '%<br>';
+    }
+    html += '</div>';
+
+    var avg = 0;
+    for (var k = 0; k < ordered.length; k++) { avg += ordered[k].data.percent; }
+    avg = Math.round(avg / ordered.length);
+
+    html += '<p>Средний уровень выраженности по всем 16 факторам — <strong>' + avg + '%</strong>. ';
+    if (avg >= 65) {
+        html += 'Это довольно высокий показатель: большинство черт выражены ярко, профиль личности чётко очерчен.';
+    } else if (avg >= 45) {
+        html += 'Это умеренный показатель: черты выражены в средней степени, профиль сбалансирован.';
+    } else {
+        html += 'Это невысокий показатель: большинство черт выражены слабо, профиль размытый.';
+    }
+    html += '</p>';
+
+    html += '<p><strong>Обратите внимание:</strong> интерпретация каждого фактора в отдельности — в списке выше и во всплывающем окне при нажатии на вершину диаграммы.</p>';
+
+    container.innerHTML = html;
+}
+
+function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ })); } catch (e) {}
+}
+function load() {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) { return; }
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.answers)) {
+            answers = data.answers;
+            while (answers.length < ITEMS.length) { answers.push(null); }
+            if (typeof data.currentQ === "number" && data.currentQ >= 0 && data.currentQ < ITEMS.length) {
+                currentQ = data.currentQ;
+            }
+        }
+    } catch (e) {}
+}
+
+function backToTest() {
+    $("resultScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    renderQuestion();
+}
+function resetAll() {
+    var ok = window.confirm("Удалить все ответы и начать заново?");
+    if (!ok) { return; }
+    answers = new Array(ITEMS.length).fill(null);
+    currentQ = 0;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    $("resultScreen").classList.add("hidden");
+    $("demographicsScreen").classList.remove("hidden");
+    $("testScreen").classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function exportResults() {
+    var res = calculateScores();
+    var data = scoresToData(res);
+    var out = {
+        title: "16-факторный тест Кеттелла",
+        date: new Date().toLocaleString("ru-RU"),
+        demographics: demographics,
+        answers: answers,
+        scores: res.scores,
+        maxScores: res.maxScores,
+        percents: {}
+    };
+    var F = Object.keys(data);
+    for (var i = 0; i < F.length; i++) {
+        out.percents[F[i]] = data[F[i]].percent;
+    }
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "cattell-16pf.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+load();
+setupDemographics();
+setupRadarClick();
+
+var demoFilled = demographics.zodiac || demographics.gender || demographics.education || demographics.age;
+if (demoFilled) {
+    $("demographicsScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    renderQuestion();
+} else {
+    $("demographicsScreen").classList.remove("hidden");
+    $("testScreen").classList.add("hidden");
+}
+
+document.getElementById("factorPopup").addEventListener("click", function (e) {
+    if (e.target === this) { closePopup(); }
+});
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closePopup(); }
+});
+
+var resizeTimer = null;
+window.addEventListener("resize", function () {
+    if (resizeTimer) { clearTimeout(resizeTimer); }
+    resizeTimer = setTimeout(function () {
+        if (!$("resultScreen").classList.contains("hidden") && lastData) {
+            drawRadar(lastData);
+        }
+    }, 200);
+});
+</script>
+</body>
+</html>
