@@ -38,27 +38,23 @@
             background:
                 radial-gradient(
                     circle at 15% 15%,
-                    rgba(80, 120, 255, 0.18),
+                    rgba(60, 120, 255, 0.20),
                     transparent 30%
                 ),
                 radial-gradient(
                     circle at 85% 25%,
-                    rgba(170, 70, 255, 0.13),
+                    rgba(180, 60, 255, 0.16),
                     transparent 30%
                 ),
                 radial-gradient(
                     circle at 50% 90%,
-                    rgba(0, 220, 180, 0.08),
+                    rgba(0, 230, 190, 0.09),
                     transparent 35%
                 ),
                 #05070d;
 
             overflow-x: hidden;
         }
-
-        /* =========================================
-           BACKGROUND
-        ========================================= */
 
         body::before {
             content: "";
@@ -133,11 +129,17 @@
 
         @keyframes logoPulse {
             0%, 100% {
-                filter: drop-shadow(0 0 8px rgba(120,160,255,0.15));
+                filter:
+                    drop-shadow(
+                        0 0 8px rgba(120,160,255,0.15)
+                    );
             }
 
             50% {
-                filter: drop-shadow(0 0 22px rgba(170,110,255,0.3));
+                filter:
+                    drop-shadow(
+                        0 0 22px rgba(170,110,255,0.35)
+                    );
             }
         }
 
@@ -181,7 +183,7 @@
         }
 
         /* =========================================
-           CARDS GRID
+           GRID
         ========================================= */
 
         .cards {
@@ -196,7 +198,7 @@
         }
 
         /* =========================================
-           SPHERES
+           SPHERE
         ========================================= */
 
         .card {
@@ -220,33 +222,36 @@
 
             overflow: hidden;
 
+            cursor: pointer;
+
             background:
                 radial-gradient(
                     circle at 30% 25%,
-                    rgba(255,255,255,0.20),
+                    rgba(255,255,255,0.22),
                     transparent 15%
                 ),
                 radial-gradient(
                     circle at 35% 35%,
-                    rgba(110,150,255,0.20),
+                    rgba(80,150,255,0.25),
                     transparent 50%
                 ),
                 radial-gradient(
                     circle at 70% 70%,
-                    rgba(130,70,255,0.20),
+                    rgba(145,65,255,0.23),
                     transparent 55%
                 ),
                 linear-gradient(
                     145deg,
-                    rgba(35,43,70,0.95),
-                    rgba(10,14,27,0.98)
+                    rgba(35,43,70,0.96),
+                    rgba(8,12,25,0.99)
                 );
 
-            border: 1px solid rgba(255,255,255,0.13);
+            border:
+                1px solid rgba(140,170,255,0.18);
 
             box-shadow:
                 inset -15px -20px 35px rgba(0,0,0,0.55),
-                inset 10px 10px 25px rgba(255,255,255,0.05),
+                inset 10px 10px 25px rgba(255,255,255,0.06),
                 0 15px 35px rgba(0,0,0,0.35);
 
             transition:
@@ -255,7 +260,44 @@
                 border-color 0.45s ease;
         }
 
-        /* Световой блик */
+        /* =========================================
+           NEON GLOW
+        ========================================= */
+
+        .card:hover,
+        .card.active {
+            transform:
+                translateY(-9px)
+                scale(1.045);
+
+            border-color:
+                rgba(130,190,255,0.75);
+
+            box-shadow:
+                inset -15px -20px 35px rgba(0,0,0,0.45),
+                inset 10px 10px 25px rgba(255,255,255,0.10),
+
+                0 0 8px rgba(80,170,255,0.55),
+                0 0 20px rgba(100,120,255,0.38),
+                0 0 42px rgba(160,80,255,0.28),
+                0 20px 55px rgba(40,80,255,0.22);
+        }
+
+        /* дополнительное неоновое кольцо */
+
+        .card.active::after,
+        .card:hover::after {
+            border-color:
+                rgba(120,190,255,0.35);
+
+            box-shadow:
+                0 0 10px rgba(100,180,255,0.25),
+                inset 0 0 12px rgba(150,100,255,0.12);
+        }
+
+        /* =========================================
+           LIGHT REFLECTION
+        ========================================= */
 
         .card::before {
             content: "";
@@ -273,43 +315,36 @@
             background:
                 radial-gradient(
                     circle,
-                    rgba(255,255,255,0.18),
+                    rgba(255,255,255,0.22),
                     transparent 65%
                 );
 
             pointer-events: none;
         }
 
-        /* Орбитальная линия */
+        /* =========================================
+           ORBIT
+        ========================================= */
 
         .card::after {
             content: "";
 
             position: absolute;
+
             inset: 8px;
 
             border-radius: 50%;
 
-            border: 1px solid rgba(130,170,255,0.08);
+            border:
+                1px solid rgba(130,170,255,0.08);
 
             transform: rotate(-25deg);
 
             pointer-events: none;
-        }
 
-        .card:hover {
-            transform:
-                translateY(-9px)
-                scale(1.045);
-
-            border-color:
-                rgba(150,180,255,0.38);
-
-            box-shadow:
-                inset -15px -20px 35px rgba(0,0,0,0.5),
-                inset 10px 10px 25px rgba(255,255,255,0.08),
-                0 20px 55px rgba(70,110,255,0.22),
-                0 0 35px rgba(130,90,255,0.12);
+            transition:
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
         }
 
         /* =========================================
@@ -327,9 +362,11 @@
 
             border-radius: 50%;
 
-            border: 1px solid rgba(150,180,255,0.05);
+            border:
+                1px solid rgba(150,180,255,0.06);
 
-            animation: spiralRotate 24s linear infinite;
+            animation:
+                spiralRotate 24s linear infinite;
 
             pointer-events: none;
         }
@@ -342,7 +379,8 @@
 
             border-radius: 50%;
 
-            border: 1px solid rgba(170,130,255,0.06);
+            border:
+                1px solid rgba(170,130,255,0.06);
         }
 
         .spiral::before {
@@ -354,6 +392,7 @@
         }
 
         @keyframes spiralRotate {
+
             from {
                 transform: rotate(0deg);
             }
@@ -361,6 +400,7 @@
             to {
                 transform: rotate(360deg);
             }
+
         }
 
         /* =========================================
@@ -369,7 +409,7 @@
 
         .icon {
             position: relative;
-            z-index: 2;
+            z-index: 3;
 
             display: flex;
             align-items: center;
@@ -386,11 +426,25 @@
                 rgba(255,255,255,0.055);
 
             border:
-                1px solid rgba(255,255,255,0.12);
+                1px solid rgba(255,255,255,0.14);
 
             box-shadow:
                 inset 0 0 15px rgba(255,255,255,0.025),
                 0 0 20px rgba(90,130,255,0.08);
+
+            transition:
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+        }
+
+        .card:hover .icon,
+        .card.active .icon {
+            border-color:
+                rgba(150,210,255,0.55);
+
+            box-shadow:
+                0 0 10px rgba(80,180,255,0.35),
+                0 0 22px rgba(160,90,255,0.22);
         }
 
         .icon svg {
@@ -399,7 +453,8 @@
 
             fill: none;
 
-            stroke: rgba(220,230,255,0.88);
+            stroke:
+                rgba(220,230,255,0.9);
 
             stroke-width: 1.5;
 
@@ -413,7 +468,7 @@
 
         .card-title {
             position: relative;
-            z-index: 2;
+            z-index: 3;
 
             max-width: 145px;
 
@@ -424,12 +479,13 @@
 
             font-weight: 700;
 
-            color: rgba(255,255,255,0.92);
+            color:
+                rgba(255,255,255,0.94);
         }
 
         .card-description {
             position: relative;
-            z-index: 2;
+            z-index: 3;
 
             max-width: 145px;
 
@@ -442,7 +498,79 @@
 
             font-weight: 500;
 
-            color: rgba(255,255,255,0.43);
+            color:
+                rgba(255,255,255,0.43);
+
+            transition:
+                color 0.3s ease;
+        }
+
+        .card:hover .card-description,
+        .card.active .card-description {
+            color:
+                rgba(210,230,255,0.75);
+        }
+
+        /* =========================================
+           POPUP DESCRIPTION
+        ========================================= */
+
+        .popup {
+            position: absolute;
+
+            left: 50%;
+            bottom: 24px;
+
+            z-index: 10;
+
+            width: 75%;
+
+            padding: 9px 12px;
+
+            transform:
+                translate(-50%, 10px)
+                scale(0.92);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            text-align: center;
+
+            font-size: 9px;
+            line-height: 1.4;
+            font-weight: 600;
+
+            color:
+                rgba(235,245,255,0.95);
+
+            background:
+                rgba(5,10,25,0.88);
+
+            border:
+                1px solid rgba(120,190,255,0.35);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 0 10px rgba(80,170,255,0.25),
+                0 0 22px rgba(140,80,255,0.16);
+
+            backdrop-filter:
+                blur(8px);
+
+            transition:
+                opacity 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .card:hover .popup,
+        .card.active .popup {
+            opacity: 1;
+
+            transform:
+                translate(-50%, 0)
+                scale(1);
         }
 
         /* =========================================
@@ -461,9 +589,11 @@
             border-top:
                 1px solid rgba(255,255,255,0.06);
 
-            color: rgba(255,255,255,0.25);
+            color:
+                rgba(255,255,255,0.25);
 
             font-size: 9px;
+
             letter-spacing: 2px;
         }
 
@@ -501,14 +631,15 @@
             }
 
             .cards {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(2, 1fr);
+
                 gap: 12px;
             }
 
             /*
-             * Если в разделе 3 карточки,
-             * последняя автоматически становится
-             * по центру нижнего ряда.
+             * Если в разделе 3 сферы,
+             * последняя становится по центру.
              */
 
             .cards .card:last-child:nth-child(odd) {
@@ -524,6 +655,7 @@
             .icon {
                 width: 48px;
                 height: 48px;
+
                 margin-bottom: 7px;
             }
 
@@ -540,6 +672,23 @@
             .card-description {
                 max-width: 125px;
                 font-size: 8px;
+            }
+
+            .popup {
+                bottom: 18px;
+
+                width: 78%;
+
+                padding: 8px 9px;
+
+                font-size: 8px;
+
+                border-radius: 12px;
+            }
+
+            .card.active {
+                transform:
+                    scale(1.035);
             }
 
             footer {
@@ -587,10 +736,14 @@
                 font-size: 7px;
                 max-width: 112px;
             }
+
+            .popup {
+                font-size: 7px;
+            }
         }
 
         /* =========================================
-           REDUCE MOTION
+           REDUCED MOTION
         ========================================= */
 
         @media (prefers-reduced-motion: reduce) {
@@ -610,6 +763,7 @@
 
     </style>
 </head>
+
 
 <body>
 
@@ -642,9 +796,11 @@
 
         <div class="cards">
 
-            <!-- Кеттелл -->
+            <!-- КЕТТЕЛЛ -->
 
-            <a href="./cattell/" class="card">
+            <a href="./cattell/"
+               class="card"
+               data-description="Исследование структуры личности по 16 личностным факторам.">
 
                 <div class="spiral"></div>
 
@@ -680,12 +836,16 @@
                     личностный профиль
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
 
             <!-- ЛЮШЕР -->
 
-            <a href="./luscher/" class="card">
+            <a href="./luscher/"
+               class="card"
+               data-description="Исследование предпочтений цвета и связанных с ними психологических состояний.">
 
                 <div class="spiral"></div>
 
@@ -716,12 +876,16 @@
                     цветовой выбор
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
 
             <!-- ГЕРЧИКОВ -->
 
-            <a href="./gerchikov/" class="card">
+            <a href="./gerchikov/"
+               class="card"
+               data-description="Исследование структуры трудовой мотивации и ведущих мотивационных типов.">
 
                 <div class="spiral"></div>
 
@@ -769,6 +933,8 @@
                     структура трудовой мотивации
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
         </div>
@@ -788,9 +954,11 @@
 
         <div class="cards">
 
-            <!-- КОЛЕСО -->
+            <!-- КОЛЕСО БАЛАНСА -->
 
-            <a href="./wheel/" class="card">
+            <a href="./wheel/"
+               class="card"
+               data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития.">
 
                 <div class="spiral"></div>
 
@@ -828,12 +996,16 @@
                     оценка жизненных сфер
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
 
-            <!-- НАВЫКИ -->
+            <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
 
-            <a href="./skills/" class="card">
+            <a href="./skills/"
+               class="card"
+               data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.">
 
                 <div class="spiral"></div>
 
@@ -858,19 +1030,23 @@
                 </div>
 
                 <div class="card-title">
-                    Карта навыков
+                    Рефлексия навыков
                 </div>
 
                 <div class="card-description">
                     анализ компетенций
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
 
             <!-- ПРОФОРИЕНТАЦИЯ -->
 
-            <a href="./career/" class="card">
+            <a href="./career/"
+               class="card"
+               data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений.">
 
                 <div class="spiral"></div>
 
@@ -906,6 +1082,8 @@
                     профессиональные направления
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
         </div>
@@ -927,7 +1105,9 @@
 
             <!-- ВАКАНСИИ -->
 
-            <a href="./work/vacancies/" class="card">
+            <a href="./work/vacancies/"
+               class="card"
+               data-description="Поиск и просмотр подходящих предложений о работе.">
 
                 <div class="spiral"></div>
 
@@ -961,12 +1141,16 @@
                     поиск работы
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
 
             <!-- РЕЗЮМЕ -->
 
-            <a href="./work/resume/" class="card">
+            <a href="./work/resume/"
+               class="card"
+               data-description="Создание и ведение собственного профессионального профиля.">
 
                 <div class="spiral"></div>
 
@@ -1006,6 +1190,8 @@
                     профессиональный профиль
                 </div>
 
+                <div class="popup"></div>
+
             </a>
 
         </div>
@@ -1021,6 +1207,128 @@
         PSY-TOOLS · исследовательские и развивающие инструменты
     </footer>
 
+
+    <!-- =========================================
+         INTERACTION
+    ========================================= -->
+
+    <script>
+
+        /*
+         * Десктоп:
+         * описание появляется при наведении курсора.
+         *
+         * Смартфон:
+         * первое касание показывает описание,
+         * второе касание открывает раздел.
+         */
+
+        const cards = document.querySelectorAll(".card");
+
+        const isTouchDevice =
+            window.matchMedia("(hover: none)").matches ||
+            "ontouchstart" in window;
+
+        cards.forEach(card => {
+
+            const popup =
+                card.querySelector(".popup");
+
+            const description =
+                card.dataset.description;
+
+            popup.textContent = description;
+
+
+            /* ==============================
+               DESKTOP
+            ============================== */
+
+            if (!isTouchDevice) {
+
+                card.addEventListener("mouseenter", () => {
+
+                    card.classList.add("active");
+
+                });
+
+                card.addEventListener("mouseleave", () => {
+
+                    card.classList.remove("active");
+
+                });
+
+            }
+
+
+            /* ==============================
+               MOBILE
+            ============================== */
+
+            else {
+
+                card.addEventListener("click", function(event) {
+
+                    if (!card.classList.contains("active")) {
+
+                        /*
+                         * Первое касание:
+                         * только показываем подсказку.
+                         */
+
+                        event.preventDefault();
+
+                        cards.forEach(otherCard => {
+
+                            if (otherCard !== card) {
+                                otherCard.classList.remove("active");
+                            }
+
+                        });
+
+                        card.classList.add("active");
+
+                    }
+
+                    else {
+
+                        /*
+                         * Второе касание:
+                         * обычный переход по ссылке.
+                         */
+
+                        card.classList.remove("active");
+
+                    }
+
+                });
+
+            }
+
+        });
+
+
+        /* =====================================
+           TAP OUTSIDE — CLOSE POPUP
+        ===================================== */
+
+        if (isTouchDevice) {
+
+            document.addEventListener("click", function(event) {
+
+                if (!event.target.closest(".card")) {
+
+                    cards.forEach(card => {
+                        card.classList.remove("active");
+                    });
+
+                }
+
+            });
+
+        }
+
+    </script>
 
 </body>
 </html>
