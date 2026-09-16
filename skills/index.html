@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Карта навыков</title>
+<title>Рефлексия навыков</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg:#0b0d12;--card:#151922;--card2:#1b202b;--border:rgba(255,255,255,.09);--text:#f3f5f7;--muted:#9299a6;--accent:#7c8cff;--accent2:#9c7cff;--good:#55d68a;--warning:#ffc857;--danger:#ff6b6b;--partner:#6ea8fe}
@@ -209,7 +209,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 <div class="app">
 <header>
 <div class="logo">🧭</div>
-<h1>Карта навыков</h1>
+<h1>Рефлексия навыков</h1>
 <div class="subtitle">Оцените свои навыки и получите визуальную карту компетенций</div>
 </header>
 
@@ -296,7 +296,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 
 <div id="resultsScreen" class="hidden">
 <div class="card result-header">
-<div class="section-title">Ваша карта навыков</div>
+<div class="section-title">Ваша рефлексия навыков</div>
 <div class="overall-gauge"><div class="overall-gauge-ring" id="overallGauge"><div class="overall-gauge-inner"><div class="overall-gauge-value" id="overallPercent">0%</div></div></div></div>
 <div class="result-caption">средний уровень <span class="result-caption-strong" id="overallAverage">0.0</span> из 5</div>
 </div>
@@ -346,7 +346,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 </div>
 </div>
 
-<footer>Карта навыков • персональная оценка компетенций</footer>
+<footer>Рефлексия навыков • персональная оценка компетенций</footer>
 </div>
 
 <div class="modal-overlay" id="programsModal">
@@ -1542,7 +1542,7 @@ function resetTest() {
 
 function exportResults() {
     var data = {
-        title: "Карта навыков",
+        title: "Рефлексия навыков",
         date: new Date().toLocaleString("ru-RU"),
         results: R,
         completed: Object.keys(C),
