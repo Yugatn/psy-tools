@@ -1,747 +1,590 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>PSY-TOOLS</title>
 
-<link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
->
-
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
->
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
->
-
-
 <style>
-
-/* =========================================================
-   ОСНОВА
-========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 * {
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+    margin: 0;
+    padding: 0;
 }
 
-html {
-    scroll-behavior: smooth;
+html,
+body {
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
-
-    margin: 0;
-
-    min-height: 100vh;
-
-    overflow-x: hidden;
-
+    font-family: "Manrope", sans-serif;
+    color: #e8faff;
     background:
-
-        radial-gradient(
-            circle at 50% 15%,
-            rgba(45, 180, 255, .10),
-            transparent 30%
-        ),
-
-        radial-gradient(
-            circle at 15% 80%,
-            rgba(120, 70, 255, .08),
-            transparent 28%
-        ),
-
-        radial-gradient(
-            circle at 90% 60%,
-            rgba(20, 220, 180, .05),
-            transparent 25%
-        ),
-
-        #02050b;
-
-    color: #eaf8ff;
-
-    font-family:
-        "Manrope",
-        sans-serif;
+        radial-gradient(circle at 50% 45%, rgba(0, 150, 255, .08), transparent 32%),
+        radial-gradient(circle at 15% 20%, rgba(0, 255, 180, .04), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(100, 0, 255, .05), transparent 30%),
+        #020509;
+    overflow-x: hidden;
 }
 
-
 /* =========================================================
-   ФОНОВАЯ СЕТКА
-========================================================= */
-
-body::before {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    pointer-events: none;
-
-    background-image:
-
-        linear-gradient(
-            rgba(70,160,200,.028) 1px,
-            transparent 1px
-        ),
-
-        linear-gradient(
-            90deg,
-            rgba(70,160,200,.028) 1px,
-            transparent 1px
-        );
-
-    background-size: 55px 55px;
-
-    mask-image:
-        radial-gradient(
-            circle at center,
-            black 0%,
-            rgba(0,0,0,.7) 50%,
-            transparent 100%
-        );
-
-    z-index: 0;
-}
-
-
-/* =========================================================
-   НЕЙРОННАЯ СЕТЬ
+   NEURAL BACKGROUND
 ========================================================= */
 
 #neuralCanvas {
-
     position: fixed;
-
     inset: 0;
-
     width: 100%;
     height: 100%;
-
+    z-index: 0;
     pointer-events: none;
-
-    z-index: 1;
-
-    opacity: .95;
 }
 
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
+
+.grid-background {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(rgba(50, 150, 190, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(50, 150, 190, .035) 1px, transparent 1px);
+
+    background-size: 70px 70px;
+
+    mask-image: radial-gradient(
+        circle at center,
+        black 20%,
+        transparent 85%
+    );
+}
 
 /* =========================================================
-   ОСНОВНОЙ КОНТЕЙНЕР
+   MAIN
 ========================================================= */
 
 .main {
-
     position: relative;
+    z-index: 5;
 
-    z-index: 3;
-
-    width: min(1400px, 100%);
+    width: 100%;
+    max-width: 1500px;
 
     margin: 0 auto;
 
     padding:
-        42px 25px
+        clamp(35px, 6vw, 75px)
+        clamp(18px, 5vw, 70px)
         100px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-
 /* =========================================================
-   ЛОГО
+   LOGO
 ========================================================= */
 
 .logo {
-
     position: relative;
 
     text-align: center;
 
-    margin-bottom: 10px;
-
-    z-index: 5;
-}
-
-.logo h1 {
-
-    margin: 0;
-
-    font-size:
-        clamp(34px, 6vw, 64px);
-
+    font-size: clamp(32px, 5vw, 58px);
     font-weight: 800;
-
-    letter-spacing: .15em;
-
-    background:
-
-        linear-gradient(
-            90deg,
-            #72dcff,
-            #c58cff,
-            #66efff,
-            #a78bfa
-        );
-
-    -webkit-background-clip: text;
-
-    background-clip: text;
+    letter-spacing: .22em;
 
     color: transparent;
 
-    text-shadow:
-        0 0 35px rgba(60,210,255,.25);
+    background:
+        linear-gradient(
+            90deg,
+            #63f5ff,
+            #8cffff,
+            #56aaff,
+            #72ffd9
+        );
 
-    animation:
-        logoPulse 5s ease-in-out infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    filter:
+        drop-shadow(0 0 10px rgba(40, 220, 255, .4))
+        drop-shadow(0 0 30px rgba(0, 160, 255, .2));
+
+    animation: logoPulse 5s ease-in-out infinite;
 }
 
-.logo p {
+.logo::after {
+    content: "";
 
-    margin:
-        10px 0 0;
+    position: absolute;
 
-    color:
-        rgba(185,220,240,.5);
+    left: 50%;
+    bottom: -15px;
 
-    font-size:
-        11px;
+    width: 150px;
+    height: 1px;
 
-    letter-spacing:
-        .32em;
+    transform: translateX(-50%);
 
-    text-transform:
-        uppercase;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(80, 230, 255, .8),
+        transparent
+    );
+
+    box-shadow: 0 0 12px rgba(50, 220, 255, .6);
 }
 
 @keyframes logoPulse {
 
     0%,
     100% {
-        filter: brightness(1);
+        opacity: .82;
     }
 
     50% {
-        filter: brightness(1.3);
+        opacity: 1;
     }
 }
 
-
 /* =========================================================
-   РАЗДЕЛ
+   SECTION
 ========================================================= */
 
 .section {
-
-    position: relative;
-
-    margin-top: 68px;
+    width: 100%;
+    margin-top: clamp(70px, 8vw, 110px);
 }
 
 .section-title {
+    text-align: center;
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    margin:
-        0 0 38px;
-
-    font-size:
-        clamp(17px, 3vw, 24px);
-
+    font-size: clamp(18px, 2vw, 25px);
     font-weight: 700;
 
-    letter-spacing:
-        .07em;
+    letter-spacing: .12em;
 
-    text-align: center;
+    color: #d9faff;
+
+    margin-bottom: 45px;
+
+    text-shadow:
+        0 0 10px rgba(50, 210, 255, .4);
 }
 
-.section-title::before,
 .section-title::after {
-
     content: "";
 
-    width:
-        min(150px, 14vw);
+    display: block;
 
+    width: 180px;
     height: 1px;
 
-    margin:
-        0 18px;
+    margin: 14px auto 0;
 
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(70,210,255,.65)
-        );
-}
-
-.section-title::after {
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(170,100,255,.65),
+            rgba(55, 220, 255, .8),
             transparent
         );
+
+    box-shadow:
+        0 0 10px rgba(40, 220, 255, .5);
 }
 
-
 /* =========================================================
-   СЕТКА КАРТОЧЕК
+   CARDS GRID
 ========================================================= */
 
 .cards {
+    width: 100%;
 
     display: grid;
 
     grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(190px, 215px)
-        );
+        repeat(4, minmax(180px, 1fr));
 
-    justify-content: center;
+    justify-items: center;
+    align-items: center;
 
     gap:
-        78px 68px;
+        clamp(90px, 8vw, 140px)
+        clamp(35px, 5vw, 80px);
+
+    margin: 0 auto;
 }
 
-
 /* =========================================================
-   СФЕРА / НЕЙРОН
+   CARD
 ========================================================= */
 
 .card {
-
     position: relative;
 
     width: 215px;
-
     height: 215px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     text-decoration: none;
 
-    color: white;
-
     cursor: pointer;
 
     isolation: isolate;
-
-    overflow: visible;
-
-    z-index: 4;
 }
 
-
 /* =========================================================
-   ДЕНДРИТЫ
+   CYBERPUNK WATER RIPPLES
 ========================================================= */
 
-.dendrites {
-
+.ripples {
     position: absolute;
 
-    inset: -75px;
+    left: 50%;
+    top: 50%;
 
-    z-index: -5;
+    width: 100%;
+    height: 100%;
+
+    transform: translate(-50%, -50%);
 
     pointer-events: none;
+
+    z-index: -3;
+}
+
+.ripple {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 115%;
+    height: 115%;
+
+    transform: translate(-50%, -50%);
+
+    border: 1px solid rgba(62, 220, 255, .38);
+
+    border-radius: 48% 52% 51% 49%;
 
     opacity: .25;
 
-    background:
-
-        linear-gradient(
-            22deg,
-            transparent 47%,
-            rgba(65,210,255,.65) 48%,
-            transparent 49%
-        ),
-
-        linear-gradient(
-            -22deg,
-            transparent 47%,
-            rgba(150,100,255,.55) 48%,
-            transparent 49%
-        ),
-
-        linear-gradient(
-            70deg,
-            transparent 48%,
-            rgba(50,220,210,.45) 49%,
-            transparent 50%
-        ),
-
-        linear-gradient(
-            -70deg,
-            transparent 48%,
-            rgba(80,160,255,.45) 49%,
-            transparent 50%
-        );
-
-    filter:
-        drop-shadow(
-            0 0 8px
-            rgba(50,210,255,.55)
-        );
-
-    transition:
-        opacity .5s ease,
-        transform .7s ease;
-}
-
-.card:hover .dendrites,
-.card.active .dendrites {
-
-    opacity: .75;
-
-    transform:
-        scale(1.12);
-}
-
-
-/* =========================================================
-   TRON-ЛУЧИ
-   НЕ ВРАЩАЮТСЯ.
-   ДВИГАЮТСЯ ПО УГЛОВЫМ ТРАЕКТОРИЯМ.
-========================================================= */
-
-.tron-rays {
-
-    position: absolute;
-
-    inset: -62px;
-
-    z-index: -3;
-
-    pointer-events: none;
-
-    opacity: .15;
-
-    border-radius: 34%;
-
-    border:
-        1px solid
-        rgba(70,220,255,.35);
-
     box-shadow:
-        0 0 12px
-        rgba(50,210,255,.10);
-
-    transition:
-        opacity .4s ease,
-        transform .5s ease;
-}
-
-
-/* внутренний прямоугольный контур */
-
-.tron-rays::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 18px;
-
-    border:
-        1px solid
-        rgba(100,160,255,.35);
-
-    border-radius: 20%;
-
-    background:
-
-        linear-gradient(
-            90deg,
-            transparent 0%,
-            transparent 38%,
-            rgba(80,230,255,.9) 39%,
-            rgba(80,230,255,.9) 42%,
-            transparent 43%,
-            transparent 100%
-        );
-
-    background-size:
-        220% 100%;
+        0 0 8px rgba(30, 190, 255, .18),
+        inset 0 0 8px rgba(30, 190, 255, .06);
 
     animation:
-        tronHorizontal 3.2s
-        linear
-        infinite;
-
-    opacity: .35;
+        rippleExpand 5.5s ease-out infinite;
 }
 
-
-/* вертикальная траектория */
-
-.tron-rays::after {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 8px 38px;
-
-    border-left:
-        1px solid
-        rgba(80,220,255,.25);
-
-    border-right:
-        1px solid
-        rgba(130,100,255,.25);
-
-    background:
-
-        linear-gradient(
-            to bottom,
-            transparent 0%,
-            transparent 38%,
-            rgba(120,235,255,.95) 39%,
-            rgba(120,235,255,.95) 43%,
-            transparent 44%,
-            transparent 100%
-        );
-
-    background-size:
-        100% 220%;
-
-    animation:
-        tronVertical 2.6s
-        linear
-        infinite;
-
-    opacity: .35;
+.ripple:nth-child(2) {
+    animation-delay: 1.8s;
 }
 
-
-.card:hover .tron-rays,
-.card.active .tron-rays {
-
-    opacity: .9;
-
-    transform:
-        scale(1.12);
-
-    box-shadow:
-
-        0 0 18px
-        rgba(60,220,255,.35),
-
-        0 0 45px
-        rgba(80,100,255,.16);
+.ripple:nth-child(3) {
+    animation-delay: 3.6s;
 }
 
-@keyframes tronHorizontal {
+@keyframes rippleExpand {
 
     0% {
-        background-position:
-            -100% 0;
+        width: 85%;
+        height: 85%;
+
+        opacity: 0;
+
+        border-color: rgba(50, 230, 255, .0);
+    }
+
+    15% {
+        opacity: .5;
+
+        border-color: rgba(50, 230, 255, .55);
+    }
+
+    65% {
+        opacity: .22;
     }
 
     100% {
-        background-position:
-            100% 0;
+        width: 245%;
+        height: 245%;
+
+        opacity: 0;
+
+        border-color: rgba(50, 190, 255, .0);
     }
 }
-
-@keyframes tronVertical {
-
-    0% {
-        background-position:
-            0 -100%;
-    }
-
-    100% {
-        background-position:
-            0 100%;
-    }
-}
-
 
 /* =========================================================
-   ВНЕШНЕЕ КОЛЬЦО
+   ANGULAR CYBERPUNK SEGMENTS
 ========================================================= */
 
-.neon-ring {
-
+.cyber-ring {
     position: absolute;
 
-    inset: -8px;
+    left: 50%;
+    top: 50%;
+
+    width: 145%;
+    height: 145%;
+
+    transform: translate(-50%, -50%);
 
     border-radius: 50%;
 
-    z-index: -1;
+    pointer-events: none;
 
-    border:
-        1px solid
-        rgba(70,220,255,.28);
+    opacity: .38;
 
-    box-shadow:
-
-        0 0 18px
-        rgba(50,210,255,.12),
-
-        inset 0 0 20px
-        rgba(90,120,255,.08);
-
-    transition:
-        transform .5s ease,
-        box-shadow .5s ease,
-        border-color .5s ease;
+    z-index: -2;
 }
 
-.card:hover .neon-ring,
-.card.active .neon-ring {
+.cyber-ring::before,
+.cyber-ring::after {
+    content: "";
 
-    transform:
-        scale(1.08);
+    position: absolute;
+    inset: 0;
 
-    border-color:
-        rgba(90,230,255,.85);
+    border-radius: 50%;
 
-    box-shadow:
+    background:
+        conic-gradient(
+            from 0deg,
 
-        0 0 20px
-        rgba(60,220,255,.65),
+            transparent 0deg 14deg,
 
-        0 0 55px
-        rgba(100,90,255,.32),
+            rgba(62, 226, 255, .8) 14deg 15deg,
 
-        inset 0 0 30px
-        rgba(60,220,255,.18);
+            transparent 15deg 42deg,
+
+            rgba(68, 190, 255, .55) 42deg 43deg,
+
+            transparent 43deg 76deg,
+
+            rgba(100, 255, 215, .7) 76deg 77deg,
+
+            transparent 77deg 112deg,
+
+            rgba(60, 190, 255, .55) 112deg 113deg,
+
+            transparent 113deg 156deg,
+
+            rgba(65, 225, 255, .75) 156deg 157deg,
+
+            transparent 157deg 210deg,
+
+            rgba(70, 190, 255, .5) 210deg 211deg,
+
+            transparent 211deg 270deg,
+
+            rgba(65, 230, 255, .8) 270deg 271deg,
+
+            transparent 271deg 315deg,
+
+            rgba(90, 255, 220, .55) 315deg 316deg,
+
+            transparent 316deg
+        );
+
+    mask:
+        radial-gradient(
+            circle,
+            transparent 0 47%,
+            black 48% 49%,
+            transparent 50%
+        );
+
+    -webkit-mask:
+        radial-gradient(
+            circle,
+            transparent 0 47%,
+            black 48% 49%,
+            transparent 50%
+        );
+
+    animation: cyberPulse 4.5s ease-in-out infinite;
 }
 
+.cyber-ring::after {
+    width: 82%;
+    height: 82%;
+
+    left: 9%;
+    top: 9%;
+
+    animation-delay: 1.7s;
+
+    opacity: .65;
+}
+
+@keyframes cyberPulse {
+
+    0%,
+    100% {
+        transform: scale(.96);
+        opacity: .25;
+    }
+
+    50% {
+        transform: scale(1.04);
+        opacity: .65;
+    }
+}
 
 /* =========================================================
-   ТЕЛО СФЕРЫ
+   DENDRITE LINES
+========================================================= */
+
+.dendrites {
+    position: absolute;
+    inset: -90px;
+
+    pointer-events: none;
+
+    z-index: -4;
+
+    opacity: .45;
+}
+
+.dendrites span {
+    position: absolute;
+
+    height: 1px;
+
+    transform-origin: left center;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(50, 215, 255, .45),
+            rgba(50, 215, 255, .08),
+            transparent
+        );
+
+    box-shadow:
+        0 0 5px rgba(40, 200, 255, .25);
+}
+
+.dendrites span:nth-child(1) {
+    width: 90px;
+    left: 20%;
+    top: 35%;
+    transform: rotate(-25deg);
+}
+
+.dendrites span:nth-child(2) {
+    width: 75px;
+    right: 15%;
+    top: 30%;
+    transform: rotate(24deg);
+}
+
+.dendrites span:nth-child(3) {
+    width: 95px;
+    left: 18%;
+    bottom: 28%;
+    transform: rotate(25deg);
+}
+
+.dendrites span:nth-child(4) {
+    width: 70px;
+    right: 18%;
+    bottom: 32%;
+    transform: rotate(-27deg);
+}
+
+/* =========================================================
+   NEURON BODY
 ========================================================= */
 
 .neuron-body {
-
     position: absolute;
-
     inset: 0;
-
-    z-index: 0;
 
     border-radius: 50%;
 
     overflow: hidden;
 
     background:
-
         radial-gradient(
-            circle at 29% 23%,
-            rgba(255,255,255,.32),
-            rgba(255,255,255,.07) 9%,
-            transparent 22%
+            circle at 32% 27%,
+            rgba(255, 255, 255, .18),
+            transparent 12%
         ),
 
         radial-gradient(
-            circle at 50% 48%,
-            rgba(45,195,255,.30),
-            rgba(60,80,190,.16) 42%,
-            rgba(4,9,23,.97) 75%
+            circle at 50% 50%,
+            rgba(30, 150, 210, .3),
+            rgba(4, 15, 27, .96) 67%
         );
 
     border:
-        1px solid
-        rgba(100,220,255,.52);
+        1px solid rgba(100, 235, 255, .65);
 
     box-shadow:
 
-        inset -25px -30px 55px
-        rgba(0,0,0,.75),
+        0 0 15px rgba(30, 210, 255, .35),
 
-        inset 14px 12px 30px
-        rgba(255,255,255,.08),
+        0 0 40px rgba(30, 180, 255, .2),
 
-        0 0 28px
-        rgba(40,200,255,.24),
+        inset 0 0 35px rgba(20, 170, 230, .18),
 
-        0 0 90px
-        rgba(90,80,255,.10);
+        inset 12px 12px 30px rgba(130, 245, 255, .07);
 
     transition:
-        transform .55s
-        cubic-bezier(.2,.8,.2,1),
+        transform 1s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 1s ease,
+        border-color 1s ease;
 
-        box-shadow .55s ease,
-
-        filter .55s ease;
+    z-index: 1;
 }
-
-.card:hover .neuron-body,
-.card.active .neuron-body {
-
-    transform:
-        scale(1.075);
-
-    filter:
-        brightness(1.2)
-        saturate(1.2);
-
-    box-shadow:
-
-        inset -25px -30px 55px
-        rgba(0,0,0,.62),
-
-        inset 14px 12px 30px
-        rgba(255,255,255,.12),
-
-        0 0 38px
-        rgba(50,220,255,.68),
-
-        0 0 90px
-        rgba(100,80,255,.40),
-
-        0 0 140px
-        rgba(40,180,255,.18);
-}
-
 
 /* =========================================================
-   MATRIX-КОД
+   NEURON INTERNAL MEMBRANE
+========================================================= */
+
+.neuron-body::before {
+    content: "";
+
+    position: absolute;
+    inset: 7px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(75, 210, 255, .22);
+
+    box-shadow:
+        inset 0 0 25px rgba(30, 220, 255, .08);
+}
+
+/* =========================================================
+   MATRIX CODE
 ========================================================= */
 
 .matrix-code {
-
     position: absolute;
-
     inset: 0;
-
-    z-index: 1;
 
     border-radius: 50%;
 
@@ -749,367 +592,208 @@ body::before {
 
     opacity: 0;
 
-    clip-path:
-        inset(
-            100% 0 0 0
-        );
-
-    background:
-
-        radial-gradient(
-            circle at center,
-            rgba(30,255,160,.18),
-            rgba(0,120,80,.05) 55%,
-            transparent 75%
-        );
+    clip-path: circle(0% at 50% 50%);
 
     transition:
+        opacity 1.5s ease,
+        clip-path 2.5s cubic-bezier(.15, .75, .15, 1);
 
-        opacity .45s ease,
+    z-index: 3;
 
-        clip-path 1.8s
-        cubic-bezier(.16,.72,.18,1);
+    pointer-events: none;
 }
 
 .card:hover .matrix-code,
 .card.active .matrix-code {
+    opacity: .9;
 
-    opacity: .85;
-
-    clip-path:
-        inset(
-            0 0 0 0
-        );
+    clip-path: circle(72% at 50% 50%);
 }
 
+.matrix-code::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 255, 160, .14),
+            rgba(0, 0, 0, .08) 55%,
+            rgba(0, 0, 0, .45)
+        );
+
+    z-index: 1;
+}
 
 /* =========================================================
-   MATRIX ВЬЮГА
+   MATRIX VORTEX
 ========================================================= */
 
 .matrix-swirl {
-
     position: absolute;
 
-    inset: -35%;
+    left: -45%;
+    top: -45%;
 
-    width: 170%;
+    width: 190%;
+    height: 190%;
 
-    height: 170%;
-
-    left: -35%;
-
-    top: -35%;
-
-    transform-origin:
-        center center;
+    transform-origin: center;
 
     animation:
-        vortexSpin
-        7s
-        linear
-        infinite;
+        matrixSlowSpin 15s linear infinite;
 
-    animation-play-state:
-        paused;
+    animation-play-state: paused;
 }
 
 .card:hover .matrix-swirl,
 .card.active .matrix-swirl {
-
-    animation-play-state:
-        running;
-
-    animation-duration:
-        3s;
+    animation-play-state: running;
 }
 
-
-@keyframes vortexSpin {
+@keyframes matrixSlowSpin {
 
     from {
-        transform:
-            rotate(0deg)
-            scale(.92);
-    }
-
-    50% {
-        transform:
-            rotate(180deg)
-            scale(1.04);
+        transform: rotate(0deg);
     }
 
     to {
-        transform:
-            rotate(360deg)
-            scale(.92);
+        transform: rotate(360deg);
     }
 }
-
-
-/* =========================================================
-   MATRIX-СИМВОЛЫ
-========================================================= */
 
 .matrix-char {
-
     position: absolute;
+
+    color: #48ffc4;
 
     font-family:
+        "Courier New",
         monospace;
 
-    font-size:
-        10px;
+    font-weight: 700;
 
-    font-weight:
-        700;
-
-    color:
-        rgba(80,255,175,.95);
+    line-height: 1;
 
     text-shadow:
+        0 0 4px rgba(50, 255, 180, .8),
+        0 0 9px rgba(0, 255, 140, .4);
 
-        0 0 5px
-        rgba(30,255,150,.95),
+    user-select: none;
 
-        0 0 12px
-        rgba(20,255,150,.7);
-
-    transform-origin:
-        center center;
-
-    animation:
-        matrixFlicker
-        1.2s
-        ease-in-out
-        infinite
-        alternate;
+    opacity: .65;
 }
-
-@keyframes matrixFlicker {
-
-    from {
-        opacity: .35;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 
 /* =========================================================
-   СПИРАЛЬ ВНУТРИ
-========================================================= */
-
-.spiral {
-
-    position: absolute;
-
-    width: 74%;
-
-    height: 74%;
-
-    border-radius: 50%;
-
-    z-index: 2;
-
-    pointer-events: none;
-
-    opacity: .45;
-
-    background:
-
-        repeating-radial-gradient(
-            circle,
-            transparent 0 10px,
-            rgba(100,220,255,.08) 11px 12px
-        );
-
-    mask-image:
-        radial-gradient(
-            circle,
-            black 22%,
-            transparent 72%
-        );
-
-    animation:
-        spiralSlow
-        18s
-        linear
-        infinite;
-
-    transition:
-        opacity .5s ease,
-        transform .7s ease;
-}
-
-.card:hover .spiral,
-.card.active .spiral {
-
-    opacity: .85;
-
-    transform:
-        scale(1.12);
-
-    animation-duration:
-        6s;
-}
-
-@keyframes spiralSlow {
-
-    from {
-        transform:
-            rotate(0deg);
-    }
-
-    to {
-        transform:
-            rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   КОНТЕНТ
-========================================================= */
-
-.card-content {
-
-    position: relative;
-
-    z-index: 5;
-
-    width: 80%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    text-align: center;
-
-    gap: 8px;
-
-    pointer-events: none;
-}
-
-
-/* =========================================================
-   ИКОНКА
+   ICON
 ========================================================= */
 
 .icon {
+    position: relative;
 
-    width: 62px;
-
-    height: 62px;
+    width: 76px;
+    height: 76px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    border-radius: 50%;
+    z-index: 6;
 
-    font-size: 30px;
+    color: #bdf7ff;
 
-    background:
-
-        radial-gradient(
-            circle,
-            rgba(20,35,60,.88),
-            rgba(5,10,25,.5)
-        );
-
-    border:
-        1px solid
-        rgba(120,220,255,.27);
-
-    box-shadow:
-
-        0 0 20px
-        rgba(50,200,255,.18);
+    filter:
+        drop-shadow(0 0 7px rgba(70, 220, 255, .35));
 
     transition:
-        transform .5s ease,
-        box-shadow .5s ease;
+        transform .8s ease,
+        filter .8s ease,
+        color .8s ease;
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
+
+    stroke: currentColor;
+
+    fill: none;
+
+    stroke-width: 1.4;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .card:hover .icon,
 .card.active .icon {
 
-    transform:
-        scale(1.13);
+    transform: scale(1.08);
 
-    box-shadow:
+    color: #eaffff;
 
-        0 0 28px
-        rgba(70,220,255,.6),
-
-        0 0 55px
-        rgba(100,100,255,.25);
+    filter:
+        drop-shadow(0 0 8px rgba(80, 235, 255, .8))
+        drop-shadow(0 0 20px rgba(30, 180, 255, .5));
 }
 
-
 /* =========================================================
-   НАЗВАНИЕ
+   CARD TITLE
 ========================================================= */
 
 .card-title {
+    position: absolute;
 
-    font-size:
-        15px;
+    left: 50%;
+    top: 50%;
 
-    line-height:
-        1.2;
-
-    font-weight:
-        700;
-
-    text-shadow:
-
-        0 2px 10px
-        rgba(0,0,0,.95),
-
-        0 0 10px
-        rgba(50,180,255,.15);
-
-    transition:
-        transform .4s ease;
-}
-
-.card:hover .card-title,
-.card.active .card-title {
+    width: 82%;
 
     transform:
-        translateY(-2px);
+        translate(-50%, 65px);
+
+    z-index: 7;
+
+    text-align: center;
+
+    color: #e6fbff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.25;
+
+    text-shadow:
+        0 0 8px rgba(50, 210, 255, .45);
 }
 
-
 /* =========================================================
-   ПОДЗАГОЛОВОК
+   HOVER
 ========================================================= */
 
-.card-subtitle {
+.card:hover .neuron-body,
+.card.active .neuron-body {
 
-    font-size:
-        10px;
+    transform: scale(1.075);
 
-    line-height:
-        1.3;
+    border-color:
+        rgba(120, 255, 245, .9);
 
-    color:
-        rgba(190,225,240,.7);
+    box-shadow:
+
+        0 0 20px rgba(30, 230, 255, .6),
+
+        0 0 55px rgba(30, 190, 255, .4),
+
+        0 0 100px rgba(0, 150, 255, .18),
+
+        inset 0 0 45px rgba(40, 255, 210, .15);
 }
 
-
 /* =========================================================
-   ВСПЛЫВАЮЩЕЕ ОПИСАНИЕ
+   DESCRIPTION
 ========================================================= */
 
 .description {
@@ -1117,270 +801,91 @@ body::before {
     position: absolute;
 
     left: 50%;
+    top: -72px;
 
-    top: 70%;
+    width: 300px;
 
     transform:
-        translate(-50%, -50%)
-        scale(.9);
+        translateX(-50%)
+        translateY(8px)
+        scale(.96);
 
-    width: 76%;
-
-    padding:
-        9px 12px;
-
-    border-radius:
-        11px;
-
-    background:
-        rgba(2,8,18,.96);
+    padding: 13px 17px;
 
     border:
-        1px solid
-        rgba(80,215,255,.52);
+        1px solid rgba(80, 220, 255, .4);
+
+    border-radius: 12px;
+
+    background:
+        rgba(2, 10, 18, .92);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    color: #dffaff;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+
+    text-align: center;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 30;
 
     box-shadow:
-
-        0 0 22px
-        rgba(50,200,255,.28),
-
-        0 5px 20px
-        rgba(0,0,0,.55);
-
-    color:
-        rgba(230,248,255,.94);
-
-    font-size:
-        12px;
-
-    font-weight:
-        500;
-
-    line-height:
-        1.4;
-
-    text-align:
-        center;
-
-    opacity:
-        0;
-
-    pointer-events:
-        none;
-
-    z-index:
-        30;
+        0 0 18px rgba(20, 190, 255, .12);
 
     transition:
-
         opacity .3s ease,
-
         transform .3s ease;
 }
 
 .card:hover .description,
 .card.active .description {
 
-    opacity:
-        1;
+    opacity: 1;
 
     transform:
-        translate(-50%, -50%)
+        translateX(-50%)
+        translateY(0)
         scale(1);
 }
 
-
 /* =========================================================
-   СИНАПТИЧЕСКИЕ ИМПУЛЬСЫ ВОКРУГ СФЕРЫ
-========================================================= */
-
-.synapse {
-
-    position: absolute;
-
-    width: 6px;
-
-    height: 6px;
-
-    border-radius: 50%;
-
-    z-index: 10;
-
-    pointer-events: none;
-
-    opacity: 0;
-
-    background:
-        #c7f7ff;
-
-    box-shadow:
-
-        0 0 7px
-        #70eaff,
-
-        0 0 18px
-        #38bdf8;
-}
-
-.card:hover .synapse,
-.card.active .synapse {
-
-    opacity: 1;
-}
-
-.synapse.s1 {
-
-    left: -10px;
-
-    top: 34%;
-
-    animation:
-        pulseRight
-        1.8s
-        linear
-        infinite;
-}
-
-.synapse.s2 {
-
-    right: -10px;
-
-    top: 64%;
-
-    animation:
-        pulseLeft
-        2s
-        linear
-        infinite;
-}
-
-.synapse.s3 {
-
-    left: 38%;
-
-    top: -10px;
-
-    animation:
-        pulseDown
-        1.7s
-        linear
-        infinite;
-}
-
-.synapse.s4 {
-
-    left: 64%;
-
-    bottom: -10px;
-
-    animation:
-        pulseUp
-        2.1s
-        linear
-        infinite;
-}
-
-@keyframes pulseRight {
-
-    0% {
-        transform:
-            translateX(-5px);
-
-        opacity: 0;
-    }
-
-    30% {
-        opacity: 1;
-    }
-
-    100% {
-        transform:
-            translateX(38px);
-
-        opacity: 0;
-    }
-}
-
-@keyframes pulseLeft {
-
-    0% {
-        transform:
-            translateX(5px);
-
-        opacity: 0;
-    }
-
-    30% {
-        opacity: 1;
-    }
-
-    100% {
-        transform:
-            translateX(-38px);
-
-        opacity: 0;
-    }
-}
-
-@keyframes pulseDown {
-
-    0% {
-        transform:
-            translateY(-5px);
-
-        opacity: 0;
-    }
-
-    30% {
-        opacity: 1;
-    }
-
-    100% {
-        transform:
-            translateY(38px);
-
-        opacity: 0;
-    }
-}
-
-@keyframes pulseUp {
-
-    0% {
-        transform:
-            translateY(5px);
-
-        opacity: 0;
-    }
-
-    30% {
-        opacity: 1;
-    }
-
-    100% {
-        transform:
-            translateY(-38px);
-
-        opacity: 0;
-    }
-}
-
-
-/* =========================================================
-   ЦЕНТРОВКА ПОСЛЕДНЕЙ СФЕРЫ
+   SECTION LAST CARD
 ========================================================= */
 
 .cards .card:last-child:nth-child(odd) {
-
-    grid-column:
-        1 / -1;
-
-    justify-self:
-        center;
+    grid-column: 1 / -1;
+    justify-self: center;
 }
 
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .cards {
+        grid-template-columns:
+            repeat(3, minmax(170px, 1fr));
+
+        gap:
+            100px
+            30px;
+    }
+}
 
 /* =========================================================
-   МОБИЛЬНАЯ ВЕРСИЯ
+   MOBILE
 ========================================================= */
 
 @media (max-width: 700px) {
@@ -1388,182 +893,122 @@ body::before {
     .main {
 
         padding:
-            28px 14px
-            70px;
+            35px 14px
+            80px;
     }
 
-    .logo h1 {
-
-        font-size:
-            34px;
-
-        letter-spacing:
-            .10em;
-    }
-
-    .logo p {
-
-        font-size:
-            8px;
-
-        letter-spacing:
-            .18em;
+    .logo {
+        font-size: 34px;
+        letter-spacing: .17em;
     }
 
     .section {
-
-        margin-top:
-            52px;
+        margin-top: 70px;
     }
 
     .section-title {
-
-        font-size:
-            16px;
-
-        margin-bottom:
-            28px;
-    }
-
-    .section-title::before,
-    .section-title::after {
-
-        width:
-            34px;
-
-        margin:
-            0 9px;
+        margin-bottom: 38px;
+        font-size: 18px;
     }
 
     .cards {
 
+        width: 100%;
+
         grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+            repeat(2, minmax(0, 1fr));
 
-        gap:
-            55px 16px;
+        column-gap: 15px;
+        row-gap: 105px;
 
-        width:
-            100%;
+        justify-items: center;
     }
 
     .card {
 
-        width:
-            min(155px, 42vw);
-
-        height:
-            min(155px, 42vw);
-
-        justify-self:
-            center;
-    }
-
-    .dendrites {
-
-        inset:
-            -52px;
-    }
-
-    .tron-rays {
-
-        inset:
-            -44px;
+        width: min(155px, 42vw);
+        height: min(155px, 42vw);
     }
 
     .icon {
 
-        width:
-            47px;
-
-        height:
-            47px;
-
-        font-size:
-            23px;
+        width: 58px;
+        height: 58px;
     }
 
     .card-title {
 
-        font-size:
-            12px;
-    }
+        font-size: 12px;
 
-    .card-subtitle {
+        transform:
+            translate(-50%, 52px);
 
-        font-size:
-            8px;
+        width: 90%;
     }
 
     .description {
 
-        top:
-            auto;
+        top: auto;
+        bottom: 70%;
 
-        bottom:
-            57%;
-
-        width:
-            88%;
+        width: 92%;
 
         padding:
-            8px 10px;
+            11px 12px;
 
-        font-size:
-            11.5px;
+        font-size: 13px;
 
-        line-height:
-            1.38;
+        line-height: 1.4;
     }
 
-    .matrix-char {
+    .cyber-ring {
+        width: 145%;
+        height: 145%;
+    }
 
-        font-size:
-            8px;
+    .ripple {
+        animation-duration: 6s;
     }
 }
 
-
 /* =========================================================
-   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ
+   VERY SMALL PHONES
 ========================================================= */
 
-@media (max-width: 380px) {
+@media (max-width: 390px) {
 
     .cards {
 
-        gap:
-            48px 10px;
+        column-gap: 8px;
+        row-gap: 100px;
     }
 
     .card {
 
-        width:
-            140px;
+        width: 140px;
+        height: 140px;
+    }
 
-        height:
-            140px;
+    .icon {
+
+        width: 52px;
+        height: 52px;
     }
 
     .card-title {
 
-        font-size:
-            11px;
+        font-size: 11px;
+
+        transform:
+            translate(-50%, 49px);
     }
 
     .description {
 
-        font-size:
-            10.5px;
-
-        width:
-            90%;
+        font-size: 12px;
+        width: 94%;
     }
 }
-
 
 /* =========================================================
    REDUCED MOTION
@@ -1575,1393 +1020,771 @@ body::before {
     *::before,
     *::after {
 
-        animation-duration:
-            .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
 
-        animation-iteration-count:
-            1 !important;
-
-        transition-duration:
-            .01ms !important;
+        transition-duration: .01ms !important;
     }
 }
 
 </style>
-
 </head>
-
 
 <body>
 
-
 <canvas id="neuralCanvas"></canvas>
 
+<div class="grid-background"></div>
 
 <main class="main">
 
-
-<!-- =======================================================
-     ЛОГО
-======================================================= -->
-
-<header class="logo">
-
-    <h1>PSY-TOOLS</h1>
-
-    <p>
-        нейронная система инструментов
-    </p>
-
-</header>
-
-
-
-<!-- =======================================================
-     ПСИХОДИАГНОСТИКА
-======================================================= -->
-
-<section class="section">
-
-    <h2 class="section-title">
-        🧠 Психодиагностика
-    </h2>
-
-
-    <div class="cards">
-
-
-        <!-- КЕТТЕЛЛ -->
-
-        <a
-            href="./cattell/"
-            class="card"
-            data-description="Исследование структуры личности по 16 личностным факторам."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    🧠
-                </div>
-
-                <div class="card-title">
-                    16 факторов<br>
-                    Кеттелла
-                </div>
-
-                <div class="card-subtitle">
-                    Личность
-                </div>
-
-            </div>
-
-            <div class="description"></div>
-
-        </a>
-
-
-
-        <!-- ЛЮШЕР -->
-
-        <a
-            href="./luscher/"
-            class="card"
-            data-description="Исследование предпочтений цвета и связанных с ними психологических состояний."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    🎨
-                </div>
-
-                <div class="card-title">
-                    Тест<br>
-                    Люшера
-                </div>
-
-                <div class="card-subtitle">
-                    Цвет и состояние
-                </div>
-
-            </div>
-
-            <div class="description"></div>
-
-        </a>
-
-
-
-        <!-- ГЕРЧИКОВ -->
-
-        <a
-            href="./gerchikov/"
-            class="card"
-            data-description="Исследование структуры трудовой мотивации и ведущих мотивационных типов."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    ⚡
-                </div>
-
-                <div class="card-title">
-                    Мотивация<br>
-                    по Герчикову
-                </div>
-
-                <div class="card-subtitle">
-                    Мотивация труда
-                </div>
-
-            </div>
-
-            <div class="description"></div>
-
-        </a>
-
-
+    <div class="logo">
+        PSY-TOOLS
     </div>
 
-</section>
 
+    <!-- =====================================================
+         ПСИХОДИАГНОСТИКА
+    ====================================================== -->
 
+    <section class="section">
 
-<!-- =======================================================
-     САМОРАЗВИТИЕ
-======================================================= -->
+        <h2 class="section-title">
+            🧠 Психодиагностика
+        </h2>
 
-<section class="section">
+        <div class="cards">
 
-    <h2 class="section-title">
-        🧭 Саморазвитие
-    </h2>
+            <!-- КЕТТЕЛЛ -->
 
+            <a class="card"
+               href="./cattell/"
+               data-description="Исследование структуры личности по 16 личностным факторам.">
 
-    <div class="cards">
-
-
-        <!-- КОЛЕСО -->
-
-        <a
-            href="./wheel/"
-            class="card"
-            data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    ☯
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
 
-                <div class="card-title">
-                    Колесо<br>
-                    баланса
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
                 </div>
 
-                <div class="card-subtitle">
-                    Жизненный баланс
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <circle cx="32" cy="32" r="9"/>
+
+                            <path d="
+                                M23 32
+                                C12 32 10 24 16 19
+                                C21 15 25 18 27 12
+                                C29 6 36 6 39 12
+                                C41 17 48 14 51 20
+                                C55 28 48 34 42 34
+                            "/>
+
+                            <path d="
+                                M23 34
+                                C14 37 14 47 21 50
+                                C27 53 29 47 32 48
+                            "/>
+
+                            <path d="M17 20L10 15"/>
+                            <path d="M39 12L43 5"/>
+                            <path d="M50 21L58 18"/>
+                            <path d="M21 50L17 58"/>
+
+                        </svg>
+
+                    </div>
+
                 </div>
 
-            </div>
+                <span class="card-title">
+                    16 факторов Кеттелла
+                </span>
 
-            <div class="description"></div>
-
-        </a>
-
-
-
-        <!-- НАВЫКИ -->
-
-        <a
-            href="./skills/"
-            class="card"
-            data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    🔬
+                <div class="description">
+                    Исследование структуры личности по 16 личностным факторам.
                 </div>
 
-                <div class="card-title">
-                    Рефлексия<br>
-                    навыков
+            </a>
+
+
+            <!-- ЛЮШЕР -->
+
+            <a class="card"
+               href="./luscher/"
+               data-description="Исследование предпочтений цвета и связанных с ними психологических состояний.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
 
-                <div class="card-subtitle">
-                    Навыки и компетенции
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
                 </div>
 
-            </div>
+                <div class="cyber-ring"></div>
 
-            <div class="description"></div>
+                <div class="neuron-body">
 
-        </a>
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
 
+                    <div class="icon">
 
+                        <svg viewBox="0 0 64 64">
 
-        <!-- ПРОФОРИЕНТАЦИЯ -->
+                            <circle cx="32" cy="32" r="20"/>
 
-        <a
-            href="./career/"
-            class="card"
-            data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений."
-        >
+                            <path d="M32 12V52"/>
+                            <path d="M12 32H52"/>
 
-            <div class="dendrites"></div>
+                            <path d="
+                                M18 18
+                                C24 24 27 27 32 32
+                            "/>
 
-            <div class="tron-rays"></div>
+                            <path d="
+                                M46 18
+                                C40 24 37 27 32 32
+                            "/>
 
-            <div class="neon-ring"></div>
+                            <path d="
+                                M18 46
+                                C24 40 27 37 32 32
+                            "/>
 
-            <div class="neuron-body"></div>
+                            <path d="
+                                M46 46
+                                C40 40 37 37 32 32
+                            "/>
 
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
+                        </svg>
 
-            <div class="spiral"></div>
+                    </div>
 
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    🧭
                 </div>
 
-                <div class="card-title">
+                <span class="card-title">
+                    Тест Люшера
+                </span>
+
+                <div class="description">
+                    Исследование предпочтений цвета и связанных с ними психологических состояний.
+                </div>
+
+            </a>
+
+
+            <!-- ГЕРЧИКОВ -->
+
+            <a class="card"
+               href="./gerchikov/"
+               data-description="Исследование структуры трудовой мотивации и ведущих мотивационных типов.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                </div>
+
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <path d="
+                                M32 8
+                                L37 25
+                                L55 25
+                                L41 35
+                                L46 53
+                                L32 42
+                                L18 53
+                                L23 35
+                                L9 25
+                                L27 25
+                                Z
+                            "/>
+
+                            <circle cx="32" cy="32" r="5"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
+                    Мотивация по Герчикову
+                </span>
+
+                <div class="description">
+                    Исследование структуры трудовой мотивации и ведущих мотивационных типов.
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         САМОРАЗВИТИЕ
+    ====================================================== -->
+
+    <section class="section">
+
+        <h2 class="section-title">
+            🧭 Саморазвитие
+        </h2>
+
+        <div class="cards">
+
+
+            <!-- КОЛЕСО -->
+
+            <a class="card"
+               href="./wheel/"
+               data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                </div>
+
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <circle cx="32" cy="32" r="22"/>
+
+                            <circle cx="32" cy="32" r="10"/>
+
+                            <path d="M32 10V22"/>
+                            <path d="M32 42V54"/>
+                            <path d="M10 32H22"/>
+                            <path d="M42 32H54"/>
+
+                            <path d="M17 17L25 25"/>
+                            <path d="M39 39L47 47"/>
+                            <path d="M47 17L39 25"/>
+                            <path d="M25 39L17 47"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
+                    Колесо баланса
+                </span>
+
+                <div class="description">
+                    Оценка удовлетворённости основными сферами жизни и поиск зон для развития.
+                </div>
+
+            </a>
+
+
+            <!-- НАВЫКИ -->
+
+            <a class="card"
+               href="./skills/"
+               data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                </div>
+
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <circle cx="32" cy="32" r="7"/>
+
+                            <path d="M32 25V9"/>
+                            <path d="M32 39V55"/>
+
+                            <path d="M25 32H9"/>
+                            <path d="M39 32H55"/>
+
+                            <path d="M27 27L16 16"/>
+                            <path d="M37 37L48 48"/>
+
+                            <path d="M37 27L48 16"/>
+                            <path d="M27 37L16 48"/>
+
+                            <circle cx="32" cy="9" r="3"/>
+                            <circle cx="32" cy="55" r="3"/>
+                            <circle cx="9" cy="32" r="3"/>
+                            <circle cx="55" cy="32" r="3"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
+                    Рефлексия навыков
+                </span>
+
+                <div class="description">
+                    Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.
+                </div>
+
+            </a>
+
+
+            <!-- ПРОФОРИЕНТАЦИЯ -->
+
+            <a class="card"
+               href="./career/"
+               data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                </div>
+
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <circle cx="32" cy="32" r="21"/>
+
+                            <path d="
+                                M32 11
+                                L36 28
+                                L53 32
+                                L36 36
+                                L32 53
+                                L28 36
+                                L11 32
+                                L28 28
+                                Z
+                            "/>
+
+                            <circle cx="32" cy="32" r="4"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
                     Профориентация
+                </span>
+
+                <div class="description">
+                    Исследование интересов и склонностей для поиска подходящих профессиональных направлений.
                 </div>
 
-                <div class="card-subtitle">
-                    Профессиональный путь
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         РАБОТА
+    ====================================================== -->
+
+    <section class="section">
+
+        <h2 class="section-title">
+            💼 Найти работу
+        </h2>
+
+        <div class="cards">
+
+
+            <!-- ВАКАНСИИ -->
+
+            <a class="card"
+               href="./work/vacancies/"
+               data-description="Поиск и просмотр подходящих предложений о работе.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
 
-            </div>
-
-            <div class="description"></div>
-
-        </a>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =======================================================
-     РАБОТА
-======================================================= -->
-
-<section class="section">
-
-    <h2 class="section-title">
-        💼 Найти работу
-    </h2>
-
-
-    <div class="cards">
-
-
-        <!-- ВАКАНСИИ -->
-
-        <a
-            href="./work/vacancies/"
-            class="card"
-            data-description="Поиск и просмотр подходящих предложений о работе."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    💼
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
                 </div>
 
-                <div class="card-title">
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <rect
+                                x="10"
+                                y="18"
+                                width="44"
+                                height="34"
+                                rx="5"/>
+
+                            <path d="
+                                M23 18
+                                V13
+                                C23 10 26 8 32 8
+                                C38 8 41 10 41 13
+                                V18
+                            "/>
+
+                            <path d="M10 31H54"/>
+
+                            <path d="M27 31V37H37V31"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
                     Вакансии
+                </span>
+
+                <div class="description">
+                    Поиск и просмотр подходящих предложений о работе.
                 </div>
 
-                <div class="card-subtitle">
-                    Поиск работы
+            </a>
+
+
+            <!-- РЕЗЮМЕ -->
+
+            <a class="card"
+               href="./work/resume/"
+               data-description="Создание и ведение собственного профессионального профиля.">
+
+                <div class="dendrites">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
 
-            </div>
-
-            <div class="description"></div>
-
-        </a>
-
-
-
-        <!-- РЕЗЮМЕ -->
-
-        <a
-            href="./work/resume/"
-            class="card"
-            data-description="Создание и ведение собственного профессионального профиля."
-        >
-
-            <div class="dendrites"></div>
-
-            <div class="tron-rays"></div>
-
-            <div class="neon-ring"></div>
-
-            <div class="neuron-body"></div>
-
-            <div class="matrix-code">
-                <div class="matrix-swirl"></div>
-            </div>
-
-            <div class="spiral"></div>
-
-            <span class="synapse s1"></span>
-            <span class="synapse s2"></span>
-            <span class="synapse s3"></span>
-            <span class="synapse s4"></span>
-
-
-            <div class="card-content">
-
-                <div class="icon">
-                    📄
+                <div class="ripples">
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
+                    <span class="ripple"></span>
                 </div>
 
-                <div class="card-title">
+                <div class="cyber-ring"></div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="icon">
+
+                        <svg viewBox="0 0 64 64">
+
+                            <rect
+                                x="15"
+                                y="8"
+                                width="34"
+                                height="48"
+                                rx="4"/>
+
+                            <circle
+                                cx="32"
+                                cy="24"
+                                r="7"/>
+
+                            <path d="
+                                M22 39
+                                C22 34 42 34 42 39
+                            "/>
+
+                            <path d="M23 47H41"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <span class="card-title">
                     Моё резюме
+                </span>
+
+                <div class="description">
+                    Создание и ведение собственного профессионального профиля.
                 </div>
 
-                <div class="card-subtitle">
-                    Профессиональный профиль
-                </div>
+            </a>
 
-            </div>
+        </div>
 
-            <div class="description"></div>
-
-        </a>
-
-
-    </div>
-
-</section>
-
+    </section>
 
 </main>
-
 
 
 <script>
 
 /* =========================================================
-   ОПИСАНИЯ
+   MATRIX CHARACTERS
+========================================================= */
+
+const matrixChars =
+    "アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
+    "0123456789" +
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+    "ΨΦΩΣΔΓΛ";
+
+function createMatrix(card) {
+
+    const container =
+        card.querySelector(".matrix-swirl");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const count = 90;
+
+    for (let i = 0; i < count; i++) {
+
+        const char =
+            document.createElement("span");
+
+        char.className = "matrix-char";
+
+        char.textContent =
+            matrixChars[
+                Math.floor(
+                    Math.random() *
+                    matrixChars.length
+                )
+            ];
+
+        /*
+         * Создаём спиральное распределение.
+         */
+
+        const angle =
+            i * 0.55 +
+            Math.random() * .7;
+
+        const radius =
+            5 +
+            i * 1.45;
+
+        const x =
+            50 +
+            Math.cos(angle) *
+            radius;
+
+        const y =
+            50 +
+            Math.sin(angle) *
+            radius;
+
+        const size =
+            8 +
+            Math.random() * 7;
+
+        const opacity =
+            .25 +
+            Math.random() * .75;
+
+        char.style.left =
+            x + "%";
+
+        char.style.top =
+            y + "%";
+
+        char.style.fontSize =
+            size + "px";
+
+        char.style.opacity =
+            opacity;
+
+        /*
+         * Небольшой наклон символов
+         * по направлению спирали.
+         */
+
+        char.style.transform =
+            `rotate(${angle * 57.3 + 90}deg)`;
+
+        container.appendChild(char);
+    }
+}
+
+
+/* =========================================================
+   INITIALIZE MATRIX
 ========================================================= */
 
 document
     .querySelectorAll(".card")
-    .forEach(card => {
-
-        const description =
-            card.querySelector(".description");
-
-        description.textContent =
-            card.dataset.description;
-
-    });
-
+    .forEach(createMatrix);
 
 
 /* =========================================================
-   MATRIX-КОД
-   СОЗДАЁМ СПИРАЛЬНУЮ СТРУКТУРУ
-========================================================= */
-
-const matrixSymbols =
-    "01ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯ<>[]{}";
-
-
-document
-    .querySelectorAll(".matrix-swirl")
-    .forEach(container => {
-
-
-        const count = 95;
-
-
-        for (
-            let i = 0;
-            i < count;
-            i++
-        ) {
-
-            const char =
-                document.createElement("span");
-
-
-            char.className =
-                "matrix-char";
-
-
-            char.textContent =
-                matrixSymbols[
-                    Math.floor(
-                        Math.random()
-                        *
-                        matrixSymbols.length
-                    )
-                ];
-
-
-            /*
-             * Полярная спираль
-             */
-
-            const angle =
-                i * 0.52;
-
-            const radius =
-                5 +
-                i * 0.85;
-
-
-            const center =
-                50;
-
-
-            const x =
-                center +
-                Math.cos(angle)
-                * radius;
-
-
-            const y =
-                center +
-                Math.sin(angle)
-                * radius;
-
-
-            char.style.left =
-                x + "%";
-
-
-            char.style.top =
-                y + "%";
-
-
-            char.style.transform =
-                `rotate(${angle * 57.3}deg)`;
-
-
-            char.style.animationDelay =
-                (-Math.random() * 2)
-                + "s";
-
-
-            container.appendChild(
-                char
-            );
-
-        }
-
-    });
-
-
-
-/* =========================================================
-   TOUCH
+   MOBILE TOUCH
 ========================================================= */
 
 const isTouchDevice =
-    window.matchMedia(
-        "(hover: none)"
-    ).matches
-    ||
+    window.matchMedia("(hover: none)").matches ||
     "ontouchstart" in window;
 
+if (isTouchDevice) {
 
-document
-    .querySelectorAll(".card")
-    .forEach(card => {
-
-
-        if (isTouchDevice) {
-
+    document
+        .querySelectorAll(".card")
+        .forEach(card => {
 
             card.addEventListener(
                 "click",
                 function(event) {
 
-
-                    if (
-                        !card.classList.contains(
-                            "active"
-                        )
-                    ) {
+                    if (!card.classList.contains("active")) {
 
                         event.preventDefault();
 
-
                         document
-                            .querySelectorAll(
-                                ".card.active"
-                            )
+                            .querySelectorAll(".card.active")
                             .forEach(other => {
 
-                                if (
-                                    other !== card
-                                ) {
-
-                                    other.classList.remove(
-                                        "active"
-                                    );
-
-                                }
+                                other.classList.remove("active");
 
                             });
 
-
-                        card.classList.add(
-                            "active"
-                        );
-
+                        card.classList.add("active");
                     }
-
                 }
             );
-
-        }
-
-    });
-
-
-
-/* =========================================================
-   ЗАКРЫТИЕ
-========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        if (
-            !event.target.closest(".card")
-        ) {
-
-            document
-                .querySelectorAll(
-                    ".card.active"
-                )
-                .forEach(card => {
-
-                    card.classList.remove(
-                        "active"
-                    );
-
-                });
-
-        }
-
-    }
-);
-
-
-
-/* =========================================================
-   НЕЙРОННАЯ СЕТЬ
-   СОЕДИНЯЕТ ИМЕННО СФЕРЫ МЕНЮ
-========================================================= */
-
-const canvas =
-    document.getElementById(
-        "neuralCanvas"
-    );
-
-const ctx =
-    canvas.getContext("2d");
-
-
-let width;
-let height;
-
-let dpr =
-    window.devicePixelRatio || 1;
-
-
-/* =========================================================
-   ФОНОВЫЕ УЗЛЫ
-========================================================= */
-
-let backgroundNodes = [];
-
-const mobile =
-    window.innerWidth < 700;
-
-const NODE_COUNT =
-    mobile ? 18 : 32;
-
-
-/* =========================================================
-   ИМПУЛЬСЫ
-========================================================= */
-
-let networkPulses = [];
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-function resizeCanvas() {
-
-    dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-
-    width =
-        window.innerWidth;
-
-    height =
-        window.innerHeight;
-
-
-    canvas.width =
-        width * dpr;
-
-    canvas.height =
-        height * dpr;
-
-
-    canvas.style.width =
-        width + "px";
-
-    canvas.style.height =
-        height + "px";
-
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-}
-
-
-resizeCanvas();
-
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        resizeCanvas();
-
-        createBackgroundNodes();
-
-    }
-);
-
-
-
-/* =========================================================
-   ФОНОВЫЕ НЕЙРОНЫ
-========================================================= */
-
-function createBackgroundNodes() {
-
-    backgroundNodes = [];
-
-
-    for (
-        let i = 0;
-        i < NODE_COUNT;
-        i++
-    ) {
-
-        backgroundNodes.push({
-
-            x:
-                Math.random()
-                * width,
-
-            y:
-                Math.random()
-                * height,
-
-            radius:
-                1.3
-                +
-                Math.random() * 2.8,
-
-            vx:
-                (Math.random() - .5)
-                * .08,
-
-            vy:
-                (Math.random() - .5)
-                * .08
-
         });
 
-    }
 
-}
+    document.addEventListener(
+        "click",
+        function(event) {
 
+            if (!event.target.closest(".card")) {
 
-createBackgroundNodes();
+                document
+                    .querySelectorAll(".card.active")
+                    .forEach(card => {
 
-
-
-/* =========================================================
-   ПОЛУЧАЕМ ЦЕНТРЫ СФЕР
-========================================================= */
-
-function getCardCenters() {
-
-    return [
-
-        ...document
-            .querySelectorAll(".card")
-
-    ].map(card => {
-
-        const rect =
-            card.getBoundingClientRect();
-
-
-        return {
-
-            x:
-                rect.left
-                +
-                rect.width / 2,
-
-            y:
-                rect.top
-                +
-                rect.height / 2,
-
-            element:
-                card
-
-        };
-
-    });
-
-}
-
-
-
-/* =========================================================
-   РИСОВАНИЕ ЛИНИИ
-========================================================= */
-
-function drawLine(
-    x1,
-    y1,
-    x2,
-    y2,
-    alpha,
-    strong = false
-) {
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        x1,
-        y1
-    );
-
-    ctx.lineTo(
-        x2,
-        y2
-    );
-
-
-    ctx.strokeStyle =
-        strong
-
-        ? `rgba(75,220,255,${alpha})`
-
-        : `rgba(70,180,240,${alpha})`;
-
-
-    ctx.lineWidth =
-        strong ? 1.4 : .7;
-
-
-    ctx.stroke();
-
-}
-
-
-
-/* =========================================================
-   ИМПУЛЬС ПО ЛИНИИ
-========================================================= */
-
-function drawPulse(
-    x1,
-    y1,
-    x2,
-    y2,
-    progress
-) {
-
-    const x =
-        x1
-        +
-        (x2 - x1)
-        * progress;
-
-
-    const y =
-        y1
-        +
-        (y2 - y1)
-        * progress;
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        2.2,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "rgba(190,250,255,.95)";
-
-
-    ctx.shadowBlur =
-        14;
-
-
-    ctx.shadowColor =
-        "rgba(60,220,255,.95)";
-
-
-    ctx.fill();
-
-
-    ctx.shadowBlur =
-        0;
-
-}
-
-
-
-/* =========================================================
-   ОСНОВНАЯ АНИМАЦИЯ СЕТИ
-========================================================= */
-
-function drawNetwork() {
-
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    const cards =
-        getCardCenters();
-
-
-    /* -----------------------------------------------------
-       СОЕДИНЕНИЯ МЕЖДУ СФЕРАМИ
-    ----------------------------------------------------- */
-
-    for (
-        let i = 0;
-        i < cards.length;
-        i++
-    ) {
-
-        for (
-            let j = i + 1;
-            j < cards.length;
-            j++
-        ) {
-
-            const a =
-                cards[i];
-
-            const b =
-                cards[j];
-
-
-            const dx =
-                a.x - b.x;
-
-            const dy =
-                a.y - b.y;
-
-
-            const distance =
-                Math.sqrt(
-                    dx * dx
-                    +
-                    dy * dy
-                );
-
-
-            /*
-             * Соединяем близкие сферы.
-             */
-
-            if (
-                distance < 520
-            ) {
-
-                const alpha =
-                    Math.max(
-                        .035,
-                        .13 -
-                        distance / 5000
-                    );
-
-
-                drawLine(
-                    a.x,
-                    a.y,
-                    b.x,
-                    b.y,
-                    alpha
-                );
-
-
-                /*
-                 * Иногда запускаем импульс.
-                 */
-
-                if (
-                    Math.random() < .0008
-                ) {
-
-                    networkPulses.push({
-
-                        x1: a.x,
-                        y1: a.y,
-
-                        x2: b.x,
-                        y2: b.y,
-
-                        progress: 0,
-
-                        speed:
-                            .003
-                            +
-                            Math.random() * .004
+                        card.classList.remove("active");
 
                     });
-
-                }
-
             }
-
-        }
-
-    }
-
-
-
-    /* -----------------------------------------------------
-       ФОНОВЫЕ НЕЙРОНЫ
-    ----------------------------------------------------- */
-
-    for (
-        let i = 0;
-        i < backgroundNodes.length;
-        i++
-    ) {
-
-        const a =
-            backgroundNodes[i];
-
-
-        for (
-            let j = i + 1;
-            j < backgroundNodes.length;
-            j++
-        ) {
-
-            const b =
-                backgroundNodes[j];
-
-
-            const dx =
-                a.x - b.x;
-
-            const dy =
-                a.y - b.y;
-
-
-            const distance =
-                Math.sqrt(
-                    dx * dx
-                    +
-                    dy * dy
-                );
-
-
-            if (
-                distance < 130
-            ) {
-
-                const alpha =
-                    (
-                        1
-                        -
-                        distance / 130
-                    )
-                    *
-                    .10;
-
-
-                drawLine(
-                    a.x,
-                    a.y,
-                    b.x,
-                    b.y,
-                    alpha
-                );
-
-            }
-
-        }
-
-    }
-
-
-
-    /* -----------------------------------------------------
-       ФОНОВЫЕ ТОЧКИ
-    ----------------------------------------------------- */
-
-    backgroundNodes.forEach(
-        node => {
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                node.x,
-                node.y,
-                node.radius,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fillStyle =
-                "rgba(70,210,255,.35)";
-
-
-            ctx.shadowBlur =
-                10;
-
-
-            ctx.shadowColor =
-                "rgba(50,200,255,.6)";
-
-
-            ctx.fill();
-
-
-            ctx.shadowBlur =
-                0;
-
-
-            node.x +=
-                node.vx;
-
-            node.y +=
-                node.vy;
-
-
-            if (
-                node.x < -20
-                ||
-                node.x > width + 20
-            ) {
-
-                node.vx *= -1;
-
-            }
-
-
-            if (
-                node.y < -20
-                ||
-                node.y > height + 20
-            ) {
-
-                node.vy *= -1;
-
-            }
-
         }
     );
-
-
-
-    /* -----------------------------------------------------
-       ИМПУЛЬСЫ
-    ----------------------------------------------------- */
-
-    networkPulses =
-        networkPulses.filter(
-            pulse => {
-
-                pulse.progress +=
-                    pulse.speed;
-
-
-                drawPulse(
-                    pulse.x1,
-                    pulse.y1,
-                    pulse.x2,
-                    pulse.y2,
-                    pulse.progress
-                );
-
-
-                return (
-                    pulse.progress < 1
-                );
-
-            }
-        );
-
-
-    requestAnimationFrame(
-        drawNetwork
-    );
-
 }
-
-
-drawNetwork();
-
-
-
-/* =========================================================
-   ПЕРИОДИЧЕСКОЕ ИЗМЕНЕНИЕ MATRIX-СИМВОЛОВ
-========================================================= */
-
-setInterval(
-    () => {
-
-        document
-            .querySelectorAll(
-                ".matrix-char"
-            )
-            .forEach(char => {
-
-                if (
-                    Math.random()
-                    <
-                    .30
-                ) {
-
-                    char.textContent =
-                        matrixSymbols[
-                            Math.floor(
-                                Math.random()
-                                *
-                                matrixSymbols.length
-                            )
-                        ];
-
-                }
-
-            });
-
-    },
-    130
-);
-
-
-
-/* =========================================================
-   ОБНОВЛЕНИЕ СВЯЗЕЙ ПРИ SCROLL
-========================================================= */
-
-let scrollTick =
-    false;
-
-
-window.addEventListener(
-    "scroll",
-    () => {
-
-        if (
-            !scrollTick
-        ) {
-
-            requestAnimationFrame(
-                () => {
-
-                    scrollTick =
-                        false;
-
-                }
-            );
-
-            scrollTick =
-                true;
-
-        }
-
-    },
-    {
-        passive: true
-    }
-);
-
 
 
 /* =========================================================
@@ -2972,34 +1795,539 @@ document
     .querySelectorAll(".card")
     .forEach(card => {
 
-
         card.addEventListener(
             "focus",
-            () => {
-
-                card.classList.add(
-                    "active"
-                );
-
-            }
+            () => card.classList.add("active")
         );
-
 
         card.addEventListener(
             "blur",
-            () => {
-
-                card.classList.remove(
-                    "active"
-                );
-
-            }
+            () => card.classList.remove("active")
         );
 
     });
 
+
+/* =========================================================
+   NEURAL NETWORK CANVAS
+========================================================= */
+
+const canvas =
+    document.getElementById("neuralCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+let width = 0;
+let height = 0;
+
+let nodes = [];
+let pulses = [];
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resizeCanvas() {
+
+    width =
+        canvas.width =
+        window.innerWidth *
+        window.devicePixelRatio;
+
+    height =
+        canvas.height =
+        window.innerHeight *
+        window.devicePixelRatio;
+
+    canvas.style.width =
+        window.innerWidth + "px";
+
+    canvas.style.height =
+        window.innerHeight + "px";
+
+    ctx.setTransform(
+        window.devicePixelRatio,
+        0,
+        0,
+        window.devicePixelRatio,
+        0,
+        0
+    );
+
+    createBackgroundNodes();
+}
+
+
+/* =========================================================
+   BACKGROUND NODES
+========================================================= */
+
+function createBackgroundNodes() {
+
+    nodes = [];
+
+    const count =
+        Math.min(
+            65,
+            Math.max(
+                28,
+                Math.floor(
+                    window.innerWidth / 24
+                )
+            )
+        );
+
+    for (let i = 0; i < count; i++) {
+
+        nodes.push({
+
+            x:
+                Math.random() *
+                window.innerWidth,
+
+            y:
+                Math.random() *
+                window.innerHeight,
+
+            r:
+                .7 +
+                Math.random() * 1.7,
+
+            phase:
+                Math.random() *
+                Math.PI *
+                2
+
+        });
+    }
+}
+
+
+/* =========================================================
+   CARD CENTERS
+========================================================= */
+
+function getCardCenters() {
+
+    return [
+        ...document
+            .querySelectorAll(".card")
+    ]
+    .map(card => {
+
+        const rect =
+            card.getBoundingClientRect();
+
+        return {
+
+            x:
+                rect.left +
+                rect.width / 2,
+
+            y:
+                rect.top +
+                rect.height / 2
+        };
+    });
+}
+
+
+/* =========================================================
+   DISTANCE
+========================================================= */
+
+function distance(a, b) {
+
+    const dx =
+        a.x - b.x;
+
+    const dy =
+        a.y - b.y;
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
+}
+
+
+/* =========================================================
+   PULSES
+========================================================= */
+
+function createPulse(a, b) {
+
+    pulses.push({
+
+        a,
+        b,
+
+        progress: 0,
+
+        speed:
+            .0015 +
+            Math.random() * .0018,
+
+        life: 1
+    });
+}
+
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function drawNetwork(time) {
+
+    ctx.clearRect(
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    const cardCenters =
+        getCardCenters();
+
+
+    /* -----------------------------------------------------
+       BACKGROUND NEURONS
+    ----------------------------------------------------- */
+
+    for (let i = 0; i < nodes.length; i++) {
+
+        const node =
+            nodes[i];
+
+        node.phase += .004;
+
+        const glow =
+            .35 +
+            Math.sin(node.phase) *
+            .15;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            node.x,
+            node.y,
+            node.r,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(70,210,255,${glow})`;
+
+        ctx.fill();
+
+
+        for (
+            let j = i + 1;
+            j < nodes.length;
+            j++
+        ) {
+
+            const other =
+                nodes[j];
+
+            const dist =
+                distance(node, other);
+
+            if (dist < 170) {
+
+                const alpha =
+                    (1 - dist / 170) *
+                    .13;
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    node.x,
+                    node.y
+                );
+
+                ctx.lineTo(
+                    other.x,
+                    other.y
+                );
+
+                ctx.strokeStyle =
+                    `rgba(50,190,240,${alpha})`;
+
+                ctx.lineWidth = .7;
+
+                ctx.stroke();
+            }
+        }
+    }
+
+
+    /* -----------------------------------------------------
+       SPHERE CONNECTIONS
+    ----------------------------------------------------- */
+
+    for (
+        let i = 0;
+        i < cardCenters.length;
+        i++
+    ) {
+
+        for (
+            let j = i + 1;
+            j < cardCenters.length;
+            j++
+        ) {
+
+            const a =
+                cardCenters[i];
+
+            const b =
+                cardCenters[j];
+
+            const dist =
+                distance(a, b);
+
+            if (dist < 620) {
+
+                const alpha =
+                    Math.max(
+                        .04,
+                        1 -
+                        dist / 620
+                    ) * .32;
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    a.x,
+                    a.y
+                );
+
+                /*
+                 * Немного изгибаем линию,
+                 * чтобы она не выглядела
+                 * обычным прямым проводом.
+                 */
+
+                const midX =
+                    (a.x + b.x) / 2;
+
+                const midY =
+                    (a.y + b.y) / 2;
+
+                const dx =
+                    b.x - a.x;
+
+                const dy =
+                    b.y - a.y;
+
+                const length =
+                    Math.sqrt(
+                        dx * dx +
+                        dy * dy
+                    );
+
+                const nx =
+                    -dy / length;
+
+                const ny =
+                    dx / length;
+
+                const bend =
+                    Math.sin(
+                        time * .0004 +
+                        i * 2 +
+                        j
+                    ) * 12;
+
+                ctx.quadraticCurveTo(
+
+                    midX +
+                    nx * bend,
+
+                    midY +
+                    ny * bend,
+
+                    b.x,
+                    b.y
+                );
+
+                ctx.strokeStyle =
+                    `rgba(50,205,245,${alpha})`;
+
+                ctx.lineWidth = 1;
+
+                ctx.stroke();
+
+
+                /*
+                 * Периодически запускаем
+                 * импульс по соединению.
+                 */
+
+                if (
+                    Math.random() <
+                    .0008
+                ) {
+
+                    createPulse(
+                        a,
+                        b
+                    );
+                }
+            }
+        }
+    }
+
+
+    /* -----------------------------------------------------
+       PULSES
+    ----------------------------------------------------- */
+
+    for (
+        let i = pulses.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const pulse =
+            pulses[i];
+
+        pulse.progress +=
+            pulse.speed *
+            16;
+
+        if (
+            pulse.progress >= 1
+        ) {
+
+            pulses.splice(i, 1);
+
+            continue;
+        }
+
+        const x =
+            pulse.a.x +
+            (
+                pulse.b.x -
+                pulse.a.x
+            ) *
+            pulse.progress;
+
+        const y =
+            pulse.a.y +
+            (
+                pulse.b.y -
+                pulse.a.y
+            ) *
+            pulse.progress;
+
+        const gradient =
+            ctx.createRadialGradient(
+                x,
+                y,
+                0,
+                x,
+                y,
+                14
+            );
+
+        gradient.addColorStop(
+            0,
+            "rgba(130,255,255,.95)"
+        );
+
+        gradient.addColorStop(
+            1,
+            "rgba(40,200,255,0)"
+        );
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            14,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            gradient;
+
+        ctx.fill();
+    }
+
+
+    /* -----------------------------------------------------
+       SMALL SYNAPTIC PARTICLES
+    ----------------------------------------------------- */
+
+    for (
+        let i = 0;
+        i < cardCenters.length;
+        i++
+    ) {
+
+        const p =
+            cardCenters[i];
+
+        const pulse =
+            1 +
+            Math.sin(
+                time * .002 +
+                i
+            ) * .4;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            2.2 * pulse,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "rgba(90,230,255,.55)";
+
+        ctx.shadowBlur = 12;
+
+        ctx.shadowColor =
+            "rgba(50,220,255,.7)";
+
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+    }
+
+
+    requestAnimationFrame(
+        drawNetwork
+    );
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+requestAnimationFrame(
+    drawNetwork
+);
+
 </script>
 
 </body>
-
 </html>
