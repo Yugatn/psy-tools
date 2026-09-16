@@ -16,24 +16,27 @@ h2{margin-top:0}
 .muted{color:var(--muted)}
 .progress-wrap{position:relative;margin-top:26px}
 .progress{height:8px;background:#20324b;border-radius:9px;overflow:hidden;position:relative}
-.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.25s}
-.walker{position:absolute;top:-20px;left:0;font-size:22px;line-height:1;transform:translateX(-50%) scaleX(-1);transition:left .3s cubic-bezier(.4,.9,.3,1);pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s;will-change:width}
+.walker{position:absolute;top:-20px;left:0;font-size:22px;line-height:1;transform:translateX(-50%) scaleX(-1);transition:left .3s cubic-bezier(.4,.9,.3,1);pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));will-change:left}
 .progress-finish{position:absolute;top:-22px;right:-4px;font-size:22px;line-height:1;opacity:.35;transition:opacity .3s,transform .3s}
 .progress-finish.reached{opacity:1;transform:scale(1.15)}
 .card{padding:24px;margin-bottom:16px}
 .hidden{display:none!important}
 label.field{display:block;margin:12px 0;color:var(--muted)}
 input[type=text],input[type=number],select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0b1728;color:var(--text);font:inherit}
+input.invalid,select.invalid{border-color:var(--danger)!important;box-shadow:0 0 0 2px rgba(251,113,133,.25)}
 .qnum{color:var(--accent);font-weight:700;text-align:center;margin-bottom:8px}
 .qtext{font-size:clamp(18px,2.6vw,22px);line-height:1.5;margin:0 auto 24px;max-width:640px;min-height:110px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 10px}
 .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:760px;margin:0 auto}
 button.option,button.main{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:16px 12px;border-radius:14px;cursor:pointer;font:inherit;text-align:center;transition:.18s;display:flex;align-items:center;justify-content:center}
 button.option:hover,button.main:hover{border-color:var(--accent);transform:translateY(-1px)}
+button.option:focus-visible,button.main:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button.option.selected{border-color:var(--accent);background:rgba(94,234,212,.12);box-shadow:0 0 0 1px var(--accent) inset}
+button.option .hotkey{display:inline-block;margin-right:6px;opacity:.5;font-size:11px}
 .actions{display:flex;gap:10px;justify-content:space-between;margin-top:22px}
 button.main{text-align:center;background:linear-gradient(135deg,#164e63,#1d4ed8);border:0;font-weight:700;padding:14px 18px}
 button.main.secondary{background:#17263a;border:1px solid var(--line)}
-.error{color:var(--danger);margin-top:10px}
+.error{color:var(--danger);margin-top:10px;min-height:20px;font-size:13px}
 canvas{width:100%;max-width:650px;display:block;margin:auto;cursor:pointer}
 #barChart{max-width:740px}
 .resultgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
@@ -42,7 +45,8 @@ canvas{width:100%;max-width:650px;display:block;margin:auto;cursor:pointer}
 .score{font-size:28px;font-weight:800}
 .note{font-size:13px;color:var(--muted)}
 .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;font-style:italic}
-footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:18px;line-height:1.6}
+footer .disclaimer{opacity:.7;font-size:11px;margin-top:6px}
 .warning-box{background:linear-gradient(135deg,rgba(94,234,212,.08),rgba(96,165,250,.08));border:1px solid rgba(94,234,212,.28);border-radius:14px;padding:16px 18px;margin-bottom:20px;font-size:14px;line-height:1.6}
 .warning-box strong{color:var(--accent)}
 .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
@@ -92,11 +96,13 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
     <h1>Личностный профиль</h1>
     <div class="muted">16PF · 185 заданий · локальная обработка</div>
     <div class="progress-wrap">
-        <div class="progress"><div class="bar" id="bar"></div></div>
-        <div class="walker" id="walker">🚶</div>
-        <div class="progress-finish" id="progressFinish">🏠</div>
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBarRole">
+            <div class="bar" id="bar"></div>
+        </div>
+        <div class="walker" id="walker" aria-hidden="true">🚶</div>
+        <div class="progress-finish" id="progressFinish" aria-hidden="true">🏠</div>
     </div>
-    <div id="counter" class="muted" style="margin-top:14px;text-align:center">Старт</div>
+    <div id="counter" class="muted" style="margin-top:14px;text-align:center" aria-live="polite">Старт</div>
 </header>
 
 <section id="intro" class="card">
@@ -110,19 +116,19 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
     <p class="muted">Выберите один вариант для каждой фразы. Здесь нет «правильных» ответов.</p>
     <div class="actions">
         <span></span>
-        <button class="main" onclick="start()">Начать тест</button>
+        <button class="main" id="startBtn">Начать тест</button>
     </div>
 </section>
 
 <section id="test" class="card hidden">
     <div class="qnum" id="qnum"></div>
     <div class="qtext" id="qtext"></div>
-    <div class="answers" id="answers"></div>
+    <div class="answers" id="answers" role="radiogroup" aria-label="Варианты ответа"></div>
     <div class="actions">
-        <button class="main secondary" onclick="prev()">Назад</button>
-        <button class="main" onclick="next()">Далее</button>
+        <button class="main secondary" id="prevBtn">Назад</button>
+        <button class="main" id="nextBtn">Далее</button>
     </div>
-    <p id="qerr" class="error"></p>
+    <p id="qerr" class="error" role="alert" aria-live="assertive"></p>
 </section>
 
 <section id="result" class="hidden">
@@ -134,7 +140,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
 
     <div class="card">
         <h2>Профиль в стенах</h2>
-        <p class="muted">Стены — стандартная шкала 1–10 со средним значением 5.5. Используется в классическом 16PF.</p>
+        <p class="muted">Стены — стандартная шкала 1–10 со средним значением около 5.5. Используется в классическом 16PF.</p>
         <canvas id="barChart" width="740" height="560"></canvas>
         <p class="hint">Нажмите на столбик, чтобы увидеть подробное описание</p>
     </div>
@@ -144,11 +150,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
         <p class="muted">Этот опросник проходит научную валидацию. Вы можете анонимно дополнить свои ответы — это поможет проверить, как профиль связан с базовыми характеристиками.</p>
         <div class="demo-grid">
             <div class="demo-field">
-                <label>Возраст</label>
-                <input type="number" id="demoAge" min="14" max="99" placeholder="Например: 27">
+                <label for="demoAge">Возраст</label>
+                <input type="number" id="demoAge" min="14" max="120" placeholder="Например: 27">
             </div>
             <div class="demo-field">
-                <label>Знак зодиака</label>
+                <label for="demoZodiac">Знак зодиака</label>
                 <select id="demoZodiac">
                     <option value="">— Не выбрано —</option>
                     <option>Овен</option><option>Телец</option><option>Близнецы</option>
@@ -162,14 +168,14 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
 
         <div class="demo-field" style="margin-bottom:14px">
             <label>Пол</label>
-            <div class="demo-gender" id="demoGender">
+            <div class="demo-gender" id="demoGender" role="radiogroup">
                 <button type="button" data-val="Мужской">Мужской</button>
                 <button type="button" data-val="Женский">Женский</button>
             </div>
         </div>
 
         <div class="demo-field" style="margin-bottom:14px">
-            <label>Уровень образования</label>
+            <label for="demoEducation">Уровень образования</label>
             <select id="demoEducation">
                 <option value="">— Не выбрано —</option>
                 <option>Среднее</option>
@@ -183,14 +189,14 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
 
         <div class="consent-box">
             <label>
-                <input type="checkbox" id="consentCheck" onchange="updateSubmitState()">
+                <input type="checkbox" id="consentCheck">
                 <span>Я согласен(на) на отправку <strong>обезличенных</strong> данных для научного анализа. Имя и контакты не собираются.</span>
             </label>
         </div>
 
-        <div id="demoStatus" class="muted" style="font-size:13px;text-align:center;margin-bottom:12px"></div>
+        <div id="demoStatus" class="muted" style="font-size:13px;text-align:center;margin-bottom:12px" role="status" aria-live="polite"></div>
 
-        <button class="main" id="demoSubmitBtn" onclick="submitDemographics()" disabled style="width:100%">
+        <button class="main" id="demoSubmitBtn" disabled style="width:100%">
             Отправить данные
         </button>
     </div>
@@ -205,27 +211,35 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
         <div id="quality"></div>
         <div class="actions" style="margin-top:20px">
             <span></span>
-            <button class="main secondary" onclick="downloadJSON()">Сохранить локально</button>
+            <button class="main secondary" id="downloadBtn">Сохранить локально</button>
         </div>
     </div>
 </section>
 
-<footer>Самостоятельная веб-реализация. Не является официальным бланком или лицензированной версией 16PF.</footer>
+<footer>
+    Самостоятельная веб-реализация. Не является официальным бланком или лицензированной версией 16PF.
+    <div class="disclaimer">
+        Шкала стен рассчитана упрощённо для демонстрации. Результат не является валидным психометрическим заключением.
+    </div>
+</footer>
 </div>
 
-<div class="modal" id="factorModal">
+<div class="modal" id="factorModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="modal-content">
-        <button class="modal-close" onclick="closeModal()">×</button>
+        <button class="modal-close" id="modalCloseBtn" aria-label="Закрыть">×</button>
         <div class="modal-code" id="mCode">A</div>
         <div class="modal-title" id="mTitle">Теплота</div>
         <div class="modal-score" id="mScore"><strong>5</strong> стен</div>
         <div class="modal-level" id="mLevel"></div>
         <div id="mBody"></div>
-        <button class="modal-btn" onclick="closeModal()">Понятно</button>
+        <button class="modal-btn" id="modalOkBtn">Понятно</button>
     </div>
 </div>
 
 <script>
+/* ============================================================
+   КОНСТАНТЫ
+============================================================ */
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВСТАВЬТЕ_ID/exec";
 
 const factors = [
@@ -295,6 +309,7 @@ const factors = [
      low:"Низкий полюс — «расслабленность». Человек спокоен, не торопится, устойчив к медленному темпу. Хорошо переносит монотонность. Может быть недостаточно инициативным."}
 ];
 
+/* Вопросы — прямые (строка) и обратные ({r:"..."}) для контроля стиля ответа */
 const Q_SRC = {
     A:["Мне легко начать непринуждённый разговор с новым человеком.",{r:"Мне обычно неинтересно, что чувствуют люди, с которыми я общаюсь."},"Мне комфортно проводить время в компании.",{r:"Я предпочитаю не делиться личными впечатлениями даже с близкими."},"Мне важно чувствовать эмоциональный контакт с окружающими.",{r:"Мне сложно найти тему для разговора даже со знакомыми."},"Я предпочитаю поддерживать отношения, даже если для этого нужна инициатива.",{r:"В группе я обычно не замечаю тех, кто хочет присоединиться к разговору."},"Мне проще решить вопрос через разговор, чем избегать контакта.",{r:"При первом знакомстве я обычно держусь холодно и отстранённо."},"Мне интересно узнавать людей с отличающимся от моего образом жизни."],
     B:["Мне нравится разбираться в закономерностях, стоящих за отдельными фактами.",{r:"Мне трудно понимать абстрактные объяснения, даже если они логично построены."},"Мне интересно искать общий принцип для разных ситуаций.",{r:"Мне проще запомнить отдельные действия, чем понять систему."},"Мне нравится решать задачи, в которых нет готового алгоритма.",{r:"Я обычно не замечаю связей между событиями, которые кажутся разными."},"Сложная теория может быть для меня интереснее простого практического примера.",{r:"Мне трудно удерживать в уме несколько взаимосвязанных идей одновременно."},"Мне интересно рассматривать проблему с нескольких концептуальных точек зрения.",{r:"Я предпочитаю обходиться без схем и моделей при разборе явлений."},"Необычная интеллектуальная задача скорее привлекает меня, чем отпугивает."],
@@ -314,85 +329,151 @@ const Q_SRC = {
     Q4:["Мне трудно бездействовать, когда важный вопрос ещё не решён.",{r:"В ожидании результата я обычно спокоен."},"Мне хочется быстрее перейти от обсуждения к действию.",{r:"Затянувшаяся задача обычно не вызывает у меня желания её ускорить."},"Я могу раздражаться, когда процесс неоправданно медленный.",{r:"После интенсивного дня я легко переключаюсь на отдых."},"Нерешённая проблема может продолжать занимать мои мысли.",{r:"Напряжение переносится легче, когда нет возможности действовать."},"Я склонен активно искать следующий шаг, если текущий уже понятен.",{r:"В период высокой нагрузки мой внутренний темп обычно не меняется."},"Мне бывает сложно терпеливо ждать, когда решение зависит от других.",{r:"Я спокойно переношу длительное отсутствие активности."}]
 };
 
+/* Разворачиваем в плоский массив */
 const questions = [];
-let _id = 0;
-for (const factor of Object.keys(Q_SRC)) {
-    for (const item of Q_SRC[factor]) {
-        _id++;
-        if (typeof item === "string") questions.push({id:_id, factor:factor, text:item, reverse:false});
-        else questions.push({id:_id, factor:factor, text:item.r, reverse:true});
+(function buildQuestions() {
+    let id = 0;
+    for (const factor of Object.keys(Q_SRC)) {
+        for (const item of Q_SRC[factor]) {
+            id++;
+            if (typeof item === "string") {
+                questions.push({ id, factor, text: item, reverse: false });
+            } else {
+                questions.push({ id, factor, text: item.r, reverse: true });
+            }
+        }
     }
-}
+})();
 
-const labels = ["Совсем не похоже на меня","Отчасти похоже на меня","Очень похоже на меня"];
+const labels = [
+    "Совсем не похоже на меня",
+    "Отчасти похоже на меня",
+    "Очень похоже на меня"
+];
 
+/* ============================================================
+   СОСТОЯНИЕ
+============================================================ */
 let answers = [];
 let idx = 0;
 let factorPositions = [];
 let barPositions = [];
 let lastResults = null;
-let demographics = { age:null, gender:"", zodiac:"", education:"" };
+let demographics = { age: null, gender: "", zodiac: "", education: "" };
 let submitted = false;
+let modalIsOpen = false;
 
 const DONE_KEY = "cattell_done_v2";
 const SAVED_KEY = "cattell_saved_v2";
 
-function isCompleted() { try { return localStorage.getItem(DONE_KEY) === "1"; } catch (e) { return false; } }
-function markCompleted() { try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {} }
-function savedResults() {
-    try {
-        const raw = localStorage.getItem(SAVED_KEY);
-        return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+/* ============================================================
+   БЕЗОПАСНАЯ РАБОТА С localStorage
+============================================================ */
+function safeLSGet(key) {
+    try { return localStorage.getItem(key); }
+    catch (e) { console.warn('localStorage недоступен:', e); return null; }
+}
+function safeLSSet(key, value) {
+    try { localStorage.setItem(key, value); return true; }
+    catch (e) { console.warn('localStorage: запись не удалась', e); return false; }
+}
+function safeLSRemove(key) {
+    try { localStorage.removeItem(key); }
+    catch (e) {}
 }
 
+function isCompleted() { return safeLSGet(DONE_KEY) === "1"; }
+function markCompleted() { safeLSSet(DONE_KEY, "1"); }
+
+function savedResults() {
+    const raw = safeLSGet(SAVED_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw); }
+    catch (e) { console.error('Повреждённый JSON в localStorage', e); return null; }
+}
+function persistResults(obj) {
+    safeLSSet(SAVED_KEY, JSON.stringify(obj));
+}
+
+/* ============================================================
+   ХЕЛПЕРЫ DOM
+============================================================ */
+const $ = (id) => document.getElementById(id);
+
+function show(elOrId) {
+    const el = typeof elOrId === "string" ? $(elOrId) : elOrId;
+    if (el) el.classList.remove('hidden');
+}
+function hide(elOrId) {
+    const el = typeof elOrId === "string" ? $(elOrId) : elOrId;
+    if (el) el.classList.add('hidden');
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+============================================================ */
 function boot() {
-    try {
-        localStorage.removeItem('cattell_done_v1');
-        localStorage.removeItem('cattell_saved_v1');
-    } catch (e) {}
+    /* Убираем устаревшие ключи v1 */
+    safeLSRemove('cattell_done_v1');
+    safeLSRemove('cattell_saved_v1');
+
+    /* Сброс состояния на случай, если предыдущая сессия была прервана */
+    answers = [];
+    idx = 0;
+    factorPositions = [];
+    barPositions = [];
+    lastResults = null;
+    demographics = { age: null, gender: "", zodiac: "", education: "" };
+    submitted = false;
 
     if (isCompleted()) {
         const saved = savedResults();
-        if (saved) showCompletedScreen(saved);
-        else document.getElementById('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
+        if (saved) {
+            showCompletedScreen(saved);
+            return;
+        }
+        $('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
         return;
     }
-    document.getElementById('intro').classList.remove('hidden');
+
+    show('intro');
 }
 
+/* ============================================================
+   ПОКАЗ ЗАВЕРШЁННОГО ПРОФИЛЯ
+============================================================ */
 function showCompletedScreen(saved) {
-    document.getElementById('intro').classList.add('hidden');
-    document.getElementById('test').classList.add('hidden');
-    document.getElementById('result').classList.remove('hidden');
-    document.getElementById('counter').textContent = 'Готово';
-    document.getElementById('bar').style.width = '100%';
-    document.getElementById('walker').textContent = '🏠';
-    document.getElementById('walker').style.left = '100%';
-    document.getElementById('progressFinish').classList.add('reached');
+    hide('intro');
+    hide('test');
+    show('result');
 
-    answers = saved.answers || [];
+    $('counter').textContent = 'Готово';
+    $('bar').style.width = '100%';
+    $('progressBarRole').setAttribute('aria-valuenow', '100');
+    $('walker').textContent = '🏠';
+    $('walker').style.left = '100%';
+    $('progressFinish').classList.add('reached');
+
+    answers = Array.isArray(saved.answers) ? saved.answers : [];
 
     let res = saved.results;
-    let needRecalc = !res || !res.length || (typeof res[0].sten !== 'number');
+    const needRecalc = !Array.isArray(res) || !res.length || (typeof res[0].sten !== 'number');
 
     if (needRecalc && answers.length === questions.length) {
         res = calc();
-        try {
-            saved.results = res;
-            localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
-        } catch (e) {}
+        saved.results = res;
+        persistResults(saved);
     }
 
-    if (!res || !res.length) {
-        document.getElementById('result').innerHTML = '<div class="card"><h2>Не удалось загрузить результат</h2><p class="muted">Сбросьте данные браузера и пройдите тест заново.</p></div>';
+    if (!Array.isArray(res) || !res.length) {
+        $('result').innerHTML = '<div class="card"><h2>Не удалось загрузить результат</h2><p class="muted">Сбросьте данные браузера и пройдите тест заново.</p></div>';
         return;
     }
 
     lastResults = res;
 
     if (saved.submitted) {
-        document.getElementById('demoCard').classList.add('hidden');
+        hide('demoCard');
         submitted = true;
     }
 
@@ -402,39 +483,65 @@ function showCompletedScreen(saved) {
     quality();
 }
 
-function start() {
-    document.getElementById('intro').classList.add('hidden');
-    document.getElementById('test').classList.remove('hidden');
+/* ============================================================
+   ОСНОВНОЙ ТЕСТ
+============================================================ */
+function startTest() {
+    hide('intro');
+    show('test');
     render();
 }
 
 function render() {
     const q = questions[idx];
-    document.getElementById('qnum').textContent = `Задание ${q.id} из ${questions.length}`;
-    document.getElementById('qtext').textContent = q.text;
-    document.getElementById('counter').textContent = `${idx + 1} / ${questions.length}`;
+    $('qnum').textContent = `Задание ${q.id} из ${questions.length}`;
+    $('qtext').textContent = q.text;
+    $('counter').textContent = `${idx + 1} / ${questions.length}`;
     updateProgress();
     updateWalker();
-    const box = document.getElementById('answers');
+
+    const box = $('answers');
     box.innerHTML = '';
+
     labels.forEach((label, i) => {
         const b = document.createElement('button');
+        b.type = 'button';
         b.className = 'option' + (answers[idx] === i ? ' selected' : '');
-        b.textContent = label;
-        b.onclick = () => { answers[idx] = i; document.getElementById('qerr').textContent = ''; render(); };
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', answers[idx] === i ? 'true' : 'false');
+        b.innerHTML = `<span class="hotkey">${i + 1}</span>${label}`;
+        b.addEventListener('click', () => selectAnswer(i));
         box.appendChild(b);
     });
+
+    $('prevBtn').disabled = idx === 0;
+
+    if (idx === questions.length - 1) {
+        $('nextBtn').textContent = 'Показать результат';
+    } else {
+        $('nextBtn').textContent = 'Далее →';
+    }
+
+    $('qerr').textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectAnswer(i) {
+    answers[idx] = i;
+    $('qerr').textContent = '';
+    render();
 }
 
 function updateProgress() {
     const pct = (idx / questions.length) * 100;
-    document.getElementById('bar').style.width = pct + '%';
+    $('bar').style.width = pct + '%';
+    $('progressBarRole').setAttribute('aria-valuenow', Math.round(pct));
 }
 
 function updateWalker() {
     const pct = (idx / questions.length) * 100;
-    const walker = document.getElementById('walker');
-    const finish = document.getElementById('progressFinish');
+    const walker = $('walker');
+    const finish = $('progressFinish');
     if (idx >= questions.length) {
         walker.textContent = '🏠';
         walker.style.left = '100%';
@@ -445,31 +552,33 @@ function updateWalker() {
     }
 }
 
-function next() {
+function nextQuestion() {
     if (answers[idx] === undefined) {
-        document.getElementById('qerr').textContent = 'Пожалуйста, выберите один из вариантов.';
+        $('qerr').textContent = 'Пожалуйста, выберите один из вариантов.';
         return;
     }
     if (idx < questions.length - 1) {
         idx++;
         render();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         finish();
     }
 }
 
-function prev() {
+function prevQuestion() {
     if (idx > 0) {
         idx--;
         render();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
+/* ============================================================
+   ПОДСЧЁТ
+============================================================ */
 function calc() {
-    const raw = Object.fromEntries(factors.map(f => [f.code, 0]));
-    const cnt = Object.fromEntries(factors.map(f => [f.code, 0]));
+    const raw = {};
+    const cnt = {};
+    factors.forEach(f => { raw[f.code] = 0; cnt[f.code] = 0; });
 
     questions.forEach((q, i) => {
         let s = answers[i];
@@ -495,22 +604,29 @@ function calc() {
 
 function finish() {
     if (answers.length < questions.length || answers.some(x => x === undefined)) {
-        document.getElementById('qerr').textContent = 'Нужно ответить на все задания.';
+        $('qerr').textContent = 'Нужно ответить на все задания.';
         return;
     }
+
     markCompleted();
-    document.getElementById('test').classList.add('hidden');
-    document.getElementById('result').classList.remove('hidden');
-    document.getElementById('counter').textContent = 'Готово';
-    document.getElementById('bar').style.width = '100%';
+
+    hide('test');
+    show('result');
+    $('counter').textContent = 'Готово';
+    $('bar').style.width = '100%';
+    $('progressBarRole').setAttribute('aria-valuenow', '100');
     updateWalker();
+
     const res = calc();
     lastResults = res;
-    try {
-        localStorage.setItem(SAVED_KEY, JSON.stringify({
-            answers: answers.slice(), results: res, date: new Date().toISOString(), submitted: false
-        }));
-    } catch (e) {}
+
+    persistResults({
+        answers: answers.slice(),
+        results: res,
+        date: new Date().toISOString(),
+        submitted: false
+    });
+
     draw(res);
     drawBars(res);
     renderDescriptions(res);
@@ -518,6 +634,9 @@ function finish() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* ============================================================
+   ИНТЕРПРЕТАЦИЯ
+============================================================ */
 function level(s) {
     if (s < 34) return 'низкая выраженность';
     if (s < 67) return 'средняя выраженность';
@@ -525,7 +644,7 @@ function level(s) {
 }
 
 function renderDescriptions(res) {
-    document.getElementById('descriptions').innerHTML = res.map(r => `
+    $('descriptions').innerHTML = res.map(r => `
         <div class="factor">
             <b>${r.code} · ${r.name}</b>
             <div class="score">${r.sten} <span style="font-size:14px;font-weight:600;color:var(--muted)">стен</span></div>
@@ -539,12 +658,12 @@ function renderDescriptions(res) {
 function quality() {
     const same = answers.filter((x, i) => i > 0 && x === answers[i - 1]).length;
     const middle = answers.filter(x => x === 1).length;
-    const middlePct = Math.round(middle / answers.length * 100);
+    const middlePct = Math.round(middle / Math.max(1, answers.length) * 100);
     let note = '';
     if (same > 40) note = '<br>⚠️ Много одинаковых ответов подряд. Часть заданий могла быть пройдена автоматически — это снижает точность.';
     else if (middlePct > 60) note = '<br>⚠️ Больше половины ответов — «Отчасти похоже». Это снижает дифференциацию профиля.';
     else note = '<br>✓ Ответы выглядят достаточно дифференцированными.';
-    document.getElementById('quality').innerHTML =
+    $('quality').innerHTML =
         `Заполнено: <b>${answers.length}/${questions.length}</b>. ` +
         `Повтор одинакового ответа подряд: <b>${same}</b>. ` +
         `Ответов «Отчасти похоже»: <b>${middlePct}%</b>.` + note;
@@ -554,10 +673,10 @@ function quality() {
    РАДАР
 ============================================================ */
 function draw(res) {
-    const c = document.getElementById('chart');
+    const c = $('chart');
     if (!c) return;
     const ctx = c.getContext('2d');
-    const dpr = devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
     c.width = 700 * dpr;
     c.height = 620 * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -672,14 +791,15 @@ function draw(res) {
 }
 
 /* ============================================================
-   ВЕРТИКАЛЬНАЯ СТОЛБЧАТАЯ ДИАГРАММА (исправлено)
-   Ось Y: 0 → 10 (стен 1 = 10% высоты)
+   СТОЛБЧАТАЯ ДИАГРАММА (переписана заново)
+   Шкала 0–10 снизу вверх. Столбик стена 10 = 100% высоты,
+   стена 1 = 10%, стена 5 = 50%.
 ============================================================ */
 function drawBars(res) {
-    const c = document.getElementById('barChart');
+    const c = $('barChart');
     if (!c) return;
     const ctx = c.getContext('2d');
-    const dpr = devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
 
     const W = 740, H = 560;
     c.width = W * dpr;
@@ -688,11 +808,7 @@ function drawBars(res) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, W, H);
 
-    const padL = 46;
-    const padR = 20;
-    const padT = 46;
-    const padB = 70;
-
+    const padL = 46, padR = 20, padT = 46, padB = 70;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
     const baselineY = padT + chartH;
@@ -701,28 +817,27 @@ function drawBars(res) {
     const colGap = chartW / N;
     const barW = colGap * 0.62;
 
-    /* Функция: стен → Y-координата на canvas (0 внизу, 10 вверху) */
+    /* стен → координата Y (0 внизу = baselineY, 10 сверху = padT) */
     const yForSten = (sten) => baselineY - (sten / 10) * chartH;
 
     barPositions = [];
 
     /* ---------- Зоны фона ---------- */
-    /* НИЗКО: 0–3.5 */
+    /* НИЗКО 0–3.5 */
     ctx.fillStyle = 'rgba(251,113,133,.06)';
     ctx.fillRect(padL, yForSten(3.5), chartW, baselineY - yForSten(3.5));
 
-    /* СРЕДНЕ: 3.5–7.5 */
+    /* СРЕДНЕ 3.5–7.5 */
     ctx.fillStyle = 'rgba(148,163,184,.05)';
     ctx.fillRect(padL, yForSten(7.5), chartW, yForSten(3.5) - yForSten(7.5));
 
-    /* ВЫСОКО: 7.5–10 */
+    /* ВЫСОКО 7.5–10 */
     ctx.fillStyle = 'rgba(94,234,212,.06)';
     ctx.fillRect(padL, padT, chartW, yForSten(7.5) - padT);
 
-    /* ---------- Сетка по стенам 0-10 ---------- */
+    /* ---------- Горизонтальная сетка 0–10 ---------- */
     for (let s = 0; s <= 10; s++) {
         const y = yForSten(s);
-
         ctx.beginPath();
         ctx.moveTo(padL, y);
         ctx.lineTo(padL + chartW, y);
@@ -737,7 +852,7 @@ function drawBars(res) {
         ctx.fillText(s.toString(), padL - 8, y);
     }
 
-    /* Средняя линия 5.5 (популяционное среднее) */
+    /* Средняя линия 5.5 */
     const yAvg = yForSten(5.5);
     ctx.beginPath();
     ctx.moveTo(padL, yAvg);
@@ -769,12 +884,10 @@ function drawBars(res) {
     res.forEach((r, i) => {
         const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
         const colX = padL + i * colGap + (colGap - barW) / 2;
-
-        /* Y верх столбика */
         const barTopY = yForSten(stenVal);
         const barH = baselineY - barTopY;
 
-        /* Область для клика */
+        /* Зона клика */
         barPositions.push({
             x: padL + i * colGap,
             y: padT,
@@ -783,7 +896,6 @@ function drawBars(res) {
             code: r.code
         });
 
-        /* Столбик */
         if (barH > 0) {
             const grad = ctx.createLinearGradient(0, barTopY, 0, baselineY);
             grad.addColorStop(0, r.color);
@@ -802,7 +914,6 @@ function drawBars(res) {
             ctx.fillStyle = grad;
             ctx.fill();
 
-            /* Обводка верхушки */
             ctx.beginPath();
             ctx.moveTo(colX, barTopY + rad);
             ctx.arcTo(colX, barTopY, colX + rad, barTopY, rad);
@@ -813,21 +924,21 @@ function drawBars(res) {
             ctx.stroke();
         }
 
-        /* Значение стена сверху столбика */
+        /* Значение стена сверху */
         ctx.fillStyle = r.color;
         ctx.font = '800 13px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         ctx.fillText(stenVal.toString(), colX + barW / 2, barTopY - 4);
 
-        /* Код фактора под столбиком */
+        /* Код фактора снизу */
         ctx.fillStyle = '#eef5ff';
         ctx.font = '700 11px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText(r.code, colX + barW / 2, baselineY + 8);
 
-        /* Название — мелко, в 2 строки */
+        /* Короткое название — мелко */
         ctx.fillStyle = '#9db0c8';
         ctx.font = '9px system-ui';
         ctx.textBaseline = 'top';
@@ -845,9 +956,9 @@ function drawBars(res) {
 /* ============================================================
    КЛИК ПО РАДАРУ
 ============================================================ */
-document.getElementById('chart').addEventListener('click', function (e) {
+function handleRadarClick(e) {
     if (!factorPositions.length) return;
-    const rect = this.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const scaleX = 700 / rect.width;
     const scaleY = 620 / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
@@ -875,14 +986,11 @@ document.getElementById('chart').addEventListener('click', function (e) {
     }
 
     if (closest) showFactorModal(closest.code);
-});
+}
 
-/* ============================================================
-   КЛИК ПО СТОЛБЧАТОЙ ДИАГРАММЕ
-============================================================ */
-document.getElementById('barChart').addEventListener('click', function (e) {
+function handleBarChartClick(e) {
     if (!barPositions.length) return;
-    const rect = this.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const scaleX = 740 / rect.width;
     const scaleY = 560 / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
@@ -896,7 +1004,7 @@ document.getElementById('barChart').addEventListener('click', function (e) {
             return;
         }
     }
-});
+}
 
 /* ============================================================
    МОДАЛЬНОЕ ОКНО
@@ -906,72 +1014,102 @@ function showFactorModal(code) {
     const r = lastResults.find(x => x.code === code);
     if (!r) return;
 
-    document.getElementById('mCode').textContent = r.code;
-    document.getElementById('mTitle').textContent = r.name;
-    document.getElementById('mScore').innerHTML =
-        `<strong>${r.sten}</strong> стен <span style="font-size:14px;font-weight:600;color:var(--muted)">(${r.score}%)</span>`;
-    document.getElementById('mLevel').textContent = level(r.score);
+    $('mCode').textContent = r.code;
+    $('mTitle').textContent = r.name;
+    $('mScore').innerHTML = `<strong>${r.sten}</strong> стен <span style="font-size:14px;font-weight:600;color:var(--muted)">(${r.score}%)</span>`;
+    $('mLevel').textContent = level(r.score);
 
-    document.getElementById('mBody').innerHTML = `
+    $('mBody').innerHTML = `
         <div class="modal-section"><h4 style="color:var(--accent)">Что означает фактор</h4><p>${r.desc}</p></div>
         <div class="modal-section high"><h4>Высокий полюс</h4><p>${r.high}</p></div>
         <div class="modal-section low"><h4>Низкий полюс</h4><p>${r.low}</p></div>
     `;
 
-    document.getElementById('factorModal').classList.add('open');
+    $('factorModal').classList.add('open');
+    modalIsOpen = true;
+    $('modalCloseBtn').focus();
 }
 
 function closeModal() {
-    document.getElementById('factorModal').classList.remove('open');
+    $('factorModal').classList.remove('open');
+    modalIsOpen = false;
 }
-
-document.getElementById('factorModal').addEventListener('click', function (e) {
-    if (e.target === this) closeModal();
-});
-
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeModal();
-});
 
 /* ============================================================
    ДЕМОГРАФИЯ
 ============================================================ */
-const genderBtns = document.querySelectorAll('#demoGender button');
-genderBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const was = btn.classList.contains('selected');
-        genderBtns.forEach(b => b.classList.remove('selected'));
-        if (!was) { btn.classList.add('selected'); demographics.gender = btn.dataset.val; }
-        else { demographics.gender = ""; }
-        updateSubmitState();
+function setupDemographics() {
+    const genderBtns = document.querySelectorAll('#demoGender button');
+    genderBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const was = btn.classList.contains('selected');
+            genderBtns.forEach(b => {
+                b.classList.remove('selected');
+                b.setAttribute('aria-checked', 'false');
+            });
+            if (!was) {
+                btn.classList.add('selected');
+                btn.setAttribute('aria-checked', 'true');
+                demographics.gender = btn.dataset.val;
+            } else {
+                demographics.gender = "";
+            }
+            updateSubmitState();
+        });
     });
-});
 
-['demoAge','demoZodiac','demoEducation'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
+    ['demoAge', 'demoZodiac', 'demoEducation'].forEach(id => {
+        const el = $(id);
+        if (!el) return;
         el.addEventListener('change', updateSubmitState);
         el.addEventListener('input', updateSubmitState);
-    }
-});
+    });
 
-document.getElementById('consentCheck').addEventListener('change', updateSubmitState);
+    $('consentCheck').addEventListener('change', updateSubmitState);
+    $('demoSubmitBtn').addEventListener('click', submitDemographics);
+}
+
+function validateAge() {
+    const el = $('demoAge');
+    const raw = el.value.trim();
+    if (raw === '') return { ok: true, value: null };
+    const age = parseInt(raw, 10);
+    if (isNaN(age) || age < 14 || age > 120) {
+        el.classList.add('invalid');
+        return { ok: false, value: null };
+    }
+    el.classList.remove('invalid');
+    return { ok: true, value: age };
+}
 
 function updateSubmitState() {
-    const ageEl = document.getElementById('demoAge');
-    const age = parseInt(ageEl.value, 10);
-    demographics.age = (age && age >= 14 && age <= 99) ? age : null;
-    demographics.zodiac = document.getElementById('demoZodiac').value;
-    demographics.education = document.getElementById('demoEducation').value;
+    const ageCheck = validateAge();
+    demographics.age = ageCheck.value;
+    demographics.zodiac = $('demoZodiac').value;
+    demographics.education = $('demoEducation').value;
 
-    const consented = document.getElementById('consentCheck').checked;
+    const consented = $('consentCheck').checked;
     const hasAnyData = demographics.age || demographics.gender || demographics.zodiac || demographics.education;
-    const btn = document.getElementById('demoSubmitBtn');
-    const status = document.getElementById('demoStatus');
+    const btn = $('demoSubmitBtn');
+    const status = $('demoStatus');
 
-    if (!consented) { btn.disabled = true; status.textContent = 'Нужно согласие на отправку'; }
-    else if (!hasAnyData) { btn.disabled = true; status.textContent = 'Заполните хотя бы одно поле'; }
-    else { btn.disabled = false; status.textContent = ''; }
+    if (!ageCheck.ok) {
+        btn.disabled = true;
+        status.textContent = 'Возраст должен быть от 14 до 120 лет';
+        return;
+    }
+    if (!consented) {
+        btn.disabled = true;
+        status.textContent = 'Нужно согласие на отправку';
+        return;
+    }
+    if (!hasAnyData) {
+        btn.disabled = true;
+        status.textContent = 'Заполните хотя бы одно поле';
+        return;
+    }
+    btn.disabled = false;
+    status.textContent = '';
 }
 
 /* ============================================================
@@ -979,10 +1117,18 @@ function updateSubmitState() {
 ============================================================ */
 async function submitDemographics() {
     if (submitted) return;
-    if (!lastResults || !lastResults.length) { alert('Результаты не найдены'); return; }
+    if (!lastResults || !lastResults.length) {
+        alert('Результаты не найдены');
+        return;
+    }
 
-    const btn = document.getElementById('demoSubmitBtn');
-    const status = document.getElementById('demoStatus');
+    if (!validateAge().ok) {
+        updateSubmitState();
+        return;
+    }
+
+    const btn = $('demoSubmitBtn');
+    const status = $('demoStatus');
     btn.disabled = true;
     btn.textContent = 'Отправляем...';
     status.textContent = '';
@@ -1000,33 +1146,32 @@ async function submitDemographics() {
             zodiac: demographics.zodiac,
             education: demographics.education
         },
-        results: lastResults.map(r => ({
-            code: r.code, name: r.name, sten: r.sten, score: r.score
-        })),
-        averages: {
-            avgSten: avgSten,
-            fillPercent: avgPercent
-        }
+        results: lastResults.map(r => ({ code: r.code, name: r.name, sten: r.sten, score: r.score })),
+        averages: { avgSten: avgSten, fillPercent: avgPercent }
     };
 
     try {
-        if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.indexOf("ВСТАВЬТЕ") === -1) {
-            await fetch(GOOGLE_SCRIPT_URL, {
+        const url = GOOGLE_SCRIPT_URL;
+        const configured = url && url.indexOf("ВСТАВЬТЕ") === -1;
+
+        if (configured) {
+            await fetch(url, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
             });
+        } else {
+            console.info('Google Script URL не настроен — данные сохранены только локально');
         }
+
         submitted = true;
-        try {
-            const saved = savedResults() || {};
-            saved.submitted = true;
-            saved.demographics = demographics;
-            localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
-        } catch (e) {}
-        document.getElementById('demoCard').innerHTML =
-            '<h2>🙏 Спасибо!</h2><p class="muted">Ваши обезличенные данные отправлены в исследовательскую базу.</p>';
+        const saved = savedResults() || {};
+        saved.submitted = true;
+        saved.demographics = demographics;
+        persistResults(saved);
+
+        $('demoCard').innerHTML = '<h2>🙏 Спасибо!</h2><p class="muted">Ваши обезличенные данные отправлены в исследовательскую базу.</p>';
     } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Попробовать снова';
@@ -1041,12 +1186,15 @@ function randomId() {
     return id;
 }
 
+/* ============================================================
+   ЭКСПОРТ
+============================================================ */
 function downloadJSON() {
     const res = lastResults || calc();
     const avgSten = (res.reduce((s, r) => s + r.sten, 0) / res.length).toFixed(1);
     const data = {
         test: 'Личностный профиль — 185 заданий',
-        version: '5.1',
+        version: '5.2',
         date: new Date().toISOString(),
         averageSten: parseFloat(avgSten),
         demographics: demographics,
@@ -1060,6 +1208,65 @@ function downloadJSON() {
     URL.revokeObjectURL(a.href);
 }
 
+/* ============================================================
+   КЛАВИАТУРА
+============================================================ */
+function handleKeydown(e) {
+    /* Esc закрывает модалку */
+    if (e.key === 'Escape' && modalIsOpen) {
+        closeModal();
+        return;
+    }
+
+    /* Если открыта модалка — остальное игнорируем */
+    if (modalIsOpen) return;
+
+    /* Если активен экран теста */
+    if (!$('test').classList.contains('hidden')) {
+        if (e.key === '1' || e.key === '2' || e.key === '3') {
+            const n = parseInt(e.key, 10) - 1;
+            if (n >= 0 && n < labels.length) {
+                e.preventDefault();
+                selectAnswer(n);
+            }
+            return;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'Enter') {
+            e.preventDefault();
+            nextQuestion();
+            return;
+        }
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevQuestion();
+            return;
+        }
+    }
+}
+
+/* ============================================================
+   ПРИВЯЗКА ОБРАБОТЧИКОВ
+============================================================ */
+function bindEvents() {
+    $('startBtn').addEventListener('click', startTest);
+    $('prevBtn').addEventListener('click', prevQuestion);
+    $('nextBtn').addEventListener('click', nextQuestion);
+    $('chart').addEventListener('click', handleRadarClick);
+    $('barChart').addEventListener('click', handleBarChartClick);
+    $('modalCloseBtn').addEventListener('click', closeModal);
+    $('modalOkBtn').addEventListener('click', closeModal);
+    $('factorModal').addEventListener('click', (e) => {
+        if (e.target === $('factorModal')) closeModal();
+    });
+    $('downloadBtn').addEventListener('click', downloadJSON);
+    document.addEventListener('keydown', handleKeydown);
+}
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+bindEvents();
+setupDemographics();
 boot();
 </script>
 </body>
