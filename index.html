@@ -23,37 +23,32 @@
     rel="stylesheet"
 >
 
-
 <style>
 
 /* =========================================================
-   RESET
+   RESET / GLOBAL
 ========================================================= */
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
-html {
+html,
+body {
     width: 100%;
-    min-height: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+
     overflow-x: hidden;
+
+    overscroll-behavior-x: none;
 }
 
 body {
-    width: 100%;
-    min-height: 100%;
-    overflow-x: hidden;
-
-    font-family:
-        "Manrope",
-        -apple-system,
-        BlinkMacSystemFont,
-        sans-serif;
-
-    color: #e8faff;
+    min-height: 100vh;
 
     background:
         radial-gradient(
@@ -73,7 +68,22 @@ body {
         ),
         #020509;
 
+    color: #e8faff;
+
+    font-family:
+        "Manrope",
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+
     -webkit-font-smoothing: antialiased;
+}
+
+@supports (overflow: clip) {
+    html,
+    body {
+        overflow-x: clip;
+    }
 }
 
 
@@ -83,7 +93,9 @@ body {
 
 #neuralCanvas {
     position: fixed;
-    inset: 0;
+
+    left: 0;
+    top: 0;
 
     width: 100%;
     height: 100%;
@@ -95,6 +107,7 @@ body {
 
 .grid-background {
     position: fixed;
+
     inset: 0;
 
     width: 100%;
@@ -149,7 +162,7 @@ body {
 
     padding:
         clamp(35px, 6vw, 75px)
-        clamp(18px, 5vw, 70px)
+        24px
         110px;
 
     display: flex;
@@ -166,6 +179,8 @@ body {
     position: relative;
 
     width: 100%;
+
+    margin: 0;
 
     text-align: center;
 
@@ -243,6 +258,11 @@ body {
 .section-title {
     position: relative;
 
+    width: 100%;
+
+    margin:
+        0 auto 55px;
+
     display: flex;
 
     align-items: center;
@@ -250,27 +270,11 @@ body {
 
     gap: 16px;
 
-    width: 100%;
-
-    margin:
-        0 auto 55px;
-
     text-align: center;
 }
 
 .section-title .num {
-    font-family:
-        "JetBrains Mono",
-        monospace;
-
-    font-size: 11px;
-
-    font-weight: 500;
-
-    letter-spacing: .22em;
-
-    color:
-        rgba(120, 235, 255, .85);
+    flex-shrink: 0;
 
     padding:
         5px 13px 5px 15px;
@@ -283,10 +287,21 @@ body {
     background:
         rgba(80, 220, 255, .05);
 
+    color:
+        rgba(120, 235, 255, .85);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+
+    font-weight: 500;
+
+    letter-spacing: .22em;
+
     text-shadow:
         0 0 8px rgba(80, 220, 255, .6);
-
-    flex-shrink: 0;
 }
 
 .section-title .name {
@@ -334,27 +349,41 @@ body {
 
 
 /* =========================================================
-   CARDS GRID — DESKTOP
+   CARDS
+   DESKTOP = TRUE CENTERED GRID
 ========================================================= */
 
 .cards {
-    width: 100%;
-    max-width: 1100px;
+    --tile-size: 220px;
+    --tile-gap: 55px;
+
+    width: max-content;
+    max-width: 100%;
 
     margin: 0 auto;
 
     display: grid;
 
     grid-template-columns:
-        repeat(4, 220px);
+        repeat(4, var(--tile-size));
 
-    justify-content: center;
-
-    align-items: start;
+    grid-auto-rows:
+        var(--tile-size);
 
     gap:
-        70px 55px;
+        var(--tile-gap);
+
+    justify-content: center;
+    align-content: start;
+
+    overflow: visible;
 }
+
+
+/*
+   Когда в разделе меньше четырёх плиток,
+   grid всё равно сохраняет общую геометрию.
+*/
 
 
 /* =========================================================
@@ -364,8 +393,8 @@ body {
 .card {
     position: relative;
 
-    width: 220px;
-    height: 220px;
+    width: var(--tile-size);
+    height: var(--tile-size);
 
     min-width: 0;
 
@@ -387,8 +416,8 @@ body {
     -webkit-tap-highlight-color: transparent;
 
     transition:
-        z-index 0s,
-        transform .45s cubic-bezier(.2, .8, .2, 1);
+        transform .45s cubic-bezier(.2, .8, .2, 1),
+        z-index 0s;
 }
 
 .card:hover,
@@ -435,7 +464,7 @@ body {
 
 
 /* =========================================================
-   CYBER RIPPLES
+   TRON RIPPLES
 ========================================================= */
 
 .tron-ripples {
@@ -546,23 +575,21 @@ body {
     width: 100%;
     height: 100%;
 
-    border-radius: 20px;
-
-    overflow: hidden;
-
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    background:
+    overflow: hidden;
 
+    border-radius: 20px;
+
+    background:
         linear-gradient(
             145deg,
             rgba(100, 230, 255, .10),
             transparent 28%
         ),
-
         linear-gradient(
             145deg,
             rgba(14, 37, 52, .98),
@@ -640,7 +667,7 @@ body {
 
 
 /* =========================================================
-   TILE HOVER
+   HOVER
 ========================================================= */
 
 .card:hover .neuron-body,
@@ -655,7 +682,6 @@ body {
         rgba(115, 245, 255, .82);
 
     background:
-
         linear-gradient(
             145deg,
             rgba(20, 55, 70, .98),
@@ -810,7 +836,7 @@ body {
 
 
 /* =========================================================
-   CONTENT
+   CARD CONTENT
 ========================================================= */
 
 .sphere-content {
@@ -835,8 +861,6 @@ body {
 }
 
 .icon {
-    position: relative;
-
     width: 46px;
     height: 46px;
 
@@ -895,7 +919,7 @@ body {
 
 
 /* =========================================================
-   CARD TITLE
+   TITLE
 ========================================================= */
 
 .card-title {
@@ -904,12 +928,6 @@ body {
     max-width: 100%;
 
     color: #e6fbff;
-
-    font-family:
-        "Manrope",
-        -apple-system,
-        BlinkMacSystemFont,
-        sans-serif;
 
     font-size: 14px;
 
@@ -950,17 +968,12 @@ body {
 
 .description {
 
+    --description-shift: 0px;
+
     position: absolute;
 
     left: 50%;
     top: -14px;
-
-    /*
-       ВАЖНО:
-       ширина теперь ограничена viewport.
-       Она никогда не должна создавать
-       горизонтальный overflow.
-    */
 
     width:
         min(340px, calc(100vw - 24px));
@@ -988,10 +1001,6 @@ body {
 
     color: #dffaff;
 
-    font-family:
-        "Manrope",
-        sans-serif;
-
     font-size: 13px;
 
     line-height: 1.5;
@@ -1003,7 +1012,11 @@ body {
     pointer-events: none;
 
     transform:
-        translate3d(-50%, -100%, 0)
+        translate3d(
+            calc(-50% + var(--description-shift)),
+            -100%,
+            0
+        )
         scale(.95);
 
     transform-origin:
@@ -1057,7 +1070,11 @@ body {
     opacity: 1;
 
     transform:
-        translate3d(-50%, calc(-100% - 12px), 0)
+        translate3d(
+            calc(-50% + var(--description-shift)),
+            calc(-100% - 12px),
+            0
+        )
         scale(1);
 }
 
@@ -1097,20 +1114,17 @@ body {
         width: 100%;
 
         padding:
-            32px 0 80px;
+            32px 10px 80px;
     }
 
 
     .logo {
 
-        width: 100%;
+        padding: 0 8px;
 
-        padding:
-            0 12px;
+        font-size: 27px;
 
-        font-size: 29px;
-
-        letter-spacing: .13em;
+        letter-spacing: .11em;
     }
 
 
@@ -1124,16 +1138,13 @@ body {
 
     .section-title {
 
-        width: 100%;
-
         flex-direction: column;
 
         gap: 10px;
 
-        margin-bottom: 42px;
+        margin-bottom: 48px;
 
-        padding:
-            0 10px;
+        padding: 0 8px;
     }
 
 
@@ -1152,9 +1163,11 @@ body {
 
         font-size: 15px;
 
-        letter-spacing: .04em;
+        line-height: 1.3;
 
-        white-space: nowrap;
+        letter-spacing: .035em;
+
+        white-space: normal;
     }
 
 
@@ -1167,59 +1180,83 @@ body {
 
 
     /*
-       ДВЕ РАВНЫЕ КОЛОНКИ
+       ======================================================
+       МОБИЛЬНАЯ КИРПИЧНАЯ СЕТКА
 
-       Используем 1fr + одинаковые поля.
-       Благодаря этому сетка всегда симметрична.
+       Размер плитки одинаковый.
+       Расстояние между колонками и рядами одинаковое.
+       ======================================================
     */
 
     .cards {
 
+        --mobile-gap: 12px;
+
         width: 100%;
+        max-width: 390px;
 
-        max-width: 100%;
+        margin:
+            0 auto;
 
-        padding:
-            0 12px;
+        padding: 0;
 
         display: grid;
 
         grid-template-columns:
-            minmax(0, 1fr)
-            minmax(0, 1fr);
+            repeat(2, minmax(0, 1fr));
+
+        grid-auto-rows:
+            auto;
 
         gap:
-            54px 12px;
+            var(--mobile-gap);
 
-        justify-content: stretch;
-
+        justify-content: center;
         align-items: start;
     }
 
 
-    /*
-       Квадрат автоматически вычисляется
-       из ширины колонки.
-    */
-
     .card {
 
         width: 100%;
-
         height: auto;
 
         aspect-ratio: 1 / 1;
 
         min-width: 0;
+    }
 
-        max-width: none;
+
+    /*
+       ТРЕТЬЯ ПЛИТКА
+
+       Если в разделе три элемента,
+       последний занимает обе колонки,
+       но сам остаётся ровно такого же размера.
+
+       Получаем:
+
+          □  □
+           □
+
+       и он находится точно на оси экрана.
+    */
+
+    .card:last-child:nth-child(odd) {
+
+        grid-column:
+            1 / -1;
+
+        justify-self: center;
+
+        width:
+            calc(
+                (100% - var(--mobile-gap)) / 2
+            );
     }
 
 
     .neuron-body {
-
-        width: 100%;
-        height: 100%;
 
         border-radius: 16px;
     }
@@ -1235,21 +1272,23 @@ body {
 
     .icon {
 
-        width: 36px;
-        height: 36px;
+        width: 35px;
+        height: 35px;
     }
 
 
     .card-title {
 
-        font-size: 11px;
+        font-size: 10.5px;
 
         line-height: 1.25;
     }
 
 
     /*
-       Описание не может стать шире экрана.
+       Описание:
+       базовая ширина — максимум 330 px,
+       но никогда больше viewport.
     */
 
     .description {
@@ -1257,16 +1296,16 @@ body {
         width:
             min(
                 330px,
-                calc(100vw - 20px)
+                calc(100vw - 16px)
             );
 
         max-width:
-            calc(100vw - 20px);
+            calc(100vw - 16px);
 
         padding:
             11px 13px;
 
-        font-size: 12px;
+        font-size: 11.5px;
 
         line-height: 1.4;
     }
@@ -1286,73 +1325,64 @@ body {
 
     .footer {
 
-        width: 100%;
-
         margin-top: 80px;
 
         padding:
-            0 12px;
+            0 8px;
 
         font-size: 9px;
+
+        line-height: 1.5;
     }
 }
 
 
 /* =========================================================
-   SMALL PHONES
+   VERY SMALL PHONES
 ========================================================= */
 
-@media (max-width: 390px) {
+@media (max-width: 360px) {
 
     .main {
 
-        padding:
-            28px 0 75px;
-    }
-
-
-    .logo {
-
-        font-size: 25px;
-
-        letter-spacing: .11em;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
 
     .cards {
 
-        padding:
-            0 10px;
+        max-width: 330px;
 
-        gap:
-            48px 10px;
+        --mobile-gap: 10px;
     }
 
 
     .card-title {
 
-        font-size: 10px;
-
-        line-height: 1.2;
+        font-size: 9.5px;
     }
 
 
     .icon {
 
-        width: 33px;
-        height: 33px;
+        width: 32px;
+        height: 32px;
     }
 
 
     .description {
 
         width:
-            calc(100vw - 16px);
+            calc(100vw - 12px);
 
         max-width:
-            calc(100vw - 16px);
+            calc(100vw - 12px);
 
-        font-size: 11.5px;
+        padding:
+            10px 11px;
+
+        font-size: 11px;
     }
 }
 
@@ -1406,7 +1436,6 @@ body {
 
 
 <body>
-
 
 <canvas id="neuralCanvas"></canvas>
 
@@ -1534,21 +1563,11 @@ body {
                             <path d="M8 24h11"></path>
                             <path d="M29 24h11"></path>
 
-                            <path
-                                d="M12.7 12.7l7.8 7.8">
-                            </path>
+                            <path d="M12.7 12.7l7.8 7.8"></path>
+                            <path d="M27.5 27.5l7.8 7.8"></path>
 
-                            <path
-                                d="M27.5 27.5l7.8 7.8">
-                            </path>
-
-                            <path
-                                d="M35.3 12.7l-7.8 7.8">
-                            </path>
-
-                            <path
-                                d="M20.5 27.5l-7.8 7.8">
-                            </path>
+                            <path d="M35.3 12.7l-7.8 7.8"></path>
+                            <path d="M20.5 27.5l-7.8 7.8"></path>
 
                         </svg>
 
@@ -1898,47 +1917,16 @@ body {
 
                         <svg viewBox="0 0 48 48">
 
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="5">
-                            </circle>
+                            <circle cx="24" cy="24" r="5"></circle>
 
-                            <circle
-                                cx="10"
-                                cy="12"
-                                r="3">
-                            </circle>
+                            <circle cx="10" cy="12" r="3"></circle>
+                            <circle cx="38" cy="12" r="3"></circle>
 
-                            <circle
-                                cx="38"
-                                cy="12"
-                                r="3">
-                            </circle>
+                            <circle cx="9" cy="36" r="3"></circle>
+                            <circle cx="39" cy="36" r="3"></circle>
 
-                            <circle
-                                cx="9"
-                                cy="36"
-                                r="3">
-                            </circle>
-
-                            <circle
-                                cx="39"
-                                cy="36"
-                                r="3">
-                            </circle>
-
-                            <circle
-                                cx="24"
-                                cy="8"
-                                r="3">
-                            </circle>
-
-                            <circle
-                                cx="24"
-                                cy="40"
-                                r="3">
-                            </circle>
+                            <circle cx="24" cy="8" r="3"></circle>
+                            <circle cx="24" cy="40" r="3"></circle>
 
                             <path d="m21 21-9-7"></path>
                             <path d="m27 21 9-7"></path>
@@ -2294,17 +2282,11 @@ body {
                                 rx="3">
                             </rect>
 
-                            <path
-                                d="M17 14v-4h14v4">
-                            </path>
+                            <path d="M17 14v-4h14v4"></path>
 
-                            <path
-                                d="M7 23h34">
-                            </path>
+                            <path d="M7 23h34"></path>
 
-                            <path
-                                d="M20 23v4h8v-4">
-                            </path>
+                            <path d="M20 23v4h8v-4"></path>
 
                         </svg>
 
@@ -2407,9 +2389,7 @@ body {
                                 rx="3">
                             </rect>
 
-                            <path
-                                d="M17 5v6h14V5">
-                            </path>
+                            <path d="M17 5v6h14V5"></path>
 
                             <circle
                                 cx="24"
@@ -2562,7 +2542,7 @@ document
 
 
 /* =========================================================
-   TOUCH INTERACTION
+   TOUCH
 ========================================================= */
 
 const cards =
@@ -2584,11 +2564,6 @@ cards.forEach(card => {
             }
 
 
-            /*
-             * Первое касание:
-             * активируем плитку.
-             */
-
             if (
                 !card.classList.contains("active")
             ) {
@@ -2607,12 +2582,17 @@ cards.forEach(card => {
 
                 card.classList.add("active");
 
-            }
 
-            /*
-             * Второе касание:
-             * переход по href.
-             */
+                /*
+                   После открытия описания
+                   пересчитываем его положение.
+                */
+
+                requestAnimationFrame(
+                    updateDescriptionPositions
+                );
+
+            }
 
         }
     );
@@ -2623,6 +2603,10 @@ cards.forEach(card => {
         () => {
 
             card.classList.add("active");
+
+            requestAnimationFrame(
+                updateDescriptionPositions
+            );
 
         }
     );
@@ -2639,10 +2623,6 @@ cards.forEach(card => {
 
 });
 
-
-/* =========================================================
-   CLOSE ACTIVE TILE
-========================================================= */
 
 document.addEventListener(
     "click",
@@ -2668,7 +2648,148 @@ document.addEventListener(
 
 
 /* =========================================================
-   STATIC NEURAL NETWORK
+   DESCRIPTION POSITIONING
+========================================================= */
+
+/*
+   Эта функция не меняет геометрию плиток.
+
+   Она только вычисляет, насколько нужно
+   сдвинуть всплывающий блок, чтобы он
+   полностью находился внутри viewport.
+*/
+
+function updateDescriptionPositions() {
+
+    const viewportWidth =
+        document.documentElement.clientWidth;
+
+
+    const edge =
+        window.innerWidth <= 760
+            ? 8
+            : 12;
+
+
+    cards.forEach(card => {
+
+        const description =
+            card.querySelector(
+                ".description"
+            );
+
+
+        if (!description) {
+            return;
+        }
+
+
+        /*
+           Сбрасываем старое значение,
+           чтобы корректно измерить блок.
+        */
+
+        card.style.setProperty(
+            "--description-shift",
+            "0px"
+        );
+
+
+        const cardRect =
+            card.getBoundingClientRect();
+
+
+        const descriptionRect =
+            description.getBoundingClientRect();
+
+
+        const cardCenter =
+            cardRect.left +
+            cardRect.width / 2;
+
+
+        const descriptionWidth =
+            Math.min(
+                descriptionRect.width,
+                viewportWidth - edge * 2
+            );
+
+
+        const idealLeft =
+            cardCenter -
+            descriptionWidth / 2;
+
+
+        const minimumLeft =
+            edge;
+
+
+        const maximumLeft =
+            viewportWidth -
+            edge -
+            descriptionWidth;
+
+
+        const safeLeft =
+            Math.max(
+                minimumLeft,
+                Math.min(
+                    idealLeft,
+                    maximumLeft
+                )
+            );
+
+
+        const shift =
+            safeLeft -
+            idealLeft;
+
+
+        card.style.setProperty(
+            "--description-shift",
+            shift + "px"
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+let resizeTimer = null;
+
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        clearTimeout(resizeTimer);
+
+
+        resizeTimer =
+            setTimeout(
+                () => {
+
+                    updateDescriptionPositions();
+
+                    refreshNetwork();
+
+                },
+                80
+            );
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+/* =========================================================
+   NEURAL BACKGROUND
 ========================================================= */
 
 const canvas =
@@ -2934,7 +3055,8 @@ function drawNetwork() {
                     )`;
 
 
-                ctx.lineWidth = .7;
+                ctx.lineWidth =
+                    .7;
 
 
                 ctx.stroke();
@@ -2978,25 +3100,37 @@ function refreshNetwork() {
 
     drawNetwork();
 
+    updateDescriptionPositions();
+
 }
 
 
 window.addEventListener(
-    "resize",
-    refreshNetwork
-);
-
-
-window.addEventListener(
     "scroll",
-    drawNetwork,
-    { passive: true }
+    () => {
+
+        drawNetwork();
+
+        updateDescriptionPositions();
+
+    },
+    {
+        passive: true
+    }
 );
 
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
 window.addEventListener(
     "load",
-    refreshNetwork
+    () => {
+
+        refreshNetwork();
+
+    }
 );
 
 
