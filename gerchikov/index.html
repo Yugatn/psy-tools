@@ -22,133 +22,51 @@ h1{margin:0;font-size:28px;font-weight:750}
 .progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
 .progress{width:100%;height:7px;background:#272c37;border-radius:20px;overflow:hidden}
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .3s}
-
-/* Вопрос */
 .q-number{color:var(--muted);font-size:12px;text-align:center;margin-bottom:6px;letter-spacing:.3px}
 .q-title{font-size:15px;color:var(--muted);text-align:center;margin-bottom:16px;line-height:1.4}
 .q-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.q-option{
-    display:flex;align-items:flex-start;gap:11px;
-    background:#10131a;border:1.5px solid var(--border);
-    border-radius:14px;padding:14px;cursor:pointer;
-    transition:all .15s;font-size:14px;line-height:1.45;
-    color:var(--text);font-family:inherit;text-align:left;
-    width:100%;
-}
+.q-option{display:flex;align-items:flex-start;gap:11px;background:#10131a;border:1.5px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.45;color:var(--text);font-family:inherit;text-align:left;width:100%}
 .q-option:hover{border-color:rgba(124,140,255,.35);background:rgba(124,140,255,.03)}
 .q-option:active{transform:scale(.99)}
-.q-option.selected{
-    border-color:var(--accent);
-    background:rgba(124,140,255,.10);
-    box-shadow:0 0 0 1px rgba(124,140,255,.35) inset;
-}
-.q-option-marker{
-    width:22px;height:22px;border-radius:50%;
-    border:2px solid rgba(255,255,255,.25);
-    background:transparent;flex-shrink:0;margin-top:1px;
-    display:flex;align-items:center;justify-content:center;
-    transition:all .15s;
-}
-.q-option.selected .q-option-marker{
-    border-color:var(--accent);
-    background:var(--accent);
-}
-.q-option.selected .q-option-marker::after{
-    content:"";width:8px;height:8px;border-radius:50%;
-    background:#ffffff;display:block;
-}
+.q-option.selected{border-color:var(--accent);background:rgba(124,140,255,.10);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
+.q-option-marker{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:transparent;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.q-option.selected .q-option-marker{border-color:var(--accent);background:var(--accent)}
+.q-option.selected .q-option-marker::after{content:"";width:8px;height:8px;border-radius:50%;background:#ffffff;display:block}
 .q-option-text{flex:1;min-width:0}
-
-/* Навигация */
 .nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.btn{
-    border:none;border-radius:13px;padding:14px 18px;
-    font-size:14px;font-weight:700;cursor:pointer;
-    font-family:inherit;transition:transform .1s,opacity .15s;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-}
+.btn{border:none;border-radius:13px;padding:14px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-secondary{background:#272c37;color:#fff}
 .btn-success{background:var(--good);color:#08130d}
 .btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
-.btn-full{width:100%;grid-column:1/-1}
-
-/* Результат */
 .result-header{text-align:center}
-.radar-wrap{
-    display:flex;justify-content:center;align-items:center;
-    width:100%;padding:8px 0;margin-top:8px;
-}
+.radar-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:8px 0;margin-top:8px}
 #radar{display:block;max-width:100%;height:auto}
-
-/* Типы (список) */
 .types-list{display:flex;flex-direction:column;gap:10px}
-.type-item{
-    background:var(--card2);border-radius:14px;
-    padding:13px 15px;border-left:4px solid;
-    transition:transform .15s;
-}
+.type-item{background:var(--card2);border-radius:14px;padding:13px 15px;border-left:4px solid;transition:transform .15s}
 .type-item:hover{transform:translateX(2px)}
-.type-head{
-    display:flex;justify-content:space-between;align-items:center;
-    gap:10px;margin-bottom:8px;
-}
-.type-name{
-    font-size:14.5px;font-weight:700;color:var(--text);
-    display:flex;align-items:center;gap:8px;
-}
-.type-score{
-    font-size:16px;font-weight:800;flex-shrink:0;
-}
-.type-bar{
-    width:100%;height:6px;background:#0b0d12;
-    border-radius:10px;overflow:hidden;
-}
-.type-bar-fill{
-    height:100%;border-radius:10px;
-    transition:width .8s cubic-bezier(.2,.9,.3,1);
-}
-.type-desc{
-    font-size:12.5px;color:var(--muted);
-    line-height:1.5;margin-top:8px;
-}
-
-/* Интерпретация */
+.type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.type-name{font-size:14.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.type-score{font-size:16px;font-weight:800;flex-shrink:0}
+.type-bar{width:100%;height:6px;background:#0b0d12;border-radius:10px;overflow:hidden}
+.type-bar-fill{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.2,.9,.3,1)}
+.type-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:8px}
 .interp p{margin:0 0 11px;font-size:14px;line-height:1.6;color:var(--text)}
 .interp p:last-child{margin-bottom:0}
 .interp strong{color:#fff}
-.interp .hl{
-    color:var(--accent);font-weight:700;
-}
-.interp .block{
-    background:rgba(124,140,255,.06);
-    border:1px solid rgba(124,140,255,.18);
-    border-radius:12px;padding:13px 15px;
-    margin:12px 0;font-size:13.5px;line-height:1.55;
-}
+.interp .hl{color:var(--accent);font-weight:700}
+.interp .block{background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:13.5px;line-height:1.55}
 .interp .block strong{color:var(--text)}
-
-/* Рекомендации */
-.reco-grid{
-    display:grid;grid-template-columns:1fr 1fr;
-    gap:10px;margin-top:10px;
-}
-.reco-col{
-    background:var(--card2);border-radius:12px;
-    padding:12px 14px;font-size:12.5px;line-height:1.5;
-}
-.reco-col-title{
-    font-size:11px;font-weight:800;letter-spacing:.4px;
-    text-transform:uppercase;margin-bottom:8px;
-}
+.reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.reco-col{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.5}
+.reco-col-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
 .reco-col.pos .reco-col-title{color:var(--good)}
 .reco-col.neg .reco-col-title{color:var(--danger)}
 .reco-col ul{margin:0;padding-left:16px}
 .reco-col li{margin-bottom:4px;color:var(--muted)}
 .reco-col li:last-child{margin-bottom:0}
-
 @media (max-width:560px){
     body{padding:14px 10px 35px}
     h1{font-size:24px}
@@ -169,7 +87,6 @@ h1{margin:0;font-size:28px;font-weight:750}
     <div class="subtitle">Определите свой тип трудовой мотивации из 5 возможных</div>
 </header>
 
-<!-- ============ ТЕСТ ============ -->
 <div id="testScreen">
     <div class="card">
         <div class="progress-wrap">
@@ -192,7 +109,6 @@ h1{margin:0;font-size:28px;font-weight:750}
     </div>
 </div>
 
-<!-- ============ РЕЗУЛЬТАТ ============ -->
 <div id="resultScreen" class="hidden">
     <div class="card result-header">
         <div class="section-title">Ваш профиль мотивации</div>
@@ -218,7 +134,7 @@ h1{margin:0;font-size:28px;font-weight:750}
     </div>
 
     <div class="card">
-        <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:0">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:0">
             <button class="btn btn-secondary" onclick="backToTest()">Изменить ответы</button>
             <button class="btn btn-primary" onclick="exportResults()">📥 Экспорт JSON</button>
             <button class="btn btn-danger" onclick="resetAll()">Начать заново</button>
@@ -245,9 +161,6 @@ window.onerror = function(msg, url, line, col) {
 </script>
 
 <script>
-/* ============================================================
-   ТИПЫ МОТИВАЦИИ
-============================================================ */
 var TYPES = {
     IN: {
         name: "Инструментальный",
@@ -281,9 +194,6 @@ var TYPES = {
     }
 };
 
-/* ============================================================
-   23 ПАРЫ ВОПРОСОВ
-============================================================ */
 var QUESTIONS = [
     { a: { t: "Для меня важно, чтобы работа приносила хороший доход", type: "IN" },
       b: { t: "Мне нравится работа, в которой можно узнавать что-то новое", type: "PR" } },
@@ -355,17 +265,12 @@ var QUESTIONS = [
       b: { t: "Готов много работать, если это хорошо оплачивается", type: "IN" } }
 ];
 
-/* ============================================================
-   СОСТОЯНИЕ
-============================================================ */
 var answers = new Array(QUESTIONS.length).fill(null);
 var currentQ = 0;
 var STORAGE_KEY = "psyGerbV1";
 
-/* ============================================================
-   РАБОТА С DOM
-============================================================ */
 function $(id) { return document.getElementById(id); }
+
 function esc(t) {
     return String(t)
         .replace(/&/g, "&amp;")
@@ -375,9 +280,6 @@ function esc(t) {
         .replace(/'/g, "&#039;");
 }
 
-/* ============================================================
-   РЕНДЕР ВОПРОСА
-============================================================ */
 function renderQuestion() {
     var q = QUESTIONS[currentQ];
     var total = QUESTIONS.length;
@@ -387,8 +289,6 @@ function renderQuestion() {
     var percent = Math.round((currentQ + 1) / total * 100);
     $("progressPercent").textContent = percent + "%";
     $("progressBar").style.width = percent + "%";
-
-    $("qTitle").textContent = "Что для вас важнее в работе?";
 
     var container = $("qOptions");
     container.innerHTML = "";
@@ -459,9 +359,6 @@ function nextQuestion() {
     }
 }
 
-/* ============================================================
-   ПОДСЧЁТ
-============================================================ */
 function calculateScores() {
     var scores = { IN: 0, PR: 0, PA: 0, HO: 0, LU: 0 };
     for (var i = 0; i < QUESTIONS.length; i++) {
@@ -485,9 +382,6 @@ function scoresToPercent(scores) {
     return result;
 }
 
-/* ============================================================
-   ПОКАЗ РЕЗУЛЬТАТОВ
-============================================================ */
 function showResults() {
     var scores = calculateScores();
     var data = scoresToPercent(scores);
@@ -495,7 +389,6 @@ function showResults() {
     $("testScreen").classList.add("hidden");
     $("resultScreen").classList.remove("hidden");
 
-    /* Сортируем по проценту */
     var ordered = [];
     var keys = Object.keys(data);
     for (var i = 0; i < keys.length; i++) {
@@ -514,9 +407,6 @@ function showResults() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* ============================================================
-   РАДАР
-============================================================ */
 function drawRadar(data) {
     var canvas = $("radar");
     if (!canvas) { return; }
@@ -541,12 +431,10 @@ function drawRadar(data) {
     var labelOffset = 78;
     var labelRadius = radius + labelOffset;
 
-    /* Порядок: по часовой стрелке от верхней точки */
     var order = ["IN", "PR", "PA", "HO", "LU"];
     var count = order.length;
     var angleStep = (Math.PI * 2) / count;
 
-    /* Сетка 20/40/60/80/100 */
     for (var lvl = 1; lvl <= 5; lvl++) {
         var r = radius * lvl / 5;
         ctx.beginPath();
@@ -563,7 +451,6 @@ function drawRadar(data) {
         ctx.stroke();
     }
 
-    /* Оси */
     for (var k = 0; k < count; k++) {
         var a = -Math.PI / 2 + k * angleStep;
         var px = cx + Math.cos(a) * radius;
@@ -576,7 +463,6 @@ function drawRadar(data) {
         ctx.stroke();
     }
 
-    /* Точки данных */
     var points = [];
     for (var p = 0; p < order.length; p++) {
         var code = order[p];
@@ -592,7 +478,6 @@ function drawRadar(data) {
         });
     }
 
-    /* Свечение */
     ctx.save();
     ctx.shadowColor = "rgba(124,140,255,.45)";
     ctx.shadowBlur = 22;
@@ -606,7 +491,6 @@ function drawRadar(data) {
     ctx.fill();
     ctx.restore();
 
-    /* Градиентная заливка */
     var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
     fg.addColorStop(0, "rgba(156,124,255,.40)");
     fg.addColorStop(1, "rgba(124,140,255,.12)");
@@ -619,17 +503,14 @@ function drawRadar(data) {
     ctx.fillStyle = fg;
     ctx.fill();
 
-    /* Контур */
     ctx.strokeStyle = "#9ca7ff";
     ctx.lineWidth = 2.5;
     ctx.lineJoin = "round";
     ctx.stroke();
 
-    /* Точки с процентами */
     for (var t = 0; t < points.length; t++) {
         var pt = points[t];
 
-        /* Внешнее свечение */
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 9, 0, Math.PI * 2);
         ctx.fillStyle = pt.color;
@@ -637,19 +518,16 @@ function drawRadar(data) {
         ctx.fill();
         ctx.globalAlpha = 1;
 
-        /* Основная точка */
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
         ctx.fillStyle = pt.color;
         ctx.fill();
 
-        /* Белый центр */
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 2.4, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
         ctx.fill();
 
-        /* Процент рядом с точкой */
         var ang3 = -Math.PI / 2 + t * angleStep;
         var lx = cx + Math.cos(ang3) * (radius * pt.value / 100 + 26);
         var ly = cy + Math.sin(ang3) * (radius * pt.value / 100 + 26);
@@ -686,7 +564,6 @@ function drawRadar(data) {
         ctx.fillText(text, lx, ly + 1);
     }
 
-    /* Подписи типов по краям */
     for (var lb = 0; lb < order.length; lb++) {
         var codeLb = order[lb];
         var meta = TYPES[codeLb];
@@ -694,14 +571,13 @@ function drawRadar(data) {
         var lxLb = cx + Math.cos(angLb) * labelRadius;
         var lyLb = cy + Math.sin(angLb) * labelRadius;
 
-        /* Иконка + название */
-        ctx.font = "800 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
         var words = meta.name.split(" ");
         var lines = [];
         var cur = "";
+        ctx.font = "800 12.5px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         for (var wi = 0; wi < words.length; wi++) {
             var test = cur ? cur + " " + words[wi] : words[wi];
             if (ctx.measureText(test).width > 110) {
@@ -716,11 +592,10 @@ function drawRadar(data) {
         var lineH = 15;
         var totalH = lines.length * lineH;
 
-        /* Иконка сверху */
         ctx.font = "16px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
         ctx.fillText(meta.icon, lxLb, lyLb - totalH / 2 - 12);
 
-        /* Название */
         ctx.font = "800 12.5px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         ctx.fillStyle = meta.color;
         for (var li = 0; li < lines.length; li++) {
@@ -728,16 +603,12 @@ function drawRadar(data) {
         }
     }
 
-    /* Центр */
     ctx.beginPath();
     ctx.arc(cx, cy, 4, 0, Math.PI * 2);
     ctx.fillStyle = "#ffffff";
     ctx.fill();
 }
 
-/* ============================================================
-   СПИСОК ТИПОВ
-============================================================ */
 function renderTypesList(ordered) {
     var container = $("typesList");
     container.innerHTML = "";
@@ -767,9 +638,6 @@ function renderTypesList(ordered) {
     }
 }
 
-/* ============================================================
-   ИНТЕРПРЕТАЦИЯ
-============================================================ */
 function renderInterpretation(ordered, scores) {
     var container = $("interpretation");
     var html = "";
@@ -779,18 +647,15 @@ function renderInterpretation(ordered, scores) {
     var third = ordered[2];
     var last = ordered[ordered.length - 1];
 
-    /* Разница в баллах */
     var diff1_2 = top.data.count - second.data.count;
     var diff1_3 = top.data.count - third.data.count;
 
-    /* ---------- Основная интерпретация ---------- */
-
     if (top.data.percent >= 40) {
-        /* Явно доминирующий тип */
         html += '<p>С <strong>высокой вероятностью</strong> у вас выражен <span class="hl">' +
                 esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.percent + '%.</p>';
+        html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.percent + '%). ' +
+                'Он проявляется слабее, но может усиливаться в определённых ситуациях.</p>';
     } else if (diff1_2 <= 1 && diff1_3 <= 2) {
-        /* Тройной профиль */
         html += '<p>Ваш профиль — <strong>смешанный</strong>. С высокой вероятностью в вас сочетаются сразу три ведущих типа мотивации:</p>';
         html += '<div class="block">' +
                 '<strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.percent + '%<br>' +
@@ -799,7 +664,6 @@ function renderInterpretation(ordered, scores) {
                 '</div>';
         html += '<p>Такое сочетание встречается редко и означает <strong>гибкую мотивацию</strong>: в разных ситуациях вас могут включать разные стимулы. Это даёт широту, но может мешать чётко определить, чего вы хотите от работы.</p>';
     } else if (diff1_2 <= 2) {
-        /* Двойной профиль */
         html += '<p>С высокой вероятностью у вас <strong>смешанный профиль</strong> из двух ведущих типов мотивации:</p>';
         html += '<div class="block">' +
                 '<strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.percent + '%<br>' +
@@ -808,29 +672,21 @@ function renderInterpretation(ordered, scores) {
         html += '<p>Это означает, что в работе вам важно сочетание двух вещей. Например, ' +
                 describePair(top.code, second.code) + '.</p>';
     } else {
-        /* Один доминирующий */
         html += '<p>Наиболее вероятно у вас <strong>доминирует</strong> <span class="hl">' +
                 esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.percent + '%.</p>';
         html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.percent + '%). ' +
                 'Он проявляется слабее, но может усиливаться в определённых ситуациях.</p>';
     }
 
-    /* ---------- Дополнительные типы ---------- */
-
     if (top.data.percent < 40 && diff1_2 > 2) {
-        /* Только для одного доминирующего — упомянуть третий */
         html += '<p>Третья по выраженности черта — <strong>' + esc(third.meta.name.toLowerCase()) +
                 '</strong> (' + third.data.percent + '%).</p>';
     }
-
-    /* ---------- Наименее выраженный ---------- */
 
     if (last.data.percent <= 10) {
         html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + ' тип</strong> (' +
                 last.data.percent + '%). Это значит, что данный стимул почти не влияет на вашу мотивацию к работе.</p>';
     }
-
-    /* ---------- Размытый профиль ---------- */
 
     var spread = top.data.count - last.data.count;
     if (spread <= 2 && top.data.percent < 35) {
@@ -844,9 +700,9 @@ function renderInterpretation(ordered, scores) {
     container.innerHTML = html;
 }
 
-/* Описание пар типа «X + Y» */
 function describePair(codeA, codeB) {
-    var key = [codeA, codeB].sort().join("-");
+    var arr = [codeA, codeB].sort();
+    var key = arr[0] + "-" + arr[1];
     var map = {
         "IN-PR": "интересные задачи и достойная оплата одновременно",
         "IN-PA": "общий результат команды и личное материальное вознаграждение",
@@ -863,9 +719,6 @@ function describePair(codeA, codeB) {
     return "сочетание двух разных стимулов, что делает вашу мотивацию многогранной";
 }
 
-/* ============================================================
-   РЕКОМЕНДАЦИИ
-   ============================================================ */
 function renderRecommendations(topCode) {
     var container = $("recommendations");
     var posMap = {
@@ -885,7 +738,6 @@ function renderRecommendations(topCode) {
 
     var pos = posMap[topCode] || [];
     var neg = negMap[topCode] || [];
-    var meta = TYPES[topCode];
 
     var html = '<div class="reco-grid">';
     html += '<div class="reco-col pos">';
@@ -905,9 +757,6 @@ function renderRecommendations(topCode) {
     container.innerHTML = html;
 }
 
-/* ============================================================
-   СОХРАНЕНИЕ / ЗАГРУЗКА
-   ============================================================ */
 function save() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -932,9 +781,6 @@ function load() {
     } catch (e) {}
 }
 
-/* ============================================================
-   КНОПКИ РЕЗУЛЬТАТА
-   ============================================================ */
 function backToTest() {
     $("resultScreen").classList.add("hidden");
     $("testScreen").classList.remove("hidden");
@@ -972,9 +818,6 @@ function exportResults() {
     URL.revokeObjectURL(url);
 }
 
-/* ============================================================
-   СТАРТ
-   ============================================================ */
 load();
 renderQuestion();
 </script>
