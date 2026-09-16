@@ -1,385 +1,668 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PSY-TOOLS</title>
+    <title>PSY-TOOLS</title>
 
-<style>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 20% 10%, #243b55 0%, transparent 35%),
+                radial-gradient(circle at 80% 90%, #16213e 0%, transparent 40%),
+                linear-gradient(135deg, #05070d, #0b1220 55%, #07101c);
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+            padding: 30px 16px 50px;
+            overflow-x: hidden;
+        }
 
-    background:
-        radial-gradient(circle at top, #182238 0%, #0b0f17 50%, #070a10 100%);
+        /* ---------- HEADER ---------- */
 
-    color: #f4f6fa;
-}
+        header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
 
-.container {
-    width: min(900px, calc(100% - 24px));
-    margin: auto;
-    padding: 42px 0 60px;
-}
+        .logo {
+            font-size: clamp(38px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: 8px;
 
-.header {
-    text-align: center;
-    margin-bottom: 38px;
-}
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #8be9fd,
+                #bd93f9,
+                #ffffff
+            );
 
-.logo {
-    font-size: 58px;
-    margin-bottom: 10px;
-}
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
 
-h1 {
-    font-size: 36px;
-    margin: 0;
-    letter-spacing: 1px;
-}
+            text-shadow:
+                0 0 30px rgba(139, 233, 253, 0.25);
+        }
 
-.subtitle {
-    color: #9ea9bb;
-    margin-top: 10px;
-    font-size: 16px;
-}
+        .subtitle {
+            margin-top: 10px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+        }
 
-.section {
-    margin-top: 34px;
-}
+        /* ---------- MAIN ---------- */
 
-.section-title {
-    font-size: 21px;
-    font-weight: 700;
-    margin: 0 0 14px 4px;
-}
+        main {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
 
-.grid {
-    display: grid;
-    grid-template-columns:
-        repeat(auto-fit, minmax(250px, 1fr));
+        .section {
+            margin-bottom: 50px;
+        }
 
-    gap: 14px;
-}
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
 
-.card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
+            margin-bottom: 22px;
 
-    background: rgba(20, 27, 40, .88);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
 
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 20px;
+        .section-title::after {
+            content: "";
+            height: 1px;
+            flex: 1;
 
-    padding: 22px;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.25),
+                transparent
+            );
+        }
 
-    transition: .2s;
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
 
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.2);
-}
+        /* ---------- CARD ---------- */
 
-.card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(120,140,255,.5);
-    background: rgba(28,37,57,.95);
-}
+        .card {
+            position: relative;
+            min-height: 245px;
 
-.icon {
-    font-size: 34px;
-    margin-bottom: 12px;
-}
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
 
-.card h2 {
-    margin: 0 0 7px;
-    font-size: 19px;
-}
+            padding: 25px 18px;
 
-.card p {
-    margin: 0;
-    color: #9faabc;
-    line-height: 1.5;
-    font-size: 14px;
-}
+            text-decoration: none;
+            color: white;
 
-.disabled {
-    opacity: .48;
-    cursor: default;
-}
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
 
-.disabled:hover {
-    transform: none;
-    border-color: rgba(255,255,255,.08);
-    background: rgba(20,27,40,.88);
-}
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.09),
+                    rgba(255,255,255,0.025)
+                );
 
-.badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 5px 9px;
-    border-radius: 8px;
-    font-size: 11px;
-    background: #252d3b;
-    color: #8995a9;
-}
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
 
-.footer {
-    text-align: center;
-    margin-top: 45px;
-    color: #697487;
-    font-size: 13px;
-}
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.35),
+                inset 0 1px 1px rgba(255,255,255,0.1);
 
-@media (max-width: 600px) {
+            overflow: hidden;
 
-    .container {
-        padding-top: 28px;
-    }
+            transition:
+                transform 0.35s ease,
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+        }
 
-    .logo {
-        font-size: 48px;
-    }
+        .card:hover {
+            transform: translateY(-8px) scale(1.015);
 
-    h1 {
-        font-size: 29px;
-    }
+            border-color: rgba(139,233,253,0.4);
 
-    .grid {
-        grid-template-columns: 1fr;
-    }
+            box-shadow:
+                0 30px 70px rgba(0,0,0,0.5),
+                0 0 30px rgba(139,233,253,0.08);
+        }
 
-}
+        .card::before {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
 
-</style>
+            border-radius: 50%;
+
+            background: radial-gradient(
+                circle,
+                rgba(139,233,253,0.13),
+                transparent 70%
+            );
+
+            top: -80px;
+            right: -60px;
+
+            pointer-events: none;
+        }
+
+        /* ---------- SPHERE ---------- */
+
+        .sphere {
+            position: relative;
+
+            width: 125px;
+            height: 125px;
+
+            margin-bottom: 20px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 32% 25%,
+                    rgba(255,255,255,0.38),
+                    rgba(255,255,255,0.08) 20%,
+                    rgba(20,35,55,0.75) 65%,
+                    rgba(3,8,15,0.95) 100%
+                );
+
+            border: 1px solid rgba(255,255,255,0.22);
+
+            box-shadow:
+                inset -15px -18px 30px rgba(0,0,0,0.55),
+                inset 10px 10px 25px rgba(255,255,255,0.08),
+                0 15px 35px rgba(0,0,0,0.45);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        /* Блик */
+
+        .sphere::before {
+            content: "";
+
+            position: absolute;
+
+            width: 45px;
+            height: 25px;
+
+            top: 16px;
+            left: 22px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.18);
+
+            filter: blur(7px);
+
+            transform: rotate(-25deg);
+        }
+
+        /* ---------- SPIRAL ---------- */
+
+        .spiral {
+            position: absolute;
+
+            width: 92px;
+            height: 92px;
+
+            border-radius: 50%;
+
+            background:
+                repeating-radial-gradient(
+                    circle,
+                    transparent 0px,
+                    transparent 5px,
+                    rgba(139,233,253,0.55) 6px,
+                    transparent 8px
+                );
+
+            opacity: 0.8;
+
+            transform: rotate(25deg) scale(0.85);
+
+            mask-image: radial-gradient(
+                circle,
+                black 30%,
+                transparent 72%
+            );
+
+            -webkit-mask-image: radial-gradient(
+                circle,
+                black 30%,
+                transparent 72%
+            );
+        }
+
+        .sphere-icon {
+            position: relative;
+            z-index: 2;
+
+            font-size: 42px;
+
+            filter:
+                drop-shadow(0 0 12px rgba(139,233,253,0.55));
+        }
+
+        /* ---------- TEXT ---------- */
+
+        .card-title {
+            text-align: center;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+        .card-description {
+            text-align: center;
+
+            font-size: 13px;
+            line-height: 1.45;
+
+            color: rgba(255,255,255,0.58);
+
+            max-width: 220px;
+        }
+
+        /* ---------- JOB SECTION ---------- */
+
+        .work-card {
+            min-height: 190px;
+        }
+
+        .work-card .sphere {
+            width: 95px;
+            height: 95px;
+            margin-bottom: 15px;
+        }
+
+        .work-card .sphere-icon {
+            font-size: 32px;
+        }
+
+        .work-card .spiral {
+            width: 70px;
+            height: 70px;
+        }
+
+        /* ---------- FOOTER ---------- */
+
+        footer {
+            width: min(1100px, 100%);
+            margin: 20px auto 0;
+
+            text-align: center;
+
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+
+            letter-spacing: 1px;
+        }
+
+        /* ---------- MOBILE ---------- */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 22px 12px 35px;
+            }
+
+            header {
+                margin-bottom: 35px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+
+            .section {
+                margin-bottom: 38px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 13px;
+            }
+
+            .card {
+                min-height: 205px;
+                padding: 17px 10px;
+                border-radius: 22px;
+            }
+
+            .sphere {
+                width: 92px;
+                height: 92px;
+                margin-bottom: 14px;
+            }
+
+            .spiral {
+                width: 68px;
+                height: 68px;
+            }
+
+            .sphere-icon {
+                font-size: 31px;
+            }
+
+            .card-title {
+                font-size: 14px;
+                line-height: 1.25;
+            }
+
+            .card-description {
+                font-size: 11px;
+                line-height: 1.35;
+            }
+
+            .work-card {
+                min-height: 175px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
+<header>
 
-    <header class="header">
+    <div class="logo">PSY-TOOLS</div>
 
-        <div class="logo">🧠</div>
+    <div class="subtitle">
+        психология · развитие · работа
+    </div>
 
-        <h1>PSY-TOOLS</h1>
-
-        <div class="subtitle">
-            Инструменты для самопознания, развития и профессионального профиля
-        </div>
-
-    </header>
+</header>
 
 
-    <!-- САМООЦЕНКА -->
+<main>
+
+    <!-- ========================= -->
+    <!-- ПСИХОДИАГНОСТИКА -->
+    <!-- ========================= -->
 
     <section class="section">
 
-        <h2 class="section-title">
-            🧠 Самооценка
-        </h2>
+        <div class="section-title">
+            🧠 Психодиагностика
+        </div>
 
-        <div class="grid">
+        <div class="cards">
 
-            <a class="card" href="./wheel/">
+            <!-- КЕТТЕЛЛ -->
 
-                <div class="icon">🌀</div>
+            <a class="card" href="./cattell/">
 
-                <h2>Колесо баланса</h2>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">🧠</div>
+                </div>
 
-                <p>
-                    Оценка удовлетворённости основными сферами жизни
-                    и определение зон развития.
-                </p>
+                <div class="card-title">
+                    16 факторов Кеттелла
+                </div>
+
+                <div class="card-description">
+                    Личностный профиль · взрослая версия
+                </div>
 
             </a>
 
 
-            <a class="card" href="./skills/">
+            <!-- ДЕТСКИЙ КЕТТЕЛЛ -->
 
-                <div class="icon">🧭</div>
+            <a class="card" href="./cattell-child/">
 
-                <h2>Рефлексия навыков</h2>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">👦</div>
+                </div>
 
-                <p>
-                    Оценка компетенций, сильных сторон и направлений
-                    профессионального развития.
-                </p>
+                <div class="card-title">
+                    Кеттелл · дети
+                </div>
+
+                <div class="card-description">
+                    Детская и подростковая психодиагностика
+                </div>
 
             </a>
 
 
-            <div class="card disabled">
+            <!-- ЛЮШЕР -->
 
-                <div class="icon">🎨</div>
+            <a class="card" href="./luscher/">
 
-                <h2>Тест Люшера</h2>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">◉</div>
+                </div>
 
-                <p>
-                    Цветовой тест и анализ предпочтений.
-                </p>
+                <div class="card-title">
+                    Тест Люшера
+                </div>
 
-                <span class="badge">
-                    Скоро
-                </span>
+                <div class="card-description">
+                    Цветовая психодиагностика
+                </div>
 
-            </div>
-
-        </div>
-
-    </section>
+            </a>
 
 
-    <!-- РАБОТА -->
-
-    <section class="section">
-
-        <h2 class="section-title">
-            💼 Работа и профессиональное развитие
-        </h2>
-
-        <div class="grid">
+            <!-- ГЕРЧИКОВ -->
 
             <a class="card" href="./gerchikov/">
 
-                <div class="icon">🎯</div>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">⚙</div>
+                </div>
 
-                <h2>Мотивационный профиль</h2>
+                <div class="card-title">
+                    Мотивация по Герчикову
+                </div>
 
-                <p>
-                    Адаптированный тест на основе типологии
-                    трудовой мотивации В. И. Герчикова.
-                </p>
+                <div class="card-description">
+                    Пять типов трудовой мотивации
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- САМОРАЗВИТИЕ -->
+    <!-- ========================= -->
+
+    <section class="section">
+
+        <div class="section-title">
+            🧭 Саморазвитие
+        </div>
+
+        <div class="cards">
+
+            <!-- КОЛЕСО -->
+
+            <a class="card" href="./wheel/">
+
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">◌</div>
+                </div>
+
+                <div class="card-title">
+                    Колесо баланса
+                </div>
+
+                <div class="card-description">
+                    Оценка основных сфер жизни
+                </div>
 
             </a>
 
 
-            <div class="card disabled">
+            <!-- НАВЫКИ -->
 
-                <div class="icon">💼</div>
+            <a class="card" href="./skills/">
 
-                <h2>Профориентация</h2>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">✦</div>
+                </div>
 
-                <p>
-                    Анализ интересов, способностей и профессиональных
-                    направлений.
-                </p>
+                <div class="card-title">
+                    Карта навыков
+                </div>
 
-                <span class="badge">
-                    Скоро
-                </span>
+                <div class="card-description">
+                    Анализ компетенций и профессиональных навыков
+                </div>
 
-            </div>
-
-
-            <div class="card disabled">
-
-                <div class="icon">👤</div>
-
-                <h2>Моё резюме</h2>
-
-                <p>
-                    Формирование профессионального профиля
-                    на основе результатов оценки.
-                </p>
-
-                <span class="badge">
-                    Скоро
-                </span>
-
-            </div>
+            </a>
 
 
-            <div class="card disabled">
+            <!-- ПРОФОРИЕНТАЦИЯ -->
 
-                <div class="icon">🔎</div>
+            <a class="card" href="./career/">
 
-                <h2>Вакансии</h2>
+                <div class="sphere">
+                    <div class="spiral"></div>
+                    <div class="sphere-icon">🧭</div>
+                </div>
 
-                <p>
-                    Поиск вакансий с учётом навыков и
-                    мотивационного профиля.
-                </p>
+                <div class="card-title">
+                    Профориентация
+                </div>
 
-                <span class="badge">
-                    Скоро
-                </span>
+                <div class="card-description">
+                    Поиск профессиональных направлений
+                </div>
 
-            </div>
+            </a>
 
         </div>
 
     </section>
 
 
-    <!-- ПРОФИЛЬ -->
+    <!-- ========================= -->
+    <!-- НАЙТИ РАБОТУ -->
+    <!-- ========================= -->
 
     <section class="section">
 
-        <h2 class="section-title">
-            👤 Мой профиль
-        </h2>
+        <div class="section-title">
+            💼 Найти работу
+        </div>
 
-        <div class="grid">
+        <div class="cards">
 
-            <div class="card disabled">
+            <!-- ВАКАНСИИ -->
 
-                <div class="icon">📊</div>
+            <a class="card work-card" href="./work/vacancies/">
 
-                <h2>Мои результаты</h2>
+                <div class="sphere">
 
-                <p>
-                    Единый профиль с результатами всех пройденных
-                    инструментов.
-                </p>
+                    <div class="spiral"></div>
 
-                <span class="badge">
-                    Скоро
-                </span>
+                    <div class="sphere-icon">
+                        🔎
+                    </div>
 
-            </div>
+                </div>
+
+                <div class="card-title">
+                    Вакансии
+                </div>
+
+                <div class="card-description">
+                    Поиск подходящих предложений
+                </div>
+
+            </a>
 
 
-            <div class="card disabled">
+            <!-- РЕЗЮМЕ -->
 
-                <div class="icon">📄</div>
+            <a class="card work-card" href="./work/resume/">
 
-                <h2>Профессиональный профиль</h2>
+                <div class="sphere">
 
-                <p>
-                    Объединение навыков, мотивации и результатов
-                    профориентации.
-                </p>
+                    <div class="spiral"></div>
 
-                <span class="badge">
-                    Скоро
-                </span>
+                    <div class="sphere-icon">
+                        📄
+                    </div>
 
-            </div>
+                </div>
+
+                <div class="card-title">
+                    Моё резюме
+                </div>
+
+                <div class="card-description">
+                    Создание и управление профессиональным профилем
+                </div>
+
+            </a>
 
         </div>
 
     </section>
 
+</main>
 
-    <footer class="footer">
 
-        PSY-TOOLS · цифровые инструменты самопознания и развития
+<footer>
 
-    </footer>
+    PSY-TOOLS · исследовательские и развивающие инструменты
 
-</div>
+</footer>
 
 </body>
 </html>
