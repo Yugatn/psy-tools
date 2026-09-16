@@ -848,7 +848,7 @@ function showDec() {
     el("testScreen").classList.add("hidden");
     el("decisionScreen").classList.remove("hidden");
     el("nextScreen").classList.add("hidden");
-    decList = Object.keys(categories);
+    decList = Object.keys(categories).filter(function (n) { return isDone(n); });
     decIdx = decList.indexOf(currentCat);
     if (decIdx < 0) { decIdx = 0; }
     showDecCat(decList[decIdx]);
