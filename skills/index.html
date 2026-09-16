@@ -85,8 +85,6 @@ select:focus{border-color:var(--accent)}
 .verification-hint{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05);line-height:1.4}
 .verification-hint.all-yes{color:var(--good)}
 .verification-hint.some-no{color:var(--warning)}
-
-/* === Блок рефлексии (для низких оценок) === */
 .reflection-block{margin-top:10px;padding:10px 12px;background:rgba(255,200,87,.04);border:1px solid rgba(255,200,87,.20);border-radius:10px;animation:vSlideDown .22s ease-out}
 .reflection-title{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;color:var(--warning);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
 .reflection-input{width:100%;background:#10131a;border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.45;color:var(--text);font-family:inherit;outline:none;resize:vertical;min-height:56px;transition:border-color .15s ease}
@@ -94,16 +92,12 @@ select:focus{border-color:var(--accent)}
 .reflection-input::placeholder{color:#5a6172}
 .reflection-hint{font-size:10.5px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:4px;transition:color .2s ease}
 .reflection-hint.saved{color:var(--good)}
-
-/* === Сводка заметок на results/decision === */
 .reflections-list{display:flex;flex-direction:column;gap:10px}
 .reflection-item{background:var(--card2);border-left:3px solid var(--warning);border-radius:8px;padding:11px 13px}
 .reflection-item-cat{font-size:10.5px;color:var(--warning);font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
 .reflection-item-skill{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .reflection-item-score{font-size:12px;color:var(--warning);font-weight:800;flex-shrink:0}
 .reflection-item-text{font-size:13px;color:var(--muted);line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
-.reflections-empty{color:var(--muted);font-size:13px;text-align:center;padding:14px;font-style:italic}
-
 .helper-box{background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.08));border:1px solid rgba(124,140,255,.22);border-radius:14px;padding:11px;margin-top:12px}
 .helper-title{font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:.2px}
 .helper-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
@@ -123,24 +117,26 @@ button:active{transform:scale(.97)}
 .btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
 .decision-top{text-align:center;margin-bottom:6px}
 .decision-icon{font-size:42px;margin-bottom:6px;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;border-radius:50%;background:rgba(85,214,138,.12);border:1px solid rgba(85,214,138,.35);color:var(--good)}
+.decision-icon.neutral{background:rgba(124,140,255,.12);border-color:rgba(124,140,255,.35);color:var(--accent)}
 .decision h2{margin:12px 0 6px;font-size:22px}
 .decision p{color:var(--muted);line-height:1.5;font-size:13.5px;margin:0}
 .decision-badge{display:inline-flex;flex-direction:column;align-items:center;margin-top:14px;padding:11px 22px;background:linear-gradient(135deg,rgba(124,140,255,.15),rgba(156,124,255,.15));border:1px solid rgba(124,140,255,.28);border-radius:17px}
 .decision-badge-value{font-size:30px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
 .decision-badge-label{font-size:10.5px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-
 .skill-radar-wrap{display:flex;align-items:center;gap:6px;margin-top:8px;position:relative}
 .skill-radar-container{flex:1;min-width:0;display:flex;justify-content:center;align-items:center;padding:4px 0}
 #skillRadar{display:block;max-width:100%;height:auto}
 .radar-nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(124,140,255,.10);border:1px solid rgba(124,140,255,.28);color:var(--accent);font-size:26px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s ease;padding:0 0 4px;font-family:inherit}
 .radar-nav-btn:hover:not(:disabled){background:rgba(124,140,255,.22);border-color:rgba(124,140,255,.55)}
 .radar-nav-btn:active:not(:disabled){transform:scale(.92)}
-.radar-nav-btn:disabled{opacity:.2;cursor:not-allowed}
-.radar-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 6px;min-height:8px}
-.radar-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .25s ease;cursor:pointer;flex-shrink:0}
-.radar-dot:hover:not(.active){background:rgba(255,255,255,.4)}
+.radar-nav-btn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.radar-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:10px 0 6px;min-height:8px}
+.radar-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s ease;cursor:pointer;flex-shrink:0;box-sizing:border-box}
+.radar-dot:hover:not(.active){background:rgba(255,255,255,.6)}
 .radar-dot.active{width:24px;border-radius:4px;background:var(--accent)}
-
+.radar-dot.empty{background:transparent;border:1.5px solid rgba(255,255,255,.25)}
+.radar-dot.empty:hover:not(.active){border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.05)}
+.radar-dot.empty.active{background:var(--accent);border-color:var(--accent)}
 .skill-radar-legend{display:flex;justify-content:center;gap:14px;margin:4px 0 14px;font-size:11px;color:var(--muted)}
 .skill-radar-legend-item{display:inline-flex;align-items:center;gap:5px}
 .skill-radar-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
@@ -283,10 +279,10 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 <div id="decisionScreen" class="hidden">
     <div class="card">
         <div class="decision-top">
-            <div class="decision-icon">✓</div>
-            <h2>Категория завершена</h2>
+            <div class="decision-icon" id="decisionIcon">✓</div>
+            <h2 id="decisionTitle">Категория завершена</h2>
             <p id="decisionText">Вы оценили навыки этой категории.</p>
-            <div class="decision-badge">
+            <div class="decision-badge" id="decisionBadge">
                 <div class="decision-badge-value" id="decisionPercent">0%</div>
                 <div class="decision-badge-label">средний уровень</div>
             </div>
@@ -307,7 +303,6 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
         </div>
         <div class="decision-category-name" id="decisionCategoryName">Категория</div>
 
-        <!-- Заметки для текущей категории -->
         <div id="decisionReflectionsWrap" class="hidden" style="margin-bottom:14px;">
             <div class="section-title" style="font-size:14px;margin-bottom:8px;">💭 Ваши заметки по категории</div>
             <div class="reflections-list" id="decisionReflections"></div>
@@ -333,7 +328,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
             </div>
         </div>
         <div class="choice-buttons">
-            <button class="btn-primary" onclick="continueFullAssessment()">Пройти полную оценку</button>
+            <button class="btn-primary" id="mainActionBtn" onclick="continueFullAssessment()">Пройти полную оценку</button>
             <button class="btn-success" onclick="finishAssessment()">Завершить</button>
         </div>
     </div>
@@ -342,7 +337,7 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
 <div id="nextScreen" class="hidden">
     <div class="card">
         <div style="text-align:center;padding:22px 10px 5px;">
-            <div class="decision-icon" style="background:rgba(124,140,255,.12);border-color:rgba(124,140,255,.35);color:var(--accent);">→</div>
+            <div class="decision-icon neutral">→</div>
             <h2>Следующая категория</h2>
             <p id="nextCategoryText" style="color:var(--muted);"></p>
             <div class="buttons"><button class="btn-primary" onclick="goNextCategory()">Далее</button></div>
@@ -388,14 +383,11 @@ footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
         <div class="section-description">Навыки, которые могут стать точками роста.</div>
         <div class="skill-list" id="developmentList"></div>
     </div>
-
-    <!-- Сводка всех заметок -->
     <div class="card" id="allReflectionsCard">
         <div class="section-title">💭 Ваши заметки для улучшения</div>
         <div class="section-description">Мысли, которые вы зафиксировали во время оценки низких навыков. Это — отправная точка для выбора направления развития.</div>
         <div id="allReflectionsList"></div>
     </div>
-
     <div class="card">
         <div class="section-title">Интерпретация</div>
         <div class="info" id="interpretation"></div>
@@ -523,6 +515,7 @@ var lastCategoryData=null;
 var lastSkillRadarData=null;
 var decisionCategoryList=[];
 var decisionIndex=0;
+var viewingCategory=null;
 
 var STORAGE_KEY="psyToolsSkillsV5";
 var STORAGE_COMPLETED_KEY="psyToolsSkillsV5Completed";
@@ -698,7 +691,6 @@ function updateSkillBadge(skillIndex,skill,level){
     slot.innerHTML="";
     if(skillCard)skillCard.classList.remove("verified","unverified","has-reflection");
 
-    /* Низкая оценка (1-2): показываем бейдж «есть заметка», если заполнено */
     if(level<=2){
         var refl=getReflection(currentCategory,skill);
         if(refl&&refl.trim()){
@@ -708,7 +700,6 @@ function updateSkillBadge(skillIndex,skill,level){
         return;
     }
 
-    /* Высокая оценка (4-5): показываем подтверждение */
     if(level>=4){
         var v=getVerification(currentCategory,skill);
         if(!v||v.level!==level||!v.answers||!v.answers.length)return;
@@ -745,7 +736,6 @@ function setSkillValue(skillIndex,value){
         renderVerificationBlock(skillIndex,skill,value);
     }else if(value<=2){
         if(vslot)vslot.innerHTML="";
-        /* Перерисовываем блок рефлексии, чтобы восстановить сохранённое значение */
         renderReflectionBlock(skillIndex,skill,value);
     }else{
         if(vslot)vslot.innerHTML="";
@@ -783,14 +773,15 @@ function saveCategory(){
 }
 
 /* =========================================================
-   DECISION SCREEN С НАВИГАЦИЕЙ
+   DECISION SCREEN — навигация по ВСЕМ категориям
 ========================================================= */
 function showDecisionScreen(){
     testScreen.classList.add("hidden");
     decisionScreen.classList.remove("hidden");
     nextScreen.classList.add("hidden");
 
-    decisionCategoryList = Object.keys(categories).filter(isCategoryCompleted);
+    /* Список ВСЕХ категорий */
+    decisionCategoryList = Object.keys(categories);
     decisionIndex = decisionCategoryList.indexOf(currentCategory);
     if (decisionIndex < 0) decisionIndex = 0;
 
@@ -799,21 +790,54 @@ function showDecisionScreen(){
 
 function showDecisionCategory(categoryName){
     if (!categoryName) return;
-
+    viewingCategory = categoryName;
+    var isCompleted = isCategoryCompleted(categoryName);
     var skills = categories[categoryName] || [];
     var skillValues = results[categoryName] || {};
-    var values = skills.map(function(s){ return Number(skillValues[s]) || 3; });
-    var average = values.length ? values.reduce(function(a,b){return a+b;},0)/values.length : 0;
+
+    /* Если не пройдена — показываем пустую диаграмму (все 0) */
+    var values = skills.map(function(s){
+        if (!isCompleted) return 0;
+        return Number(skillValues[s]) || 3;
+    });
+
+    var average = 0;
+    if (isCompleted) {
+        var realValues = skills.map(function(s){return Number(skillValues[s]) || 3;});
+        average = realValues.length ? realValues.reduce(function(a,b){return a+b;},0)/realValues.length : 0;
+    }
     var percent = Math.round((average/5)*100);
 
-    document.getElementById("decisionText").textContent = "Вы оценили " + values.length + " навыков";
+    /* Иконка и заголовок */
+    var iconEl = document.getElementById("decisionIcon");
+    var titleEl = document.getElementById("decisionTitle");
+    var textEl = document.getElementById("decisionText");
+    var badgeEl = document.getElementById("decisionBadge");
+    var percentEl = document.getElementById("decisionPercent");
+    var mainBtn = document.getElementById("mainActionBtn");
+
+    if (isCompleted) {
+        iconEl.className = "decision-icon";
+        iconEl.textContent = "✓";
+        titleEl.textContent = "Категория завершена";
+        textEl.textContent = "Вы оценили " + skills.length + " навыков";
+        badgeEl.classList.remove("hidden");
+        percentEl.textContent = "0%";
+        animateNumber(percentEl, 0, percent, 700, function(v){return Math.round(v) + "%";});
+        if (mainBtn) mainBtn.textContent = "Пройти полную оценку";
+    } else {
+        iconEl.className = "decision-icon neutral";
+        iconEl.textContent = "○";
+        titleEl.textContent = "Категория не оценена";
+        textEl.textContent = "Навыки этой категории ещё не оценены. Пройдите её, чтобы увидеть реальную диаграмму.";
+        badgeEl.classList.add("hidden");
+        if (mainBtn) mainBtn.textContent = "Пройти эту категорию";
+    }
+
     document.getElementById("decisionCategoryName").textContent = categoryName;
 
-    var percentEl = document.getElementById("decisionPercent");
-    percentEl.textContent = "0%";
-    animateNumber(percentEl, 0, percent, 700, function(v){ return Math.round(v) + "%"; });
-
-    var weak = getWeakSkills(categoryName);
+    /* Подсказка про курсы */
+    var weak = isCompleted ? getWeakSkills(categoryName) : [];
     var hint = document.getElementById("programsHint");
     if (hint) {
         if (weak.length) {
@@ -824,7 +848,14 @@ function showDecisionCategory(categoryName){
         }
     }
 
-    renderDecisionReflections(categoryName);
+    /* Заметки только для пройденных */
+    if (isCompleted) {
+        renderDecisionReflections(categoryName);
+    } else {
+        var wrap = document.getElementById("decisionReflectionsWrap");
+        if (wrap) wrap.classList.add("hidden");
+    }
+
     updateDecisionNav();
 
     lastSkillRadarData = { skills: skills, values: values, average: average };
@@ -866,12 +897,13 @@ function updateDecisionNav(){
     var dots = document.getElementById("radarDots");
     if (!dots) return;
     dots.innerHTML = "";
-    if (decisionCategoryList.length <= 1) return;
 
     decisionCategoryList.forEach(function(name, i){
         var dot = document.createElement("div");
-        dot.className = "radar-dot" + (i === decisionIndex ? " active" : "");
-        dot.title = name;
+        dot.className = "radar-dot";
+        if (i === decisionIndex) dot.classList.add("active");
+        if (!isCategoryCompleted(name)) dot.classList.add("empty");
+        dot.title = name + (isCategoryCompleted(name) ? "" : " — не пройдена");
         dot.addEventListener("click", function(){
             decisionIndex = i;
             showDecisionCategory(decisionCategoryList[i]);
@@ -970,570 +1002,4 @@ function drawSkillRadar(canvasId,skills,values,average,compact){
         var outerR=isCompact?7:8;
         var innerR=isCompact?4.8:5.8;
         var whiteR=isCompact?1.9:2.3;
-        ctx.beginPath();ctx.arc(p.x,p.y,outerR,0,Math.PI*2);ctx.fillStyle=color;ctx.globalAlpha=0.25;ctx.fill();ctx.globalAlpha=1;
-        ctx.beginPath();ctx.arc(p.x,p.y,innerR,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
-        ctx.beginPath();ctx.arc(p.x,p.y,whiteR,0,Math.PI*2);ctx.fillStyle="#ffffff";ctx.fill();
-    });
-    ctx.font="700 "+fontSize+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-    ctx.textAlign="center";ctx.textBaseline="middle";
-    skills.forEach(function(skill,idx){
-        var ang=-Math.PI/2+idx*angleStep;
-        var lx=cx+Math.cos(ang)*labelRadius;
-        var ly=cy+Math.sin(ang)*labelRadius;
-        var words=skill.split(" ");
-        var lines=[];var current="";
-        words.forEach(function(word){
-            var test=current?current+" "+word:word;
-            if(ctx.measureText(test).width>maxLabelWidth){if(current)lines.push(current);current=word;}
-            else current=test;
-        });
-        if(current)lines.push(current);
-        var displayLines=lines.slice(0,3);
-        var lineHeight=fontSize+3;
-        var totalHeight=displayLines.length*lineHeight;
-        ctx.fillStyle="#dfe3ea";
-        displayLines.forEach(function(line,li){ctx.fillText(line,lx,ly+(li*lineHeight)-(totalHeight-lineHeight)/2);});
-    });
-    var innerR2=isCompact?26:30;
-    ctx.beginPath();ctx.arc(cx,cy,innerR2,0,Math.PI*2);ctx.fillStyle="#0b0d12";ctx.fill();
-    ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=1.5;ctx.stroke();
-    ctx.font="800 "+(isCompact?16:18)+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-    ctx.fillStyle="#ffffff";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillText(average.toFixed(1),cx,cy-4);
-    ctx.font="600 "+(isCompact?10:11)+"px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-    ctx.fillStyle="#9299a6";ctx.fillText("из 5",cx,cy+(isCompact?9:10));
-}
-
-function findNextUncompletedCategory(){
-    var names=Object.keys(categories);
-    var start=currentCategoryIndex;
-    for(var i=start+1;i<names.length;i++)if(!isCategoryCompleted(names[i]))return i;
-    for(var j=0;j<=start;j++)if(!isCategoryCompleted(names[j]))return j;
-    return -1;
-}
-
-function continueFullAssessment(){
-    var currentName = decisionCategoryList[decisionIndex] || currentCategory;
-    var names = Object.keys(categories);
-    currentCategoryIndex = names.indexOf(currentName);
-    if (currentCategoryIndex < 0) currentCategoryIndex = 0;
-
-    decisionScreen.classList.add("hidden");
-    var nextIndex = findNextUncompletedCategory();
-    if (nextIndex === -1) { finishAssessment(); return; }
-    nextScreen.classList.remove("hidden");
-    document.getElementById("nextCategoryText").textContent = "Следующая категория: " + names[nextIndex];
-    var btn = nextScreen.querySelector("button");
-    btn.textContent = "Далее";
-    btn.onclick = goNextCategory;
-}
-
-function goNextCategory(){
-    var nextIndex=findNextUncompletedCategory();
-    if(nextIndex===-1){finishAssessment();return;}
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-    loadCategory(nextIndex);
-}
-
-function finishAssessment(){
-    saveResults();
-    testScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    resultsScreen.classList.remove("hidden");
-    renderResults();
-    window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function getRingColor(avg){if(avg>=4)return "var(--good)";if(avg>=3)return "var(--accent)";if(avg>=2)return "var(--warning)";return "var(--danger)";}
-function getRingColorHex(avg){if(avg>=4)return "#55d68a";if(avg>=3)return "#7c8cff";if(avg>=2)return "#ffc857";return "#ff6b6b";}
-function getLevelLabel(avg){if(avg>=4.5)return "профи";if(avg>=3.5)return "продвинутый";if(avg>=2.5)return "уверенный";if(avg>=1.5)return "начальный";return "нет опыта";}
-function animateNumber(el,from,to,duration,formatter){
-    var start=performance.now();
-    function tick(now){
-        var t=Math.min(1,(now-start)/duration);
-        var eased=1-Math.pow(1-t,3);
-        el.textContent=formatter(from+(to-from)*eased);
-        if(t<1)requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-function animateCssVar(el,name,from,to,duration,unit){
-    var start=performance.now();
-    function tick(now){
-        var t=Math.min(1,(now-start)/duration);
-        var eased=1-Math.pow(1-t,3);
-        el.style.setProperty(name,(from+(to-from)*eased)+unit);
-        if(t<1)requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-function renderResults(){
-    var allSkills=[];
-    var categoryData=[];
-    Object.keys(results).forEach(function(category){
-        var skillValues=results[category];
-        var values=Object.values(skillValues);
-        if(!values.length)return;
-        var average=values.reduce(function(a,b){return a+b;},0)/values.length;
-        categoryData.push({name:category,average:average,count:values.length});
-        Object.entries(skillValues).forEach(function(pair){
-            var skill=pair[0];
-            var v=getVerification(category,skill);
-            var verified=v&&v.answers&&v.answers.length&&v.answers.every(function(a){return a;});
-            allSkills.push({category:category,name:skill,value:pair[1],verified:verified});
-        });
-    });
-    if(!allSkills.length){safeAlert("Сначала оцените хотя бы одну категорию.");backToAssessment();return;}
-    var average=allSkills.reduce(function(s,i){return s+i.value;},0)/allSkills.length;
-    var max=Math.max.apply(null,allSkills.map(function(i){return i.value;}));
-    var min=Math.min.apply(null,allSkills.map(function(i){return i.value;}));
-    var overallPercent=(average/5)*100;
-    var overallPercentRounded=Math.round(overallPercent);
-    var gaugeColor=getRingColor(average);
-    document.getElementById("statAverage").textContent=average.toFixed(1);
-    document.getElementById("statMax").textContent=max;
-    document.getElementById("statMin").textContent=min;
-    var gaugeEl=document.getElementById("overallGauge");
-    var percentEl=document.getElementById("overallPercent");
-    var avgEl=document.getElementById("overallAverage");
-    gaugeEl.style.setProperty("--gauge-color",gaugeColor);
-    gaugeEl.style.setProperty("--gauge-percent","0%");
-    percentEl.textContent="0%";avgEl.textContent="0.0";
-    animateNumber(percentEl,0,overallPercentRounded,900,function(v){return Math.round(v)+"%";});
-    animateNumber(avgEl,0,average,900,function(v){return v.toFixed(1);});
-    animateCssVar(gaugeEl,"--gauge-percent",0,overallPercent,900,"%");
-
-    var categoryResults=document.getElementById("categoryResults");
-    categoryResults.innerHTML="";
-    categoryData.forEach(function(item){
-        var percent=(item.average/5)*100;
-        var percentRounded=Math.round(percent);
-        var ringColor=getRingColor(item.average);
-        var level=getLevelLabel(item.average);
-        var card=document.createElement("div");
-        card.className="category-result";
-        card.innerHTML='<div class="circle" style="--percent:'+percent+'%; --ring-color:'+ringColor+';"><div><div class="circle-value">'+percentRounded+'%</div><div class="circle-level">'+item.average.toFixed(1)+'/5</div></div></div>'+
-            '<div class="category-result-name">'+escapeHtml(item.name)+'</div>'+
-            '<div class="category-result-count">'+item.count+' навыков · '+level+'</div>';
-        categoryResults.appendChild(card);
-    });
-
-    var strengths=allSkills.slice().sort(function(a,b){return b.value-a.value;}).slice(0,7);
-    var strengthsList=document.getElementById("strengthsList");
-    strengthsList.innerHTML="";
-    strengths.forEach(function(item){
-        var row=document.createElement("div");
-        row.className="result-skill";
-        var badge=item.verified?' <span style="color:var(--good);font-size:11px;font-weight:800;">✓</span>':"";
-        row.innerHTML='<div class="result-skill-name">'+escapeHtml(item.name)+badge+'</div><div class="result-skill-value good">'+item.value+'/5</div>';
-        strengthsList.appendChild(row);
-    });
-
-    var development=allSkills.slice().sort(function(a,b){return a.value-b.value;}).slice(0,7);
-    var developmentList=document.getElementById("developmentList");
-    developmentList.innerHTML="";
-    development.forEach(function(item){
-        var row=document.createElement("div");
-        row.className="result-skill";
-        var cls=item.value<=2?"danger":"warning";
-        row.innerHTML='<div class="result-skill-name">'+escapeHtml(item.name)+'</div><div class="result-skill-value '+cls+'">'+item.value+'/5</div>';
-        developmentList.appendChild(row);
-    });
-
-    renderAllReflections();
-    renderInterpretation(average,categoryData);
-    lastCategoryData=categoryData;
-    drawRadar(categoryData);
-}
-
-function renderAllReflections(){
-    var card=document.getElementById("allReflectionsCard");
-    var list=document.getElementById("allReflectionsList");
-    if(!card||!list)return;
-
-    var total=countAllReflections();
-    if(!total){
-        card.classList.add("hidden");
-        return;
-    }
-    card.classList.remove("hidden");
-
-    var html="";
-    Object.keys(categories).forEach(function(category){
-        var catRefs=reflections[category];
-        if(!catRefs)return;
-        var items=Object.keys(catRefs).filter(function(s){return catRefs[s]&&catRefs[s].trim();});
-        if(!items.length)return;
-
-        var skillValues=results[category]||{};
-        items.forEach(function(skill){
-            var score=Number(skillValues[skill])||0;
-            html+='<div class="reflection-item">'+
-                '<div class="reflection-item-cat">'+escapeHtml(category)+'</div>'+
-                '<div class="reflection-item-skill"><span>'+escapeHtml(skill)+'</span><span class="reflection-item-score">'+score+'/5</span></div>'+
-                '<div class="reflection-item-text">'+escapeHtml(catRefs[skill])+'</div>'+
-                '</div>';
-        });
-    });
-
-    list.innerHTML='<div class="reflections-list">'+html+'</div>';
-}
-
-function renderInterpretation(average,categoryData){
-    var percent=Math.round((average/5)*100);
-    var text="";
-    if(average<2)text="Большинство оценённых навыков находятся на начальном уровне. Это не означает отсутствие потенциала — скорее, карта показывает направления, в которых ещё предстоит накопить опыт.";
-    else if(average<3)text="У вас формируется набор практических навыков, однако многие из них пока находятся на начальном или переходном уровне.";
-    else if(average<4)text="У вас достаточно широкий набор навыков с преимущественно уверенным уровнем владения. Полезно определить несколько сильных направлений и углублять их.";
-    else text="Карта показывает высокий средний уровень по оценённым навыкам. Следующий шаг — специализация и создание проектов.";
-    text+=" Общий уровень: "+percent+"% ("+average.toFixed(1)+" из 5).";
-    if(categoryData.length===1)text+=" Сейчас оценена только одна категория.";
-    else text+=" Оценено категорий: "+categoryData.length+".";
-
-    var reflCount=countAllReflections();
-    if(reflCount){
-        var word=pluralize(reflCount,["заметка","заметки","заметок"]);
-        text+=" Вы зафиксировали "+reflCount+" "+word+" для улучшения — их можно использовать как отправную точку при выборе направления обучения.";
-    }
-    document.getElementById("interpretation").textContent=text;
-}
-
-function drawRadar(categoryData){
-    var canvas=document.getElementById("skillsRadar");
-    if(!canvas)return;
-    var ctx=canvas.getContext("2d");
-    var dpr=window.devicePixelRatio||1;
-    var containerWidth=(canvas.parentElement&&canvas.parentElement.clientWidth)||0;
-    var cssSize=Math.max(280,Math.min(containerWidth||640,640));
-    canvas.style.width=cssSize+"px";
-    canvas.style.height=cssSize+"px";
-    canvas.width=Math.round(cssSize*dpr);
-    canvas.height=Math.round(cssSize*dpr);
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.scale(dpr,dpr);
-    var width=cssSize,height=cssSize;
-    ctx.clearRect(0,0,width,height);
-    if(!categoryData.length)return;
-    var cx=width/2,cy=height/2;
-    var radius=Math.min(width,height)*0.33;
-    var count=categoryData.length;
-    var labelRadius=radius+62;
-    for(var level=1;level<=5;level++){
-        var r=radius*level/5;
-        ctx.beginPath();
-        for(var i=0;i<count;i++){
-            var angle=-Math.PI/2+i*2*Math.PI/count;
-            var x=cx+Math.cos(angle)*r;
-            var y=cy+Math.sin(angle)*r;
-            if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle="rgba(255,255,255,.10)";ctx.lineWidth=1;ctx.stroke();
-    }
-    for(var j=0;j<count;j++){
-        var a2=-Math.PI/2+j*2*Math.PI/count;
-        var px=cx+Math.cos(a2)*radius;
-        var py=cy+Math.sin(a2)*radius;
-        ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);
-        ctx.strokeStyle="rgba(255,255,255,.10)";ctx.stroke();
-    }
-    ctx.beginPath();
-    categoryData.forEach(function(item,index){
-        var ang=-Math.PI/2+index*2*Math.PI/count;
-        var r3=radius*item.average/5;
-        var x2=cx+Math.cos(ang)*r3;
-        var y2=cy+Math.sin(ang)*r3;
-        if(index===0)ctx.moveTo(x2,y2);else ctx.lineTo(x2,y2);
-    });
-    ctx.closePath();
-    ctx.fillStyle="rgba(124,140,255,.22)";ctx.fill();
-    ctx.strokeStyle="#7c8cff";ctx.lineWidth=3;ctx.stroke();
-    categoryData.forEach(function(item,index){
-        var ang=-Math.PI/2+index*2*Math.PI/count;
-        var r4=radius*item.average/5;
-        var x3=cx+Math.cos(ang)*r4;
-        var y3=cy+Math.sin(ang)*r4;
-        ctx.beginPath();ctx.arc(x3,y3,5,0,Math.PI*2);ctx.fillStyle="#9ca7ff";ctx.fill();
-    });
-    categoryData.forEach(function(item,index){
-        var ang=-Math.PI/2+index*2*Math.PI/count;
-        var x4=cx+Math.cos(ang)*labelRadius;
-        var y4=cy+Math.sin(ang)*labelRadius;
-        ctx.fillStyle="#dfe3ea";
-        ctx.font="700 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.textAlign="center";ctx.textBaseline="middle";
-        var words=item.name.split(" ");
-        var lines=[];var current="";
-        words.forEach(function(word){
-            var test=current?current+" "+word:word;
-            if(ctx.measureText(test).width>120){if(current)lines.push(current);current=word;}
-            else current=test;
-        });
-        if(current)lines.push(current);
-        lines.slice(0,3).forEach(function(line,li){
-            ctx.fillText(line,x4,y4+(li-(Math.min(lines.length,3)-1)/2)*16);
-        });
-    });
-    ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle="#ffffff";ctx.fill();
-}
-
-function updateProgress(){
-    var names=Object.keys(categories);
-    var completed=names.filter(isCategoryCompleted).length;
-    var current=currentCategoryIndex+1;
-    var percent=Math.round(completed/names.length*100);
-    document.getElementById("progressText").textContent="Категория "+current+" из "+names.length;
-    document.getElementById("progressPercent").textContent=percent+"%";
-    document.getElementById("progressBar").style.width=percent+"%";
-}
-function updateChecklist(){
-    var container=document.getElementById("checklist");
-    if(!container)return;
-    var names=Object.keys(categories);
-    var completedCount=names.filter(isCategoryCompleted).length;
-    container.innerHTML="";
-    var summary=document.createElement("div");
-    summary.className="checklist-summary";
-    summary.textContent="Пройдено: "+completedCount+" из "+names.length;
-    container.appendChild(summary);
-    names.forEach(function(name,index){
-        var done=isCategoryCompleted(name);
-        var touched=isCategoryTouched(name);
-        var active=index===currentCategoryIndex;
-        var btn=document.createElement("button");
-        btn.type="button";
-        btn.className="checklist-item";
-        if(done)btn.classList.add("done");
-        else if(touched)btn.classList.add("partial");
-        if(active)btn.classList.add("active");
-        var mark=done?"✓":(touched?"◐":"○");
-        btn.innerHTML='<span class="checklist-check">'+mark+'</span><span>'+escapeHtml(name)+'</span>';
-        btn.addEventListener("click",function(){loadCategory(index);window.scrollTo({top:0,behavior:"smooth"});});
-        container.appendChild(btn);
-    });
-}
-function refreshCategorySelect(){
-    var names=Object.keys(categories);
-    var opts=categorySelect.options;
-    for(var i=0;i<opts.length;i++){
-        var name=names[i];
-        var prefix="";
-        if(isCategoryCompleted(name))prefix="✓ ";
-        else if(isCategoryTouched(name))prefix="◐ ";
-        opts[i].textContent=prefix+name;
-    }
-}
-function backToAssessment(){
-    resultsScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-    loadCategory(currentCategoryIndex);
-    window.scrollTo({top:0,behavior:"smooth"});
-}
-async function resetTest(){
-    var confirmed=await safeConfirm("Удалить все оценки и начать заново?");
-    if(!confirmed)return;
-    results={};completedCategories={};verifications={};reflections={};
-    lastCategoryData=null;lastSkillRadarData=null;
-    decisionCategoryList=[];decisionIndex=0;
-    try{
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(STORAGE_COMPLETED_KEY);
-        localStorage.removeItem(STORAGE_VERIFICATIONS_KEY);
-        localStorage.removeItem(STORAGE_REFLECTIONS_KEY);
-    }catch(e){}
-    currentCategoryIndex=0;
-    resultsScreen.classList.add("hidden");
-    decisionScreen.classList.add("hidden");
-    nextScreen.classList.add("hidden");
-    testScreen.classList.remove("hidden");
-    loadCategory(0);
-    updateProgress();updateChecklist();refreshCategorySelect();
-    window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function saveResults(){
-    try{
-        localStorage.setItem(STORAGE_KEY,JSON.stringify(results));
-        localStorage.setItem(STORAGE_COMPLETED_KEY,JSON.stringify(completedCategories));
-        localStorage.setItem(STORAGE_VERIFICATIONS_KEY,JSON.stringify(verifications));
-        localStorage.setItem(STORAGE_REFLECTIONS_KEY,JSON.stringify(reflections));
-    }catch(e){console.log("Не удалось сохранить",e);}
-}
-function loadResults(){
-    try{
-        var saved=localStorage.getItem(STORAGE_KEY);
-        if(saved)results=JSON.parse(saved)||{};
-        var savedCompleted=localStorage.getItem(STORAGE_COMPLETED_KEY);
-        if(savedCompleted)completedCategories=JSON.parse(savedCompleted)||{};
-        var savedV=localStorage.getItem(STORAGE_VERIFICATIONS_KEY);
-        if(savedV)verifications=JSON.parse(savedV)||{};
-        var savedR=localStorage.getItem(STORAGE_REFLECTIONS_KEY);
-        if(savedR)reflections=JSON.parse(savedR)||{};
-    }catch(e){results={};completedCategories={};verifications={};reflections={};}
-}
-
-function exportResults(){
-    var data={title:"Карта навыков",date:new Date().toLocaleString("ru-RU"),results:results,completed:Object.keys(completedCategories),verifications:verifications,reflections:reflections};
-    var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement("a");
-    a.href=url;a.download="karta-navykov.json";a.click();
-    URL.revokeObjectURL(url);
-}
-
-function escapeHtml(text){
-    return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-}
-function pluralize(n,forms){
-    var mod10=n%10,mod100=n%100;
-    if(mod10===1&&mod100!==11)return forms[0];
-    if(mod10>=2&&mod10<=4&&(mod100<10||mod100>=20))return forms[1];
-    return forms[2];
-}
-
-function getWeakSkills(category){
-    var skillValues=results[category]||{};
-    return Object.entries(skillValues).filter(function(pair){return Number(pair[1])<=2;}).map(function(pair){return pair[0];});
-}
-
-function openPrograms(){
-    if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred("light");}catch(e){}}
-    var categoryName=currentCategory||Object.keys(categories)[0];
-    var categoryPrograms=partners[categoryName]||[];
-    var weakSkills=getWeakSkills(categoryName);
-    var withRec=categoryPrograms.map(function(p){
-        var matched=(p.skills||[]).filter(function(s){return weakSkills.indexOf(s)!==-1;});
-        return Object.assign({},p,{recommended:matched.length>0,matchedSkills:matched});
-    }).sort(function(a,b){
-        if(a.recommended!==b.recommended)return b.recommended?1:-1;
-        return b.matchedSkills.length-a.matchedSkills.length;
-    });
-    document.getElementById("programsSubtitle").textContent=categoryName;
-    var body=document.getElementById("programsBody");
-    if(!withRec.length){
-        body.innerHTML='<div class="programs-empty"><div style="font-size:40px;margin-bottom:12px;opacity:.6;">🎓</div><div>Программы партнёров по этой категории скоро появятся.</div><div style="margin-top:10px;font-size:12px;opacity:.7;">Оставьте заявку на консультацию — подберём индивидуально.</div></div>'+
-            '<button class="btn-primary" style="width:100%;margin-top:14px;" onclick="closeModal(\'programsModal\');openConsultation();">💬 Оставить заявку</button>';
-    }else{
-        body.innerHTML='<div class="programs-list">'+withRec.map(function(p){return renderProgramCard(p);}).join("")+'</div>'+
-            '<div class="consult-intro" style="margin-top:18px;margin-bottom:0;">Не нашли подходящее? <a href="#" onclick="event.preventDefault();closeModal(\'programsModal\');openConsultation();" style="color:var(--accent);text-decoration:none;font-weight:700;">Оставьте заявку на консультацию</a> — подберём программу индивидуально.</div>';
-    }
-    body.querySelectorAll(".program-cta").forEach(function(btn){
-        btn.addEventListener("click",function(){handleProgramClick(btn.dataset.partner,btn.dataset.program);});
-    });
-    document.getElementById("programsModal").classList.add("open");
-    document.body.style.overflow="hidden";
-}
-
-function renderProgramCard(p){
-    var meta='<span>🌐 '+escapeHtml(p.format||"Онлайн")+'</span><span>⏱ '+escapeHtml(p.duration||"—")+'</span><span>💳 '+escapeHtml(p.price||"—")+'</span>';
-    return '<div class="program-card '+(p.recommended?"recommended":"")+'">'+
-        '<div class="program-head"><div class="program-partner"><span class="program-partner-dot"></span>'+escapeHtml(p.partner)+'</div>'+
-        (p.recommended?'<div class="program-badge">Рекомендуем</div>':"")+'</div>'+
-        '<div class="program-title">'+escapeHtml(p.program)+'</div>'+
-        '<div class="program-desc">'+escapeHtml(p.desc)+'</div>'+
-        '<div class="program-meta">'+meta+'</div>'+
-        '<button class="program-cta" data-partner="'+escapeHtml(p.partner)+'" data-program="'+escapeHtml(p.program)+'">Открыть программу →</button></div>';
-}
-
-function handleProgramClick(partner,program){
-    if(tg&&typeof tg.sendData==="function"){try{tg.sendData(JSON.stringify({type:"program_interest",partner:partner,program:program,category:currentCategory}));}catch(e){}}
-    showToast('Заявка на «'+program+'» от '+partner+' отправлена');
-    if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}
-}
-
-function openConsultation(){
-    if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.impactOccurred("light");}catch(e){}}
-    var categoryName=currentCategory||Object.keys(categories)[0];
-    var weakSkills=getWeakSkills(categoryName);
-    document.getElementById("consultationSubtitle").textContent=categoryName;
-
-    /* Подтягиваем заметки пользователя в текст */
-    var catRefs=reflections[categoryName]||{};
-    var notes=Object.keys(catRefs).filter(function(s){return catRefs[s]&&catRefs[s].trim();}).map(function(s){
-        return "• "+s+": "+catRefs[s];
-    });
-    var weakHint=weakSkills.length?"Слабые места: "+weakSkills.slice(0,3).join(", ")+(weakSkills.length>3?" и др.":""):"Разбор текущего профиля по этой категории";
-    var topicText="";
-    if(notes.length){
-        topicText="Мои заметки:\n"+notes.join("\n");
-    }else if(weakSkills.length){
-        topicText="Хочу разобраться с навыками: "+weakSkills.join(", ");
-    }
-
-    var notesBlock="";
-    if(notes.length){
-        notesBlock='<br><br><strong>Ваши заметки:</strong><br>'+notes.map(function(n){return escapeHtml(n);}).join("<br>");
-    }
-
-    document.getElementById("consultationBody").innerHTML=
-        '<div class="consult-intro">💬 Специалист поможет разобрать ваши результаты и составить план развития <strong>по категории «'+escapeHtml(categoryName)+'»</strong>.'+
-        (weakSkills.length?'<br><br>Найденные слабые места: <strong>'+escapeHtml(weakHint)+'</strong>':"")+
-        notesBlock+'</div>'+
-        '<form class="consult-form" onsubmit="submitConsultation(event)">'+
-        '<div class="consult-field"><label>Как к вам обращаться</label><input type="text" id="consultName" placeholder="Имя" required></div>'+
-        '<div class="consult-field"><label>Контакт для связи</label><input type="text" id="consultContact" placeholder="@telegram, email или телефон" required></div>'+
-        '<div class="consult-field"><label>Что хотите обсудить</label><textarea id="consultTopic" placeholder="Опишите, с чем нужна помощь">'+escapeHtml(topicText)+'</textarea></div>'+
-        '<div class="consult-field"><label>Удобное время (необязательно)</label><input type="text" id="consultTime" placeholder="Например, будни после 18:00"></div>'+
-        '<button type="submit" class="consult-submit">Отправить заявку</button></form>';
-    document.getElementById("consultationModal").classList.add("open");
-    document.body.style.overflow="hidden";
-}
-
-function submitConsultation(event){
-    event.preventDefault();
-    var name=document.getElementById("consultName").value.trim();
-    var contact=document.getElementById("consultContact").value.trim();
-    var topic=document.getElementById("consultTopic").value.trim();
-    var time=document.getElementById("consultTime").value.trim();
-    if(!name||!contact){showToast("Заполните имя и контакт");return;}
-    var application={type:"consultation",name:name,contact:contact,topic:topic,time:time,category:currentCategory,date:new Date().toISOString()};
-    try{
-        var existing=JSON.parse(localStorage.getItem(STORAGE_APPLICATIONS_KEY)||"[]");
-        existing.push(application);
-        localStorage.setItem(STORAGE_APPLICATIONS_KEY,JSON.stringify(existing));
-    }catch(e){}
-    if(tg&&typeof tg.sendData==="function"){try{tg.sendData(JSON.stringify(application));}catch(e){}}
-    document.getElementById("consultationBody").innerHTML=
-        '<div class="consult-success"><div class="consult-success-icon">✓</div><h3>Заявка отправлена</h3>'+
-        '<p>Мы свяжемся с вами по указанному контакту в течение 1 рабочего дня.</p>'+
-        '<button class="btn-primary" style="width:100%;margin-top:20px;" onclick="closeModal(\'consultationModal\')">Хорошо</button></div>';
-    if(tg&&tg.HapticFeedback){try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}}
-}
-
-function closeModal(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    el.classList.remove("open");
-    document.body.style.overflow="";
-}
-
-var toastTimer=null;
-function showToast(text){
-    var toast=document.getElementById("appToast");
-    if(!toast){
-        toast=document.createElement("div");
-        toast.id="appToast";
-        toast.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:#263653;color:#fff;padding:12px 18px;border-radius:14px;font-size:13px;z-index:3000;opacity:0;transition:all .3s ease;max-width:calc(100vw - 30px);text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4);pointer-events:none;";
-        document.body.appendChild(toast);
-    }
-    toast.textContent=text;
-    requestAnimationFrame(function(){toast.style.opacity="1";toast.style.transform="translateX(-50%) translateY(0)";});
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){toast.style.opacity="0";toast.style.transform="translateX(-50%) translateY(80px)";},2800);
-}
-
-window.addEventListener("resize",function(){
-    if(!resultsScreen.classList.contains("hidden")&&lastCategoryData)drawRadar(lastCategoryData);
-    if(!decisionScreen.classList.contains("hidden")&&lastSkillRadarData)drawSkillRadar("skillRadar",lastSkillRadarData.skills,lastSkillRadarData.values,lastSkillRadarData.average,false);
-    if(!testScreen.classList.contains("hidden"))updateLiveRadar();
-});
-
-init();
-</script>
-</body>
-</html>
+        ctx.beginPath();ctx.arc(p.x,p.y,
