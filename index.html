@@ -35,10 +35,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* =========================================================
-   BACKGROUND GRID
-========================================================= */
-
 .grid-background {
     position: fixed;
     inset: 0;
@@ -54,10 +50,6 @@ body {
     mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
     -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 85%);
 }
-
-/* =========================================================
-   MAIN
-========================================================= */
 
 .main {
     position: relative;
@@ -77,10 +69,6 @@ body {
     flex-direction: column;
     align-items: center;
 }
-
-/* =========================================================
-   LOGO
-========================================================= */
 
 .logo {
     position: relative;
@@ -119,10 +107,6 @@ body {
     background: linear-gradient(90deg, transparent, rgba(80, 230, 255, .8), transparent);
     box-shadow: 0 0 12px rgba(50, 220, 255, .6);
 }
-
-/* =========================================================
-   SECTION
-========================================================= */
 
 .section {
     width: 100%;
@@ -191,10 +175,6 @@ body {
     box-shadow: 0 0 10px rgba(40, 220, 255, .5);
 }
 
-/* =========================================================
-   CARDS — flexbox для идеальной симметрии
-========================================================= */
-
 .cards {
     width: 100%;
 
@@ -210,10 +190,6 @@ body {
 
     margin: 0 auto;
 }
-
-/* =========================================================
-   CARD
-========================================================= */
 
 .card {
     position: relative;
@@ -231,10 +207,6 @@ body {
 
     isolation: isolate;
 }
-
-/* =========================================================
-   DENDRITES
-========================================================= */
 
 .dendrites {
     position: absolute;
@@ -262,10 +234,6 @@ body {
 .dendrites span:nth-child(2) { width: 60px; right: 15%; top: 30%; transform: rotate(24deg); }
 .dendrites span:nth-child(3) { width: 80px; left: 18%; bottom: 28%; transform: rotate(25deg); }
 .dendrites span:nth-child(4) { width: 55px; right: 18%; bottom: 32%; transform: rotate(-27deg); }
-
-/* =========================================================
-   NEURON BODY — flex-контейнер для центрирования контента
-========================================================= */
 
 .neuron-body {
     position: absolute;
@@ -313,10 +281,6 @@ body {
 
     pointer-events: none;
 }
-
-/* =========================================================
-   MATRIX CODE — ВНУТРИ СФЕР (без изменений)
-========================================================= */
 
 .matrix-code {
     position: absolute;
@@ -401,10 +365,6 @@ body {
     opacity: .65;
 }
 
-/* =========================================================
-   SPHERE CONTENT — иконка + название по центру сферы
-========================================================= */
-
 .sphere-content {
     position: relative;
 
@@ -423,10 +383,6 @@ body {
 
     pointer-events: none;
 }
-
-/* =========================================================
-   ICON — новые, компактнее
-========================================================= */
 
 .icon {
     position: relative;
@@ -473,10 +429,6 @@ body {
         drop-shadow(0 0 18px rgba(30, 180, 255, .55));
 }
 
-/* =========================================================
-   CARD TITLE — ВНУТРИ СФЕРЫ, ПОД ИКОНКОЙ
-========================================================= */
-
 .card-title {
     display: block;
 
@@ -508,10 +460,6 @@ body {
         0 0 22px rgba(50, 200, 255, .45);
 }
 
-/* =========================================================
-   HOVER — BODY
-========================================================= */
-
 .card:hover .neuron-body,
 .card.active .neuron-body {
     transform: scale(1.075);
@@ -524,10 +472,6 @@ body {
         0 0 100px rgba(0, 150, 255, .18),
         inset 0 0 45px rgba(40, 255, 210, .15);
 }
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
 
 .description {
     position: absolute;
@@ -575,10 +519,6 @@ body {
     transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
-
 @media (max-width: 1050px) {
     .card {
         width: 200px;
@@ -590,10 +530,6 @@ body {
         height: 42px;
     }
 }
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media (max-width: 700px) {
 
@@ -634,7 +570,6 @@ body {
         width: 140px;
     }
 
-    /* Flex — идеальная симметрия */
     .cards {
         width: 100%;
 
@@ -682,10 +617,6 @@ body {
     }
 }
 
-/* =========================================================
-   VERY SMALL PHONES
-========================================================= */
-
 @media (max-width: 390px) {
 
     .cards {
@@ -718,10 +649,6 @@ body {
     }
 }
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -747,23 +674,168 @@ body {
 
 
     <!-- =====================================================
-         ПСИХОДИАГНОСТИКА
+         САМОРАЗВИТИЕ — теперь первый раздел
     ====================================================== -->
 
     <section class="section">
 
         <h2 class="section-title">
             <span class="num">01</span>
+            <span class="name">Саморазвитие</span>
+        </h2>
+
+        <div class="cards">
+
+            <!-- КОЛЕСО БАЛАНСА -->
+
+            <a class="card"
+               href="./wheel/"
+               aria-label="Колесо баланса"
+               data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития.">
+
+                <div class="dendrites">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="sphere-content">
+
+                        <div class="icon">
+                            <svg viewBox="0 0 64 64">
+                                <circle cx="32" cy="32" r="22"/>
+                                <line x1="32" y1="10" x2="32" y2="54"/>
+                                <line x1="10" y1="32" x2="54" y2="32"/>
+                                <line x1="16.5" y1="16.5" x2="47.5" y2="47.5"/>
+                                <line x1="47.5" y1="16.5" x2="16.5" y2="47.5"/>
+                                <circle cx="32" cy="32" r="5"/>
+                            </svg>
+                        </div>
+
+                        <span class="card-title">Колесо баланса</span>
+
+                    </div>
+
+                </div>
+
+                <div class="description">
+                    Оценка удовлетворённости основными сферами жизни и поиск зон для развития.
+                </div>
+
+            </a>
+
+
+            <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
+
+            <a class="card"
+               href="./skills/"
+               aria-label="Рефлексия навыков"
+               data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.">
+
+                <div class="dendrites">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="sphere-content">
+
+                        <div class="icon">
+                            <svg viewBox="0 0 64 64">
+                                <path d="M32 8
+                                         C22 8 14 16 14 26
+                                         C14 33 18 38 22 42
+                                         L22 48 L42 48 L42 42
+                                         C46 38 50 33 50 26
+                                         C50 16 42 8 32 8 Z"/>
+                                <line x1="24" y1="52" x2="40" y2="52"/>
+                                <line x1="27" y1="56" x2="37" y2="56"/>
+                            </svg>
+                        </div>
+
+                        <span class="card-title">Рефлексия навыков</span>
+
+                    </div>
+
+                </div>
+
+                <div class="description">
+                    Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.
+                </div>
+
+            </a>
+
+
+            <!-- ПРОФОРИЕНТАЦИЯ -->
+
+            <a class="card"
+               href="./career/"
+               aria-label="Профориентация"
+               data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений.">
+
+                <div class="dendrites">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+
+                <div class="neuron-body">
+
+                    <div class="matrix-code">
+                        <div class="matrix-swirl"></div>
+                    </div>
+
+                    <div class="sphere-content">
+
+                        <div class="icon">
+                            <svg viewBox="0 0 64 64">
+                                <circle cx="32" cy="32" r="22"/>
+                                <polygon points="32,14 38,32 32,50 26,32"/>
+                                <circle cx="32" cy="32" r="2.5" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </div>
+
+                        <span class="card-title">Профориентация</span>
+
+                    </div>
+
+                </div>
+
+                <div class="description">
+                    Исследование интересов и склонностей для поиска подходящих профессиональных направлений.
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ПСИХОДИАГНОСТИКА — теперь второй раздел
+    ====================================================== -->
+
+    <section class="section">
+
+        <h2 class="section-title">
+            <span class="num">02</span>
             <span class="name">Психодиагностика</span>
         </h2>
 
         <div class="cards">
 
-            <!-- КЕТТЕЛЛ — радар-диаграмма (16 факторов) -->
+            <!-- ОЦЕНКА ЛИЧНОСТНЫХ СВОЙСТВ (бывш. 16 факторов Кеттелла) -->
 
             <a class="card"
                href="./cattell/"
-               aria-label="16 факторов Кеттелла"
+               aria-label="Оценка личностных свойств"
                data-description="Исследование структуры личности по 16 личностным факторам.">
 
                 <div class="dendrites">
@@ -792,7 +864,7 @@ body {
                             </svg>
                         </div>
 
-                        <span class="card-title">16 факторов Кеттелла</span>
+                        <span class="card-title">Оценка личностных свойств</span>
 
                     </div>
 
@@ -805,7 +877,7 @@ body {
             </a>
 
 
-            <!-- ЛЮШЕР — три пересекающихся круга (цвета) -->
+            <!-- ТЕСТ ЛЮШЕРА -->
 
             <a class="card"
                href="./luscher/"
@@ -845,7 +917,7 @@ body {
             </a>
 
 
-            <!-- ГЕРЧИКОВ — восходящие столбики (мотивация) -->
+            <!-- МОТИВАЦИЯ ПО ГЕРЧИКОВУ -->
 
             <a class="card"
                href="./gerchikov/"
@@ -892,152 +964,7 @@ body {
 
 
     <!-- =====================================================
-         САМОРАЗВИТИЕ
-    ====================================================== -->
-
-    <section class="section">
-
-        <h2 class="section-title">
-            <span class="num">02</span>
-            <span class="name">Саморазвитие</span>
-        </h2>
-
-        <div class="cards">
-
-            <!-- КОЛЕСО — диаграмма-пирог со спицами -->
-
-            <a class="card"
-               href="./wheel/"
-               aria-label="Колесо баланса"
-               data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития.">
-
-                <div class="dendrites">
-                    <span></span><span></span><span></span><span></span>
-                </div>
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-                        <div class="matrix-swirl"></div>
-                    </div>
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-                            <svg viewBox="0 0 64 64">
-                                <circle cx="32" cy="32" r="22"/>
-                                <line x1="32" y1="10" x2="32" y2="54"/>
-                                <line x1="10" y1="32" x2="54" y2="32"/>
-                                <line x1="16.5" y1="16.5" x2="47.5" y2="47.5"/>
-                                <line x1="47.5" y1="16.5" x2="16.5" y2="47.5"/>
-                                <circle cx="32" cy="32" r="5"/>
-                            </svg>
-                        </div>
-
-                        <span class="card-title">Колесо баланса</span>
-
-                    </div>
-
-                </div>
-
-                <div class="description">
-                    Оценка удовлетворённости основными сферами жизни и поиск зон для развития.
-                </div>
-
-            </a>
-
-
-            <!-- НАВЫКИ — лампочка (озарение) -->
-
-            <a class="card"
-               href="./skills/"
-               aria-label="Рефлексия навыков"
-               data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.">
-
-                <div class="dendrites">
-                    <span></span><span></span><span></span><span></span>
-                </div>
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-                        <div class="matrix-swirl"></div>
-                    </div>
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-                            <svg viewBox="0 0 64 64">
-                                <path d="M32 8
-                                         C22 8 14 16 14 26
-                                         C14 33 18 38 22 42
-                                         L22 48 L42 48 L42 42
-                                         C46 38 50 33 50 26
-                                         C50 16 42 8 32 8 Z"/>
-                                <line x1="24" y1="52" x2="40" y2="52"/>
-                                <line x1="27" y1="56" x2="37" y2="56"/>
-                            </svg>
-                        </div>
-
-                        <span class="card-title">Рефлексия навыков</span>
-
-                    </div>
-
-                </div>
-
-                <div class="description">
-                    Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.
-                </div>
-
-            </a>
-
-
-            <!-- ПРОФОРИЕНТАЦИЯ — компас -->
-
-            <a class="card"
-               href="./career/"
-               aria-label="Профориентация"
-               data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений.">
-
-                <div class="dendrites">
-                    <span></span><span></span><span></span><span></span>
-                </div>
-
-                <div class="neuron-body">
-
-                    <div class="matrix-code">
-                        <div class="matrix-swirl"></div>
-                    </div>
-
-                    <div class="sphere-content">
-
-                        <div class="icon">
-                            <svg viewBox="0 0 64 64">
-                                <circle cx="32" cy="32" r="22"/>
-                                <polygon points="32,14 38,32 32,50 26,32"/>
-                                <circle cx="32" cy="32" r="2.5" fill="currentColor" stroke="none"/>
-                            </svg>
-                        </div>
-
-                        <span class="card-title">Профориентация</span>
-
-                    </div>
-
-                </div>
-
-                <div class="description">
-                    Исследование интересов и склонностей для поиска подходящих профессиональных направлений.
-                </div>
-
-            </a>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         РАБОТА
+         НАЙТИ РАБОТУ — третий раздел
     ====================================================== -->
 
     <section class="section">
@@ -1049,7 +976,7 @@ body {
 
         <div class="cards">
 
-            <!-- ВАКАНСИИ — портфель -->
+            <!-- ВАКАНСИИ -->
 
             <a class="card"
                href="./work/vacancies/"
@@ -1090,7 +1017,7 @@ body {
             </a>
 
 
-            <!-- РЕЗЮМЕ — визитка с профилем -->
+            <!-- МОЁ РЕЗЮМЕ -->
 
             <a class="card"
                href="./work/resume/"
