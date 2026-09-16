@@ -1,79 +1,1182 @@
-function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    
-    // Заголовки — создать при первом запросе
-    if (sheet.getLastRow() === 0) {
-      var headers = [
-        'ID', 'Дата', 'TZ', 'UserAgent',
-        // 25 ответов основного теста
-        'И1', 'П1', 'Па1', 'Х1', 'Л1',
-        'И2', 'П2', 'Па2', 'Х2', 'Л2',
-        'И3', 'П3', 'Па3', 'Х3', 'Л3',
-        'И4', 'П4', 'Па4', 'Х4', 'Л4',
-        'И5', 'П5', 'Па5', 'Х5', 'Л5',
-        // Баллы по типам (5-25)
-        'Балл_И', 'Балл_П', 'Балл_Па', 'Балл_Х', 'Балл_Л',
-        // Доли 0-100
-        'Доля_И', 'Доля_П', 'Доля_Па', 'Доля_Х', 'Доля_Л',
-        // Сила 20-100
-        'Сила_И', 'Сила_П', 'Сила_Па', 'Сила_Х', 'Сила_Л',
-        // 25 стимулов
-        'С1_Заработок', 'С2_Премии', 'С3_Подработка', 'С4_Справедливость', 'С5_Материальное',
-        'С6_Карьера', 'С7_Обучение', 'С8_СложныеЗадачи', 'С9_ПризнаниеЭкспертизы', 'С10_ЛюбимоеДело',
-        'С11_Стабильность', 'С12_Коллектив', 'С13_Миссия', 'С14_Долгосрочность', 'С15_ПоддержкаРук',
-        'С16_Самостоятельность', 'С17_Ответственность', 'С18_Влияние', 'С19_Автономия', 'С20_Управление',
-        'С21_БезПереработок', 'С22_МинимумУсилий', 'С23_ГарантОклад', 'С24_Предсказуемость', 'С25_БезСтресса',
-        // Суммы по стимулам каждого типа (5-25)
-        'СтимИ_сумма', 'СтимП_сумма', 'СтимПа_сумма', 'СтимХ_сумма', 'СтимЛ_сумма'
-      ];
-      sheet.appendRow(headers);
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e8ecff');
-      sheet.setFrozenRows(1);
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Мотивация по Герчикову</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0b0d12;--card:#151922;--card2:#1b202b;--border:rgba(255,255,255,.09);--text:#f3f5f7;--muted:#9299a6;--accent:#7c8cff;--accent2:#9c7cff;--good:#55d68a;--warning:#ffc857;--danger:#ff6b6b}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{padding:20px 14px 50px}
+.app{width:100%;max-width:900px;margin:0 auto}
+header{text-align:center;margin-bottom:18px}
+.logo{font-size:44px;margin-bottom:6px}
+h1{margin:0;font-size:28px;font-weight:750}
+.subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 10px 35px rgba(0,0,0,.16)}
+.hidden{display:none!important}
+.section-title{font-size:19px;font-weight:700;margin-bottom:5px}
+.section-description{color:var(--muted);font-size:13px;line-height:1.45;margin-bottom:14px}
+.progress-wrap{margin-bottom:16px}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
+.progress{width:100%;height:7px;background:#272c37;border-radius:20px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .3s}
+.q-number{color:var(--muted);font-size:11.5px;text-align:center;margin-bottom:8px;letter-spacing:.4px;text-transform:uppercase}
+.q-text{font-size:16.5px;line-height:1.5;color:var(--text);margin-bottom:18px;text-align:center;font-weight:600;min-height:50px;display:flex;align-items:center;justify-content:center}
+.scale{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.scale-option{display:flex;align-items:center;gap:11px;background:#10131a;border:1.5px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;transition:all .15s;font-size:13.5px;color:var(--text);font-family:inherit;text-align:left;width:100%}
+.scale-option:hover{border-color:rgba(124,140,255,.35);background:rgba(124,140,255,.03)}
+.scale-option.selected{border-color:var(--accent);background:rgba(124,140,255,.10);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
+.scale-num{width:32px;height:32px;border-radius:9px;background:#1b202b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--muted);flex-shrink:0;transition:all .15s}
+.scale-option.selected .scale-num{background:var(--accent);color:#fff}
+.scale-label{flex:1;line-height:1.3}
+@media (min-width:640px){
+    .scale{flex-direction:row;gap:8px}
+    .scale-option{flex-direction:column;align-items:center;text-align:center;padding:14px 6px;gap:8px}
+    .scale-num{width:36px;height:36px;font-size:16px}
+    .scale-label{font-size:11.5px;line-height:1.25}
+}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{border:none;border-radius:13px;padding:14px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:#272c37;color:#fff}
+.btn-success{background:var(--good);color:#08130d}
+.btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
+.radar-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:8px 0;margin-top:8px}
+#radar{display:block;max-width:100%;height:auto;cursor:pointer}
+.radar-hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:4px;font-style:italic}
+.types-list{display:flex;flex-direction:column;gap:10px}
+.type-item{background:var(--card2);border-radius:14px;padding:13px 15px;border-left:4px solid;cursor:pointer;transition:transform .15s}
+.type-item:active{transform:scale(.99)}
+.type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.type-name{font-size:14.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.type-score{font-size:15px;font-weight:800;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.type-score-main{font-size:16px}
+.type-score-sub{font-size:10.5px;color:var(--muted);font-weight:600}
+.type-bar{width:100%;height:6px;background:#0b0d12;border-radius:10px;overflow:hidden}
+.type-bar-fill{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.2,.9,.3,1)}
+.type-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:8px}
+.interp p{margin:0 0 11px;font-size:14px;line-height:1.6;color:var(--text)}
+.interp p:last-child{margin-bottom:0}
+.interp strong{color:#fff}
+.interp .hl{color:var(--accent);font-weight:700}
+.interp .block{background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:13.5px;line-height:1.55}
+.interp .block strong{color:var(--text)}
+.reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.reco-col{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.5}
+.reco-col-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.reco-col.pos .reco-col-title{color:var(--good)}
+.reco-col.neg .reco-col-title{color:var(--danger)}
+.reco-col ul{margin:0;padding-left:16px}
+.reco-col li{margin-bottom:4px;color:var(--muted)}
+.reco-col li:last-child{margin-bottom:0}
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.popup-overlay.open{opacity:1;pointer-events:auto}
+.popup-sheet{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 20px 20px;max-width:420px;width:100%;position:relative;transform:scale(.92);transition:transform .22s cubic-bezier(.2,.9,.3,1);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.popup-overlay.open .popup-sheet{transform:scale(1)}
+.popup-close{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--muted);font-size:20px;border:none;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit}
+.popup-icon{font-size:52px;margin-bottom:8px;line-height:1}
+.popup-title{font-size:22px;font-weight:800;margin-bottom:4px}
+.popup-score{font-size:13.5px;color:var(--muted);margin-bottom:16px;font-weight:600}
+.popup-score strong{font-size:16px;font-weight:800}
+.popup-desc{font-size:14px;line-height:1.55;color:var(--text);margin-bottom:16px;text-align:left;background:rgba(255,255,255,.03);border-radius:12px;padding:12px 14px;border:1px solid var(--border)}
+.popup-lists{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;text-align:left}
+.popup-list-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+.popup-list-title.pos{color:var(--good)}
+.popup-list-title.neg{color:var(--danger)}
+.popup-list{background:var(--card2);border-radius:10px;padding:10px 12px 10px 28px;margin:0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.popup-list li{margin-bottom:3px}
+.popup-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+
+/* Валидация */
+.intro-box{background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.08));border:1px solid rgba(124,140,255,.28);border-radius:14px;padding:14px;margin-bottom:14px;font-size:13.5px;line-height:1.55;color:var(--text)}
+.intro-box strong{color:#fff}
+.intro-box ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:12.5px}
+.intro-box ul li{margin-bottom:3px}
+.stim-row{background:#10131a;border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.stim-text{font-size:13.5px;color:var(--text);line-height:1.35;margin-bottom:9px;font-weight:600}
+.stim-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.stim-btn{padding:9px 0;border-radius:8px;background:#1b202b;color:var(--muted);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;border:1.5px solid transparent;transition:all .12s}
+.stim-btn:hover{background:#252b38}
+.stim-btn.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stim-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4}
+.consent-box{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--muted);margin-top:14px;margin-bottom:12px}
+.consent-box label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;color:var(--text);font-size:12.5px}
+.consent-box input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent);flex-shrink:0;margin-top:1px}
+.thanks-box{text-align:center;padding:24px 12px}
+.thanks-icon{font-size:56px;margin-bottom:12px}
+.thanks-box h3{margin:0 0 10px;font-size:20px;font-weight:800;color:var(--text)}
+.thanks-box p{margin:0 0 8px;color:var(--muted);font-size:14px;line-height:1.55}
+@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:23px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.q-text{font-size:15px}.scale-option{padding:10px 11px;font-size:13px}.scale-num{width:28px;height:28px;font-size:14px}.reco-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app">
+<header>
+    <div class="logo">🎯</div>
+    <h1>Мотивация по Герчикову</h1>
+    <div class="subtitle">Определите свой тип трудовой мотивации по 5-балльной шкале</div>
+</header>
+
+<div id="testScreen">
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span id="progressText">Утверждение 1 из 25</span>
+                <span id="progressPercent">4%</span>
+            </div>
+            <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+        <div class="q-number" id="qNumber">УТВЕРЖДЕНИЕ 1</div>
+        <div class="q-text" id="qText">Загрузка...</div>
+        <div class="scale" id="scale"></div>
+        <div class="nav">
+            <button class="btn btn-secondary" id="backBtn" onclick="prevQuestion()">← Назад</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Далее →</button>
+        </div>
+    </div>
+</div>
+
+<div id="resultScreen" class="hidden">
+    <div class="card result-header" style="text-align:center">
+        <div class="section-title">Ваш профиль мотивации</div>
+        <div class="section-description">Соотношение 5 типов трудовой мотивации по методике Герчикова</div>
+        <div class="radar-wrap"><canvas id="radar"></canvas></div>
+        <div class="radar-hint">Нажмите на процент, чтобы увидеть подробнее</div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Профиль по типам</div>
+        <div class="section-description">От наиболее выраженного к наименее выраженному</div>
+        <div class="types-list" id="typesList"></div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Интерпретация</div>
+        <div class="interp" id="interpretation"></div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Что мотивирует и демотивирует</div>
+        <div class="section-description">Рекомендации по ведущему типу</div>
+        <div id="recommendations"></div>
+    </div>
+
+    <!-- Новый блок: предложение валидации -->
+    <div class="card" id="validationCard">
+        <div class="section-title">🧪 Помогите сделать тест точнее</div>
+        <div class="section-description">Мы проводим научную валидацию этого опросника и приглашаем вас принять участие.</div>
+        <div class="intro-box">
+            Что нужно сделать:
+            <ul>
+                <li>Оценить по 5-балльной шкале, насколько для вас <strong>важен</strong> каждый из 25 стимулов</li>
+                <li>Это займёт около 2 минут</li>
+                <li>Ответы отправляются <strong>анонимно</strong> — без имени, контактов и любых персональных данных</li>
+                <li>Результаты будут использованы только в обезличенном виде для исследования</li>
+            </ul>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="startValidation()">Пройти валидацию</button>
+            <button class="btn btn-secondary" onclick="skipValidation()">Пропустить</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="backToTest()">Изменить ответы</button>
+            <button class="btn btn-primary" onclick="exportResults()">Экспорт JSON</button>
+            <button class="btn btn-danger" onclick="resetAll()">Начать заново</button>
+        </div>
+    </div>
+</div>
+
+<!-- Экран валидации -->
+<div id="validationScreen" class="hidden">
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span id="valProgressText">Оценено 0 из 25</span>
+                <span id="valProgressPercent">0%</span>
+            </div>
+            <div class="progress"><div class="progress-bar" id="valProgressBar"></div></div>
+        </div>
+
+        <div class="section-title">Насколько для вас важен каждый стимул?</div>
+        <div class="section-description">Оцените по шкале от 1 до 5, где 1 — совсем не важен, 5 — очень важен</div>
+
+        <div id="stimuliList"></div>
+
+        <div class="consent-box">
+            <label>
+                <input type="checkbox" id="consentCheck" onchange="updateValidationState()">
+                <span>Я согласен(на) на отправку обезличенных ответов для научного анализа</span>
+            </label>
+        </div>
+
+        <div class="nav">
+            <button class="btn btn-secondary" onclick="cancelValidation()">← Отмена</button>
+            <button class="btn btn-success" id="valSubmitBtn" onclick="submitValidation()" disabled>Отправить данные</button>
+        </div>
+    </div>
+</div>
+
+<!-- Экран благодарности -->
+<div id="thanksScreen" class="hidden">
+    <div class="card">
+        <div class="thanks-box">
+            <div class="thanks-icon">🙏</div>
+            <h3>Спасибо за участие!</h3>
+            <p>Ваши обезличенные ответы отправлены в исследовательскую базу.</p>
+            <p>Они помогут проверить, насколько типы мотивации действительно предсказывают важность разных стимулов.</p>
+        </div>
+        <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="closeThanks()">Вернуться к результатам</button>
+        </div>
+    </div>
+</div>
+
+<footer style="text-align:center;color:#656c78;font-size:12px;margin-top:20px">
+    Мотивация по Герчикову • 5 типов трудовой мотивации
+</footer>
+</div>
+
+<div class="popup-overlay" id="motivationPopup">
+    <div class="popup-sheet">
+        <button class="popup-close" onclick="closeMotivationPopup()">×</button>
+        <div class="popup-icon" id="popupIcon">💰</div>
+        <div class="popup-title" id="popupTitle">Инструментальный</div>
+        <div class="popup-score" id="popupScore">—</div>
+        <div class="popup-desc" id="popupDesc">—</div>
+        <div class="popup-lists">
+            <div>
+                <div class="popup-list-title pos">Что мотивирует</div>
+                <ul class="popup-list" id="popupPos"></ul>
+            </div>
+            <div>
+                <div class="popup-list-title neg">Что демотивирует</div>
+                <ul class="popup-list" id="popupNeg"></ul>
+            </div>
+        </div>
+        <button class="popup-btn" onclick="closeMotivationPopup()">Понятно</button>
+    </div>
+</div>
+
+<script>
+window.onerror = function(msg, url, line, col) {
+    var b = document.getElementById('jsErrorBanner');
+    if (!b) {
+        b = document.createElement('div');
+        b.id = 'jsErrorBanner';
+        b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;';
+        document.body.appendChild(b);
     }
-    
-    // Формируем строку данных
-    var row = [
-      data.id || '',
-      data.date || '',
-      data.tz || '',
-      data.ua || ''
-    ];
-    
-    // 25 ответов
-    for (var i = 0; i < 25; i++) { row.push(data.answers && data.answers[i] != null ? data.answers[i] : ''); }
-    
-    // 5 баллов
-    var scoreKeys = ['IN', 'PR', 'PA', 'HO', 'LU'];
-    for (var k = 0; k < 5; k++) { row.push(data.scores && data.scores[scoreKeys[k]] != null ? data.scores[scoreKeys[k]] : ''); }
-    
-    // 5 долей
-    for (var k2 = 0; k2 < 5; k2++) { row.push(data.share && data.share[scoreKeys[k2]] != null ? data.share[scoreKeys[k2]] : ''); }
-    
-    // 5 сил
-    for (var k3 = 0; k3 < 5; k3++) { row.push(data.strength && data.strength[scoreKeys[k3]] != null ? data.strength[scoreKeys[k3]] : ''); }
-    
-    // 25 стимулов
-    for (var s = 0; s < 25; s++) { row.push(data.stimuli && data.stimuli[s] != null ? data.stimuli[s] : ''); }
-    
-    // 5 сумм по стимулам
-    for (var sm = 0; sm < 5; sm++) { row.push(data.stimSums && data.stimSums[scoreKeys[sm]] != null ? data.stimSums[scoreKeys[sm]] : ''); }
-    
-    sheet.appendRow(row);
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: true, id: data.id }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
+    b.textContent = 'Ошибка: ' + msg + ' (строка ' + line + ', колонка ' + col + ')';
+};
+</script>
+
+<script>
+/* ============================================================
+   ⚙️ НАСТРОЙКА — ВСТАВЬТЕ СВОЙ URL ИЗ GOOGLE APPS SCRIPT
+============================================================ */
+var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВСТАВЬТЕ_СЮДА_ВАШ_ID/exec";
+
+/* ============================================================
+   ТИПЫ МОТИВАЦИИ
+============================================================ */
+var TYPES = {
+    IN: { name: "Инструментальный", icon: "💰", color: "#55d68a",
+        desc: "Ориентация на результат и материальное вознаграждение. Главное — размер и справедливость оплаты." },
+    PR: { name: "Профессиональный", icon: "📚", color: "#7c8cff",
+        desc: "Важен интерес в работе, профессиональное развитие и признание компетенции." },
+    PA: { name: "Патриотичный", icon: "🤝", color: "#6ea8fe",
+        desc: "Преданность организации, важность коллектива, долг и безопасность." },
+    HO: { name: "Хозяйский", icon: "🏛", color: "#ffc857",
+        desc: "Стремление к самостоятельности и ответственности, готовность влиять на результат." },
+    LU: { name: "Люмпенизированный", icon: "😴", color: "#ff6b6b",
+        desc: "Минимизация усилий, безразличие к результату, избегание ответственности." }
+};
+
+var SCALE_LABELS = [
+    { v: 1, t: "Совершенно не согласен" },
+    { v: 2, t: "Скорее не согласен" },
+    { v: 3, t: "Затрудняюсь ответить" },
+    { v: 4, t: "Скорее согласен" },
+    { v: 5, t: "Полностью согласен" }
+];
+
+var STATEMENTS = [
+    { id: "И1", t: "Главное для меня в работе — это размер заработка.", type: "IN" },
+    { id: "П1", t: "Мне важно, чтобы работа была интересной и давала возможность развиваться.", type: "PR" },
+    { id: "Па1", t: "Стабильность и надёжность работы для меня важнее, чем высокая зарплата.", type: "PA" },
+    { id: "Х1", t: "Я хочу сам принимать решения и нести за них ответственность.", type: "HO" },
+    { id: "Л1", t: "Я работаю только потому, что без работы нельзя.", type: "LU" },
+    { id: "И2", t: "Я работаю прежде всего ради денег, а не ради интереса к делу.", type: "IN" },
+    { id: "П2", t: "Признание моих профессиональных заслуг для меня ценнее, чем просто высокая зарплата.", type: "PR" },
+    { id: "Па2", t: "Я чувствую преданность своей организации и готов работать здесь долго.", type: "PA" },
+    { id: "Х2", t: "Я отношусь к работе как к собственному делу, даже если работаю по найму.", type: "HO" },
+    { id: "Л2", t: "Главное — поменьше делать и побольше получать.", type: "LU" },
+    { id: "И3", t: "Если мне предложат заметно больше платить — перейду на другую работу без сожалений.", type: "IN" },
+    { id: "П3", t: "Я готов выполнять сложную работу, даже если за неё не доплачивают, — ради опыта и роста.", type: "PR" },
+    { id: "Па3", t: "Работа — это мой долг перед коллективом и руководством.", type: "PA" },
+    { id: "Х3", t: "Мне нужна самостоятельность — когда говорят только что делать, но не как.", type: "HO" },
+    { id: "Л3", t: "Мне в общем безразлично, каким будет результат моей работы.", type: "LU" },
+    { id: "И4", t: "Премия или бонус для меня важнее, чем похвала или грамота.", type: "IN" },
+    { id: "П4", t: "Мне важно чувствовать, что я становлюсь профессионалом своего дела.", type: "PR" },
+    { id: "Па4", t: "Для меня важно, чтобы на работе был хороший, сплочённый коллектив.", type: "PA" },
+    { id: "Х4", t: "Я готов вложить дополнительные усилия, потому что результат — это мой личный вклад.", type: "HO" },
+    { id: "Л4", t: "Я не хочу брать на себя никаких дополнительных обязанностей.", type: "LU" },
+    { id: "И5", t: "Справедливость оплаты — это когда платят пропорционально тому, сколько я реально работаю.", type: "IN" },
+    { id: "П5", t: "Качество моей работы важнее, сколько за неё платят.", type: "PR" },
+    { id: "Па5", t: "Я готов терпеть неудобства в работе, если отношения с руководством и коллегами хорошие.", type: "PA" },
+    { id: "Х5", t: "Для меня важно видеть, что мой труд реально меняет ситуацию к лучшему.", type: "HO" },
+    { id: "Л5", t: "Дополнительная ответственность и новые задачи — это лишняя головная боль, а не возможность.", type: "LU" }
+];
+
+/* ============================================================
+   25 СТИМУЛОВ ДЛЯ ВАЛИДАЦИИ
+   Каждый привязан к типу мотивации для корреляционного анализа
+============================================================ */
+var STIMULI = [
+    { t: "Высокий заработок", type: "IN" },
+    { t: "Премии и бонусы за результат", type: "IN" },
+    { t: "Возможность дополнительной подработки", type: "IN" },
+    { t: "Справедливая оплата по вкладу", type: "IN" },
+    { t: "Материальное поощрение достижений", type: "IN" },
+
+    { t: "Карьерный рост", type: "PR" },
+    { t: "Обучение и повышение квалификации", type: "PR" },
+    { t: "Сложные интересные задачи", type: "PR" },
+    { t: "Признание профессиональной экспертизы", type: "PR" },
+    { t: "Возможность заниматься любимым делом", type: "PR" },
+
+    { t: "Стабильность в работе", type: "PA" },
+    { t: "Хороший, сплочённый коллектив", type: "PA" },
+    { t: "Общая миссия и ценности компании", type: "PA" },
+    { t: "Долгосрочные отношения с работодателем", type: "PA" },
+    { t: "Поддержка со стороны руководства", type: "PA" },
+
+    { t: "Самостоятельность в принятии решений", type: "HO" },
+    { t: "Личная ответственность за результат", type: "HO" },
+    { t: "Возможность влиять на процессы", type: "HO" },
+    { t: "Автономия и свобода действий", type: "HO" },
+    { t: "Возможность участвовать в управлении", type: "HO" },
+
+    { t: "Отсутствие переработок", type: "LU" },
+    { t: "Минимум физических и умственных усилий", type: "LU" },
+    { t: "Гарантированный оклад вне зависимости от результата", type: "LU" },
+    { t: "Предсказуемость и чёткие правила", type: "LU" },
+    { t: "Отсутствие давления и стресса", type: "LU" }
+];
+
+var answers = new Array(STATEMENTS.length).fill(null);
+var currentQ = 0;
+var STORAGE_KEY = "psyGerbV4";
+
+var radarHitboxes = [];
+var lastData = null;
+var validationAnswers = new Array(STIMULI.length).fill(null);
+
+function $(id) { return document.getElementById(id); }
+function esc(t) {
+    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-// Для теста в браузере
-function doGet(e) {
-  return ContentService.createTextOutput('Сервис работает. Используйте POST для отправки данных.');
+/* ============================================================
+   ОСНОВНОЙ ТЕСТ
+============================================================ */
+function renderQuestion() {
+    var st = STATEMENTS[currentQ];
+    var total = STATEMENTS.length;
+
+    $("qNumber").textContent = "УТВЕРЖДЕНИЕ " + (currentQ + 1);
+    $("progressText").textContent = "Утверждение " + (currentQ + 1) + " из " + total;
+    var percent = Math.round((currentQ + 1) / total * 100);
+    $("progressPercent").textContent = percent + "%";
+    $("progressBar").style.width = percent + "%";
+    $("qText").textContent = st.t;
+
+    var container = $("scale");
+    container.innerHTML = "";
+    for (var i = 0; i < SCALE_LABELS.length; i++) {
+        (function (sc) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "scale-option";
+            if (answers[currentQ] === sc.v) { btn.classList.add("selected"); }
+            btn.innerHTML = '<span class="scale-num">' + sc.v + '</span><span class="scale-label">' + esc(sc.t) + '</span>';
+            btn.addEventListener("click", function () {
+                answers[currentQ] = sc.v;
+                save();
+                renderQuestion();
+            });
+            container.appendChild(btn);
+        })(SCALE_LABELS[i]);
+    }
+
+    var backBtn = $("backBtn");
+    var nextBtn = $("nextBtn");
+    backBtn.disabled = currentQ === 0;
+    nextBtn.disabled = answers[currentQ] === null;
+
+    if (currentQ === total - 1) {
+        nextBtn.innerHTML = "Показать результат";
+        nextBtn.classList.remove("btn-primary");
+        nextBtn.classList.add("btn-success");
+    } else {
+        nextBtn.innerHTML = "Далее →";
+        nextBtn.classList.remove("btn-success");
+        nextBtn.classList.add("btn-primary");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+function prevQuestion() { if (currentQ > 0) { currentQ--; renderQuestion(); } }
+function nextQuestion() {
+    if (answers[currentQ] === null) { return; }
+    if (currentQ < STATEMENTS.length - 1) { currentQ++; renderQuestion(); }
+    else { showResults(); }
+}
+
+function calculateScores() {
+    var scores = { IN: 0, PR: 0, PA: 0, HO: 0, LU: 0 };
+    for (var i = 0; i < STATEMENTS.length; i++) {
+        var ans = answers[i];
+        if (ans === null) { continue; }
+        var type = STATEMENTS[i].type;
+        if (scores[type] !== undefined) { scores[type] += ans; }
+    }
+    return scores;
+}
+
+function scoresToData(scores) {
+    var total = 0;
+    var keys = Object.keys(scores);
+    for (var i = 0; i < keys.length; i++) { total += scores[keys[i]]; }
+    var data = {};
+    for (var j = 0; j < keys.length; j++) {
+        var k = keys[j];
+        var s = scores[k];
+        var share = total > 0 ? Math.round(s / total * 100) : 0;
+        var strength = Math.round(s / 25 * 100);
+        data[k] = { count: s, share: share, strength: strength };
+    }
+    return { data: data, total: total };
+}
+
+function showResults() {
+    var scores = calculateScores();
+    var res = scoresToData(scores);
+    var data = res.data;
+    lastData = data;
+
+    $("testScreen").classList.add("hidden");
+    $("resultScreen").classList.remove("hidden");
+
+    var ordered = [];
+    var keys = Object.keys(data);
+    for (var i = 0; i < keys.length; i++) {
+        ordered.push({ code: keys[i], data: data[keys[i]], meta: TYPES[keys[i]] });
+    }
+    ordered.sort(function (a, b) {
+        if (b.data.count !== a.data.count) { return b.data.count - a.data.count; }
+        return b.data.share - a.data.share;
+    });
+
+    drawRadar(data);
+    renderTypesList(ordered);
+    renderInterpretation(ordered);
+    renderRecommendations(ordered[0].code, ordered[1].code);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function wrapText(ctx, text, maxWidth) {
+    var words = text.split(" ");
+    var lines = [];
+    var cur = "";
+    for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        var test = cur ? cur + " " + w : w;
+        if (ctx.measureText(test).width > maxWidth) {
+            if (cur) { lines.push(cur); }
+            if (ctx.measureText(w).width > maxWidth) {
+                var mid = Math.ceil(w.length / 2);
+                lines.push(w.substring(0, mid) + "-");
+                cur = w.substring(mid);
+            } else { cur = w; }
+        } else { cur = test; }
+    }
+    if (cur) { lines.push(cur); }
+    return lines;
+}
+
+function drawRadar(data) {
+    var canvas = $("radar");
+    if (!canvas) { return; }
+    var ctx = canvas.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    var parentW = canvas.parentElement.clientWidth || 620;
+    var size = Math.max(280, Math.min(parentW || 620, 620));
+
+    canvas.style.width = size + "px";
+    canvas.style.height = size + "px";
+    canvas.width = Math.round(size * dpr);
+    canvas.height = Math.round(size * dpr);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, size, size);
+    radarHitboxes = [];
+
+    var isSmall = size < 420;
+    var isMedium = size >= 420 && size < 540;
+
+    var cx = size / 2;
+    var cy = size / 2;
+    var radius = Math.min(size, size) * (isSmall ? 0.33 : (isMedium ? 0.30 : 0.32));
+    var labelOffset = isSmall ? 44 : (isMedium ? 60 : 78);
+    var labelRadius = radius + labelOffset;
+
+    var labelFont = isSmall ? 9.5 : (isMedium ? 11 : 12.5);
+    var iconFont = isSmall ? 13 : 16;
+    var maxLabelW = isSmall ? 74 : (isMedium ? 90 : 108);
+    var percentFont = isSmall ? 11 : 13;
+
+    var order = ["IN", "PR", "PA", "HO", "LU"];
+    var count = order.length;
+    var angleStep = (Math.PI * 2) / count;
+
+    for (var lvl = 1; lvl <= 5; lvl++) {
+        var r = radius * lvl / 5;
+        ctx.beginPath();
+        for (var i = 0; i < count; i++) {
+            var ang = -Math.PI / 2 + i * angleStep;
+            var x = cx + Math.cos(ang) * r;
+            var y = cy + Math.sin(ang) * r;
+            if (i === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+        }
+        ctx.closePath();
+        ctx.strokeStyle = lvl === 5 ? "rgba(255,255,255,.24)" : "rgba(255,255,255,.08)";
+        ctx.lineWidth = lvl === 5 ? 1.6 : 1;
+        ctx.stroke();
+    }
+
+    for (var k = 0; k < count; k++) {
+        var a = -Math.PI / 2 + k * angleStep;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius);
+        ctx.strokeStyle = "rgba(255,255,255,.08)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    var points = [];
+    for (var p = 0; p < order.length; p++) {
+        var code = order[p];
+        var strength = data[code] ? data[code].strength : 0;
+        var share = data[code] ? data[code].share : 0;
+        var normVal = (strength - 20) / 80;
+        if (normVal < 0) { normVal = 0; }
+        if (normVal > 1) { normVal = 1; }
+        var ang2 = -Math.PI / 2 + p * angleStep;
+        var r2 = radius * normVal;
+        points.push({
+            x: cx + Math.cos(ang2) * r2, y: cy + Math.sin(ang2) * r2,
+            share: share, color: TYPES[code].color, code: code,
+            angle: ang2, normVal: normVal
+        });
+    }
+
+    ctx.save();
+    ctx.shadowColor = "rgba(124,140,255,.45)";
+    ctx.shadowBlur = 22;
+    ctx.beginPath();
+    for (var s = 0; s < points.length; s++) {
+        if (s === 0) { ctx.moveTo(points[s].x, points[s].y); } else { ctx.lineTo(points[s].x, points[s].y); }
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(124,140,255,.18)";
+    ctx.fill();
+    ctx.restore();
+
+    var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    fg.addColorStop(0, "rgba(156,124,255,.40)");
+    fg.addColorStop(1, "rgba(124,140,255,.12)");
+    ctx.beginPath();
+    for (var s2 = 0; s2 < points.length; s2++) {
+        if (s2 === 0) { ctx.moveTo(points[s2].x, points[s2].y); } else { ctx.lineTo(points[s2].x, points[s2].y); }
+    }
+    ctx.closePath();
+    ctx.fillStyle = fg;
+    ctx.fill();
+    ctx.strokeStyle = "#9ca7ff";
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    for (var t = 0; t < points.length; t++) {
+        var pt = points[t];
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 9, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.globalAlpha = 0.22;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+
+        var ptDist = radius * pt.normVal;
+        var labelDist = ptDist + 42;
+        var lx = cx + Math.cos(pt.angle) * labelDist;
+        var ly = cy + Math.sin(pt.angle) * labelDist;
+
+        ctx.beginPath();
+        ctx.moveTo(pt.x, pt.y);
+        ctx.lineTo(lx, ly);
+        ctx.strokeStyle = pt.color;
+        ctx.globalAlpha = 0.55;
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fill();
+        ctx.strokeStyle = "#0b0d12";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        var text = pt.share + "%";
+        ctx.font = "800 " + percentFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        var metrics = ctx.measureText(text);
+        var bw = metrics.width + 16;
+        var bh = isSmall ? 20 : 24;
+        var boxDist = labelDist + (isSmall ? 18 : 22);
+        var bx = cx + Math.cos(pt.angle) * boxDist;
+        var by = cy + Math.sin(pt.angle) * boxDist;
+
+        ctx.fillStyle = "rgba(11,13,18,.94)";
+        ctx.beginPath();
+        var rectX = bx - bw / 2, rectY = by - bh / 2, rr = 6;
+        ctx.moveTo(rectX + rr, rectY);
+        ctx.lineTo(rectX + bw - rr, rectY);
+        ctx.arcTo(rectX + bw, rectY, rectX + bw, rectY + rr, rr);
+        ctx.lineTo(rectX + bw, rectY + bh - rr);
+        ctx.arcTo(rectX + bw, rectY + bh, rectX + bw - rr, rectY + bh, rr);
+        ctx.lineTo(rectX + rr, rectY + bh);
+        ctx.arcTo(rectX, rectY + bh, rectX, rectY + bh - rr, rr);
+        ctx.lineTo(rectX, rectY + rr);
+        ctx.arcTo(rectX, rectY, rectX + rr, rectY, rr);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = pt.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = pt.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, bx, by + 1);
+
+        radarHitboxes.push({
+            x: bx - bw / 2 - 12, y: by - bh / 2 - 12,
+            w: bw + 24, h: bh + 24, code: pt.code
+        });
+    }
+
+    for (var lb = 0; lb < order.length; lb++) {
+        var meta = TYPES[order[lb]];
+        var angLb = -Math.PI / 2 + lb * angleStep;
+        var lxLb = cx + Math.cos(angLb) * labelRadius;
+        var lyLb = cy + Math.sin(angLb) * labelRadius;
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        var lineH = labelFont + 2;
+        ctx.font = "800 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
+
+        var lines = wrapText(ctx, meta.name, maxLabelW);
+        var totalH = lines.length * lineH;
+
+        var iconY = lyLb - totalH / 2 - lineH - 2;
+        if (iconY < 12) { iconY = 12; }
+        ctx.font = iconFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
+        ctx.fillText(meta.icon, lxLb, iconY);
+
+        ctx.font = "800 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
+        for (var li = 0; li < lines.length; li++) {
+            ctx.fillText(lines[li], lxLb, lyLb + li * lineH - (totalH - lineH) / 2 + 2);
+        }
+    }
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+}
+
+function setupRadarClick() {
+    var canvas = $("radar");
+    if (!canvas) { return; }
+    canvas.addEventListener("click", function (e) {
+        if (!radarHitboxes.length) { return; }
+        var rect = canvas.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+        for (var i = 0; i < radarHitboxes.length; i++) {
+            var h = radarHitboxes[i];
+            if (clickX >= h.x && clickX <= h.x + h.w && clickY >= h.y && clickY <= h.y + h.h) {
+                showMotivationPopup(h.code);
+                return;
+            }
+        }
+    });
+}
+
+var POPUP_POS = {
+    IN: ["Прозрачная система оплаты", "Бонусы и премии за конкретный результат", "Понятные KPI", "Возможность зарабатывать больше", "Справедливая оценка вклада"],
+    PR: ["Интересные сложные задачи", "Обучение и доступ к новым знаниям", "Признание экспертизы", "Автономия в методах работы", "Публичное признание достижений"],
+    PA: ["Стабильность компании", "Команда единомышленников", "Признание верности и вклада", "Хорошие отношения с руководством", "Понятные долгосрочные перспективы"],
+    HO: ["Свобода в принятии решений", "Личная ответственность за результат", "Возможность влиять на процессы", "Отсутствие микроменеджмента", "Роль лидера или владельца"],
+    LU: ["Стабильность и предсказуемость", "Минимум переработок", "Чёткие инструкции", "Комфортные условия", "Гарантированный оклад"]
+};
+var POPUP_NEG = {
+    IN: ["Уравниловка в оплате", "«Работа за идею» без денег", "Размытые критерии результата", "Задержки зарплаты"],
+    PR: ["Рутина и однообразие", "Отсутствие развития", "Работа без смысла", "Жёсткий контроль процесса"],
+    PA: ["Частые перемены в компании", "Конфликты в коллективе", "Неуважение к стажу", "Обесценивание вклада «старичков»"],
+    HO: ["Мелочный контроль", "Отсутствие самостоятельности", "Бюрократия и согласования", "Работа «на побегушках»"],
+    LU: ["Постоянные изменения", "Высокие требования", "Частые переработки", "Стресс и неопределённость"]
+};
+
+function showMotivationPopup(code) {
+    if (!TYPES[code]) { return; }
+    var meta = TYPES[code];
+    var d = lastData && lastData[code] ? lastData[code] : { share: 0, count: 0, strength: 0 };
+
+    $("popupIcon").textContent = meta.icon;
+    $("popupTitle").textContent = meta.name;
+    $("popupTitle").style.color = meta.color;
+    $("popupScore").innerHTML = '<strong style="color:' + meta.color + '">' + d.share + '%</strong> · ' + d.count + ' из 25 баллов';
+    $("popupDesc").textContent = meta.desc;
+
+    var posList = POPUP_POS[code] || [];
+    var negList = POPUP_NEG[code] || [];
+    var posHtml = "", negHtml = "";
+    for (var i = 0; i < posList.length; i++) { posHtml += "<li>" + esc(posList[i]) + "</li>"; }
+    for (var j = 0; j < negList.length; j++) { negHtml += "<li>" + esc(negList[j]) + "</li>"; }
+    $("popupPos").innerHTML = posHtml;
+    $("popupNeg").innerHTML = negHtml;
+
+    $("motivationPopup").classList.add("open");
+}
+function closeMotivationPopup() { $("motivationPopup").classList.remove("open"); }
+
+function renderTypesList(ordered) {
+    var container = $("typesList");
+    container.innerHTML = "";
+    for (var i = 0; i < ordered.length; i++) {
+        var item = ordered[i];
+        var div = document.createElement("div");
+        div.className = "type-item";
+        div.style.borderLeftColor = item.meta.color;
+        div.innerHTML =
+            '<div class="type-head">' +
+                '<div class="type-name"><span style="font-size:18px">' + item.meta.icon + '</span><span>' + esc(item.meta.name) + '</span></div>' +
+                '<div class="type-score">' +
+                    '<span class="type-score-main" style="color:' + item.meta.color + '">' + item.data.share + '%</span>' +
+                    '<span class="type-score-sub">' + item.data.count + ' / 25 баллов</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="type-bar"><div class="type-bar-fill" style="width:' + item.data.share + '%;background:' + item.meta.color + '"></div></div>' +
+            '<div class="type-desc">' + esc(item.meta.desc) + '</div>';
+        (function (code) {
+            div.addEventListener("click", function () { showMotivationPopup(code); });
+        })(item.code);
+        container.appendChild(div);
+    }
+}
+
+function renderInterpretation(ordered) {
+    var container = $("interpretation");
+    var html = "";
+    var top = ordered[0], second = ordered[1], third = ordered[2], last = ordered[4];
+    var diff1_2 = top.data.count - second.data.count;
+    var diff1_3 = top.data.count - third.data.count;
+    var spread = top.data.count - last.data.count;
+
+    var allMid = spread <= 4;
+    if (allMid && top.data.strength < 60) {
+        html += '<p>Ваш профиль <strong>выражен слабо</strong> — нет ни одного ярко доминирующего типа.</p>';
+        html += '<div class="block">• Вы ещё формируете приоритеты<br>• Мотивация ситуативная<br>• Либо отвечали не вдумчиво</div>';
+        html += '<p>С <strong>наибольшей вероятностью</strong> присутствуют черты <span class="hl">' + esc(top.meta.name.toLowerCase()) + '</span> и <span class="hl">' + esc(second.meta.name.toLowerCase()) + '</span>.</p>';
+        container.innerHTML = html;
+        return;
+    }
+
+    if (diff1_2 >= 4 && top.data.strength >= 70) {
+        html += '<p>У вас <strong>отчётливо выражен</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип</span> — ' + top.data.share + '% (' + top.data.count + '/25).</p>';
+        html += '<p>' + getTypeSentence(top.code) + '</p>';
+        html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.share + '%).</p>';
+        if (third.data.count >= 15) {
+            html += '<p>Третий — <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.share + '%).</p>';
+        }
+        if (last.data.count <= 10) {
+            html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>';
+        }
+        container.innerHTML = html;
+        return;
+    }
+
+    if (diff1_2 <= 3 && diff1_3 >= 4) {
+        html += '<p>С <strong>высокой вероятностью</strong> у вас <strong>смешанный профиль</strong> из двух ведущих типов:</p>';
+        html += '<div class="block"><strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.share + '%<br>' +
+                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.share + '%</div>';
+        html += '<p>В работе важно сочетание двух вещей: <strong>' + describePair(top.code, second.code) + '</strong>.</p>';
+        if (last.data.count <= 10) {
+            html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>';
+        }
+        container.innerHTML = html;
+        return;
+    }
+
+    if (diff1_2 <= 3 && diff1_3 <= 3) {
+        html += '<p>Ваш профиль — <strong>множественный</strong>. Сочетаются три ведущих типа:</p>';
+        html += '<div class="block"><strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.share + '%<br>' +
+                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.share + '%<br>' +
+                '<strong>' + third.meta.icon + ' ' + esc(third.meta.name) + '</strong> — ' + third.data.share + '%</div>';
+        html += '<p>Это <strong>гибкая мотивация</strong>: разные ситуации включают разные стимулы.</p>';
+        html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>';
+        container.innerHTML = html;
+        return;
+    }
+
+    html += '<p>Наиболее вероятно у вас <strong>доминирует</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип</span> — ' + top.data.share + '%.</p>';
+    html += '<p>Второй — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.share + '%).</p>';
+    if (third.data.count >= 15) { html += '<p>Третий — <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.share + '%).</p>'; }
+    if (last.data.count <= 10) { html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>'; }
+    container.innerHTML = html;
+}
+
+function getTypeSentence(code) {
+    var m = {
+        IN: "Вы работаете прежде всего ради денег и готовы сменить работу, если предложат больше.",
+        PR: "Вам важнее интересные задачи и рост, чем просто высокая зарплата.",
+        PA: "Вы цените надёжность, хорошие отношения в коллективе и преданность компании.",
+        HO: "Вы относитесь к работе как к своему делу и хотите влиять на результат.",
+        LU: "Вы стремитесь минимизировать усилия и избегать лишней ответственности."
+    };
+    return m[code] || "";
+}
+
+function describePair(codeA, codeB) {
+    var arr = [codeA, codeB].sort();
+    var key = arr[0] + "-" + arr[1];
+    var map = {
+        "IN-PR": "достойная оплата и интересные задачи одновременно",
+        "IN-PA": "стабильность компании и личный доход",
+        "HO-IN": "самостоятельность при прямой связи усилий с вознаграждением",
+        "IN-LU": "хороший заработок при отсутствии лишней нагрузки",
+        "PA-PR": "профессиональный рост в сплочённой команде",
+        "HO-PA": "ответственность за общее дело в «своей» компании",
+        "LU-PA": "спокойная работа с ощущением причастности",
+        "HO-PR": "самостоятельная работа с профессиональным ростом",
+        "LU-PR": "интересная работа без перегрузок",
+        "HO-LU": "самостоятельность без лишнего напряжения"
+    };
+    return map[key] || "сочетание двух разных стимулов";
+}
+
+function renderRecommendations(topCode, secondCode) {
+    var container = $("recommendations");
+    var posTop = POPUP_POS[topCode] || [];
+    var negTop = POPUP_NEG[topCode] || [];
+    var posSecond = POPUP_POS[secondCode] || [];
+
+    var html = '<div class="reco-grid">';
+    html += '<div class="reco-col pos"><div class="reco-col-title">Что мотивирует — ' + esc(TYPES[topCode].name) + '</div><ul>';
+    for (var i = 0; i < posTop.length; i++) { html += '<li>' + esc(posTop[i]) + '</li>'; }
+    html += '</ul></div>';
+    html += '<div class="reco-col pos"><div class="reco-col-title">Что мотивирует — ' + esc(TYPES[secondCode].name) + '</div><ul>';
+    for (var k = 0; k < posSecond.length; k++) { html += '<li>' + esc(posSecond[k]) + '</li>'; }
+    html += '</ul></div></div>';
+    html += '<div style="margin-top:10px;background:var(--card2);border-radius:12px;padding:12px 14px">';
+    html += '<div style="color:var(--danger);font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">Что демотивирует</div><ul style="margin:0;padding-left:16px">';
+    for (var j = 0; j < negTop.length; j++) { html += '<li style="margin-bottom:4px;color:var(--muted)">' + esc(negTop[j]) + '</li>'; }
+    html += '</ul></div>';
+    container.innerHTML = html;
+}
+
+/* ============================================================
+   ВАЛИДАЦИЯ
+============================================================ */
+function startValidation() {
+    $("resultScreen").classList.add("hidden");
+    $("validationScreen").classList.remove("hidden");
+    validationAnswers = new Array(STIMULI.length).fill(null);
+    renderStimuli();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function skipValidation() {
+    $("validationCard").classList.add("hidden");
+}
+
+function cancelValidation() {
+    $("validationScreen").classList.add("hidden");
+    $("resultScreen").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderStimuli() {
+    var container = $("stimuliList");
+    container.innerHTML = "";
+
+    for (var i = 0; i < STIMULI.length; i++) {
+        (function (stim, idx) {
+            var row = document.createElement("div");
+            row.className = "stim-row";
+            row.innerHTML = '<div class="stim-text">' + (idx + 1) + '. ' + esc(stim.t) + '</div>' +
+                '<div class="stim-scale">' +
+                    [1, 2, 3, 4, 5].map(function (v) {
+                        var sel = validationAnswers[idx] === v ? " selected" : "";
+                        return '<button type="button" class="stim-btn' + sel + '" data-val="' + v + '">' + v + '</button>';
+                    }).join("") +
+                '</div>';
+
+            var btns = row.querySelectorAll(".stim-btn");
+            for (var b = 0; b < btns.length; b++) {
+                (function (btn) {
+                    btn.addEventListener("click", function () {
+                        validationAnswers[idx] = Number(btn.dataset.val);
+                        var sibs = btn.parentElement.querySelectorAll(".stim-btn");
+                        for (var s = 0; s < sibs.length; s++) { sibs[s].classList.remove("selected"); }
+                        btn.classList.add("selected");
+                        updateValProgress();
+                        updateValidationState();
+                    });
+                })(btns[b]);
+            }
+            container.appendChild(row);
+        })(STIMULI[i], i);
+    }
+
+    updateValProgress();
+    updateValidationState();
+}
+
+function updateValProgress() {
+    var cnt = 0;
+    for (var i = 0; i < validationAnswers.length; i++) {
+        if (validationAnswers[i] !== null) { cnt++; }
+    }
+    var total = validationAnswers.length;
+    var percent = Math.round(cnt / total * 100);
+    $("valProgressText").textContent = "Оценено " + cnt + " из " + total;
+    $("valProgressPercent").textContent = percent + "%";
+    $("valProgressBar").style.width = percent + "%";
+}
+
+function updateValidationState() {
+    var allFilled = true;
+    for (var i = 0; i < validationAnswers.length; i++) {
+        if (validationAnswers[i] === null) { allFilled = false; break; }
+    }
+    var consented = $("consentCheck").checked;
+    var btn = $("valSubmitBtn");
+    btn.disabled = !(allFilled && consented);
+    if (allFilled && !consented) {
+        btn.textContent = "Нужно согласие";
+    } else if (!allFilled && consented) {
+        btn.textContent = "Заполните все " + validationAnswers.length + " пунктов";
+    } else {
+        btn.textContent = "Отправить данные";
+    }
+}
+
+function generateId() {
+    var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var id = "";
+    for (var i = 0; i < 12; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
+function submitValidation() {
+    var btn = $("valSubmitBtn");
+    btn.disabled = true;
+    btn.textContent = "Отправляем...";
+
+    var scores = calculateScores();
+    var res = scoresToData(scores);
+
+    /* Сумма баллов по стимулам каждого типа */
+    var stimSums = { IN: 0, PR: 0, PA: 0, HO: 0, LU: 0 };
+    for (var i = 0; i < STIMULI.length; i++) {
+        var type = STIMULI[i].type;
+        var val = validationAnswers[i];
+        if (val !== null) { stimSums[type] += val; }
+    }
+
+    var payload = {
+        id: generateId(),
+        date: new Date().toISOString(),
+        tz: new Date().getTimezoneOffset(),
+        ua: (navigator.userAgent || "").substring(0, 120),
+
+        /* Ответы на 25 утверждений основного теста (1-5) */
+        answers: answers.slice(),
+
+        /* Баллы по 5 типам (5-25) */
+        scores: {
+            IN: scores.IN,
+            PR: scores.PR,
+            PA: scores.PA,
+            HO: scores.HO,
+            LU: scores.LU
+        },
+
+        /* Проценты по типам (доля 0-100 и сила 20-100) */
+        share: {
+            IN: res.data.IN.share,
+            PR: res.data.PR.share,
+            PA: res.data.PA.share,
+            HO: res.data.HO.share,
+            LU: res.data.LU.share
+        },
+        strength: {
+            IN: res.data.IN.strength,
+            PR: res.data.PR.strength,
+            PA: res.data.PA.strength,
+            HO: res.data.HO.strength,
+            LU: res.data.LU.strength
+        },
+
+        /* Оценки 25 стимулов (1-5) */
+        stimuli: validationAnswers.slice(),
+
+        /* Суммы по стимулам каждого типа (5-25) */
+        stimSums: stimSums
+    };
+
+    /* Отправка через fetch */
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(payload)
+    })
+    .then(function () {
+        /* no-cors не даёт прочитать ответ, считаем успехом */
+        $("validationScreen").classList.add("hidden");
+        $("thanksScreen").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    })
+    .catch(function () {
+        /* Даже при ошибке не показываем пользователю — данные могли уйти */
+        $("validationScreen").classList.add("hidden");
+        $("thanksScreen").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+}
+
+function closeThanks() {
+    $("thanksScreen").classList.add("hidden");
+    $("resultScreen").classList.remove("hidden");
+    $("validationCard").classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================
+   ХРАНЕНИЕ И КНОПКИ
+============================================================ */
+function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ })); } catch (e) {}
+}
+function load() {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) { return; }
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.answers)) {
+            answers = data.answers;
+            while (answers.length < STATEMENTS.length) { answers.push(null); }
+            if (typeof data.currentQ === "number" && data.currentQ >= 0 && data.currentQ < STATEMENTS.length) {
+                currentQ = data.currentQ;
+            }
+        }
+    } catch (e) {}
+}
+function backToTest() {
+    $("resultScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    renderQuestion();
+}
+function resetAll() {
+    var ok = window.confirm("Удалить все ответы и начать заново?");
+    if (!ok) { return; }
+    answers = new Array(STATEMENTS.length).fill(null);
+    currentQ = 0;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    $("resultScreen").classList.add("hidden");
+    $("testScreen").classList.remove("hidden");
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function exportResults() {
+    var scores = calculateScores();
+    var res = scoresToData(scores);
+    var out = {
+        title: "Мотивация по Герчикову",
+        date: new Date().toLocaleString("ru-RU"),
+        answers: answers,
+        scores: scores,
+        percent: res.data
+    };
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "gerchikov-motivation.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+load();
+renderQuestion();
+setupRadarClick();
+
+document.getElementById("motivationPopup").addEventListener("click", function (e) {
+    if (e.target === this) { closeMotivationPopup(); }
+});
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeMotivationPopup(); }
+});
+
+var resizeTimer = null;
+window.addEventListener("resize", function () {
+    if (resizeTimer) { clearTimeout(resizeTimer); }
+    resizeTimer = setTimeout(function () {
+        if (!$("resultScreen").classList.contains("hidden") && lastData) {
+            drawRadar(lastData);
+        }
+    }, 200);
+});
+</script>
+</body>
+</html>
