@@ -1,1662 +1,426 @@
+В коде есть незакрытый объект `partners` — он обрывается на середине. Ниже — исправленная и дописанная версия: я дописал закрывающие скобки, кавычки и фигурные скобки, а также привёл код в более читаемый вид (с отступами).
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Карта навыков</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#0b0d12;--card:#151922;--card2:#1b202b;--border:rgba(255,255,255,.09);--text:#f3f5f7;--muted:#9299a6;--accent:#7c8cff;--accent2:#9c7cff;--good:#55d68a;--warning:#ffc857;--danger:#ff6b6b;--partner:#6ea8fe}
-html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-body{padding:20px 14px 50px}
-.app{width:100%;max-width:1180px;margin:0 auto}
-header{text-align:center;margin-bottom:18px}
-.logo{font-size:44px;margin-bottom:6px}
-h1{margin:0;font-size:28px;font-weight:750}
-.subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 10px 35px rgba(0,0,0,.16)}
-.hidden{display:none!important}
-.section-title{font-size:19px;font-weight:700;margin-bottom:5px}
-.section-description{color:var(--muted);font-size:13px;line-height:1.45;margin-bottom:14px}
-.progress-wrap{margin-bottom:14px}
-.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
-.progress{width:100%;height:7px;background:#272c37;border-radius:20px;overflow:hidden}
-.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .3s ease}
-.checklist{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.checklist-summary{width:100%;color:var(--muted);font-size:11px;margin-bottom:1px}
-.checklist-item{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;background:#10131a;border:1px solid var(--border);border-radius:10px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s ease;font-family:inherit;line-height:1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.checklist-item:active{transform:scale(.97)}
-.checklist-item .checklist-check{font-size:11px;opacity:.35}
-.checklist-item.done{color:var(--good);border-color:rgba(85,214,138,.35);background:rgba(85,214,138,.07)}
-.checklist-item.done .checklist-check{opacity:1;color:var(--good)}
-.checklist-item.partial{color:var(--accent);border-color:rgba(124,140,255,.30);background:rgba(124,140,255,.05)}
-.checklist-item.partial .checklist-check{opacity:1;color:var(--accent)}
-.checklist-item.active{color:var(--text);border-color:var(--accent);background:rgba(124,140,255,.12);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
-.checklist-item.active .checklist-check{opacity:1}
-.category-box{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:14px}
-.category-label{color:var(--muted);font-size:10.5px;margin-bottom:5px;letter-spacing:.4px}
-select{width:100%;appearance:none;background:#10131a;color:var(--text);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit}
-select:focus{border-color:var(--accent)}
-.category-layout{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:16px;align-items:start;margin-top:4px}
-.skills-column{min-width:0}
-.radar-column{position:sticky;top:16px;background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:12px}
-.live-radar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 4px}
-.live-radar-title{color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.live-radar-percent{color:var(--accent);font-size:20px;font-weight:800;transition:color .2s}
-.live-radar-container{display:flex;justify-content:center;align-items:center;width:100%}
-#liveSkillRadar{display:block;max-width:100%;height:auto}
-.skill{background:#10131a;border:1px solid var(--border);border-radius:12px;padding:9px 12px 8px;margin-bottom:6px;transition:border-color .2s,box-shadow .2s}
-.skill:focus-within{border-color:rgba(124,140,255,.35)}
-.skill.verified{border-color:rgba(85,214,138,.35);box-shadow:0 0 0 1px rgba(85,214,138,.10) inset}
-.skill.unverified{border-color:rgba(255,200,87,.30)}
-.skill.has-reflection{border-color:rgba(255,200,87,.35);box-shadow:0 0 0 1px rgba(255,200,87,.08) inset}
-.skill-name-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.skill-name{font-size:13px;font-weight:600;line-height:1.3;color:var(--text);flex:1;min-width:0}
-.skill-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:6px;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;flex-shrink:0;white-space:nowrap}
-.skill-badge.verified{background:rgba(85,214,138,.15);color:var(--good);border:1px solid rgba(85,214,138,.4)}
-.skill-badge.unverified{background:rgba(255,200,87,.13);color:var(--warning);border:1px solid rgba(255,200,87,.35)}
-.skill-badge.reflection{background:rgba(255,200,87,.15);color:var(--warning);border:1px solid rgba(255,200,87,.4)}
-.segmented{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:#0b0d12;padding:3px;border-radius:10px;border:1px solid var(--border);max-width:280px}
-.segmented button{padding:8px 0;border-radius:7px;background:transparent;color:var(--muted);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;border:none;line-height:1;transition:background .15s,color .15s,transform .1s}
-.segmented button:hover:not(.active){background:rgba(255,255,255,.05);color:var(--text)}
-.segmented button:active{transform:scale(.94)}
-.segmented button.active{box-shadow:0 3px 10px rgba(0,0,0,.30);color:#fff}
-.segmented button[data-value="1"].active{background:var(--danger);color:#2a0a0a}
-.segmented button[data-value="2"].active{background:var(--warning);color:#3a2a08}
-.segmented button[data-value="3"].active{background:var(--accent);color:#fff}
-.segmented button[data-value="4"].active{background:var(--good);color:#08130d}
-.segmented button[data-value="5"].active{background:#4be08a;color:#08130d}
-.skill-level-hint{font-size:10.5px;font-weight:700;margin-top:5px;letter-spacing:.3px;color:var(--muted);transition:color .2s;display:inline-block}
-.skill-level-hint.lv-1{color:var(--danger)}
-.skill-level-hint.lv-2{color:var(--warning)}
-.skill-level-hint.lv-3{color:var(--accent)}
-.skill-level-hint.lv-4{color:var(--good)}
-.skill-level-hint.lv-5{color:#4be08a}
-.verification-block{margin-top:10px;padding:10px 12px;background:rgba(124,140,255,.05);border:1px solid rgba(124,140,255,.18);border-radius:10px;animation:vSlideDown .22s ease-out}
-@keyframes vSlideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.verification-title{font-size:10.5px;font-weight:800;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
-.verification-question{display:flex;align-items:flex-start;gap:8px;padding:7px 0;cursor:pointer;font-size:12.5px;line-height:1.4;color:var(--text);user-select:none;transition:color .15s}
-.verification-question:not(:last-child){border-bottom:1px solid rgba(255,255,255,.05)}
-.verification-checkbox{width:18px;height:18px;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);background:#10131a;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s;font-size:12px;color:transparent;font-weight:900}
-.verification-question.checked .verification-checkbox{background:var(--good);border-color:var(--good);color:#08130d}
-.verification-question.checked{color:#b8c1d0}
-.verification-question.checked .verification-checkbox::after{content:"✓"}
-.verification-hint{font-size:10.5px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05);line-height:1.4}
-.verification-hint.all-yes{color:var(--good)}
-.verification-hint.some-no{color:var(--warning)}
-.reflection-block{margin-top:10px;padding:10px 12px;background:rgba(255,200,87,.04);border:1px solid rgba(255,200,87,.20);border-radius:10px;animation:vSlideDown .22s ease-out}
-.reflection-title{font-size:10.5px;font-weight:800;color:var(--warning);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
-.reflection-input{width:100%;background:#10131a;border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.45;color:var(--text);font-family:inherit;outline:none;resize:vertical;min-height:56px;transition:border-color .15s}
-.reflection-input:focus{border-color:var(--warning)}
-.reflection-input::placeholder{color:#5a6172}
-.reflection-hint{font-size:10.5px;color:var(--muted);margin-top:6px;transition:color .2s}
-.reflection-hint.saved{color:var(--good)}
-.reflections-list{display:flex;flex-direction:column;gap:10px}
-.reflection-item{background:var(--card2);border-left:3px solid var(--warning);border-radius:8px;padding:11px 13px}
-.reflection-item-cat{font-size:10.5px;color:var(--warning);font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px}
-.reflection-item-skill{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.reflection-item-score{font-size:12px;color:var(--warning);font-weight:800;flex-shrink:0}
-.reflection-item-text{font-size:13px;color:var(--muted);line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
-.helper-box{background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.08));border:1px solid rgba(124,140,255,.22);border-radius:14px;padding:11px;margin-top:12px}
-.helper-title{font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:8px}
-.helper-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.helper-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:11.5px;font-weight:600;font-family:inherit;text-align:left;cursor:pointer;transition:background .15s,border-color .15s;line-height:1.25}
-.helper-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(124,140,255,.35)}
-.helper-btn-icon{font-size:18px;flex-shrink:0}
-.helper-btn-body{display:flex;flex-direction:column;gap:1px;min-width:0}
-.helper-btn-label{color:var(--text);font-size:11.5px;font-weight:700}
-.helper-btn-sub{color:var(--muted);font-size:9.5px;font-weight:500}
-.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-button{border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s,opacity .15s,background .15s}
-button:active{transform:scale(.97)}
-.btn-primary{flex:1;min-width:180px;background:var(--accent);color:#fff}
-.btn-secondary{flex:1;min-width:180px;background:#272c37;color:#fff}
-.btn-success{flex:1;min-width:180px;background:var(--good);color:#08130d}
-.btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
-.decision-top{text-align:center;margin-bottom:6px}
-.decision-icon{font-size:42px;margin-bottom:6px;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;border-radius:50%;background:rgba(85,214,138,.12);border:1px solid rgba(85,214,138,.35);color:var(--good)}
-.decision-icon.neutral{background:rgba(124,140,255,.12);border-color:rgba(124,140,255,.35);color:var(--accent)}
-.decision h2{margin:12px 0 6px;font-size:22px}
-.decision p{color:var(--muted);line-height:1.5;font-size:13.5px;margin:0}
-.decision-badge{display:inline-flex;flex-direction:column;align-items:center;margin-top:14px;padding:11px 22px;background:linear-gradient(135deg,rgba(124,140,255,.15),rgba(156,124,255,.15));border:1px solid rgba(124,140,255,.28);border-radius:17px}
-.decision-badge-value{font-size:30px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
-.decision-badge-label{font-size:10.5px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.skill-radar-wrap{display:flex;align-items:center;gap:6px;margin-top:8px;position:relative}
-.skill-radar-container{flex:1;min-width:0;display:flex;justify-content:center;align-items:center;padding:4px 0}
-#skillRadar{display:block;max-width:100%;height:auto}
-.radar-nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(124,140,255,.10);border:1px solid rgba(124,140,255,.28);color:var(--accent);font-size:26px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;padding:0 0 4px;font-family:inherit}
-.radar-nav-btn:hover:not(:disabled){background:rgba(124,140,255,.22);border-color:rgba(124,140,255,.55)}
-.radar-nav-btn:active:not(:disabled){transform:scale(.92)}
-.radar-nav-btn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
-.radar-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:10px 0 6px;min-height:8px}
-.radar-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s;cursor:pointer;flex-shrink:0}
-.radar-dot:hover:not(.active){background:rgba(255,255,255,.6)}
-.radar-dot.active{width:24px;border-radius:4px;background:var(--accent)}
-.radar-dot.empty{background:transparent;border:1.5px solid rgba(255,255,255,.25)}
-.radar-dot.empty:hover:not(.active){border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.05)}
-.radar-dot.empty.active{background:var(--accent);border-color:var(--accent)}
-.skill-radar-legend{display:flex;justify-content:center;gap:14px;margin:4px 0 14px;font-size:11px;color:var(--muted)}
-.skill-radar-legend-item{display:inline-flex;align-items:center;gap:5px}
-.skill-radar-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.decision-category-name{text-align:center;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:14px;letter-spacing:.3px}
-.choice-buttons{display:flex;flex-direction:column;gap:9px;margin-top:14px}
-.choice-buttons button{width:100%}
-.result-header{text-align:center}
-.overall-gauge{display:flex;justify-content:center;margin:20px 0 12px}
-.overall-gauge-ring{--gauge-percent:0%;--gauge-color:var(--accent);width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--gauge-color) var(--gauge-percent),#272c37 var(--gauge-percent));display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 12px 40px rgba(124,140,255,.10)}
-.overall-gauge-inner{width:156px;height:156px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
-.overall-gauge-value{font-size:46px;font-weight:800;line-height:1;background:linear-gradient(135deg,#fff,#9da7ff);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
-.result-caption{color:var(--muted);font-size:14px}
-.result-caption-strong{color:var(--text);font-weight:700}
-.radar-container{display:flex;justify-content:center;align-items:center;width:100%;overflow:hidden;padding:5px}
-#skillsRadar{display:block;max-width:100%;height:auto}
-.category-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.category-result{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center}
-.circle{width:110px;height:110px;margin:0 auto 10px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--ring-color,var(--accent)) var(--percent),#303642 var(--percent))}
-.circle::before{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:var(--card2)}
-.circle-value{position:relative;z-index:2;font-size:22px;font-weight:800;color:var(--text);line-height:1}
-.circle-level{position:relative;z-index:2;font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600}
-.category-result-name{font-size:13.5px;font-weight:700;line-height:1.3}
-.category-result-count{margin-top:4px;color:var(--muted);font-size:10.5px}
-.skill-list{display:flex;flex-direction:column;gap:8px}
-.result-skill{background:var(--card2);border-radius:12px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.result-skill-name{font-size:13.5px;line-height:1.35}
-.result-skill-value{font-weight:800;font-size:14.5px;flex-shrink:0}
-.good{color:var(--good)}
-.warning{color:var(--warning)}
-.danger{color:var(--danger)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{text-align:center;background:var(--card2);border-radius:13px;padding:13px 8px}
-.stat-value{font-size:22px;font-weight:800}
-.stat-label{color:var(--muted);font-size:10.5px;margin-top:3px}
-.info{color:var(--muted);font-size:13px;line-height:1.55}
-footer{text-align:center;color:#656c78;font-size:12px;margin-top:20px}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
-.modal-overlay.open{opacity:1;pointer-events:auto}
-.modal-sheet{width:100%;max-width:720px;margin:0 auto;max-height:92vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.9,.3,1);overflow:hidden}
-.modal-overlay.open .modal-sheet{transform:translateY(0)}
-.modal-grabber{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:10px auto 4px;flex-shrink:0}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
-.modal-header-left{display:flex;align-items:center;gap:12px;min-width:0}
-.modal-header-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(124,140,255,.14)}
-.modal-title{font-size:17px;font-weight:800;line-height:1.2}
-.modal-subtitle{font-size:12px;color:var(--muted);margin-top:2px}
-.modal-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--muted);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;padding:0;flex-shrink:0;line-height:1}
-.modal-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
-.modal-body{padding:16px 20px 24px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
-.programs-list{display:flex;flex-direction:column;gap:12px}
-.program-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:15px}
-.program-card.recommended{border-color:rgba(110,168,254,.45);background:linear-gradient(135deg,rgba(110,168,254,.08),rgba(156,124,255,.06))}
-.program-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
-.program-partner{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--partner);letter-spacing:.3px;text-transform:uppercase}
-.program-partner-dot{width:6px;height:6px;border-radius:50%;background:var(--partner);box-shadow:0 0 8px rgba(110,168,254,.7)}
-.program-badge{background:rgba(85,214,138,.15);border:1px solid rgba(85,214,138,.35);color:var(--good);font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;white-space:nowrap;letter-spacing:.3px;flex-shrink:0}
-.program-title{font-size:15px;font-weight:700;line-height:1.35;margin-bottom:6px;color:var(--text)}
-.program-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:12px}
-.program-meta{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:11px;color:var(--muted);margin-bottom:12px}
-.program-cta{width:100%;padding:11px 14px;border-radius:11px;background:rgba(110,168,254,.14);color:var(--partner);font-size:13px;font-weight:700;font-family:inherit;border:1px solid rgba(110,168,254,.25);cursor:pointer}
-.programs-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;line-height:1.5}
-.consult-intro{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:18px;padding:12px 14px;background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px}
-.consult-form{display:flex;flex-direction:column;gap:14px}
-.consult-field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase}
-.consult-field input,.consult-field textarea{width:100%;background:#10131a;border:1px solid var(--border);border-radius:12px;padding:13px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;resize:vertical}
-.consult-field textarea{min-height:90px}
-.consult-field input:focus,.consult-field textarea:focus{border-color:var(--accent)}
-.consult-submit{width:100%;padding:15px;background:var(--accent);color:#fff;border-radius:13px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;border:none;margin-top:4px}
-.consult-success{text-align:center;padding:30px 20px}
-.consult-success-icon{width:68px;height:68px;border-radius:50%;background:rgba(85,214,138,.15);border:1px solid rgba(85,214,138,.4);color:var(--good);font-size:34px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.consult-success h3{margin:0 0 8px;font-size:19px}
-.consult-success p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
-#jsErrorBanner{position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;max-height:50vh;overflow:auto;display:none}
-#jsErrorBanner.visible{display:block}
-@media (max-width:1040px){.category-layout{grid-template-columns:minmax(0,1fr) 440px}.app{max-width:1040px}}
-@media (max-width:900px){.category-layout{grid-template-columns:1fr;gap:12px}.radar-column{position:static;order:-1;padding:12px}#liveSkillRadar{max-width:100%;width:100%;max-height:500px}}
-@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:24px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.category-results{grid-template-columns:1fr 1fr}.circle{width:96px;height:96px}.circle::before{width:70px;height:70px}.circle-value{font-size:19px}.overall-gauge-ring{width:165px;height:165px}.overall-gauge-inner{width:135px;height:135px}.overall-gauge-value{font-size:40px}.stats{grid-template-columns:1fr 1fr 1fr}.stat-value{font-size:20px}.decision-badge-value{font-size:28px}.decision-icon{width:56px;height:56px;font-size:38px}.segmented{max-width:100%}#liveSkillRadar{max-height:440px}.modal-sheet{border-radius:22px 22px 0 0}.modal-body{padding:14px 16px 20px}.modal-header{padding:8px 16px 12px}.radar-nav-btn{width:36px;height:36px;font-size:22px;padding-bottom:3px}.radar-dot{width:7px;height:7px}.radar-dot.active{width:20px}.skill-badge{font-size:9px;padding:2px 6px}.verification-question{font-size:12px}.helper-actions{grid-template-columns:1fr 1fr}}
-</style>
-</head>
-<body>
-
-<div id="jsErrorBanner"></div>
-
-<div class="app">
-<header>
-<div class="logo">🧭</div>
-<h1>Карта навыков</h1>
-<div class="subtitle">Оцените свои навыки и получите визуальную карту компетенций</div>
-</header>
-
-<!-- ============ TEST SCREEN ============ -->
-<div id="testScreen">
-<div class="card">
-<div class="progress-wrap">
-<div class="progress-info"><span id="progressText">Категория 1</span><span id="progressPercent">0%</span></div>
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-</div>
-<div class="checklist" id="checklist"></div>
-<div class="section-title">Оценка навыков</div>
-<div class="section-description">Оцените каждый навык от 1 до 5. Для уровней «Продвинутый» и «Профи» система попросит подтвердить профессионализм. Для низких оценок можно зафиксировать, что хотелось бы улучшить.</div>
-<div class="category-box">
-<div class="category-label">КАТЕГОРИЯ</div>
-<select id="categorySelect"></select>
-</div>
-<div class="category-layout">
-<div class="skills-column"><div id="skillsContainer"></div></div>
-<aside class="radar-column">
-<div class="live-radar-header">
-<span class="live-radar-title">Профиль</span>
-<span class="live-radar-percent" id="liveRadarPercent">0%</span>
-</div>
-<div class="live-radar-container"><canvas id="liveSkillRadar"></canvas></div>
-<div class="helper-box">
-<div class="helper-title">Нужна помощь по этой категории?</div>
-<div class="helper-actions">
-<button class="helper-btn" onclick="openPrograms()">
-<span class="helper-btn-icon">🎓</span>
-<span class="helper-btn-body">
-<span class="helper-btn-label">Программа обучения</span>
-<span class="helper-btn-sub">Курсы партнёров</span>
-</span>
-</button>
-<button class="helper-btn" onclick="openConsultation()">
-<span class="helper-btn-icon">💬</span>
-<span class="helper-btn-body">
-<span class="helper-btn-label">Консультация</span>
-<span class="helper-btn-sub">Со специалистом</span>
-</span>
-</button>
-</div>
-</div>
-</aside>
-</div>
-<div class="buttons">
-<button class="btn-primary" onclick="saveCategory()">Готово</button>
-</div>
-</div>
-</div>
-
-<!-- ============ DECISION SCREEN ============ -->
-<div id="decisionScreen" class="hidden">
-<div class="card">
-<div class="decision-top">
-<div class="decision-icon" id="decisionIcon">✓</div>
-<h2 id="decisionTitle">Категория завершена</h2>
-<p id="decisionText">Вы оценили навыки этой категории.</p>
-<div class="decision-badge" id="decisionBadge">
-<div class="decision-badge-value" id="decisionPercent">0%</div>
-<div class="decision-badge-label">средний уровень</div>
-</div>
-</div>
-<div class="skill-radar-wrap">
-<button class="radar-nav-btn" id="radarNavPrev" onclick="navigateDecision(-1)" aria-label="Предыдущая">‹</button>
-<div class="skill-radar-container"><canvas id="skillRadar"></canvas></div>
-<button class="radar-nav-btn" id="radarNavNext" onclick="navigateDecision(1)" aria-label="Следующая">›</button>
-</div>
-<div class="radar-dots" id="radarDots"></div>
-<div class="skill-radar-legend">
-<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--danger);"></span>1</span>
-<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--warning);"></span>2</span>
-<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--accent);"></span>3</span>
-<span class="skill-radar-legend-item"><span class="skill-radar-legend-dot" style="background:var(--good);"></span>4–5</span>
-</div>
-<div class="decision-category-name" id="decisionCategoryName">Категория</div>
-<div id="decisionReflectionsWrap" class="hidden" style="margin-bottom:14px;">
-<div class="section-title" style="font-size:14px;margin-bottom:8px;">💭 Ваши заметки по категории</div>
-<div class="reflections-list" id="decisionReflections"></div>
-</div>
-<div class="helper-box">
-<div class="helper-title">Что дальше?</div>
-<div class="helper-actions">
-<button class="helper-btn" onclick="openPrograms()">
-<span class="helper-btn-icon">🎓</span>
-<span class="helper-btn-body">
-<span class="helper-btn-label">Программа обучения</span>
-<span class="helper-btn-sub" id="programsHint">Подобрать курс</span>
-</span>
-</button>
-<button class="helper-btn" onclick="openConsultation()">
-<span class="helper-btn-icon">💬</span>
-<span class="helper-btn-body">
-<span class="helper-btn-label">Консультация</span>
-<span class="helper-btn-sub">Разбор с экспертом</span>
-</span>
-</button>
-</div>
-</div>
-<div class="choice-buttons">
-<button class="btn-primary" id="mainActionBtn" onclick="continueFullAssessment()">Пройти полную оценку</button>
-<button class="btn-success" onclick="finishAssessment()">Завершить</button>
-</div>
-</div>
-</div>
-
-<!-- ============ NEXT SCREEN ============ -->
-<div id="nextScreen" class="hidden">
-<div class="card">
-<div style="text-align:center;padding:22px 10px 5px;">
-<div class="decision-icon neutral">→</div>
-<h2>Следующая категория</h2>
-<p id="nextCategoryText" style="color:var(--muted);"></p>
-<div class="buttons"><button class="btn-primary" onclick="goNextCategory()">Далее</button></div>
-</div>
-</div>
-</div>
-
-<!-- ============ RESULTS SCREEN ============ -->
-<div id="resultsScreen" class="hidden">
-<div class="card result-header">
-<div class="section-title">Ваша карта навыков</div>
-<div class="overall-gauge">
-<div class="overall-gauge-ring" id="overallGauge">
-<div class="overall-gauge-inner"><div class="overall-gauge-value" id="overallPercent">0%</div></div>
-</div>
-</div>
-<div class="result-caption">средний уровень <span class="result-caption-strong" id="overallAverage">0.0</span> из 5</div>
-</div>
-<div class="card">
-<div class="section-title">Карта компетенций</div>
-<div class="section-description">Чем дальше область от центра, тем выше средний уровень навыков в соответствующей категории.</div>
-<div class="radar-container"><canvas id="skillsRadar"></canvas></div>
-</div>
-<div class="card">
-<div class="section-title">Общая статистика</div>
-<div class="stats">
-<div class="stat"><div class="stat-value" id="statAverage">—</div><div class="stat-label">Средний уровень</div></div>
-<div class="stat"><div class="stat-value" id="statMax">—</div><div class="stat-label">Максимум</div></div>
-<div class="stat"><div class="stat-value" id="statMin">—</div><div class="stat-label">Минимум</div></div>
-</div>
-</div>
-<div class="card">
-<div class="section-title">Уровень по категориям</div>
-<div class="section-description">Средняя оценка навыков внутри каждой пройденной категории.</div>
-<div class="category-results" id="categoryResults"></div>
-</div>
-<div class="card">
-<div class="section-title">Сильные навыки</div>
-<div class="section-description">Навыки с наиболее высокой оценкой.</div>
-<div class="skill-list" id="strengthsList"></div>
-</div>
-<div class="card">
-<div class="section-title">Навыки для развития</div>
-<div class="section-description">Навыки, которые могут стать точками роста.</div>
-<div class="skill-list" id="developmentList"></div>
-</div>
-<div class="card" id="allReflectionsCard">
-<div class="section-title">💭 Ваши заметки для улучшения</div>
-<div class="section-description">Мысли, которые вы зафиксировали во время оценки низких навыков. Это — отправная точка для выбора направления развития.</div>
-<div id="allReflectionsList"></div>
-</div>
-<div class="card">
-<div class="section-title">Интерпретация</div>
-<div class="info" id="interpretation"></div>
-</div>
-<div class="card">
-<div class="buttons">
-<button class="btn-secondary" onclick="backToAssessment()">Изменить оценки</button>
-<button class="btn-primary" onclick="exportResults()">Экспорт JSON</button>
-<button class="btn-danger" onclick="resetTest()">Начать заново</button>
-</div>
-</div>
-</div>
-
-<footer>Карта навыков • персональная оценка компетенций</footer>
-</div>
-
-<!-- ============ MODAL: PROGRAMS ============ -->
-<div class="modal-overlay" id="programsModal">
-<div class="modal-sheet">
-<div class="modal-grabber"></div>
-<div class="modal-header">
-<div class="modal-header-left">
-<div class="modal-header-icon" style="background:rgba(110,168,254,.16);color:var(--partner);">🎓</div>
-<div>
-<div class="modal-title">Программы обучения</div>
-<div class="modal-subtitle" id="programsSubtitle">—</div>
-</div>
-</div>
-<button class="modal-close" onclick="closeModal('programsModal')">×</button>
-</div>
-<div class="modal-body" id="programsBody"></div>
-</div>
-</div>
-
-<!-- ============ MODAL: CONSULTATION ============ -->
-<div class="modal-overlay" id="consultationModal">
-<div class="modal-sheet">
-<div class="modal-grabber"></div>
-<div class="modal-header">
-<div class="modal-header-left">
-<div class="modal-header-icon" style="background:rgba(156,124,255,.16);color:var(--accent2);">💬</div>
-<div>
-<div class="modal-title">Консультация специалиста</div>
-<div class="modal-subtitle" id="consultationSubtitle">—</div>
-</div>
-</div>
-<button class="modal-close" onclick="closeModal('consultationModal')">×</button>
-</div>
-<div class="modal-body" id="consultationBody"></div>
-</div>
-</div>
-
-<script>
-/* ---- Глобальный перехватчик ошибок ---- */
-(function(){
-  var banner = document.getElementById('jsErrorBanner');
-  function show(text){
-    if(!banner){ banner = document.createElement('div'); banner.id='jsErrorBanner'; document.body.appendChild(banner); }
-    banner.textContent = text;
-    banner.classList.add('visible');
-  }
-  window.addEventListener('error', function(e){
-    show('❌ ' + e.message + '\n' + (e.filename||'') + '\nСтрока: ' + e.lineno + ':' + e.colno);
-  });
-  window.addEventListener('unhandledrejection', function(e){
-    show('❌ ' + ((e.reason && e.reason.message) || e.reason));
-  });
-})();
-</script>
-
-<script>
-/* ============================================================
-   TELEGRAM
-============================================================ */
-var tg = null;
-try {
-  if (window.Telegram && window.Telegram.WebApp) {
-    tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-  }
-} catch(e){}
-
-/* ============================================================
-   ДАННЫЕ
-============================================================ */
-var categories = {
-  "Цифровые навыки": ["Программирование на ПК","Программирование на смартфоне","Веб-разработка (frontend)","Веб-разработка (backend)","Монтаж видео на ПК","Монтаж видео на смартфоне","Графический дизайн на ПК","Графический дизайн на смартфоне","Работа с ИИ-инструментами","Аналитика данных и таблицы","Съёмка фото на смартфон","Съёмка фото на камеру","3D-моделирование и визуализация","SMM и ведение соцсетей","Работа с текстами и редактура"],
-  "Аналитические навыки": ["Анализ информации и источников","Критическое мышление","Системное мышление","Работа с данными и таблицами","Поиск закономерностей","Решение сложных проблем","Стратегическое планирование","Принятие решений в неопределённости"],
-  "Коммуникация": ["Устная речь и дикция","Письменная речь и переписка","Публичные выступления","Переговоры и торг","Активное слушание","Работа с конфликтами","Презентация идей и проектов","Нетворкинг и знакомства"],
-  "Управленческие": ["Организация процессов и задач","Постановка задач команде","Контроль выполнения задач","Распределение ресурсов и бюджета","Работа в команде","Лидерство и мотивация","Делегирование полномочий","Управление проектами"],
-  "Творческие": ["Рисование на бумаге","Рисование на планшете (digital art)","Игра на музыкальном инструменте","Создание музыки на ПК","Съёмка видео на смартфон","Съёмка видео на камеру","Писательство и проза","Дизайн и композиция","Создание концепций и идей","Креативное мышление"],
-  "Ручной труд": ["Столярное дело","Плотницкое дело","Шитьё и работа с тканью","Вязание и работа с пряжей","Работа с металлом и сварка","Работа с ручным инструментом","Реставрация и восстановление","Изготовление вещей своими руками"],
-  "Строительство и ремонт": ["Сантехнические работы","Электромонтажные работы","Бытовой ремонт","Отделочные работы","Малярные работы","Кладка и бетонные работы","Монтаж конструкций","Работа с измерительными инструментами"],
-  "Техника и механика": ["Ремонт автомобиля","Общая механика","Электроника и пайка","Ремонт бытовой техники","Обслуживание техники","Сборка и разборка техники","Работа с электроинструментом","Диагностика неисправностей"],
-  "Транспорт": ["Вождение автомобиля","Вождение мотоцикла","Езда на велосипеде","Навигация и работа с картами","Ориентирование на местности","Техническое обслуживание транспорта"],
-  "Бытовые": ["Приготовление пищи","Уборка и поддержание порядка","Организация пространства","Планирование быта и расписания","Уход за одеждой и вещами","Уход за растениями","Личное финансовое планирование"],
-  "Социальные": ["Помощь людям","Обучение и преподавание","Наставничество","Эмпатия и понимание людей","Медиация и разрешение споров","Работа с группами","Организация мероприятий","Работа с детьми","Воспитание"],
-  "Языки": ["Русский язык — владение","Английский язык","Немецкий язык","Другие иностранные языки","Письменный перевод","Разговорная практика"],
-  "Предпринимательство": ["Поиск и генерация идей","Создание продукта","Продажи","Маркетинг и продвижение","Финансовое планирование бизнеса","Работа с клиентами","Переговоры и партнёрства","Запуск проектов и стартапов"],
-  "Саморазвитие": ["Самоорганизация","Управление временем","Обучение новым навыкам","Работа с информацией","Концентрация и внимание","Адаптивность к изменениям","Самодисциплина","Постановка целей"]
-};
-
-var verificationQuestions = {
-  "Цифровые навыки": {4:["Применяли ли вы «{skill}» в реальных проектах хотя бы 2–3 раза?"],5:["Есть ли у вас публичное портфолио, GitHub или проекты, которые можно показать?","Выполняли ли вы задачу от начала до конца самостоятельно?","Помогали ли вы другим людям осваивать «{skill}»?"]},
-  "Аналитические навыки": {4:["Применяли ли вы «{skill}» для принятия реальных рабочих решений?"],5:["Можете ли вы разобрать сложный кейс и объяснить логику решения?","Применяли ли вы «{skill}» в условиях неопределённости?","Обучали ли вы кого-то «{skill}»?"]},
-  "Коммуникация": {4:["Регулярно ли вы применяете «{skill}» в работе или жизни?"],5:["Получали ли вы обратную связь о высоком уровне «{skill}»?","Можете ли вы научить других применять этот навык?","Выступали ли вы публично или вели серьёзные переговоры?"]},
-  "Управленческие": {4:["Управляли ли вы командой или проектом, применяя «{skill}»?"],5:["Отвечали ли вы за результат команды от начала до конца?","Есть ли у вас кейсы, где вы улучшили процесс?","Обучали ли вы других управленческим практикам?"]},
-  "Творческие": {4:["Создавали ли вы завершённые работы, используя «{skill}»?"],5:["Есть ли у вас публичные работы или портфолио?","Получали ли вы заказы или признание за свои работы?","Обучали ли вы кого-то «{skill}»?"]},
-  "Ручной труд": {4:["Изготавливали ли вы изделия самостоятельно, применяя «{skill}»?"],5:["Есть ли у вас работы, которые вы показываете или продаёте?","Работаете ли вы с инструментами профессионального уровня?","Обучали ли вы кого-то «{skill}»?"]},
-  "Строительство и ремонт": {4:["Выполняли ли вы работы по «{skill}» самостоятельно?"],5:["Сколько объектов или проектов вы реализовали?","Можете ли вы выполнить работу без контроля?","Обучали ли вы кого-то «{skill}»?"]},
-  "Техника и механика": {4:["Ремонтировали или обслуживали технику, применяя «{skill}»?"],5:["Решали ли вы задачи, с которыми не справлялись другие?","Есть ли у вас опыт с техникой разных марок?","Обучали ли вы кого-то «{skill}»?"]},
-  "Транспорт": {4:["Регулярно ли вы применяете «{skill}» на практике?"],5:["Есть ли у вас опыт в сложных условиях (дальние поездки, бездорожье)?","Можете ли вы обучить основам «{skill}» другого?"]},
-  "Бытовые": {4:["Регулярно ли вы применяете «{skill}» в повседневной жизни?"],5:["Делаете ли вы это заметно лучше большинства знакомых?","Обучали ли вы кого-то «{skill}»?"]},
-  "Социальные": {4:["Применяли ли вы «{skill}» в реальных ситуациях?"],5:["Есть ли у вас опыт, когда вы меняли ситуацию к лучшему?","Обучали ли вы других или делились опытом?"]},
-  "Языки": {4:["Свободно ли вы используете «{skill}» в рабочей ситуации?"],5:["Ведёте ли вы переговоры или работаете на этом языке?","Есть ли у вас сертификат или подтверждённый уровень?","Обучали ли вы кого-то этому языку?"]},
-  "Предпринимательство": {4:["Запускали ли вы проект или продукт, применяя «{skill}»?"],5:["Есть ли у вас кейсы прибыльных проектов?","Привлекали ли вы клиентов или инвестиции?","Обучали ли вы кого-то «{skill}»?"]},
-  "Саморазвитие": {4:["Применяете ли вы «{skill}» систематически в последние месяцы?"],5:["Есть ли у вас измеримые результаты благодаря «{skill}»?","Можете ли вы научить других этому подходу?"]}
-};
-
-var partners = {
-  "Цифровые навыки": [
-    {partner:"Skillbox",program:"Веб-разработчик с нуля",desc:"HTML, CSS, JavaScript, React, Node.js. Полный стек с проектами в портфолио.",format:"Онлайн",duration:"12 мес",price:"5 500 ₽/мес",skills:["Программирование на ПК","Веб-разработка (frontend)","Веб-разработка (backend)"]},
-    {partner:"GeekBrains",program:"Python-разработчик",desc:"Основы Python, Django, REST API, работа с базами данных.",format:"Онлайн",duration:"9 мес",price:"4 900 ₽/мес",skills:["Программирование на ПК","Аналитика данных и таблицы"]},
-    {partner:"Нетология",program:"Видеомонтаж в Premiere Pro",desc:"Профессиональный монтаж, цветокоррекция, звук.",format:"Онлайн",duration:"4 мес",price:"3 900 ₽/мес",skills:["Монтаж видео на ПК","Съёмка видео на камеру"]},
-    {partner:"Bang Bang Education",program:"Графический дизайн",desc:"Композиция, типографика, Figma, Photoshop.",format:"Онлайн",duration:"8 мес",price:"5 200 ₽/мес",skills:["Графический дизайн на ПК","Графический дизайн на смартфоне"]},
-    {partner:"Skillbox",program:"SMM-менеджер",desc:"Стратегия, контент, таргет, аналитика.",format:"Онлайн",duration:"6 мес",price:"4 400 ₽/мес",skills:["SMM и ведение соцсетей","Работа с текстами и редактура"]}
-  ],
-  "Аналитические навыки": [
-    {partner:"Яндекс Практикум",program:"Аналитик данных",desc:"SQL, Python, визуализация, A/B-тесты.",format:"Онлайн",duration:"8 мес",price:"6 000 ₽/мес",skills:["Анализ информации и источников","Работа с данными и таблицами","Поиск закономерностей"]},
-    {partner:"Skillbox",program:"Системное мышление",desc:"Инструменты для решения сложных задач.",format:"Онлайн",duration:"2 мес",price:"3 500 ₽/мес",skills:["Системное мышление","Решение сложных проблем"]}
-  ],
-  "Коммуникация": [
-    {partner:"Школа ораторского мастерства",program:"Публичные выступления",desc:"Голос, подача, работа с залом.",format:"Онлайн",duration:"3 мес",price:"4 200 ₽/мес",skills:["Устная речь и дикция","Публичные выступления","Презентация идей и проектов"]},
-    {partner:"Radical Agreement",program:"Переговоры и работа с конфликтами",desc:"Гарвардская модель, тактики влияния.",format:"Онлайн",duration:"2 мес",price:"5 800 ₽/мес",skills:["Переговоры и торг","Работа с конфликтами","Активное слушание"]}
-  ],
-  "Управленческие": [
-    {partner:"Академия Eduson",program:"Управление проектами",desc:"Agile, Scrum, Kanban, планирование, ресурсы.",format:"Онлайн",duration:"5 мес",price:"5 400 ₽/мес",skills:["Управление проектами","Организация процессов и задач","Постановка задач команде"]},
-    {partner:"Business Speech",program:"Лидерство и управление командой",desc:"Мотивация, делегирование, обратная связь.",format:"Онлайн",duration:"3 мес",price:"6 200 ₽/мес",skills:["Лидерство и мотивация","Делегирование полномочий","Работа в команде"]}
-  ],
-  "Творческие": [
-    {partner:"Bang Bang Education",program:"Иллюстрация и digital art",desc:"Procreate, Photoshop, композиция, свет.",format:"Онлайн",duration:"6 мес",price:"4 900 ₽/мес",skills:["Рисование на планшете (digital art)","Рисование на бумаге","Дизайн и композиция"]},
-    {partner:"Music Academy",program:"Создание музыки на ПК",desc:"Ableton, FL Studio, сведение, мастеринг.",format:"Онлайн",duration:"5 мес",price:"5 500 ₽/мес",skills:["Создание музыки на ПК","Игра на музыкальном инструменте"]},
-    {partner:"Creative Writing School",program:"Писательское мастерство",desc:"Структура текста, персонажи, сюжет.",format:"Онлайн",duration:"4 мес",price:"4 300 ₽/мес",skills:["Писательство и проза","Создание концепций и идей","Креативное мышление"]}
-  ],
-  "Ручной труд": [
-    {partner:"Школа ремёсел",program:"Столярное мастерство",desc:"Работа с деревом, ручной инструмент, соединения.",format:"Оффлайн",duration:"6 мес",price:"7 000 ₽/мес",skills:["Столярное дело","Плотницкое дело","Работа с ручным инструментом"]},
-    {partner:"Швейная академия",program:"Шитьё и конструирование",desc:"Основы кроя, работа с тканью, пошив одежды.",format:"Онлайн",duration:"5 мес",price:"4 100 ₽/мес",skills:["Шитьё и работа с тканью","Изготовление вещей своими руками"]}
-  ],
-  "Строительство и ремонт": [
-    {partner:"ПрофШкола",program:"Электромонтаж с нуля",desc:"Схемы, монтаж щитов, проводка.",format:"Оффлайн",duration:"4 мес",price:"6 500 ₽/мес",skills:["Электромонтажные работы","Монтаж конструкций"]},
-    {partner:"Мастер-класс",program:"Сантехника и отопление",desc:"Разводка, пайка труб, монтаж оборудования.",format:"Оффлайн",duration:"3 мес",price:"5 900 ₽/мес",skills:["Сантехнические работы","Бытовой ремонт"]}
-  ],
-  "Техника и механика": [
-    {partner:"АвтоШкола Pro",program:"Ремонт автомобиля",desc:"Двигатель, подвеска, тормоза, электрика.",format:"Оффлайн",duration:"6 мес",price:"8 000 ₽/мес",skills:["Ремонт автомобиля","Общая механика","Диагностика неисправностей"]},
-    {partner:"RoboSkill",program:"Электроника и пайка",desc:"Схемотехника, пайка, микроконтроллеры.",format:"Онлайн",duration:"4 мес",price:"5 600 ₽/мес",skills:["Электроника и пайка","Ремонт бытовой техники"]}
-  ],
-  "Транспорт": [
-    {partner:"Автошкола №1",program:"Вождение категории B",desc:"Полный курс с инструктором.",format:"Оффлайн",duration:"3 мес",price:"по запросу",skills:["Вождение автомобиля","Техническое обслуживание транспорта"]}
-  ],
-  "Бытовые": [
-    {partner:"Кулинарная школа",program:"Домашняя кухня",desc:"Основы, техники, супы, вторые блюда, выпечка.",format:"Онлайн",duration:"3 мес",price:"3 400 ₽/мес",skills:["Приготовление пищи","Планирование быта и расписания"]},
-    {partner:"ФинГрамотность",program:"Личные финансы",desc:"Бюджет, накопления, инвестиции, подушка.",format:"Онлайн",duration:"2 мес",price:"3 900 ₽/мес",skills:["Личное финансовое планирование","Организация пространства"]}
-  ],
-  "Социальные": [
-    {partner:"Школа наставников",program:"Наставничество и преподавание",desc:"Методики обучения взрослых, обратная связь.",format:"Онлайн",duration:"3 мес",price:"4 700 ₽/мес",skills:["Обучение и преподавание","Наставничество","Работа с группами"]},
-    {partner:"Медиатор Про",program:"Медиация и разрешение споров",desc:"Техники медиации, работа с конфликтами.",format:"Онлайн",duration:"2 мес",price:"5 100 ₽/мес",skills:["Медиация и разрешение споров","Эмпатия и понимание людей"]},
-    {partner:"Академия родителей",program:"Работа с детьми и воспитание",desc:"Возрастная психология, общение, мягкие навыки.",format:"Онлайн",duration:"3 мес",price:"3 800 ₽/мес",skills:["Работа с детьми","Воспитание","Эмпатия и понимание людей"]}
-  ],
-  "Языки": [
-    {partner:"Skyeng",program:"Английский язык — с нуля до C1",desc:"Индивидуальные занятия, разговорный клуб.",format:"Онлайн",duration:"гибко",price:"от 1 200 ₽/занятие",skills:["Английский язык","Разговорная практика"]},
-    {partner:"Deutsch Online",program:"Немецкий язык A1–B2",desc:"Курс с носителем, подготовка к Goethe-Zertifikat.",format:"Онлайн",duration:"8 мес",price:"4 800 ₽/мес",skills:["Немецкий язык","Письменный перевод"]}
-  ],
-  "Предпринимательство": [
-    {partner:"Акселератор ФРИИ",program:"Запуск стартапа",desc:"Идея, продукт, метрики, инвестиции, питч.",format:"Онлайн + оффлайн",duration:"3 мес",price:"по запросу",skills:["Поиск и генерация идей","Создание продукта","Запуск проектов и стартапов"]},
-    {partner:"Sales Academy",program:"Продажи B2B",desc:"Скрипты, работа с возражениями, воронка, CRM.",format:"Онлайн",duration:"3 мес",price:"5 200 ₽/мес",skills:["Продажи","Работа с клиентами","Переговоры и партнёрства"]}
-  ],
-  "Саморазвитие": [
-    {partner:"Лайфхакер Академия",program:"Управление временем",desc:"GTD, Pomodoro, приоритизация.",format:"Онлайн",duration:"1 мес",price:"2 900 ₽",skills:["Управление временем","Самоорганизация","Концентрация и внимание"]},
-    {partner:"Нетология",program:"Обучение новым навыкам",desc:"Методики быстрого обучения, метапознание.",format:"Онлайн",duration:"2 мес",price:"3 400 ₽/мес",skills:["Обучение новым навыкам","Работа с информацией","Адаптивность к изменениям"]}
-  ]
-};
-
-var LEVEL_WORDS = {1:"Нет опыта",2:"Начальный",3:"Уверенный",4:"Продвинутый",5:"Профи"};
-
-/* ============================================================
-   СОСТОЯНИЕ
-============================================================ */
-var results = {};
-var completedCategories = {};
-var verifications = {};
-var reflections = {};
-var currentCategoryIndex = 0;
-var currentCategory = null;
-var lastCategoryData = null;
-var lastSkillRadarData = null;
-var decisionCategoryList = [];
-var decisionIndex = 0;
-
-var STORAGE_KEY = "psyToolsSkillsV5";
-var STORAGE_COMPLETED_KEY = "psyToolsSkillsV5Completed";
-var STORAGE_VERIFICATIONS_KEY = "psyToolsSkillsV5Verifications";
-var STORAGE_REFLECTIONS_KEY = "psyToolsSkillsV5Reflections";
-var STORAGE_APPLICATIONS_KEY = "psyToolsSkillsV5Applications";
-
-/* ============================================================
-   ХЕЛПЕРЫ
-============================================================ */
-function $(id){ return document.getElementById(id); }
-function escapeHtml(text){
-  return String(text)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-}
-function pluralize(n, forms){
-  var m10 = n % 10, m100 = n % 100;
-  if(m10 === 1 && m100 !== 11) return forms[0];
-  if(m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return forms[1];
-  return forms[2];
-}
-function isCategoryTouched(name){ return !!(results[name] && Object.keys(results[name]).length > 0); }
-function isCategoryCompleted(name){ return completedCategories[name] === true; }
-function getVerification(cat, skill){ return (verifications[cat] && verifications[cat][skill]) || null; }
-function getReflection(cat, skill){ return (reflections[cat] && reflections[cat][skill]) || ""; }
-function getWeakSkills(cat){
-  var sv = results[cat] || {};
-  return Object.keys(sv).filter(function(k){ return Number(sv[k]) <= 2; });
-}
-function countAllReflections(){
-  var total = 0;
-  Object.keys(reflections).forEach(function(cat){ total += Object.keys(reflections[cat]).length; });
-  return total;
-}
-function getRingColorVar(avg){ if(avg>=4) return "var(--good)"; if(avg>=3) return "var(--accent)"; if(avg>=2) return "var(--warning)"; return "var(--danger)"; }
-function getRingColorHex(avg){ if(avg>=4) return "#55d68a"; if(avg>=3) return "#7c8cff"; if(avg>=2) return "#ffc857"; return "#ff6b6b"; }
-function getLevelLabel(avg){ if(avg>=4.5) return "профи"; if(avg>=3.5) return "продвинутый"; if(avg>=2.5) return "уверенный"; if(avg>=1.5) return "начальный"; return "нет опыта"; }
-
-/* ============================================================
-   ХРАНИЛИЩЕ
-============================================================ */
-function saveResults(){
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-    localStorage.setItem(STORAGE_COMPLETED_KEY, JSON.stringify(completedCategories));
-    localStorage.setItem(STORAGE_VERIFICATIONS_KEY, JSON.stringify(verifications));
-    localStorage.setItem(STORAGE_REFLECTIONS_KEY, JSON.stringify(reflections));
-  } catch(e){ console.log("save error", e); }
-}
-function loadResults(){
-  try {
-    var s = localStorage.getItem(STORAGE_KEY); if(s) results = JSON.parse(s) || {};
-    var sc = localStorage.getItem(STORAGE_COMPLETED_KEY); if(sc) completedCategories = JSON.parse(sc) || {};
-    var sv = localStorage.getItem(STORAGE_VERIFICATIONS_KEY); if(sv) verifications = JSON.parse(sv) || {};
-    var sr = localStorage.getItem(STORAGE_REFLECTIONS_KEY); if(sr) reflections = JSON.parse(sr) || {};
-  } catch(e){
-    results = {}; completedCategories = {}; verifications = {}; reflections = {};
-  }
-}
-
-/* ============================================================
-   БЕЗОПАСНЫЕ ДИАЛОГИ
-============================================================ */
-function safeConfirm(message){
-  return new Promise(function(resolve){
-    if(tg && typeof tg.showConfirm === "function"){
-      try { tg.showConfirm(message, function(ok){ resolve(!!ok); }); return; } catch(e){}
-    }
-    resolve(window.confirm(message));
-  });
-}
-function safeAlert(message){
-  if(tg && typeof tg.showAlert === "function"){
-    try { tg.showAlert(message); return; } catch(e){}
-  }
-  window.alert(message);
-}
-
-/* ============================================================
-   АНИМАЦИИ
-============================================================ */
-function animateNumber(el, from, to, duration, formatter){
-  var start = performance.now();
-  function tick(now){
-    var t = Math.min(1, (now - start) / duration);
-    var eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = formatter(from + (to - from) * eased);
-    if(t < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-function animateCssVar(el, name, from, to, duration, unit){
-  var start = performance.now();
-  function tick(now){
-    var t = Math.min(1, (now - start) / duration);
-    var eased = 1 - Math.pow(1 - t, 3);
-    el.style.setProperty(name, (from + (to - from) * eased) + unit);
-    if(t < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-/* ============================================================
-   INIT
-============================================================ */
-function init(){
-  loadResults();
-
-  var select = $("categorySelect");
-  var names = Object.keys(categories);
-  names.forEach(function(name, index){
-    var option = document.createElement("option");
-    option.value = index;
-    option.textContent = name;
-    select.appendChild(option);
-  });
-
-  select.addEventListener("change", function(){
-    currentCategoryIndex = Number(select.value);
-    loadCategory(currentCategoryIndex);
-  });
-
-  document.querySelectorAll(".modal-overlay").forEach(function(overlay){
-    overlay.addEventListener("click", function(e){
-      if(e.target === overlay) closeModal(overlay.id);
-    });
-  });
-  document.addEventListener("keydown", function(e){
-    if(e.key === "Escape"){
-      document.querySelectorAll(".modal-overlay.open").forEach(function(o){ closeModal(o.id); });
-    }
-  });
-
-  loadCategory(0);
-}
-
-/* ============================================================
-   ЗАГРУЗКА КАТЕГОРИИ
-============================================================ */
-function loadCategory(index){
-  var names = Object.keys(categories);
-  if(index < 0 || index >= names.length) return;
-
-  currentCategoryIndex = index;
-  currentCategory = names[index];
-  $("categorySelect").value = index;
-
-  var container = $("skillsContainer");
-  container.innerHTML = "";
-
-  var skills = categories[currentCategory];
-
-  skills.forEach(function(skill, skillIndex){
-    var savedValue = (results[currentCategory] && results[currentCategory][skill]) || 3;
-
-    var wrapper = document.createElement("div");
-    wrapper.className = "skill";
-    wrapper.setAttribute("data-skill-idx", skillIndex);
-
-    var buttonsHtml = "";
-    [1,2,3,4,5].forEach(function(v){
-      buttonsHtml += '<button type="button" data-value="' + v + '">' + v + '</button>';
-    });
-
-    wrapper.innerHTML =
-      '<div class="skill-name-row">' +
-        '<div class="skill-name">' + escapeHtml(skill) + '</div>' +
-        '<div id="badge-' + skillIndex + '"></div>' +
-      '</div>' +
-      '<div class="segmented" data-idx="' + skillIndex + '">' + buttonsHtml + '</div>' +
-      '<div class="skill-level-hint lv-' + savedValue + '" id="lh-' + skillIndex + '">' + LEVEL_WORDS[savedValue] + '</div>' +
-      '<div id="vslot-' + skillIndex + '"></div>' +
-      '<div id="rslot-' + skillIndex + '"></div>';
-
-    var segmented = wrapper.querySelector(".segmented");
-    segmented.querySelectorAll("button").forEach(function(btn){
-      if(Number(btn.dataset.value) === savedValue) btn.classList.add("active");
-      btn.addEventListener("click", function(){
-        setSkillValue(skillIndex, Number(btn.dataset.value));
-      });
-    });
-
-    container.appendChild(wrapper);
-
-    if(savedValue >= 4) renderVerificationBlock(skillIndex, skill, savedValue);
-    if(savedValue <= 2) renderReflectionBlock(skillIndex, skill, savedValue);
-    updateSkillBadge(skillIndex, skill, savedValue);
-  });
-
-  updateProgress();
-  updateChecklist();
-  refreshCategorySelect();
-
-  requestAnimationFrame(function(){ updateLiveRadar(); });
-}
-
-/* ============================================================
-   БЛОК ВЕРИФИКАЦИИ
-============================================================ */
-function renderVerificationBlock(skillIndex, skill, level){
-  var slot = $("vslot-" + skillIndex);
-  if(!slot) return;
-
-  var questionData = verificationQuestions[currentCategory];
-  var questions = (questionData && questionData[level]) || [];
-  if(!questions.length){ slot.innerHTML = ""; return; }
-
-  var existing = getVerification(currentCategory, skill);
-  var answers = (existing && existing.level === level && existing.answers)
-    ? existing.answers.slice()
-    : new Array(questions.length).fill(false);
-
-  if(!existing || existing.level !== level){
-    if(!verifications[currentCategory]) verifications[currentCategory] = {};
-    verifications[currentCategory][skill] = { level: level, answers: answers };
-    saveResults();
-  }
-
-  var block = document.createElement("div");
-  block.className = "verification-block";
-
-  var html = '<div class="verification-title">🔍 Подтверждение уровня «' + LEVEL_WORDS[level] + '»</div>';
-
-  questions.forEach(function(q, qi){
-    var text = q.replace(/\{skill\}/g, skill);
-    var checked = answers[qi] ? " checked" : "";
-    html += '<div class="verification-question' + checked + '" data-qidx="' + qi + '">' +
-      '<div class="verification-checkbox"></div>' +
-      '<div>' + escapeHtml(text) + '</div>' +
-    '</div>';
-  });
-
-  var allYes = answers.length && answers.every(function(a){ return a === true; });
-  var cnt = answers.filter(function(a){ return a === true; }).length;
-  var statusClass = allYes ? "all-yes" : (cnt > 0 && cnt < answers.length ? "some-no" : "");
-  var statusText = allYes ? "✓ Уровень подтверждён" : "Отметьте те пункты, которые к вам относятся";
-  html += '<div class="verification-hint ' + statusClass + '">' + statusText + '</div>';
-
-  block.innerHTML = html;
-  slot.innerHTML = "";
-  slot.appendChild(block);
-
-  block.querySelectorAll(".verification-question").forEach(function(el){
-    el.addEventListener("click", function(){
-      toggleVerificationAnswer(skillIndex, skill, level, Number(el.dataset.qidx));
-    });
-  });
-}
-
-function toggleVerificationAnswer(skillIndex, skill, level, qi){
-  var v = getVerification(currentCategory, skill);
-  if(!v || v.level !== level) return;
-  var answers = v.answers.slice();
-  answers[qi] = !answers[qi];
-  verifications[currentCategory][skill] = { level: level, answers: answers };
-  saveResults();
-  renderVerificationBlock(skillIndex, skill, level);
-  updateSkillBadge(skillIndex, skill, level);
-  if(tg && tg.HapticFeedback){ try { tg.HapticFeedback.selectionChanged(); } catch(e){} }
-}
-
-/* ============================================================
-   БЛОК РЕФЛЕКСИИ
-============================================================ */
-function renderReflectionBlock(skillIndex, skill, level){
-  var slot = $("rslot-" + skillIndex);
-  if(!slot) return;
-
-  var current = getReflection(currentCategory, skill);
-
-  var block = document.createElement("div");
-  block.className = "reflection-block";
-  block.innerHTML =
-    '<div class="reflection-title">💭 Что хотелось бы улучшить?</div>' +
-    '<textarea class="reflection-input" placeholder="Опишите своими словами — эта мысль поможет позже выбрать направление развития" maxlength="500"></textarea>' +
-    '<div class="reflection-hint" id="rh-' + skillIndex + '">Ответ сохранится вместе с результатами</div>';
-
-  slot.innerHTML = "";
-  slot.appendChild(block);
-
-  var ta = block.querySelector("textarea");
-  ta.value = current;
-  if(current.trim()) updateReflectionHint(skillIndex, true);
-
-  ta.addEventListener("input", function(){
-    if(!reflections[currentCategory]) reflections[currentCategory] = {};
-    var trimmed = ta.value.trim();
-    if(trimmed){ reflections[currentCategory][skill] = trimmed; }
-    else {
-      delete reflections[currentCategory][skill];
-      if(!Object.keys(reflections[currentCategory]).length) delete reflections[currentCategory];
-    }
-    saveResults();
-    updateReflectionHint(skillIndex, trimmed.length > 0);
-    updateSkillBadge(skillIndex, skill, level);
-  });
-}
-
-function updateReflectionHint(skillIndex, saved){
-  var hint = $("rh-" + skillIndex);
-  if(!hint) return;
-  if(saved){ hint.textContent = "✓ Сохранено"; hint.classList.add("saved"); }
-  else { hint.textContent = "Ответ сохранится вместе с результатами"; hint.classList.remove("saved"); }
-}
-
-/* ============================================================
-   БЕЙДЖИ
-============================================================ */
-function updateSkillBadge(skillIndex, skill, level){
-  var slot = $("badge-" + skillIndex);
-  var card = document.querySelector('.skill[data-skill-idx="' + skillIndex + '"]');
-  if(!slot) return;
-
-  slot.innerHTML = "";
-  if(card) card.classList.remove("verified", "unverified", "has-reflection");
-
-  if(level <= 2){
-    var refl = getReflection(currentCategory, skill);
-    if(refl && refl.trim()){
-      slot.innerHTML = '<div class="skill-badge reflection">💭 Заметка</div>';
-      if(card) card.classList.add("has-reflection");
-    }
-    return;
-  }
-
-  if(level >= 4){
-    var v = getVerification(currentCategory, skill);
-    if(!v || v.level !== level || !v.answers || !v.answers.length) return;
-    var answered = v.answers.some(function(a){ return a === true; });
-    if(!answered) return;
-    var allYes = v.answers.every(function(a){ return a === true; });
-    if(allYes){
-      slot.innerHTML = '<div class="skill-badge verified">✓ Подтверждено</div>';
-      if(card) card.classList.add("verified");
-    } else {
-      slot.innerHTML = '<div class="skill-badge unverified">⚠ Уточнить</div>';
-      if(card) card.classList.add("unverified");
-    }
-  }
-}
-
-/* ============================================================
-   ИЗМЕНЕНИЕ ОЦЕНКИ
-============================================================ */
-function setSkillValue(skillIndex, value){
-  var skills = categories[currentCategory] || [];
-  var skill = skills[skillIndex];
-  if(!skill) return;
-
-  if(!results[currentCategory]) results[currentCategory] = {};
-  results[currentCategory][skill] = value;
-  saveResults();
-
-  var segmented = document.querySelector('.segmented[data-idx="' + skillIndex + '"]');
-  if(segmented){
-    segmented.querySelectorAll("button").forEach(function(b){
-      b.classList.toggle("active", Number(b.dataset.value) === value);
-    });
-  }
-
-  var hint = $("lh-" + skillIndex);
-  if(hint){ hint.textContent = LEVEL_WORDS[value] || ""; hint.className = "skill-level-hint lv-" + value; }
-
-  var vslot = $("vslot-" + skillIndex);
-  var rslot = $("rslot-" + skillIndex);
-
-  if(value >= 4){
-    if(rslot) rslot.innerHTML = "";
-    renderVerificationBlock(skillIndex, skill, value);
-  } else if(value <= 2){
-    if(vslot) vslot.innerHTML = "";
-    renderReflectionBlock(skillIndex, skill, value);
-  } else {
-    if(vslot) vslot.innerHTML = "";
-    if(rslot) rslot.innerHTML = "";
-  }
-
-  updateSkillBadge(skillIndex, skill, value);
-  updateChecklist();
-  updateProgress();
-  refreshCategorySelect();
-  updateLiveRadar();
-
-  if(tg && tg.HapticFeedback){ try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
-}
-
-/* ============================================================
-   LIVE-РАДАР
-============================================================ */
-function updateLiveRadar(){
-  var skills = categories[currentCategory] || [];
-  var skillValues = results[currentCategory] || {};
-  var values = skills.map(function(s){ return Number(skillValues[s]) || 3; });
-  var avg = values.length ? values.reduce(function(a,b){ return a+b; }, 0) / values.length : 0;
-  var percent = Math.round((avg / 5) * 100);
-
-  var pctEl = $("liveRadarPercent");
-  if(pctEl){ pctEl.textContent = percent + "%"; pctEl.style.color = getRingColorHex(avg); }
-
-  drawSkillRadar("liveSkillRadar", skills, values, avg, true);
-}
-
-/* ============================================================
-   ПЕРЕХОД НА DECISION
-============================================================ */
-function saveCategory(){
-  if(!results[currentCategory]) results[currentCategory] = {};
-  completedCategories[currentCategory] = true;
-  saveResults();
-  updateChecklist();
-  updateProgress();
-  refreshCategorySelect();
-
-  if(tg && tg.HapticFeedback){ try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} }
-
-  showDecisionScreen();
-}
-
-function showDecisionScreen(){
-  $("testScreen").classList.add("hidden");
-  $("decisionScreen").classList.remove("hidden");
-  $("nextScreen").classList.add("hidden");
-
-  /* Все категории в списке */
-  decisionCategoryList = Object.keys(categories);
-  decisionIndex = decisionCategoryList.indexOf(currentCategory);
-  if(decisionIndex < 0) decisionIndex = 0;
-
-  showDecisionCategory(decisionCategoryList[decisionIndex]);
-}
-
-function showDecisionCategory(categoryName){
-  if(!categoryName) return;
-
-  var isCompleted = isCategoryCompleted(categoryName);
-  var skills = categories[categoryName] || [];
-  var skillValues = results[categoryName] || {};
-
-  /* Если не пройдена — все 0 */
-  var values;
-  var average;
-  if(isCompleted){
-    values = skills.map(function(s){ return Number(skillValues[s]) || 3; });
-    average = values.length ? values.reduce(function(a,b){ return a+b; }, 0) / values.length : 0;
-  } else {
-    values = skills.map(function(){ return 0; });
-    average = 0;
-  }
-  var percent = Math.round((average / 5) * 100);
-
-  var iconEl = $("decisionIcon");
-  var titleEl = $("decisionTitle");
-  var textEl = $("decisionText");
-  var badgeEl = $("decisionBadge");
-  var percentEl = $("decisionPercent");
-  var mainBtn = $("mainActionBtn");
-
-  if(isCompleted){
-    iconEl.className = "decision-icon";
-    iconEl.textContent = "✓";
-    titleEl.textContent = "Категория завершена";
-    textEl.textContent = "Вы оценили " + skills.length + " навыков";
-    badgeEl.classList.remove("hidden");
-    percentEl.textContent = "0%";
-    animateNumber(percentEl, 0, percent, 700, function(v){ return Math.round(v) + "%"; });
-    if(mainBtn) mainBtn.textContent = "Пройти полную оценку";
-  } else {
-    iconEl.className = "decision-icon neutral";
-    iconEl.textContent = "○";
-    titleEl.textContent = "Категория не оценена";
-    textEl.textContent = "Навыки этой категории ещё не оценены. Пройдите её, чтобы увидеть реальную диаграмму.";
-    badgeEl.classList.add("hidden");
-    if(mainBtn) mainBtn.textContent = "Пройти эту категорию";
-  }
-
-  $("decisionCategoryName").textContent = categoryName;
-
-  /* Подсказка курсов */
-  var weak = isCompleted ? getWeakSkills(categoryName) : [];
-  var hint = $("programsHint");
-  if(hint){
-    if(weak.length){
-      var w = pluralize(weak.length, ["навык","навыка","навыков"]);
-      hint.textContent = weak.length + " " + w + " ниже нормы";
-    } else {
-      hint.textContent = "Подобрать курс под ваши цели";
-    }
-  }
-
-  /* Заметки */
-  if(isCompleted){
-    renderDecisionReflections(categoryName);
-  } else {
-    var wrap = $("decisionReflectionsWrap");
-    if(wrap) wrap.classList.add("hidden");
-  }
-
-  updateDecisionNav();
-
-  lastSkillRadarData = { skills: skills, values: values, average: average };
-  requestAnimationFrame(function(){
-    drawSkillRadar("skillRadar", skills, values, average, false);
-  });
-}
-
-function renderDecisionReflections(categoryName){
-  var wrap = $("decisionReflectionsWrap");
-  var list = $("decisionReflections");
-  if(!wrap || !list) return;
-
-  var catRefs = reflections[categoryName] || {};
-  var items = Object.keys(catRefs).filter(function(s){ return catRefs[s] && catRefs[s].trim(); });
-  if(!items.length){ wrap.classList.add("hidden"); list.innerHTML = ""; return; }
-
-  wrap.classList.remove("hidden");
-  var skillValues = results[categoryName] || {};
-
-  list.innerHTML = items.map(function(skill){
-    var score = Number(skillValues[skill]) || 0;
-    return '<div class="reflection-item">' +
-      '<div class="reflection-item-skill">' +
-        '<span>' + escapeHtml(skill) + '</span>' +
-        '<span class="reflection-item-score">' + score + '/5</span>' +
-      '</div>' +
-      '<div class="reflection-item-text">' + escapeHtml(catRefs[skill]) + '</div>' +
-    '</div>';
-  }).join("");
-}
-
-function updateDecisionNav(){
-  var prevBtn = $("radarNavPrev");
-  var nextBtn = $("radarNavNext");
-  if(prevBtn) prevBtn.disabled = decisionIndex <= 0;
-  if(nextBtn) nextBtn.disabled = decisionIndex >= decisionCategoryList.length - 1;
-
-  var dots = $("radarDots");
-  if(!dots) return;
-  dots.innerHTML = "";
-
-  decisionCategoryList.forEach(function(name, i){
-    var dot = document.createElement("div");
-    dot.className = "radar-dot";
-    if(i === decisionIndex) dot.classList.add("active");
-    if(!isCategoryCompleted(name)) dot.classList.add("empty");
-    dot.title = name + (isCategoryCompleted(name) ? "" : " — не пройдена");
-    dot.addEventListener("click", function(){
-      decisionIndex = i;
-      showDecisionCategory(decisionCategoryList[i]);
-      if(tg && tg.HapticFeedback){ try { tg.HapticFeedback.selectionChanged(); } catch(e){} }
-    });
-    dots.appendChild(dot);
-  });
-}
-
-function navigateDecision(delta){
-  var newIndex = decisionIndex + delta;
-  if(newIndex < 0 || newIndex >= decisionCategoryList.length) return;
-  decisionIndex = newIndex;
-  showDecisionCategory(decisionCategoryList[decisionIndex]);
-  if(tg && tg.HapticFeedback){ try { tg.HapticFeedback.selectionChanged(); } catch(e){} }
-}
-
-/* ============================================================
-   РИСОВАНИЕ РАДАРА
-============================================================ */
-function drawSkillRadar(canvasId, skills, values, average, compact){
-  var canvas = document.getElementById(canvasId);
-  if(!canvas) return;
-  var ctx = canvas.getContext("2d");
-  var dpr = window.devicePixelRatio || 1;
-  var parentWidth = (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
-  var maxSize = compact ? 520 : 640;
-  var cssSize = Math.max(280, Math.min(parentWidth || maxSize, maxSize));
-
-  canvas.style.width = cssSize + "px";
-  canvas.style.height = cssSize + "px";
-  canvas.width = Math.round(cssSize * dpr);
-  canvas.height = Math.round(cssSize * dpr);
-
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(dpr, dpr);
-
-  var width = cssSize, height = cssSize;
-  ctx.clearRect(0, 0, width, height);
-
-  var count = skills.length;
-  if(!count) return;
-
-  var cx = width / 2, cy = height / 2;
-  var isCompact = compact || cssSize < 420;
-  var radius = Math.min(width, height) * (isCompact ? 0.35 : 0.32);
-
-  var fontSize, maxLabelWidth, labelOffset;
-  if(cssSize >= 460){ fontSize = 13; maxLabelWidth = 100; labelOffset = count > 12 ? 62 : (count > 9 ? 68 : 76); }
-  else if(cssSize >= 360){ fontSize = 11.5; maxLabelWidth = 82; labelOffset = count > 12 ? 54 : (count > 9 ? 60 : 68); }
-  else { fontSize = 10; maxLabelWidth = 68; labelOffset = count > 12 ? 48 : (count > 9 ? 54 : 60); }
-
-  var labelRadius = radius + labelOffset;
-  var angleStep = (Math.PI * 2) / count;
-
-  /* Сетка */
-  for(var lvl = 1; lvl <= 5; lvl++){
-    var r = radius * lvl / 5;
-    ctx.beginPath();
-    for(var i = 0; i < count; i++){
-      var angle = -Math.PI / 2 + i * angleStep;
-      var x = cx + Math.cos(angle) * r;
-      var y = cy + Math.sin(angle) * r;
-      if(i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = lvl === 5 ? "rgba(255,255,255,.22)" : "rgba(255,255,255,.08)";
-    ctx.lineWidth = lvl === 5 ? 1.6 : 1;
-    ctx.stroke();
-  }
-
-  /* Оси */
-  for(var k = 0; k < count; k++){
-    var a = -Math.PI / 2 + k * angleStep;
-    var px = cx + Math.cos(a) * radius;
-    var py = cy + Math.sin(a) * radius;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(px, py);
-    ctx.strokeStyle = "rgba(255,255,255,.07)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  /* Точки */
-  var points = values.map(function(v, idx){
-    var ang = -Math.PI / 2 + idx * angleStep;
-    var r2 = radius * v / 5;
-    return { x: cx + Math.cos(ang) * r2, y: cy + Math.sin(ang) * r2, value: v };
-  });
-
-  /* Свечение */
-  ctx.save();
-  ctx.shadowColor = "rgba(124,140,255,.45)";
-  ctx.shadowBlur = isCompact ? 18 : 26;
-  ctx.beginPath();
-  points.forEach(function(p, idx){
-    if(idx === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-  });
-  ctx.closePath();
-  ctx.fillStyle = "rgba(124,140,255,.20)";
-  ctx.fill();
-  ctx.restore();
-
-  /* Градиент */
-  var fillGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-  fillGradient.addColorStop(0, "rgba(156,124,255,.42)");
-  fillGradient.addColorStop(1, "rgba(124,140,255,.12)");
-  ctx.beginPath();
-  points.forEach(function(p, idx){
-    if(idx === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-  });
-  ctx.closePath();
-  ctx.fillStyle = fillGradient;
-  ctx.fill();
-
-  /* Контур */
-  ctx.strokeStyle = "#9ca7ff";
-  ctx.lineWidth = isCompact ? 2.3 : 2.6;
-  ctx.lineJoin = "round";
-  ctx.stroke();
-
-  /* Точки с цветом */
-  points.forEach(function(p){
-    var color = getRingColorHex(p.value);
-    var outerR = isCompact ? 7 : 8;
-    var innerR = isCompact ? 4.8 : 5.8;
-    var whiteR = isCompact ? 1.9 : 2.3;
-    ctx.beginPath(); ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
-    ctx.fillStyle = color; ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
-    ctx.beginPath(); ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
-    ctx.fillStyle = color; ctx.fill();
-    ctx.beginPath(); ctx.arc(p.x, p.y, whiteR, 0, Math.PI * 2);
-    ctx.fillStyle = "#ffffff"; ctx.fill();
-  });
-
-  /* Подписи */
-  ctx.font = "700 " + fontSize + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  skills.forEach(function(skill, idx){
-    var ang = -Math.PI / 2 + idx * angleStep;
-    var lx = cx + Math.cos(ang) * labelRadius;
-    var ly = cy + Math.sin(ang) * labelRadius;
-
-    var words = skill.split(" ");
-    var lines = [];
-    var cur = "";
-    words.forEach(function(w){
-      var test = cur ? cur + " " + w : w;
-      if(ctx.measureText(test).width > maxLabelWidth){
-        if(cur) lines.push(cur);
-        cur = w;
-      } else { cur = test; }
-    });
-    if(cur) lines.push(cur);
-
-    var display = lines.slice(0, 3);
-    var lineH = fontSize + 3;
-    var totalH = display.length * lineH;
-
-    ctx.fillStyle = "#dfe3ea";
-    display.forEach(function(line, li){
-      ctx.fillText(line, lx, ly + (li * lineH) - (totalH - lineH) / 2);
-    });
-  });
-
-  /* Центр */
-  var innerR2 = isCompact ? 26 : 30;
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerR2, 0, Math.PI * 2);
-  ctx.fillStyle = "#0b0d12";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.14)";
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  ctx.font = "800 " + (isCompact ? 16 : 18) + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(average.toFixed(1), cx, cy - 4);
-
-  ctx.font = "600 " + (isCompact ? 10 : 11) + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-  ctx.fillStyle = "#9299a6";
-  ctx.fillText("из 5", cx, cy + (isCompact ? 9 : 10));
-}
-
-/* ============================================================
-   НАВИГАЦИЯ
-============================================================ */
-function findNextUncompleted(){
-  var names = Object.keys(categories);
-  var start = currentCategoryIndex;
-  for(var i = start + 1; i < names.length; i++) if(!isCategoryCompleted(names[i])) return i;
-  for(var j = 0; j <= start; j++) if(!isCategoryCompleted(names[j])) return j;
-  return -1;
-}
-
-function continueFullAssessment(){
-  var categoryName = decisionCategoryList[decisionIndex] || currentCategory;
-  var names = Object.keys(categories);
-  var isDone = isCategoryCompleted(categoryName);
-
-  if(!isDone){
-    /* Сразу ведём в непройденную категорию */
-    $("decisionScreen").classList.add("hidden");
-    $("nextScreen").classList.remove("hidden");
-    $("nextCategoryText").textContent = "Следующая категория: " + categoryName;
-
-    var btn = $("nextScreen").querySelector("button");
-    btn.textContent = "Далее";
-    btn.onclick = function(){
-      $("nextScreen").classList.add("hidden");
-      $("testScreen").classList.remove("hidden");
-      currentCategoryIndex = names.indexOf(categoryName);
-      loadCategory(currentCategoryIndex);
-    };
-    return;
-  }
-
-  /* Иначе — ищем следующую непройденную от неё */
-  currentCategoryIndex = names.indexOf(categoryName);
-  if(currentCategoryIndex < 0) currentCategoryIndex = 0;
-
-  $("decisionScreen").classList.add("hidden");
-  var nextIndex = findNextUncompleted();
-  if(nextIndex === -1){ finishAssessment(); return; }
-
-  $("nextScreen").classList.remove("hidden");
-  $("nextCategoryText").textContent = "Следующая категория: " + names[nextIndex];
-
-  var btn2 = $("nextScreen").querySelector("button");
-  btn2.textContent = "Далее";
-  btn2.onclick = goNextCategory;
-}
-
-function goNextCategory(){
-  var nextIndex = findNextUncompleted();
-  if(nextIndex === -1){ finishAssessment(); return; }
-  $("nextScreen").classList.add("hidden");
-  $("testScreen").classList.remove("hidden");
-  loadCategory(nextIndex);
-}
-
-function finishAssessment(){
-  saveResults();
-  $("testScreen").classList.add("hidden");
-  $("decisionScreen").classList.add("hidden");
-  $("nextScreen").classList.add("hidden");
-  $("resultsScreen").classList.remove("hidden");
-  renderResults();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function backToAssessment(){
-  $("resultsScreen").classList.add("hidden");
-  $("decisionScreen").classList.add("hidden");
-  $("nextScreen").classList.add("hidden");
-  $("testScreen").classList.remove("hidden");
-  loadCategory(currentCategoryIndex);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-/* ============================================================
-   РЕЗУЛЬТАТЫ
-============================================================ */
-function renderResults(){
-  var allSkills = [];
-  var categoryData = [];
-
-  Object.keys(results).forEach(function(cat){
-    var skillValues = results[cat];
-    var vals = Object.values(skillValues);
-    if(!vals.length) return;
-
-    var avg = vals.reduce(function(a,b){ return a+b; }, 0) / vals.length;
-    categoryData.push({ name: cat, average: avg, count: vals.length });
-
-    Object.keys(skillValues).forEach(function(skill){
-      var v = getVerification(cat, skill);
-      var verified = v && v.answers && v.answers.length && v.answers.every(function(a){ return a; });
-      allSkills.push({ category: cat, name: skill, value: skillValues[skill], verified: verified });
-    });
-  });
-
-  if(!allSkills.length){
-    safeAlert("Сначала оцените хотя бы одну категорию.");
-    backToAssessment();
-    return;
-  }
-
-  var average = allSkills.reduce(function(s, i){ return s + i.value; }, 0) / allSkills.length;
-  var max = Math.max.apply(null, allSkills.map(function(i){ return i.value; }));
-  var min = Math.min.apply(null, allSkills.map(function(i){ return i.value; }));
-  var overallPercent = (average / 5) * 100;
-  var overallPercentRounded = Math.round(overallPercent);
-  var gaugeColor = getRingColorVar(average);
-
-  $("statAverage").textContent = average.toFixed(1);
-  $("statMax").textContent = max;
-  $("statMin").textContent = min;
-
-  var gaugeEl = $("overallGauge");
-  var percentEl = $("overallPercent");
-  var avgEl = $("overallAverage");
-
-  gaugeEl.style.setProperty("--gauge-color", gaugeColor);
-  gaugeEl.style.setProperty("--gauge-percent", "0%");
-  percentEl.textContent = "0%";
-  avgEl.textContent = "0.0";
-
-  animateNumber(percentEl, 0, overallPercentRounded, 900, function(v){ return Math.round(v) + "%"; });
-  animateNumber(avgEl, 0, average, 900, function(v){ return v.toFixed(1); });
-  animateCssVar(gaugeEl, "--gauge-percent", 0, overallPercent, 900, "%");
-
-  var categoryResults = $("categoryResults");
-  categoryResults.innerHTML = "";
-
-  categoryData.forEach(function(item){
-    var percent = (item.average / 5) * 100;
-    var percentRounded = Math.round(percent);
-    var ringColor = getRingColorVar(item.average);
-    var level = getLevelLabel(item.average);
-
-    var card = document.createElement("div");
-    card.className = "category-result";
-    card.innerHTML =
-      '<div class="circle" style="--percent:' + percent + '%; --ring-color:' + ringColor + ';">' +
-        '<div>' +
-          '<div class="circle-value">' + percentRounded + '%</div>' +
-          '<div class="circle-level">' + item.average.toFixed(1) + '/5</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="category-result-name">' + escapeHtml(item.name) + '</div>' +
-      '<div class="category-result-count">' + item.count + ' навыков · ' + level + '</div>';
-    categoryResults.appendChild(card);
-  });
-
-  /* Сильные навыки */
-  var strengths = allSkills.slice().sort(function(a,b){ return b.value - a.value; }).slice(0, 7);
-  var strengthsList = $("strengthsList");
-  strengthsList.innerHTML = "";
-  strengths.forEach(function(item){
-    var row = document.createElement("div");
-    row.className = "result-skill";
-    var badge = item.verified ? ' <span style="color:var(--good);font-size:11px;font-weight:800;">✓</span>' : "";
-    row.innerHTML =
-      '<div class="result-skill-name">' + escapeHtml(item.name) + badge + '</div>' +
-      '<div class="result-skill-value good">' + item.value + '/5</div>';
-    strengthsList.appendChild(row);
-  });
-
-  /* Навыки для развития */
-  var development = allSkills.slice().sort(function(a,b){ return a.value - b.value; }).slice(0, 7);
-  var developmentList = $("developmentList");
-  developmentList.innerHTML = "";
-  development.forEach(function(item){
-    var row = document.createElement("div");
-    row.className = "result-skill";
-    var cls = item.value <= 2 ? "danger" : "warning";
-    row.innerHTML =
-      '<div class="result-skill-name">' + escapeHtml(item.name) + '</div>' +
-      '<div class="result-skill-value ' + cls + '">' + item.value + '/5</div>';
-    developmentList.appendChild(row);
-  });
-
-  renderAllReflections();
-  renderInterpretation(average, categoryData);
-
-  lastCategoryData = categoryData;
-  drawCategoryRadar(categoryData);
-}
-
-function renderAllReflections(){
-  var card = $("allReflectionsCard");
-  var list = $("allReflectionsList");
-  if(!card || !list) return;
-
-  var total = countAllReflections();
-  if(!total){ card.classList.add("hidden"); return; }
-  card.classList.remove("hidden");
-
-  var html = "";
-  Object.keys(categories).forEach(function(cat){
-    var catRefs = reflections[cat];
-    if(!catRefs) return;
-    var items = Object.keys(catRefs).filter(function(s){ return catRefs[s] && catRefs[s].trim(); });
-    if(!items.length) return;
-    var skillValues = results[cat] || {};
-    items.forEach(function(skill){
-      var score = Number(skillValues[skill]) || 0;
-      html +=
-        '<div class="reflection-item">' +
-          '<div class="reflection-item-cat">' + escapeHtml(cat) + '</div>' +
-          '<div class="reflection-item-skill">' +
-            '<span>' + escapeHtml(skill) + '</span>' +
-            '<span class="reflection-item-score">' + score + '/5</span>' +
-          '</div>' +
-          '<div class="reflection-item-text">' + escapeHtml(catRefs[skill]) + '</div>' +
-        '</div>';
-    });
-  });
-
-  list.innerHTML = '<div class="reflections-list">' + html + '</div>';
-}
-
-function renderInterpretation(average, categoryData){
-  var percent = Math.round((average / 5) * 100);
-  var text = "";
-
-  if(average < 2) text = "Большинство оценённых навыков находятся на начальном уровне. Это не означает отсутствие потенциала — скорее, карта показывает направления, в которых ещё предстоит накопить опыт.";
-  else if(average < 3) text = "У вас формируется набор практических навыков, однако многие из них пока находятся на начальном или переходном уровне.";
-  else if(average < 4) text = "У вас достаточно широкий набор навыков с преимущественно уверенным уровнем владения. Полезно определить несколько сильных направлений и углублять их.";
-  else text = "Карта показывает высокий средний уровень по оценённым навыкам. Следующий шаг — специализация и создание проектов.";
-
-  text += " Общий уровень: " + percent + "% (" + average.toFixed(1) + " из 5).";
-  if(categoryData.length === 1) text += " Сейчас оценена только одна категория.";
-  else text += " Оценено категорий: " + categoryData.length + ".";
-
-  var rc = countAllReflections();
-  if(rc){
-    var w = pluralize(rc, ["заметка","заметки","заметок"]);
-    text += " Вы зафиксировали " + rc + " " + w + " для улучшения — их можно использовать как отправную точку при выборе направления обучения.";
-  }
-
-  $("interpretation").textContent = text;
-}
-
-/* ============================================================
-   ИТОГОВЫЙ РАДАР ПО КАТЕГОРИЯМ
-============================================================ */
-function drawCategoryRadar(categoryData){
-  var canvas = $("skillsRadar");
-  if(!canvas) return;
-  var ctx = canvas.getContext("2d");
-  var dpr = window.devicePixelRatio || 1;
-  var parentWidth = (canvas.parentElement && canvas.parentElement.clientWidth) || 0;
-  var cssSize = Math.max(280, Math.min(parentWidth || 640, 640));
-
-  canvas.style.width = cssSize + "px";
-  canvas.style.height = cssSize + "px";
-  canvas.width = Math.round(cssSize * dpr);
-  canvas.height = Math.round(cssSize * dpr);
-
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(dpr, dpr);
-
-  var width = cssSize, height = cssSize;
-  ctx.clearRect(0, 0, width, height);
-
-  if(!categoryData.length) return;
-
-  var cx = width / 2, cy = height / 2;
-  var radius = Math.min(width, height) * 0.33;
-  var count = categoryData.length;
-  var labelRadius = radius + 62;
-
-  for(var lvl = 1; lvl <= 5; lvl++){
-    var r = radius * lvl / 5;
-    ctx.beginPath();
-    for(var i = 0; i < count; i++){
-      var angle = -Math.PI / 2 + i * 2 * Math.PI / count;
-      var x = cx + Math.cos(angle) * r;
-      var y = cy + Math.sin(angle) * r;
-      if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = "rgba(255,255,255,.10)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  for(var j = 0; j < count; j++){
-    var a2 = -Math.PI / 2 + j * 2 * Math.PI / count;
-    var px = cx + Math.cos(a2) * radius;
-    var py = cy + Math.sin(a2) * radius;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(px, py);
-    ctx.strokeStyle = "rgba(255,255,255,.10)";
-    ctx.stroke();
-  }
-
-  ctx.beginPath();
-  categoryData.forEach(function(item, index){
-    var ang = -Math.PI / 2 + index * 2 * Math.PI / count;
-    var r3 = radius * item.average / 5;
-    var x2 = cx + Math.cos(ang) * r3;
-    var y2 = cy + Math.sin(ang) * r3;
-    if(index === 0) ctx.moveTo(x2, y2); else ctx.lineTo(x2, y2);
-  });
-  ctx.closePath();
-  ctx.fillStyle = "rgba(124,140,255,.22)";
-  ctx.fill();
-  ctx.strokeStyle = "#7c8cff";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  categoryData.forEach(function(item, index){
-    var ang = -Math.PI / 2 + index * 2 * Math.PI / count;
-    var r4 = radius * item.average / 5;
-    var x3 = cx + Math.cos(ang) * r4;
-    var y3 = cy + Math.sin(ang) * r4;
-    ctx.beginPath();
-    ctx.arc(x3, y3, 5, 0, Math.PI * 2);
-    ctx.fillStyle = "#9ca7ff";
-    ctx.fill();
-  });
-
-  categoryData.forEach(function(item, index){
-    var ang = -Math.PI / 2 + index * 2 * Math.PI / count;
-    var x4 = cx + Math.cos(ang) * labelRadius;
-    var y4 = cy + Math.sin(ang) * labelRadius;
-
-    ctx.fillStyle = "#dfe3ea";
-    ctx.font = "700 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    var words = item.name.split(" ");
-    var lines = [];
-    var cur = "";
-    words.forEach(function(w){
-      var test = cur ? cur + " " + w : w;
-      if(ctx.measureText(test).width > 120){
-        if(cur) lines.push(cur);
-        cur = w;
-      } else {
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Карта навыков</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      :root {
+        --bg: #0b0d12;
+        --card: #151922;
+        --card2: #1b202b;
+        --border: rgba(255, 255, 255, 0.09);
+        --text: #f3f5f7;
+        --muted: #9299a6;
+        --accent: #7c8cff;
+        --accent2: #9c7cff;
+        --good: #55d68a;
+        --warning: #ffc857;
+        --danger: #ff6b6b;
+        --partner: #6ea8fe;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+      body {
+        padding: 20px 14px 50px;
+      }
+      .app {
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 18px;
+      }
+      .logo {
+        font-size: 44px;
+        margin-bottom: 6px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 750;
+      }
+      .subtitle {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.16);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .section-title {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .section-description {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        margin-bottom: 14px;
+      }
+      .progress-wrap {
+        margin-bottom: 14px;
+      }
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+      .progress {
+        width: 100%;
+        height: 7px;
+        background: #272c37;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 20px;
+        transition: width 0.3s ease;
+      }
+      .checklist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .checklist-summary {
+        width: 100%;
+        color: var(--muted);
+        font-size: 11px;
+        margin-bottom: 1px;
+      }
+      .checklist-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        background: #10131a;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: inherit;
+        line-height: 1;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .checklist-item:active {
+        transform: scale(0.97);
+      }
+      .checklist-item .checklist-check {
+        font-size: 11px;
+        line-height: 1;
+        opacity: 0.35;
+      }
+      .checklist-item.done {
+        color: var(--good);
+        border-color: rgba(85, 214, 138, 0.35);
+        background: rgba(85, 214, 138, 0.07);
+      }
+      .checklist-item.done .checklist-check {
+        opacity: 1;
+        color: var(--good);
+      }
+      .checklist-item.partial {
+        color: var(--accent);
+        border-color: rgba(124, 140, 255, 0.3);
+        background: rgba(124, 140, 255, 0.05);
+      }
+      .checklist-item.partial .checklist-check {
+        opacity: 1;
+        color: var(--accent);
+      }
+      .checklist-item.active {
+        color: var(--text);
+        border-color: var(--accent);
+        background: rgba(124, 140, 255, 0.12);
+        box-shadow: 0 0 0 1px rgba(124, 140, 255, 0.35) inset;
+      }
+      .checklist-item.active .checklist-check {
+        opacity: 1;
+      }
+      .category-box {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+      }
+      .category-label {
+        color: var(--muted);
+        font-size: 10.5px;
+        margin-bottom: 5px;
+        letter-spacing: 0.4px;
+      }
+      select {
+        width: 100%;
+        appearance: none;
+        background: #10131a;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+      }
+      select:focus {
+        border-color: var(--accent);
+      }
+      .category-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 520px;
+        gap: 16px;
+        align-items: start;
+        margin-top: 4px;
+      }
+      .skills-column {
+        min-width: 0;
+      }
+      .radar-column {
+        position: sticky;
+        top: 16px;
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px;
+      }
+      .live-radar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+        padding: 0 4px;
+      }
+      .live-radar-title {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .live-radar-percent {
+        color: var(--accent);
+        font-size: 20px;
+        font-weight: 800;
+        transition: color 0.2s ease;
+      }
+      .live-radar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+      #liveSkillRadar {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .skill {
+        background: #10131a;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 9px 12px 8px;
+        margin-bottom: 6px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .skill:focus-within {
+        border-color: rgba(124, 140, 255, 0.35);
+      }
+      .skill.verified {
+        border-color: rgba(85, 214, 138, 0.35);
+        box-shadow: 0 0 0 1px rgba(85, 214, 138, 0.1) inset;
+      }
+      .skill.unverified {
+        border-color: rgba(255, 200, 87, 0.3);
+      }
+      .skill.has-reflection {
+        border-color: rgba(255, 200, 87, 0.35);
+        box-shadow: 0 0 0 1px rgba(255, 200, 87, 0.08) inset;
+      }
+      .skill-name-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .skill-name {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--text);
+        flex: 1;
+        min-width: 0;
+      }
+      .skill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 3px 7px;
+        border-radius: 6px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .skill-badge.verified {
+        background: rgba(85, 214, 138, 0.15);
+        color: var(--good);
+        border: 1px solid rgba(85, 214, 138, 0.4);
+      }
+      .skill-badge.unverified {
+        background: rgba(255, 200, 87, 0.13);
+        color: var(--warning);
+        border: 1px solid rgba(255, 200, 87, 0.35);
+      }
+      .skill-badge.reflection {
+        background: rgba(255, 200, 87, 0.15);
+        color: var(--warning);
+        border: 1px solid rgba(255, 200, 87, 0.4);
+      }
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 3px;
+        background: #0b0d12;
+        padding: 3px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        max-width: 280px;
+      }
+      .segmented button {
+        padding: 8px 0;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 13px;
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        line-height: 1;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      }
+      .segmented button:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+      .segmented button:active {
+        transform: scale(0.94);
+      }
+      .segmented button.active {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        color: #fff;
+      }
+      .segmented button[data-value="1"].active {
+        background: var(--danger);
+        color: #2a0a0a;
+      }
+      .segmented button[data-value="2"].active {
+        background: var(--warning);
+        color: #3a2a08;
+      }
+      .segmented button[data-value="3"].active {
+        background: var(--accent);
+        color: #fff;
+      }
+      .segmented button[data-value="4"].active {
+        background: var(--good);
+        color: #08130d;
+      }
+      .segmented button[data-value="5"].active {
+        background: #4be08a;
+        color: #08130d;
+      }
+      .skill-level-hint {
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-top: 5px;
+        letter-spacing: 0.3px;
+        color: var(--muted);
+        transition: color 0.2s ease;
+        display: inline-block;
+      }
+      .skill-level-hint.lv-1 {
+        color: var(--danger);
+      }
+      .skill-level-hint.lv-2 {
+        color: var(--warning);
+      }
+      .skill-level-hint.lv-3 {
+        color: var(--accent);
+      }
+      .skill-level-hint.lv-4 {
+        color: var(--good);
+      }
+      .skill-level-hint.lv-5 {
+        color: #4be08a;
+      }
+      .verification-block {
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: rgba(124, 140, 255, 0.05);
+        border: 1px solid rgba(124, 140, 255, 0.18);
+        border-radius: 10px;
+        animation: vSlideDown 0.22s ease-out;
+      }
+      @keyframes vSlideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .verification-title {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 0.5
