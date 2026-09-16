@@ -225,8 +225,12 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
 </div>
 
 <script>
+/* ⚙️ ВСТАВЬТЕ СВОЙ URL APPS SCRIPT */
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВСТАВЬТЕ_ID/exec";
 
+/* ============================================================
+   ФАКТОРЫ
+============================================================ */
 const factors = [
     {code:"A", name:"Теплота", short:"Теплота", color:"#5eead4",
      desc:"Открытость к людям, контактность, эмоциональная включённость.",
@@ -313,18 +317,27 @@ const Q_SRC = {
     Q4:["Мне трудно бездействовать, когда важный вопрос ещё не решён.",{r:"В ожидании результата я обычно спокоен."},"Мне хочется быстрее перейти от обсуждения к действию.",{r:"Затянувшаяся задача обычно не вызывает у меня желания её ускорить."},"Я могу раздражаться, когда процесс неоправданно медленный.",{r:"После интенсивного дня я легко переключаюсь на отдых."},"Нерешённая проблема может продолжать занимать мои мысли.",{r:"Напряжение переносится легче, когда нет возможности действовать."},"Я склонен активно искать следующий шаг, если текущий уже понятен.",{r:"В период высокой нагрузки мой внутренний темп обычно не меняется."},"Мне бывает сложно терпеливо ждать, когда решение зависит от других.",{r:"Я спокойно переношу длительное отсутствие активности."}]
 };
 
+/* ============================================================
+   РАЗВОРАЧИВАЕМ ВОПРОСЫ
+============================================================ */
 const questions = [];
 let _id = 0;
 for (const factor of Object.keys(Q_SRC)) {
     for (const item of Q_SRC[factor]) {
         _id++;
-        if (typeof item === "string") questions.push({id:_id, factor:factor, text:item, reverse:false});
-        else questions.push({id:_id, factor:factor, text:item.r, reverse:true});
+        if (typeof item === "string") {
+            questions.push({id:_id, factor:factor, text:item, reverse:false});
+        } else {
+            questions.push({id:_id, factor:factor, text:item.r, reverse:true});
+        }
     }
 }
 
 const labels = ["Совсем не похоже на меня","Отчасти похоже на меня","Очень похоже на меня"];
 
+/* ============================================================
+   СОСТОЯНИЕ
+============================================================ */
 let answers = [];
 let idx = 0;
 let factorPositions = [];
@@ -332,18 +345,42 @@ let lastResults = null;
 let demographics = { age:null, gender:"", zodiac:"", education:"" };
 let submitted = false;
 
-const DONE_KEY = "cattell_done_v1";
-const SAVED_KEY = "cattell_saved_v1";
+/* Новые ключи хранения — сброс старых данных */
+const DONE_KEY = "cattell_done_v2";
+const SAVED_KEY = "cattell_saved_v2";
 
-function isCompleted() { try { return localStorage.getItem(DONE_KEY) === "1"; } catch (e) { return false; } }
-function markCompleted() { try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {} }
-function savedResults() { try { const raw = localStorage.getItem(SAVED_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
+/* ============================================================
+   УТИЛИТЫ ХРАНЕНИЯ
+============================================================ */
+function isCompleted() {
+    try { return localStorage.getItem(DONE_KEY) === "1"; } catch (e) { return false; }
+}
+function markCompleted() {
+    try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {}
+}
+function savedResults() {
+    try {
+        const raw = localStorage.getItem(SAVED_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+}
 
+/* ============================================================
+   СТАРТ
+============================================================ */
 function boot() {
+    /* Чистим старые ключи v1, если остались */
+    try {
+        localStorage.removeItem('cattell_done_v1');
+        localStorage.removeItem('cattell_saved_v1');
+    } catch (e) {}
+
     if (isCompleted()) {
         const saved = savedResults();
         if (saved) showCompletedScreen(saved);
-        else document.getElementById('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
+        else {
+            document.getElementById('intro').innerHTML = '<h2>Тест уже пройден</h2><p class="muted">Этот опросник можно пройти только один раз.</p>';
+        }
         return;
     }
     document.getElementById('intro').classList.remove('hidden');
@@ -358,18 +395,43 @@ function showCompletedScreen(saved) {
     document.getElementById('walker').textContent = '🏠';
     document.getElementById('walker').style.left = '100%';
     document.getElementById('progressFinish').classList.add('reached');
+
     answers = saved.answers || [];
-    lastResults = saved.results;
+
+    /* Проверяем, что у результатов есть поле sten */
+    let res = saved.results;
+    let needRecalc = !res || !res.length || (typeof res[0].sten !== 'number');
+
+    if (needRecalc && answers.length === questions.length) {
+        res = calc();
+        try {
+            saved.results = res;
+            localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+        } catch (e) {}
+    }
+
+    if (!res || !res.length) {
+        /* Совсем ничего нет — показываем сообщение */
+        document.getElementById('result').innerHTML = '<div class="card"><h2>Не удалось загрузить результат</h2><p class="muted">Пожалуйста, сбросьте данные браузера и пройдите тест заново.</p></div>';
+        return;
+    }
+
+    lastResults = res;
+
     if (saved.submitted) {
         document.getElementById('demoCard').classList.add('hidden');
         submitted = true;
     }
+
     draw(lastResults);
     drawBars(lastResults);
     renderDescriptions(lastResults);
     quality();
 }
 
+/* ============================================================
+   ТЕСТ
+============================================================ */
 function start() {
     document.getElementById('intro').classList.add('hidden');
     document.getElementById('test').classList.remove('hidden');
@@ -383,13 +445,18 @@ function render() {
     document.getElementById('counter').textContent = `${idx + 1} / ${questions.length}`;
     updateProgress();
     updateWalker();
+
     const box = document.getElementById('answers');
     box.innerHTML = '';
     labels.forEach((label, i) => {
         const b = document.createElement('button');
         b.className = 'option' + (answers[idx] === i ? ' selected' : '');
         b.textContent = label;
-        b.onclick = () => { answers[idx] = i; document.getElementById('qerr').textContent = ''; render(); };
+        b.onclick = () => {
+            answers[idx] = i;
+            document.getElementById('qerr').textContent = '';
+            render();
+        };
         box.appendChild(b);
     });
 }
@@ -414,54 +481,91 @@ function updateWalker() {
 }
 
 function next() {
-    if (answers[idx] === undefined) { document.getElementById('qerr').textContent = 'Пожалуйста, выберите один из вариантов.'; return; }
-    if (idx < questions.length - 1) { idx++; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    else finish();
+    if (answers[idx] === undefined) {
+        document.getElementById('qerr').textContent = 'Пожалуйста, выберите один из вариантов.';
+        return;
+    }
+    if (idx < questions.length - 1) {
+        idx++;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        finish();
+    }
 }
 
 function prev() {
-    if (idx > 0) { idx--; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    if (idx > 0) {
+        idx--;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
 
+/* ============================================================
+   ПОДСЧЁТ
+============================================================ */
 function calc() {
     const raw = Object.fromEntries(factors.map(f => [f.code, 0]));
     const cnt = Object.fromEntries(factors.map(f => [f.code, 0]));
+
     questions.forEach((q, i) => {
-        let s = answers[i] ?? 1;
+        let s = answers[i];
+        if (s === undefined || s === null) s = 1;
         if (q.reverse) s = 2 - s;
         raw[q.factor] += s;
         cnt[q.factor]++;
     });
+
     return factors.map(f => {
         const max = cnt[f.code] * 2;
         const percent = Math.round(raw[f.code] / max * 100);
         let sten = 1 + Math.round(percent / 100 * 9);
         if (sten < 1) sten = 1;
         if (sten > 10) sten = 10;
-        return { code:f.code, name:f.name, short:f.short, color:f.color,
-                 desc:f.desc, high:f.high, low:f.low,
-                 raw:raw[f.code], score:percent, sten:sten };
+        return {
+            code: f.code,
+            name: f.name,
+            short: f.short,
+            color: f.color,
+            desc: f.desc,
+            high: f.high,
+            low: f.low,
+            raw: raw[f.code],
+            score: percent,
+            sten: sten
+        };
     });
 }
 
+/* ============================================================
+   ФИНАЛ
+============================================================ */
 function finish() {
     if (answers.length < questions.length || answers.some(x => x === undefined)) {
         document.getElementById('qerr').textContent = 'Нужно ответить на все задания.';
         return;
     }
     markCompleted();
+
     document.getElementById('test').classList.add('hidden');
     document.getElementById('result').classList.remove('hidden');
     document.getElementById('counter').textContent = 'Готово';
     document.getElementById('bar').style.width = '100%';
     updateWalker();
+
     const res = calc();
     lastResults = res;
+
     try {
         localStorage.setItem(SAVED_KEY, JSON.stringify({
-            answers: answers.slice(), results: res, date: new Date().toISOString(), submitted: false
+            answers: answers.slice(),
+            results: res,
+            date: new Date().toISOString(),
+            submitted: false
         }));
     } catch (e) {}
+
     draw(res);
     drawBars(res);
     renderDescriptions(res);
@@ -491,27 +595,37 @@ function quality() {
     const same = answers.filter((x, i) => i > 0 && x === answers[i - 1]).length;
     const middle = answers.filter(x => x === 1).length;
     const middlePct = Math.round(middle / answers.length * 100);
+
     let note = '';
     if (same > 40) note = '<br>⚠️ Много одинаковых ответов подряд. Часть заданий могла быть пройдена автоматически — это снижает точность.';
     else if (middlePct > 60) note = '<br>⚠️ Больше половины ответов — «Отчасти похоже». Это снижает дифференциацию профиля.';
     else note = '<br>✓ Ответы выглядят достаточно дифференцированными.';
+
     document.getElementById('quality').innerHTML =
         `Заполнено: <b>${answers.length}/${questions.length}</b>. ` +
         `Повтор одинакового ответа подряд: <b>${same}</b>. ` +
         `Ответов «Отчасти похоже»: <b>${middlePct}%</b>.` + note;
 }
 
+/* ============================================================
+   ДИАГРАММА-РАДАР
+============================================================ */
 function draw(res) {
     const c = document.getElementById('chart');
+    if (!c) return;
     const ctx = c.getContext('2d');
     const dpr = devicePixelRatio || 1;
     c.width = 700 * dpr;
     c.height = 620 * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
-    const W = 700, H = 620, cx = 350, cy = 300, R = 190, N = res.length;
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, 700, 620);
+
+    const W = 700, H = 620, cx = 350, cy = 300, R = 190;
+    const N = res.length;
     factorPositions = [];
 
+    /* Сетка */
     ctx.strokeStyle = '#263a55';
     for (let ring = 20; ring <= 100; ring += 20) {
         ctx.beginPath();
@@ -519,12 +633,13 @@ function draw(res) {
             const a = -Math.PI / 2 + i * 2 * Math.PI / N;
             const x = cx + R * (ring / 100) * Math.cos(a);
             const y = cy + R * (ring / 100) * Math.sin(a);
-            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.closePath();
         ctx.stroke();
     }
 
+    /* Оси */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
         ctx.beginPath();
@@ -534,12 +649,14 @@ function draw(res) {
         ctx.stroke();
     });
 
+    /* Заливка */
     ctx.beginPath();
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
-        const x = cx + R * r.score / 100 * Math.cos(a);
-        const y = cy + R * r.score / 100 * Math.sin(a);
-        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        const v = (typeof r.score === 'number') ? r.score : 0;
+        const x = cx + R * v / 100 * Math.cos(a);
+        const y = cy + R * v / 100 * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     });
     ctx.closePath();
     ctx.fillStyle = 'rgba(94,234,212,.16)';
@@ -548,20 +665,28 @@ function draw(res) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
+    /* Точки + плашки стенов */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
-        const x = cx + R * r.score / 100 * Math.cos(a);
-        const y = cy + R * r.score / 100 * Math.sin(a);
+        const v = (typeof r.score === 'number') ? r.score : 0;
+        const x = cx + R * v / 100 * Math.cos(a);
+        const y = cy + R * v / 100 * Math.sin(a);
+
         ctx.beginPath();
         ctx.arc(x, y, 4, 0, Math.PI * 2);
         ctx.fillStyle = '#60a5fa';
         ctx.fill();
+
         factorPositions.push({ x, y, code: r.code, cx, cy, angle: a, R });
 
+        /* Плашка со стеном */
         const labelDist = 22;
         const lx = x + Math.cos(a) * labelDist;
         const ly = y + Math.sin(a) * labelDist;
-        const text = r.sten.toString();
+
+        const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
+        const text = stenVal.toString();
+
         ctx.font = '800 13px system-ui';
         const tw = ctx.measureText(text).width;
         const bw = tw + 16;
@@ -591,6 +716,7 @@ function draw(res) {
         ctx.fillText(text, lx, ly + 1);
     });
 
+    /* Подписи */
     res.forEach((r, i) => {
         const a = -Math.PI / 2 + i * 2 * Math.PI / N;
         const labelR = R + 34;
@@ -609,6 +735,9 @@ function draw(res) {
     });
 }
 
+/* ============================================================
+   СТУПЕНЧАТЫЙ ГРАФ
+============================================================ */
 function drawBars(res) {
     const c = document.getElementById('barChart');
     if (!c) return;
@@ -617,6 +746,7 @@ function drawBars(res) {
     const W = 700, H = 540;
     c.width = W * dpr;
     c.height = H * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, W, H);
 
@@ -630,6 +760,7 @@ function drawBars(res) {
     const rowH = chartH / N;
     const barH = rowH * 0.62;
 
+    /* Сетка по стенам */
     for (let s = 1; s <= 10; s++) {
         const x = padL + (s - 1) / 9 * chartW;
         ctx.beginPath();
@@ -646,6 +777,7 @@ function drawBars(res) {
         ctx.fillText(s.toString(), x, padT - 10);
     }
 
+    /* Метки зон */
     ctx.font = '600 10px system-ui';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(251,113,133,.75)';
@@ -655,13 +787,18 @@ function drawBars(res) {
     ctx.fillStyle = 'rgba(94,234,212,.75)';
     ctx.fillText('ВЫСОКО', padL + chartW * 0.89, padT - 24);
 
+    /* Строки */
     res.forEach((r, i) => {
         const y = padT + i * rowH + (rowH - barH) / 2;
+        const stenVal = (typeof r.sten === 'number') ? r.sten : 5;
+        const pctVal = (typeof r.score === 'number') ? r.score : 0;
 
+        /* Фон строки */
         ctx.fillStyle = (i % 2 === 0) ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.005)';
         ctx.fillRect(padL, y, chartW, barH);
 
-        const w = (r.sten - 1) / 9 * chartW;
+        /* Полоса */
+        const w = (stenVal - 1) / 9 * chartW;
         if (w > 0) {
             const grad = ctx.createLinearGradient(padL, 0, padL + w, 0);
             grad.addColorStop(0, r.color + '66');
@@ -678,6 +815,7 @@ function drawBars(res) {
             ctx.stroke();
         }
 
+        /* Слева — код + название */
         ctx.fillStyle = '#eef5ff';
         ctx.font = '700 12px system-ui';
         ctx.textAlign = 'right';
@@ -688,17 +826,21 @@ function drawBars(res) {
         ctx.font = '10px system-ui';
         ctx.fillText(r.short, padL - 12, y + barH / 2 + 8);
 
+        /* Справа — стен + процент */
         ctx.fillStyle = r.color;
         ctx.font = '800 15px system-ui';
         ctx.textAlign = 'left';
-        ctx.fillText(r.sten.toString(), padL + chartW + 12, y + barH / 2 - 5);
+        ctx.fillText(stenVal.toString(), padL + chartW + 12, y + barH / 2 - 5);
 
         ctx.fillStyle = '#9db0c8';
         ctx.font = '11px system-ui';
-        ctx.fillText(r.score + '%', padL + chartW + 12, y + barH / 2 + 10);
+        ctx.fillText(pctVal + '%', padL + chartW + 12, y + barH / 2 + 10);
     });
 }
 
+/* ============================================================
+   КЛИК ПО ДИАГРАММЕ
+============================================================ */
 document.getElementById('chart').addEventListener('click', function (e) {
     if (!factorPositions.length) return;
     const rect = this.getBoundingClientRect();
@@ -706,12 +848,14 @@ document.getElementById('chart').addEventListener('click', function (e) {
     const scaleY = 620 / rect.height;
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
+
     let closest = null;
     let minDist = 40;
     factorPositions.forEach(p => {
         const d = Math.hypot(p.x - clickX, p.y - clickY);
         if (d < minDist) { minDist = d; closest = p; }
     });
+
     if (!closest) {
         const dx = clickX - 350;
         const dy = clickY - 300;
@@ -725,74 +869,144 @@ document.getElementById('chart').addEventListener('click', function (e) {
         });
         if (best && bestDiff < Math.PI / N) closest = best;
     }
+
     if (closest) showFactorModal(closest.code);
 });
 
+/* ============================================================
+   МОДАЛЬНОЕ ОКНО
+============================================================ */
 function showFactorModal(code) {
     if (!lastResults) return;
     const r = lastResults.find(x => x.code === code);
     if (!r) return;
+
     document.getElementById('mCode').textContent = r.code;
     document.getElementById('mTitle').textContent = r.name;
-    document.getElementById('mScore').innerHTML = `<strong>${r.sten}</strong> стен <span style="font-size:14px;font-weight:600;color:var(--muted)">(${r.score}%)</span>`;
+    document.getElementById('mScore').innerHTML =
+        `<strong>${r.sten}</strong> стен <span style="font-size:14px;font-weight:600;color:var(--muted)">(${r.score}%)</span>`;
     document.getElementById('mLevel').textContent = level(r.score);
+
     document.getElementById('mBody').innerHTML = `
         <div class="modal-section"><h4 style="color:var(--accent)">Что означает фактор</h4><p>${r.desc}</p></div>
         <div class="modal-section high"><h4>Высокий полюс</h4><p>${r.high}</p></div>
         <div class="modal-section low"><h4>Низкий полюс</h4><p>${r.low}</p></div>
     `;
+
     document.getElementById('factorModal').classList.add('open');
 }
-function closeModal() { document.getElementById('factorModal').classList.remove('open'); }
-document.getElementById('factorModal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
+function closeModal() {
+    document.getElementById('factorModal').classList.remove('open');
+}
+
+document.getElementById('factorModal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+});
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+});
+
+/* ============================================================
+   ДЕМОГРАФИЯ
+============================================================ */
 const genderBtns = document.querySelectorAll('#demoGender button');
 genderBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const was = btn.classList.contains('selected');
         genderBtns.forEach(b => b.classList.remove('selected'));
-        if (!was) { btn.classList.add('selected'); demographics.gender = btn.dataset.val; }
-        else demographics.gender = "";
+        if (!was) {
+            btn.classList.add('selected');
+            demographics.gender = btn.dataset.val;
+        } else {
+            demographics.gender = "";
+        }
         updateSubmitState();
     });
 });
 
 ['demoAge','demoZodiac','demoEducation'].forEach(id => {
-    document.getElementById(id).addEventListener('change', updateSubmitState);
-    document.getElementById(id).addEventListener('input', updateSubmitState);
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('change', updateSubmitState);
+        el.addEventListener('input', updateSubmitState);
+    }
 });
+
 document.getElementById('consentCheck').addEventListener('change', updateSubmitState);
 
 function updateSubmitState() {
-    const age = parseInt(document.getElementById('demoAge').value, 10);
-    demographics.age = age && age >= 14 && age <= 99 ? age : null;
+    const ageEl = document.getElementById('demoAge');
+    const age = parseInt(ageEl.value, 10);
+    demographics.age = (age && age >= 14 && age <= 99) ? age : null;
     demographics.zodiac = document.getElementById('demoZodiac').value;
     demographics.education = document.getElementById('demoEducation').value;
+
     const consented = document.getElementById('consentCheck').checked;
     const hasAnyData = demographics.age || demographics.gender || demographics.zodiac || demographics.education;
     const btn = document.getElementById('demoSubmitBtn');
     const status = document.getElementById('demoStatus');
-    if (!consented) { btn.disabled = true; status.textContent = 'Нужно согласие на отправку'; }
-    else if (!hasAnyData) { btn.disabled = true; status.textContent = 'Заполните хотя бы одно поле'; }
-    else { btn.disabled = false; status.textContent = ''; }
+
+    if (!consented) {
+        btn.disabled = true;
+        status.textContent = 'Нужно согласие на отправку';
+    } else if (!hasAnyData) {
+        btn.disabled = true;
+        status.textContent = 'Заполните хотя бы одно поле';
+    } else {
+        btn.disabled = false;
+        status.textContent = '';
+    }
 }
 
+/* ============================================================
+   ОТПРАВКА В GOOGLE SHEETS
+============================================================ */
 async function submitDemographics() {
     if (submitted) return;
+    if (!lastResults || !lastResults.length) {
+        alert('Результаты не найдены');
+        return;
+    }
+
     const btn = document.getElementById('demoSubmitBtn');
     const status = document.getElementById('demoStatus');
     btn.disabled = true;
     btn.textContent = 'Отправляем...';
     status.textContent = '';
+
+    /* Считаем средний стен и средний процент */
+    const avgSten = parseFloat(
+        (lastResults.reduce((s, r) => s + r.sten, 0) / lastResults.length).toFixed(1)
+    );
+    const avgPercent = Math.round(
+        lastResults.reduce((s, r) => s + r.score, 0) / lastResults.length
+    );
+
     const payload = {
         type: "cattell_16pf",
         id: randomId(),
         date: new Date().toISOString(),
-        demographics: { age: demographics.age, gender: demographics.gender, zodiac: demographics.zodiac, education: demographics.education },
-        results: lastResults.map(r => ({ code: r.code, name: r.name, sten: r.sten, percent: r.score })),
-        averages: { avgSten: parseFloat((lastResults.reduce((s, r) => s + r.sten, 0) / lastResults.length).toFixed(1)) }
+        demographics: {
+            age: demographics.age,
+            gender: demographics.gender,
+            zodiac: demographics.zodiac,
+            education: demographics.education
+        },
+        results: lastResults.map(r => ({
+            code: r.code,
+            name: r.name,
+            sten: r.sten,
+            score: r.score
+        })),
+        averages: {
+            avgSten: avgSten,
+            /* Отправляем оба поля — для совместимости со старым и новым Apps Script */
+            fillPercent: avgPercent
+        }
     };
+
     try {
         if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.indexOf("ВСТАВЬТЕ") === -1) {
             await fetch(GOOGLE_SCRIPT_URL, {
@@ -802,14 +1016,19 @@ async function submitDemographics() {
                 body: JSON.stringify(payload)
             });
         }
+
         submitted = true;
+
         try {
             const saved = savedResults() || {};
             saved.submitted = true;
             saved.demographics = demographics;
             localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
         } catch (e) {}
-        document.getElementById('demoCard').innerHTML = '<h2>🙏 Спасибо!</h2><p class="muted">Ваши обезличенные данные отправлены в исследовательскую базу.</p>';
+
+        document.getElementById('demoCard').innerHTML =
+            '<h2>🙏 Спасибо!</h2><p class="muted">Ваши обезличенные данные отправлены в исследовательскую базу.</p>';
+
     } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Попробовать снова';
@@ -820,21 +1039,33 @@ async function submitDemographics() {
 function randomId() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let id = "";
-    for (let i = 0; i < 10; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (let i = 0; i < 10; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
     return id;
 }
 
+/* ============================================================
+   ЭКСПОРТ JSON
+============================================================ */
 function downloadJSON() {
     const res = lastResults || calc();
     const avgSten = (res.reduce((s, r) => s + r.sten, 0) / res.length).toFixed(1);
+
     const data = {
         test: 'Личностный профиль — 185 заданий',
         version: '4.0',
         date: new Date().toISOString(),
         averageSten: parseFloat(avgSten),
         demographics: demographics,
-        results: res.map(r => ({ code: r.code, name: r.name, sten: r.sten, percent: r.score }))
+        results: res.map(r => ({
+            code: r.code,
+            name: r.name,
+            sten: r.sten,
+            percent: r.score
+        }))
     };
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -843,6 +1074,9 @@ function downloadJSON() {
     URL.revokeObjectURL(a.href);
 }
 
+/* ============================================================
+   СТАРТ
+============================================================ */
 boot();
 </script>
 </body>
