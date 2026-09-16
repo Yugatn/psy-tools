@@ -1,1227 +1,1025 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PSY-TOOLS — психологические инструменты</title>
+
+    <meta name="description"
+          content="PSY-TOOLS — исследовательские, диагностические и развивающие психологические инструменты.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            min-height: 100%;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 35px 20px 45px;
+
+            font-family: "Manrope", sans-serif;
+            color: #ffffff;
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(80, 120, 255, 0.18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 25%,
+                    rgba(170, 70, 255, 0.13),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 90%,
+                    rgba(0, 220, 180, 0.08),
+                    transparent 35%
+                ),
+                #05070d;
+
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           BACKGROUND
+        ========================================= */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px
+                );
+
+            background-size: 45px 45px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent 90%
+            );
+        }
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        header {
+            text-align: center;
+            margin-bottom: 55px;
+        }
+
+        .logo {
+            display: inline-block;
+
+            font-size: clamp(38px, 7vw, 68px);
+            font-weight: 800;
+            letter-spacing: 7px;
+            line-height: 1;
 
-<title>PSY-TOOLS</title>
+            background:
+                linear-gradient(
+                    110deg,
+                    #ffffff 0%,
+                    #9bbcff 35%,
+                    #c37cff 65%,
+                    #ffffff 100%
+                );
 
-<!-- Дизайнерский шрифт -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
 
-<style>
+            animation: logoPulse 5s ease-in-out infinite;
+        }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        .subtitle {
+            margin-top: 13px;
 
-body {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
 
-    min-height: 100vh;
+            color: rgba(255,255,255,0.45);
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px rgba(120,160,255,0.15));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 22px rgba(170,110,255,0.3));
+            }
+        }
+
+        /* =========================================
+           SECTIONS
+        ========================================= */
+
+        .section {
+            width: 100%;
+            max-width: 1050px;
+
+            margin: 0 auto 58px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+
+            color: rgba(255,255,255,0.9);
+        }
+
+        .section-title::after {
+            content: "";
+
+            flex: 1;
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(140,160,255,0.55),
+                    transparent
+                );
+        }
+
+        /* =========================================
+           CARDS GRID
+        ========================================= */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(205px, 1fr));
 
-    font-family: "Manrope",
-                 -apple-system,
-                 BlinkMacSystemFont,
-                 "Segoe UI",
-                 sans-serif;
+            justify-items: center;
 
-    color: #ffffff;
+            gap: 25px;
+        }
 
-    background:
-        radial-gradient(
-            circle at 50% -15%,
-            rgba(90,130,190,.18),
-            transparent 38%
-        ),
+        /* =========================================
+           SPHERES
+        ========================================= */
 
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(100,70,160,.12),
-            transparent 35%
-        ),
+        .card {
+            position: relative;
 
-        #05070c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
 
-    padding: 28px 18px 55px;
+            width: 100%;
+            max-width: 215px;
+            min-height: 215px;
 
-    overflow-x: hidden;
-}
+            padding: 28px 20px;
 
+            text-decoration: none;
+            color: #ffffff;
 
-/* ==================================================
-   HEADER
-================================================== */
+            border-radius: 50%;
 
-header {
+            overflow: hidden;
 
-    text-align: center;
+            background:
+                radial-gradient(
+                    circle at 30% 25%,
+                    rgba(255,255,255,0.20),
+                    transparent 15%
+                ),
+                radial-gradient(
+                    circle at 35% 35%,
+                    rgba(110,150,255,0.20),
+                    transparent 50%
+                ),
+                radial-gradient(
+                    circle at 70% 70%,
+                    rgba(130,70,255,0.20),
+                    transparent 55%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(35,43,70,0.95),
+                    rgba(10,14,27,0.98)
+                );
 
-    margin-bottom: 45px;
+            border: 1px solid rgba(255,255,255,0.13);
 
-}
+            box-shadow:
+                inset -15px -20px 35px rgba(0,0,0,0.55),
+                inset 10px 10px 25px rgba(255,255,255,0.05),
+                0 15px 35px rgba(0,0,0,0.35);
 
-.logo {
+            transition:
+                transform 0.45s cubic-bezier(.2,.8,.2,1),
+                box-shadow 0.45s ease,
+                border-color 0.45s ease;
+        }
 
-    font-size:
-        clamp(38px, 7vw, 68px);
+        /* Световой блик */
 
-    font-weight: 800;
+        .card::before {
+            content: "";
 
-    letter-spacing: 8px;
+            position: absolute;
 
-    background:
+            width: 75%;
+            height: 75%;
 
-        linear-gradient(
-            90deg,
-            #ffffff,
-            #9be7ff,
-            #c8a7ff,
-            #ffffff
-        );
+            top: -30%;
+            left: -15%;
 
-    -webkit-background-clip: text;
+            border-radius: 50%;
 
-    background-clip: text;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,0.18),
+                    transparent 65%
+                );
 
-    color: transparent;
+            pointer-events: none;
+        }
 
-    animation:
-        logoPulse 6s ease-in-out infinite;
+        /* Орбитальная линия */
 
-}
+        .card::after {
+            content: "";
 
-.subtitle {
+            position: absolute;
+            inset: 8px;
 
-    margin-top: 8px;
+            border-radius: 50%;
 
-    font-size: 11px;
+            border: 1px solid rgba(130,170,255,0.08);
 
-    font-weight: 500;
+            transform: rotate(-25deg);
 
-    letter-spacing: 4px;
+            pointer-events: none;
+        }
 
-    text-transform: uppercase;
+        .card:hover {
+            transform:
+                translateY(-9px)
+                scale(1.045);
 
-    color:
-        rgba(255,255,255,.38);
+            border-color:
+                rgba(150,180,255,0.38);
 
-}
+            box-shadow:
+                inset -15px -20px 35px rgba(0,0,0,0.5),
+                inset 10px 10px 25px rgba(255,255,255,0.08),
+                0 20px 55px rgba(70,110,255,0.22),
+                0 0 35px rgba(130,90,255,0.12);
+        }
 
-@keyframes logoPulse {
+        /* =========================================
+           SPIRAL
+        ========================================= */
 
-    0%,100% {
-        filter: brightness(1);
-    }
+        .spiral {
+            position: absolute;
 
-    50% {
-        filter: brightness(1.25);
-    }
+            width: 180%;
+            height: 180%;
 
-}
+            left: -40%;
+            top: -40%;
 
+            border-radius: 50%;
 
-/* ==================================================
-   MAIN
-================================================== */
+            border: 1px solid rgba(150,180,255,0.05);
 
-main {
+            animation: spiralRotate 24s linear infinite;
 
-    width:
-        min(1080px, 100%);
+            pointer-events: none;
+        }
 
-    margin: auto;
+        .spiral::before,
+        .spiral::after {
+            content: "";
 
-}
+            position: absolute;
 
-.section {
+            border-radius: 50%;
 
-    margin-bottom: 52px;
+            border: 1px solid rgba(170,130,255,0.06);
+        }
 
-}
+        .spiral::before {
+            inset: 12%;
+        }
 
-.section-title {
+        .spiral::after {
+            inset: 25%;
+        }
 
-    display: flex;
+        @keyframes spiralRotate {
+            from {
+                transform: rotate(0deg);
+            }
 
-    align-items: center;
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    gap: 14px;
+        /* =========================================
+           ICON
+        ========================================= */
 
-    margin-bottom: 22px;
+        .icon {
+            position: relative;
+            z-index: 2;
 
-    font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    font-weight: 700;
+            width: 55px;
+            height: 55px;
 
-    letter-spacing: .5px;
+            margin-bottom: 11px;
 
-}
+            border-radius: 50%;
 
-.section-title::after {
+            background:
+                rgba(255,255,255,0.055);
 
-    content: "";
+            border:
+                1px solid rgba(255,255,255,0.12);
 
-    height: 1px;
+            box-shadow:
+                inset 0 0 15px rgba(255,255,255,0.025),
+                0 0 20px rgba(90,130,255,0.08);
+        }
 
-    flex: 1;
+        .icon svg {
+            width: 35px;
+            height: 35px;
 
-    background:
+            fill: none;
 
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.20),
-            transparent
-        );
+            stroke: rgba(220,230,255,0.88);
 
-}
+            stroke-width: 1.5;
 
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-/* ==================================================
-   GRID
-================================================== */
+        /* =========================================
+           TEXT
+        ========================================= */
 
-.cards {
+        .card-title {
+            position: relative;
+            z-index: 2;
 
-    display: grid;
+            max-width: 145px;
 
-    grid-template-columns:
-        repeat(auto-fit, minmax(205px, 1fr));
+            text-align: center;
 
-    gap: 22px;
+            font-size: 12px;
+            line-height: 1.35;
 
-}
+            font-weight: 700;
 
+            color: rgba(255,255,255,0.92);
+        }
 
-/* ==================================================
-   SPHERICAL CARD
-================================================== */
+        .card-description {
+            position: relative;
+            z-index: 2;
 
-.card {
+            max-width: 145px;
 
-    position: relative;
+            margin-top: 5px;
 
-    aspect-ratio: 1 / 1;
+            text-align: center;
 
-    width: 100%;
+            font-size: 9px;
+            line-height: 1.35;
 
-    max-width: 215px;
+            font-weight: 500;
 
-    margin: auto;
+            color: rgba(255,255,255,0.43);
+        }
 
-    display: flex;
+        /* =========================================
+           FOOTER
+        ========================================= */
 
-    flex-direction: column;
+        footer {
+            max-width: 1050px;
 
-    align-items: center;
+            margin: 15px auto 0;
 
-    justify-content: center;
+            padding-top: 25px;
 
-    text-decoration: none;
+            text-align: center;
 
-    color: white;
+            border-top:
+                1px solid rgba(255,255,255,0.06);
 
-    border-radius: 50%;
+            color: rgba(255,255,255,0.25);
 
-    overflow: hidden;
+            font-size: 9px;
+            letter-spacing: 2px;
+        }
 
-    isolation: isolate;
+        /* =========================================
+           MOBILE
+        ========================================= */
 
-    background:
+        @media (max-width: 650px) {
 
-        radial-gradient(
-            circle at 31% 23%,
-            rgba(255,255,255,.24),
-            transparent 12%
-        ),
+            body {
+                padding: 20px 10px 35px;
+            }
 
-        radial-gradient(
-            circle at 35% 30%,
-            rgba(100,190,255,.13),
-            transparent 44%
-        ),
+            header {
+                margin-bottom: 32px;
+            }
 
-        radial-gradient(
-            circle at 68% 72%,
-            rgba(25,35,65,.92),
-            rgba(4,7,13,1) 76%
-        );
+            .logo {
+                font-size: 37px;
+                letter-spacing: 5px;
+            }
 
-    border:
-        1px solid
-        rgba(255,255,255,.18);
+            .subtitle {
+                font-size: 8px;
+                letter-spacing: 2.5px;
+            }
 
-    box-shadow:
+            .section {
+                margin-bottom: 38px;
+            }
 
-        inset
-        -20px -24px 38px
-        rgba(0,0,0,.65),
+            .section-title {
+                font-size: 16px;
+                margin-bottom: 17px;
+            }
 
-        inset
-        12px 12px 24px
-        rgba(255,255,255,.07),
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
 
-        0 18px 40px
-        rgba(0,0,0,.48);
+            /*
+             * Если в разделе 3 карточки,
+             * последняя автоматически становится
+             * по центру нижнего ряда.
+             */
 
-    transition:
+            .cards .card:last-child:nth-child(odd) {
+                grid-column: 1 / -1;
+                justify-self: center;
+            }
 
-        transform .4s cubic-bezier(.2,.8,.2,1),
+            .card {
+                max-width: 155px;
+                min-height: 155px;
+            }
 
-        box-shadow .4s ease,
+            .icon {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 7px;
+            }
 
-        border-color .4s ease;
+            .icon svg {
+                width: 32px;
+                height: 32px;
+            }
 
-}
+            .card-title {
+                max-width: 125px;
+                font-size: 11px;
+            }
 
+            .card-description {
+                max-width: 125px;
+                font-size: 8px;
+            }
 
-/* ==================================================
-   SPHERE HIGHLIGHT
-================================================== */
+            footer {
+                font-size: 8px;
+                letter-spacing: 1.5px;
+            }
+        }
 
-.card::before {
+        /* =========================================
+           VERY SMALL SCREENS
+        ========================================= */
 
-    content: "";
+        @media (max-width: 380px) {
 
-    position: absolute;
+            .logo {
+                font-size: 31px;
+                letter-spacing: 4px;
+            }
 
-    width: 52%;
-    height: 25%;
+            .cards {
+                gap: 8px;
+            }
 
-    top: 9%;
-    left: 17%;
+            .card {
+                max-width: 140px;
+                min-height: 140px;
+            }
 
-    border-radius: 50%;
+            .icon {
+                width: 43px;
+                height: 43px;
+            }
 
-    background:
+            .icon svg {
+                width: 28px;
+                height: 28px;
+            }
 
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,.22),
-            transparent
-        );
+            .card-title {
+                font-size: 10px;
+                max-width: 112px;
+            }
 
-    filter: blur(9px);
+            .card-description {
+                font-size: 7px;
+                max-width: 112px;
+            }
+        }
 
-    transform:
-        rotate(-25deg);
+        /* =========================================
+           REDUCE MOTION
+        ========================================= */
 
-    pointer-events: none;
+        @media (prefers-reduced-motion: reduce) {
 
-}
+            html {
+                scroll-behavior: auto;
+            }
 
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
 
-/* ==================================================
-   ORBIT
-================================================== */
-
-.card::after {
-
-    content: "";
-
-    position: absolute;
-
-    width: 115%;
-    height: 115%;
-
-    border-radius: 50%;
-
-    border:
-        1px solid
-        rgba(130,220,255,.07);
-
-    animation:
-        orbit 10s linear infinite;
-
-    pointer-events: none;
-
-}
-
-@keyframes orbit {
-
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-
-}
-
-
-/* ==================================================
-   HOVER
-================================================== */
-
-.card:hover {
-
-    transform:
-        translateY(-8px)
-        scale(1.035);
-
-    border-color:
-        rgba(140,225,255,.42);
-
-    box-shadow:
-
-        inset
-        -20px -24px 38px
-        rgba(0,0,0,.65),
-
-        inset
-        12px 12px 24px
-        rgba(255,255,255,.10),
-
-        0 28px 55px
-        rgba(0,0,0,.60),
-
-        0 0 35px
-        rgba(100,190,255,.10);
-
-}
-
-
-/* ==================================================
-   SPIRAL
-================================================== */
-
-.spiral {
-
-    position: absolute;
-
-    width: 78%;
-    height: 78%;
-
-    border-radius: 50%;
-
-    opacity: .32;
-
-    background:
-
-        repeating-radial-gradient(
-            circle,
-            transparent 0px,
-            transparent 6px,
-            rgba(130,220,255,.23) 7px,
-            transparent 9px
-        );
-
-    mask-image:
-
-        radial-gradient(
-            circle,
-            black 15%,
-            transparent 70%
-        );
-
-    -webkit-mask-image:
-
-        radial-gradient(
-            circle,
-            black 15%,
-            transparent 70%
-        );
-
-    animation:
-        spiralRotate 18s linear infinite;
-
-    pointer-events: none;
-
-}
-
-@keyframes spiralRotate {
-
-    from {
-
-        transform:
-            rotate(0deg)
-            scale(.72);
-
-    }
-
-    to {
-
-        transform:
-            rotate(360deg)
-            scale(.72);
-
-    }
-
-}
-
-
-/* ==================================================
-   ICON
-================================================== */
-
-.icon {
-
-    position: relative;
-
-    z-index: 3;
-
-    width: 62px;
-    height: 62px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 10px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(255,255,255,.035);
-
-    border:
-        1px solid
-        rgba(255,255,255,.10);
-
-    box-shadow:
-        0 0 22px
-        rgba(100,200,255,.08);
-
-}
-
-
-/* ==================================================
-   SVG ICONS
-================================================== */
-
-.icon svg {
-
-    width: 43px;
-    height: 43px;
-
-    stroke:
-        rgba(225,247,255,.95);
-
-    fill: none;
-
-    stroke-width: 1.7;
-
-    stroke-linecap: round;
-
-    stroke-linejoin: round;
-
-    filter:
-
-        drop-shadow(
-            0 0 6px
-            rgba(130,220,255,.45)
-        );
-
-}
-
-
-/* ==================================================
-   CARD TEXT
-================================================== */
-
-.card-title {
-
-    position: relative;
-
-    z-index: 3;
-
-    max-width: 175px;
-
-    text-align: center;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    line-height: 1.25;
-
-    margin-bottom: 5px;
-
-}
-
-.card-description {
-
-    position: relative;
-
-    z-index: 3;
-
-    max-width: 165px;
-
-    text-align: center;
-
-    font-size: 10px;
-
-    line-height: 1.35;
-
-    font-weight: 400;
-
-    color:
-        rgba(255,255,255,.44);
-
-}
-
-
-/* ==================================================
-   FOOTER
-================================================== */
-
-footer {
-
-    margin-top: 5px;
-
-    text-align: center;
-
-    font-size: 10px;
-
-    font-weight: 500;
-
-    letter-spacing: 2px;
-
-    color:
-        rgba(255,255,255,.22);
-
-}
-
-
-/* ==================================================
-   MOBILE
-================================================== */
-
-@media (max-width: 650px) {
-
-    body {
-
-        padding:
-            20px
-            10px
-            35px;
-
-    }
-
-    header {
-
-        margin-bottom: 32px;
-
-    }
-
-    .logo {
-
-        font-size: 37px;
-
-        letter-spacing: 5px;
-
-    }
-
-    .subtitle {
-
-        font-size: 8px;
-
-        letter-spacing: 2.5px;
-
-    }
-
-    .section {
-
-        margin-bottom: 38px;
-
-    }
-
-    .section-title {
-
-        font-size: 16px;
-
-        margin-bottom: 17px;
-
-    }
-
-    .cards {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-        gap: 12px;
-
-    }
-
-    .card {
-
-        max-width: 155px;
-
-        min-height: 155px;
-
-    }
-
-    .icon {
-
-        width: 48px;
-        height: 48px;
-
-        margin-bottom: 7px;
-
-    }
-
-    .icon svg {
-
-        width: 32px;
-        height: 32px;
-
-    }
-
-    .card-title {
-
-        max-width: 125px;
-
-        font-size: 11px;
-
-    }
-
-    .card-description {
-
-        max-width: 125px;
-
-        font-size: 8px;
-
-    }
-
-}
-
-
-/* ==================================================
-   ACCESSIBILITY
-================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation: none !important;
-
-        transition: none !important;
-
-    }
-
-}
-
-</style>
+    </style>
 </head>
-
 
 <body>
 
+    <!-- =========================================
+         HEADER
+    ========================================= -->
 
-<header>
+    <header>
 
-    <div class="logo">
-        PSY-TOOLS
-    </div>
+        <div class="logo">
+            PSY-TOOLS
+        </div>
 
-    <div class="subtitle">
-        психология · развитие · работа
-    </div>
+        <div class="subtitle">
+            исследовательские и развивающие инструменты
+        </div>
 
-</header>
+    </header>
 
 
-<main>
+    <!-- =========================================
+         ПСИХОДИАГНОСТИКА
+    ========================================= -->
 
+    <section class="section">
 
-<!-- ==================================================
-     ПСИХОДИАГНОСТИКА
-================================================== -->
+        <h2 class="section-title">
+            🧠 Психодиагностика
+        </h2>
 
-<section class="section">
+        <div class="cards">
 
-    <div class="section-title">
-        🧠 Психодиагностика
-    </div>
+            <!-- Кеттелл -->
 
+            <a href="./cattell/" class="card">
 
-    <div class="cards">
+                <div class="spiral"></div>
 
+                <div class="icon">
 
-        <!-- КЕТТЕЛЛ -->
+                    <svg viewBox="0 0 48 48">
 
-        <a href="./cattell/" class="card">
+                        <path d="
+                            M12 27
+                            C8 24,8 18,12 15
+                            C14 10,20 8,24 11
+                            C29 7,36 10,36 15
+                            C41 17,41 23,37 27
+                            C38 33,33 38,28 36
+                            C24 40,18 37,17 33
+                            C12 34,9 31,12 27
+                        "/>
 
-            <div class="spiral"></div>
+                        <path d="M18 18c3-3 5-3 8-1"/>
+                        <path d="M27 17c3-1 6 1 7 4"/>
+                        <path d="M17 27c3 2 6 2 9 0"/>
+                        <path d="M26 28c2 3 5 4 8 2"/>
 
-            <div class="icon">
+                    </svg>
 
-                <svg viewBox="0 0 64 64">
+                </div>
 
-                    <path d="
-                        M24 48
-                        C16 47 12 41 14 35
-                        C9 30 12 22 18 21
-                        C18 14 25 11 30 15
-                        C34 9 43 12 44 18
-                        C51 18 54 25 51 30
-                        C56 36 52 44 46 45
-                        C43 51 35 51 31 47
-                    "/>
+                <div class="card-title">
+                    16 факторов Кеттелла
+                </div>
 
-                    <path d="
-                        M31 16
-                        C29 22 30 27 31 32
-                        C30 38 31 43 31 47
-                    "/>
+                <div class="card-description">
+                    личностный профиль
+                </div>
 
-                    <path d="
-                        M20 23
-                        C25 22 28 25 28 29
-                    "/>
+            </a>
 
-                    <path d="
-                        M42 20
-                        C38 22 37 25 38 29
-                    "/>
 
-                    <path d="
-                        M19 35
-                        C23 32 27 34 29 37
-                    "/>
+            <!-- ЛЮШЕР -->
 
-                </svg>
+            <a href="./luscher/" class="card">
 
-            </div>
+                <div class="spiral"></div>
 
-            <div class="card-title">
-                16 факторов Кеттелла
-            </div>
+                <div class="icon">
 
-            <div class="card-description">
-                Личностный профиль · взрослые
-            </div>
+                    <svg viewBox="0 0 48 48">
 
-        </a>
+                        <circle cx="24" cy="24" r="15"/>
 
+                        <path d="
+                            M24 9
+                            L24 39
+                            M9 24
+                            L39 24
+                        "/>
 
+                        <circle cx="24" cy="24" r="4"/>
 
-        <!-- ЛЮШЕР -->
+                    </svg>
 
-        <a href="./luscher/" class="card">
+                </div>
 
-            <div class="spiral"></div>
+                <div class="card-title">
+                    Тест Люшера
+                </div>
 
-            <div class="icon">
+                <div class="card-description">
+                    цветовой выбор
+                </div>
 
-                <svg viewBox="0 0 64 64">
+            </a>
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="22"
-                    />
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="7"
-                    />
+            <!-- ГЕРЧИКОВ -->
 
-                    <path d="
-                        M32 10
-                        V25
+            <a href="./gerchikov/" class="card">
 
-                        M51 21
-                        L38 28
+                <div class="spiral"></div>
 
-                        M51 43
-                        L38 36
+                <div class="icon">
 
-                        M32 54
-                        V39
+                    <svg viewBox="0 0 48 48">
 
-                        M13 43
-                        L26 36
+                        <circle cx="19" cy="13" r="5"/>
 
-                        M13 21
-                        L26 28
-                    "/>
+                        <path d="
+                            M19 18
+                            L19 30
+                            M19 22
+                            L11 27
+                            M19 22
+                            L27 27
+                            M19 30
+                            L13 38
+                            M19 30
+                            L25 38
+                        "/>
 
-                </svg>
+                        <circle cx="34" cy="32" r="7"/>
 
-            </div>
+                        <path d="
+                            M34 21
+                            L34 25
+                            M34 39
+                            L34 43
+                            M23 32
+                            L27 32
+                            M41 32
+                            L45 32
+                        "/>
 
-            <div class="card-title">
-                Тест Люшера
-            </div>
+                    </svg>
 
-            <div class="card-description">
-                Цветовая психодиагностика
-            </div>
+                </div>
 
-        </a>
+                <div class="card-title">
+                    Мотивация по Герчикову
+                </div>
 
+                <div class="card-description">
+                    структура трудовой мотивации
+                </div>
 
+            </a>
 
-        <!-- ГЕРЧИКОВ -->
+        </div>
 
-        <a href="./gerchikov/" class="card">
+    </section>
 
-            <div class="spiral"></div>
 
-            <div class="icon">
+    <!-- =========================================
+         САМОРАЗВИТИЕ
+    ========================================= -->
 
-                <svg viewBox="0 0 64 64">
+    <section class="section">
 
-                    <circle
-                        cx="30"
-                        cy="17"
-                        r="6"
-                    />
+        <h2 class="section-title">
+            🧭 Саморазвитие
+        </h2>
 
-                    <path d="
-                        M30 23
-                        V41
+        <div class="cards">
 
-                        M30 28
-                        L19 35
+            <!-- КОЛЕСО -->
 
-                        M30 28
-                        L41 35
+            <a href="./wheel/" class="card">
 
-                        M30 41
-                        L21 52
+                <div class="spiral"></div>
 
-                        M30 41
-                        L39 52
-                    "/>
+                <div class="icon">
 
-                    <circle
-                        cx="47"
-                        cy="19"
-                        r="8"
-                    />
+                    <svg viewBox="0 0 48 48">
 
-                    <circle
-                        cx="47"
-                        cy="19"
-                        r="3"
-                    />
+                        <circle cx="24" cy="24" r="15"/>
 
-                </svg>
+                        <circle cx="24" cy="24" r="4"/>
 
-            </div>
+                        <path d="
+                            M24 9V20
+                            M24 28V39
+                            M9 24H20
+                            M28 24H39
+                        "/>
 
-            <div class="card-title">
-                Мотивация по Герчикову
-            </div>
+                        <path d="
+                            M13 13L20 20
+                            M28 28L35 35
+                            M35 13L28 20
+                            M20 28L13 35
+                        "/>
 
-            <div class="card-description">
-                Пять типов трудовой мотивации
-            </div>
+                    </svg>
 
-        </a>
+                </div>
 
-    </div>
+                <div class="card-title">
+                    Колесо баланса
+                </div>
 
-</section>
+                <div class="card-description">
+                    оценка жизненных сфер
+                </div>
 
+            </a>
 
 
-<!-- ==================================================
-     САМОРАЗВИТИЕ
-================================================== -->
+            <!-- НАВЫКИ -->
 
-<section class="section">
+            <a href="./skills/" class="card">
 
-    <div class="section-title">
-        🧭 Саморазвитие
-    </div>
+                <div class="spiral"></div>
 
+                <div class="icon">
 
-    <div class="cards">
+                    <svg viewBox="0 0 48 48">
 
+                        <circle cx="24" cy="12" r="4"/>
+                        <circle cx="12" cy="30" r="4"/>
+                        <circle cx="36" cy="30" r="4"/>
+                        <circle cx="24" cy="40" r="4"/>
 
-        <!-- КОЛЕСО -->
+                        <path d="
+                            M24 16L12 26
+                            M24 16L36 26
+                            M12 34L24 36
+                            M36 34L24 36
+                        "/>
 
-        <a href="./wheel/" class="card">
+                    </svg>
 
-            <div class="spiral"></div>
+                </div>
 
-            <div class="icon">
+                <div class="card-title">
+                    Карта навыков
+                </div>
 
-                <svg viewBox="0 0 64 64">
+                <div class="card-description">
+                    анализ компетенций
+                </div>
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="23"
-                    />
+            </a>
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="5"
-                    />
 
-                    <path d="
-                        M32 9
-                        V27
+            <!-- ПРОФОРИЕНТАЦИЯ -->
 
-                        M55 32
-                        H37
+            <a href="./career/" class="card">
 
-                        M32 55
-                        V37
+                <div class="spiral"></div>
 
-                        M9 32
-                        H27
-                    "/>
+                <div class="icon">
 
-                </svg>
+                    <svg viewBox="0 0 48 48">
 
-            </div>
+                        <circle cx="24" cy="24" r="15"/>
 
-            <div class="card-title">
-                Колесо баланса
-            </div>
+                        <path d="
+                            M24 10
+                            L27 21
+                            L38 24
+                            L27 27
+                            L24 38
+                            L21 27
+                            L10 24
+                            L21 21
+                            Z
+                        "/>
 
-            <div class="card-description">
-                Основные сферы жизни
-            </div>
+                        <circle cx="24" cy="24" r="3"/>
 
-        </a>
+                    </svg>
 
+                </div>
 
+                <div class="card-title">
+                    Профориентация
+                </div>
 
-        <!-- НАВЫКИ -->
+                <div class="card-description">
+                    профессиональные направления
+                </div>
 
-        <a href="./skills/" class="card">
+            </a>
 
-            <div class="spiral"></div>
+        </div>
 
-            <div class="icon">
+    </section>
 
-                <svg viewBox="0 0 64 64">
 
-                    <circle cx="15" cy="32" r="4"/>
-                    <circle cx="32" cy="17" r="4"/>
-                    <circle cx="49" cy="32" r="4"/>
-                    <circle cx="32" cy="47" r="4"/>
+    <!-- =========================================
+         НАЙТИ РАБОТУ
+    ========================================= -->
 
-                    <path d="
-                        M19 30
-                        L28 20
+    <section class="section">
 
-                        M36 20
-                        L45 30
+        <h2 class="section-title">
+            💼 Найти работу
+        </h2>
 
-                        M45 34
-                        L36 44
+        <div class="cards">
 
-                        M28 44
-                        L19 34
-                    "/>
+            <!-- ВАКАНСИИ -->
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="5"
-                    />
+            <a href="./work/vacancies/" class="card">
 
-                </svg>
+                <div class="spiral"></div>
 
-            </div>
+                <div class="icon">
 
-            <div class="card-title">
-                Карта навыков
-            </div>
+                    <svg viewBox="0 0 48 48">
 
-            <div class="card-description">
-                Компетенции и профессиональные навыки
-            </div>
+                        <circle cx="21" cy="21" r="10"/>
 
-        </a>
+                        <path d="
+                            M29 29
+                            L39 39
+                        "/>
 
+                        <path d="
+                            M18 21
+                            H24
+                            M21 18
+                            V24
+                        "/>
 
+                    </svg>
 
-        <!-- ПРОФОРИЕНТАЦИЯ -->
+                </div>
 
-        <a href="./career/" class="card">
+                <div class="card-title">
+                    Вакансии
+                </div>
 
-            <div class="spiral"></div>
+                <div class="card-description">
+                    поиск работы
+                </div>
 
-            <div class="icon">
+            </a>
 
-                <svg viewBox="0 0 64 64">
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="21"
-                    />
+            <!-- РЕЗЮМЕ -->
 
-                    <path d="
-                        M32 11
-                        L37 27
-                        L53 32
-                        L37 37
-                        L32 53
-                        L27 37
-                        L11 32
-                        L27 27
-                        Z
-                    "/>
+            <a href="./work/resume/" class="card">
 
-                    <circle
-                        cx="32"
-                        cy="32"
-                        r="4"
-                    />
+                <div class="spiral"></div>
 
-                </svg>
+                <div class="icon">
 
-            </div>
+                    <svg viewBox="0 0 48 48">
 
-            <div class="card-title">
-                Профориентация
-            </div>
+                        <rect
+                            x="12"
+                            y="7"
+                            width="24"
+                            height="34"
+                            rx="3"
+                        />
 
-            <div class="card-description">
-                Поиск профессионального направления
-            </div>
+                        <circle cx="24" cy="17" r="4"/>
 
-        </a>
+                        <path d="
+                            M18 27
+                            C18 23,30 23,30 27
+                        "/>
 
-    </div>
+                        <path d="
+                            M18 34
+                            H30
+                        "/>
 
-</section>
+                    </svg>
 
+                </div>
 
+                <div class="card-title">
+                    Моё резюме
+                </div>
 
-<!-- ==================================================
-     НАЙТИ РАБОТУ
-================================================== -->
+                <div class="card-description">
+                    профессиональный профиль
+                </div>
 
-<section class="section">
+            </a>
 
-    <div class="section-title">
-        💼 Найти работу
-    </div>
+        </div>
 
+    </section>
 
-    <div class="cards">
 
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
 
-        <!-- ВАКАНСИИ -->
-
-        <a
-            href="./work/vacancies/"
-            class="card"
-        >
-
-            <div class="spiral"></div>
-
-            <div class="icon">
-
-                <svg viewBox="0 0 64 64">
-
-                    <circle
-                        cx="27"
-                        cy="27"
-                        r="14"
-                    />
-
-                    <path d="
-                        M37 37
-                        L51 51
-                    "/>
-
-                    <path d="
-                        M21 27
-                        H33
-
-                        M27 21
-                        V33
-                    "/>
-
-                </svg>
-
-            </div>
-
-            <div class="card-title">
-                Вакансии
-            </div>
-
-            <div class="card-description">
-                Поиск подходящих предложений
-            </div>
-
-        </a>
-
-
-
-        <!-- РЕЗЮМЕ -->
-
-        <a
-            href="./work/resume/"
-            class="card"
-        >
-
-            <div class="spiral"></div>
-
-            <div class="icon">
-
-                <svg viewBox="0 0 64 64">
-
-                    <rect
-                        x="17"
-                        y="9"
-                        width="30"
-                        height="46"
-                        rx="3"
-                    />
-
-                    <circle
-                        cx="32"
-                        cy="23"
-                        r="6"
-                    />
-
-                    <path d="
-                        M24 36
-                        H40
-
-                        M22 43
-                        H42
-                    "/>
-
-                </svg>
-
-            </div>
-
-            <div class="card-title">
-                Моё резюме
-            </div>
-
-            <div class="card-description">
-                Профессиональный профиль
-            </div>
-
-        </a>
-
-    </div>
-
-</section>
-
-
-</main>
-
-
-<footer>
-
-    PSY-TOOLS · исследовательские и развивающие инструменты
-
-</footer>
+    <footer>
+        PSY-TOOLS · исследовательские и развивающие инструменты
+    </footer>
 
 
 </body>
