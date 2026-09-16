@@ -73,8 +73,6 @@ h1{margin:0;font-size:28px;font-weight:750}
 .reco-col ul{margin:0;padding-left:16px}
 .reco-col li{margin-bottom:4px;color:var(--muted)}
 .reco-col li:last-child{margin-bottom:0}
-
-/* Popup для диаграммы */
 .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
 .popup-overlay.open{opacity:1;pointer-events:auto}
 .popup-sheet{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 20px 20px;max-width:420px;width:100%;position:relative;transform:scale(.92);transition:transform .22s cubic-bezier(.2,.9,.3,1);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
@@ -95,7 +93,6 @@ h1{margin:0;font-size:28px;font-weight:750}
 .popup-list li:last-child{margin-bottom:0}
 .popup-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
 .popup-btn:active{transform:scale(.98)}
-
 @media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:23px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.q-text{font-size:15px}.scale-option{padding:10px 11px;font-size:13px}.scale-num{width:28px;height:28px;font-size:14px}.reco-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -168,7 +165,6 @@ h1{margin:0;font-size:28px;font-weight:750}
 </footer>
 </div>
 
-<!-- Popup с деталями типа -->
 <div class="popup-overlay" id="motivationPopup">
     <div class="popup-sheet">
         <button class="popup-close" onclick="closeMotivationPopup()">×</button>
@@ -211,7 +207,7 @@ var TYPES = {
     PR: { name: "Профессиональный", icon: "📚", color: "#7c8cff",
         short: "Важны содержание и рост",
         desc: "Важен интерес в работе, профессиональное развитие и признание компетенции." },
-    PA: { name: "Патриархальный", icon: "🤝", color: "#6ea8fe",
+    PA: { name: "Патриотичный", icon: "🤝", color: "#6ea8fe",
         short: "Ценность стабильности и коллектива",
         desc: "Преданность организации, важность коллектива, долг и безопасность." },
     HO: { name: "Хозяйский", icon: "🏛", color: "#ffc857",
@@ -392,6 +388,31 @@ function showResults() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/* Умный перенос длинных слов */
+function wrapText(ctx, text, maxWidth) {
+    var words = text.split(" ");
+    var lines = [];
+    var cur = "";
+    for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        var test = cur ? cur + " " + w : w;
+        if (ctx.measureText(test).width > maxWidth) {
+            if (cur) { lines.push(cur); }
+            if (ctx.measureText(w).width > maxWidth) {
+                var mid = Math.ceil(w.length / 2);
+                lines.push(w.substring(0, mid) + "-");
+                cur = w.substring(mid);
+            } else {
+                cur = w;
+            }
+        } else {
+            cur = test;
+        }
+    }
+    if (cur) { lines.push(cur); }
+    return lines;
+}
+
 function drawRadar(data) {
     var canvas = $("radar");
     if (!canvas) { return; }
@@ -415,13 +436,13 @@ function drawRadar(data) {
 
     var cx = size / 2;
     var cy = size / 2;
-    var radius = Math.min(size, size) * (isSmall ? 0.36 : 0.32);
-    var labelOffset = isSmall ? 52 : (isMedium ? 68 : 82);
+    var radius = Math.min(size, size) * (isSmall ? 0.33 : (isMedium ? 0.30 : 0.32));
+    var labelOffset = isSmall ? 44 : (isMedium ? 60 : 78);
     var labelRadius = radius + labelOffset;
 
-    var labelFont = isSmall ? 10 : (isMedium ? 11.5 : 12.5);
-    var iconFont = isSmall ? 14 : 16;
-    var maxLabelW = isSmall ? 78 : (isMedium ? 95 : 108);
+    var labelFont = isSmall ? 9.5 : (isMedium ? 11 : 12.5);
+    var iconFont = isSmall ? 13 : 16;
+    var maxLabelW = isSmall ? 74 : (isMedium ? 90 : 108);
     var lineHeight = labelFont + 2;
     var percentFont = isSmall ? 11 : 13;
 
@@ -478,7 +499,6 @@ function drawRadar(data) {
         });
     }
 
-    /* Свечение */
     ctx.save();
     ctx.shadowColor = "rgba(124,140,255,.45)";
     ctx.shadowBlur = 22;
@@ -491,7 +511,6 @@ function drawRadar(data) {
     ctx.fill();
     ctx.restore();
 
-    /* Градиент */
     var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
     fg.addColorStop(0, "rgba(156,124,255,.40)");
     fg.addColorStop(1, "rgba(124,140,255,.12)");
@@ -508,7 +527,7 @@ function drawRadar(data) {
     ctx.lineJoin = "round";
     ctx.stroke();
 
-    /* Точки + указатели + проценты */
+    /* Точки + указатели */
     for (var t = 0; t < points.length; t++) {
         var pt = points[t];
 
@@ -586,7 +605,6 @@ function drawRadar(data) {
         ctx.textBaseline = "middle";
         ctx.fillText(text, bx, by + 1);
 
-        /* Записываем hitbox для клика */
         radarHitboxes.push({
             x: bx - bw / 2 - 12,
             y: by - bh / 2 - 12,
@@ -606,30 +624,25 @@ function drawRadar(data) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        ctx.font = iconFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.fillStyle = "#f3f5f7";
-        ctx.fillText(meta.icon, lxLb, lyLb - lineHeight - 4);
-
+        var lineH = labelFont + 2;
         ctx.font = "800 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         ctx.fillStyle = meta.color;
 
-        var words = meta.name.split(" ");
-        var lines = [];
-        var cur = "";
-        for (var wi = 0; wi < words.length; wi++) {
-            var test = cur ? cur + " " + words[wi] : words[wi];
-            if (ctx.measureText(test).width > maxLabelW) {
-                if (cur) { lines.push(cur); }
-                cur = words[wi];
-            } else {
-                cur = test;
-            }
-        }
-        if (cur) { lines.push(cur); }
+        var lines = wrapText(ctx, meta.name, maxLabelW);
+        var totalH = lines.length * lineH;
 
-        var totalH = lines.length * lineHeight;
+        /* Иконка — наверх, с проверкой чтобы не ушла за границу */
+        var iconY = lyLb - totalH / 2 - lineH - 2;
+        if (iconY < 12) { iconY = 12; }
+        ctx.font = iconFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
+        ctx.fillText(meta.icon, lxLb, iconY);
+
+        /* Название */
+        ctx.font = "800 " + labelFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
         for (var li = 0; li < lines.length; li++) {
-            ctx.fillText(lines[li], lxLb, lyLb + li * lineHeight - (totalH - lineHeight) / 2 + 2);
+            ctx.fillText(lines[li], lxLb, lyLb + li * lineH - (totalH - lineH) / 2 + 2);
         }
     }
 
@@ -639,9 +652,6 @@ function drawRadar(data) {
     ctx.fill();
 }
 
-/* ============================================================
-   КЛИК ПО ДИАГРАММЕ
-============================================================ */
 function setupRadarClick() {
     var canvas = $("radar");
     if (!canvas) { return; }
@@ -661,9 +671,6 @@ function setupRadarClick() {
     });
 }
 
-/* ============================================================
-   POPUP С ДЕТАЛЯМИ
-============================================================ */
 var POPUP_POS = {
     IN: ["Прозрачная система оплаты", "Бонусы и премии за конкретный результат", "Понятные KPI", "Возможность зарабатывать больше", "Справедливая оценка вклада"],
     PR: ["Интересные сложные задачи", "Обучение и доступ к новым знаниям", "Признание экспертизы", "Автономия в методах работы", "Публичное признание достижений"],
@@ -712,9 +719,6 @@ function closeMotivationPopup() {
     $("motivationPopup").classList.remove("open");
 }
 
-/* ============================================================
-   СПИСОК ТИПОВ
-============================================================ */
 function renderTypesList(ordered) {
     var container = $("typesList");
     container.innerHTML = "";
@@ -747,9 +751,6 @@ function renderTypesList(ordered) {
     }
 }
 
-/* ============================================================
-   ИНТЕРПРЕТАЦИЯ
-============================================================ */
 function renderInterpretation(ordered) {
     var container = $("interpretation");
     var html = "";
@@ -912,9 +913,6 @@ function renderRecommendations(topCode, secondCode) {
     container.innerHTML = html;
 }
 
-/* ============================================================
-   СОХРАНЕНИЕ
-============================================================ */
 function save() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ }));
@@ -936,9 +934,6 @@ function load() {
     } catch (e) {}
 }
 
-/* ============================================================
-   КНОПКИ
-============================================================ */
 function backToTest() {
     $("resultScreen").classList.add("hidden");
     $("testScreen").classList.remove("hidden");
@@ -976,24 +971,18 @@ function exportResults() {
     URL.revokeObjectURL(url);
 }
 
-/* ============================================================
-   СТАРТ
-============================================================ */
 load();
 renderQuestion();
 setupRadarClick();
 
-/* Закрытие попапа по клику на фон */
 document.getElementById("motivationPopup").addEventListener("click", function (e) {
     if (e.target === this) { closeMotivationPopup(); }
 });
 
-/* Закрытие по Escape */
 document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeMotivationPopup(); }
 });
 
-/* Перерисовка при повороте/ресайзе */
 var resizeTimer = null;
 window.addEventListener("resize", function () {
     if (resizeTimer) { clearTimeout(resizeTimer); }
