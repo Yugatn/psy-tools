@@ -22,17 +22,15 @@ h1{margin:0;font-size:28px;font-weight:750}
 .progress-info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
 .progress{width:100%;height:7px;background:#272c37;border-radius:20px;overflow:hidden}
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .3s}
-.q-number{color:var(--muted);font-size:12px;text-align:center;margin-bottom:6px;letter-spacing:.3px}
-.q-title{font-size:15px;color:var(--muted);text-align:center;margin-bottom:16px;line-height:1.4}
-.q-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.q-option{display:flex;align-items:flex-start;gap:11px;background:#10131a;border:1.5px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;font-size:14px;line-height:1.45;color:var(--text);font-family:inherit;text-align:left;width:100%}
-.q-option:hover{border-color:rgba(124,140,255,.35);background:rgba(124,140,255,.03)}
-.q-option:active{transform:scale(.99)}
-.q-option.selected{border-color:var(--accent);background:rgba(124,140,255,.10);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
-.q-option-marker{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:transparent;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.q-option.selected .q-option-marker{border-color:var(--accent);background:var(--accent)}
-.q-option.selected .q-option-marker::after{content:"";width:8px;height:8px;border-radius:50%;background:#ffffff;display:block}
-.q-option-text{flex:1;min-width:0}
+.q-number{color:var(--muted);font-size:11.5px;text-align:center;margin-bottom:8px;letter-spacing:.4px;text-transform:uppercase}
+.q-text{font-size:16.5px;line-height:1.5;color:var(--text);margin-bottom:18px;text-align:center;font-weight:600;min-height:50px;display:flex;align-items:center;justify-content:center}
+.scale{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.scale-option{display:flex;align-items:center;gap:11px;background:#10131a;border:1.5px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;transition:all .15s;font-size:13.5px;color:var(--text);font-family:inherit;text-align:left;width:100%}
+.scale-option:hover{border-color:rgba(124,140,255,.35);background:rgba(124,140,255,.03)}
+.scale-option.selected{border-color:var(--accent);background:rgba(124,140,255,.10);box-shadow:0 0 0 1px rgba(124,140,255,.35) inset}
+.scale-num{width:32px;height:32px;border-radius:9px;background:#1b202b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--muted);flex-shrink:0;transition:all .15s}
+.scale-option.selected .scale-num{background:var(--accent);color:#fff}
+.scale-label{flex:1;line-height:1.3}
 .nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .btn{border:none;border-radius:13px;padding:14px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.97)}
@@ -41,14 +39,15 @@ h1{margin:0;font-size:28px;font-weight:750}
 .btn-secondary{background:#272c37;color:#fff}
 .btn-success{background:var(--good);color:#08130d}
 .btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
-.result-header{text-align:center}
 .radar-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:8px 0;margin-top:8px}
 #radar{display:block;max-width:100%;height:auto}
 .types-list{display:flex;flex-direction:column;gap:10px}
 .type-item{background:var(--card2);border-radius:14px;padding:13px 15px;border-left:4px solid}
 .type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .type-name{font-size:14.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
-.type-score{font-size:16px;font-weight:800;flex-shrink:0}
+.type-score{font-size:15px;font-weight:800;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.type-score-main{font-size:16px}
+.type-score-sub{font-size:10.5px;color:var(--muted);font-weight:600}
 .type-bar{width:100%;height:6px;background:#0b0d12;border-radius:10px;overflow:hidden}
 .type-bar-fill{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.2,.9,.3,1)}
 .type-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:8px}
@@ -58,6 +57,7 @@ h1{margin:0;font-size:28px;font-weight:750}
 .interp .hl{color:var(--accent);font-weight:700}
 .interp .block{background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:13.5px;line-height:1.55}
 .interp .block strong{color:var(--text)}
+.interp .warn{background:rgba(255,200,87,.06);border-color:rgba(255,200,87,.20)}
 .reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .reco-col{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.5}
 .reco-col-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
@@ -66,7 +66,7 @@ h1{margin:0;font-size:28px;font-weight:750}
 .reco-col ul{margin:0;padding-left:16px}
 .reco-col li{margin-bottom:4px;color:var(--muted)}
 .reco-col li:last-child{margin-bottom:0}
-@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:24px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.q-option{padding:12px;font-size:13.5px}.reco-grid{grid-template-columns:1fr}}
+@media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:23px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.q-text{font-size:15px}.scale-option{padding:10px 11px;font-size:13px}.scale-num{width:28px;height:28px;font-size:14px}.reco-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -75,22 +75,22 @@ h1{margin:0;font-size:28px;font-weight:750}
 <header>
     <div class="logo">🎯</div>
     <h1>Мотивация по Герчикову</h1>
-    <div class="subtitle">Определите свой тип трудовой мотивации из 5 возможных</div>
+    <div class="subtitle">Определите свой тип трудовой мотивации по 5-балльной шкале</div>
 </header>
 
 <div id="testScreen">
     <div class="card">
         <div class="progress-wrap">
             <div class="progress-info">
-                <span id="progressText">Вопрос 1 из 23</span>
-                <span id="progressPercent">0%</span>
+                <span id="progressText">Утверждение 1 из 25</span>
+                <span id="progressPercent">4%</span>
             </div>
             <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
         </div>
 
-        <div class="q-number" id="qNumber">ВОПРОС 1</div>
-        <div class="q-title" id="qTitle"></div>
-        <div class="q-options" id="qOptions"></div>
+        <div class="q-number" id="qNumber">УТВЕРЖДЕНИЕ 1</div>
+        <div class="q-text" id="qText">Загрузка...</div>
+        <div class="scale" id="scale"></div>
 
         <div class="nav">
             <button class="btn btn-secondary" id="backBtn" onclick="prevQuestion()">← Назад</button>
@@ -100,7 +100,7 @@ h1{margin:0;font-size:28px;font-weight:750}
 </div>
 
 <div id="resultScreen" class="hidden">
-    <div class="card result-header">
+    <div class="card result-header" style="text-align:center">
         <div class="section-title">Ваш профиль мотивации</div>
         <div class="section-description">Соотношение 5 типов трудовой мотивации по методике Герчикова</div>
         <div class="radar-wrap"><canvas id="radar"></canvas></div>
@@ -118,15 +118,15 @@ h1{margin:0;font-size:28px;font-weight:750}
     </div>
 
     <div class="card">
-        <div class="section-title">Что вас мотивирует и демотивирует</div>
+        <div class="section-title">Что мотивирует и демотивирует</div>
         <div class="section-description">Рекомендации по ведущему типу</div>
         <div id="recommendations"></div>
     </div>
 
     <div class="card">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:0">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn btn-secondary" onclick="backToTest()">Изменить ответы</button>
-            <button class="btn btn-primary" onclick="exportResults()">📥 Экспорт JSON</button>
+            <button class="btn btn-primary" onclick="exportResults()">Экспорт JSON</button>
             <button class="btn btn-danger" onclick="resetAll()">Начать заново</button>
         </div>
     </div>
@@ -146,314 +146,107 @@ window.onerror = function(msg, url, line, col) {
         b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff5566;color:#fff;padding:14px 18px;z-index:999999;font:13px/1.5 monospace;white-space:pre-wrap;';
         document.body.appendChild(b);
     }
-    b.textContent = '❌ ' + msg + ' (строка ' + line + ', колонка ' + col + ')';
+    b.textContent = 'Ошибка: ' + msg + ' (строка ' + line + ', колонка ' + col + ')';
 };
 </script>
 
 <script>
-/* ============================================================
-   ТИПЫ МОТИВАЦИИ
-============================================================ */
 var TYPES = {
-    IN: { name: "Инструментальный", icon: "💰", color: "#55d68a", desc: "Фокус на результате и вознаграждении. Работа — инструмент для достижения целей." },
-    PR: { name: "Профессиональный", icon: "📚", color: "#7c8cff", desc: "Важны интерес, рост и содержание. Ценится признание экспертизы." },
-    PA: { name: "Патриотический", icon: "🤝", color: "#6ea8fe", desc: "Ценность команды и общего дела. Работа — часть миссии." },
-    HO: { name: "Хозяйский", icon: "🏛", color: "#ffc857", desc: "Стремление к самостоятельности и ответственности. Готовность брать решения на себя." },
-    LU: { name: "Люмпенизированный", icon: "😴", color: "#ff6b6b", desc: "Предпочтение стабильности и минимума усилий. Работа — необходимость." }
+    IN: { name: "Инструментальный", icon: "💰", color: "#55d68a",
+        short: "Работа — инструмент заработка",
+        desc: "Ориентация на результат и материальное вознаграждение. Главное — размер и справедливость оплаты." },
+    PR: { name: "Профессиональный", icon: "📚", color: "#7c8cff",
+        short: "Важны содержание и рост",
+        desc: "Важен интерес в работе, профессиональное развитие и признание компетенции." },
+    PA: { name: "Патриархальный", icon: "🤝", color: "#6ea8fe",
+        short: "Ценность стабильности и коллектива",
+        desc: "Преданность организации, важность коллектива, долг и безопасность." },
+    HO: { name: "Хозяйский", icon: "🏛", color: "#ffc857",
+        short: "Работа как своё дело",
+        desc: "Стремление к самостоятельности и ответственности, готовность влиять на результат." },
+    LU: { name: "Люмпенизированный", icon: "😴", color: "#ff6b6b",
+        short: "Избегание усилий",
+        desc: "Минимизация усилий, безразличие к результату, избегание ответственности." }
 };
 
-/* ============================================================
-   23 ВОПРОСА (современные формулировки, оригинальная структура)
-============================================================ */
-var QUESTIONS = [
-    {
-        q: "Что для вас главное в работе?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Свобода самому решать, что и как делать", type: "HO" },
-            { t: "Возможность проявить свои знания и умения", type: "PR" },
-            { t: "Ощущение, что я полезен и нужен", type: "PA" },
-            { t: "Хорошая оплата", type: "IN" },
-            { t: "Ничего особенного — просто привычная и знакомая работа", type: "LU" }
-        ]
-    },
-    {
-        q: "Какое утверждение про вас точнее?",
-        hint: "Выберите 1 вариант",
-        options: [
-            { t: "Хочу обеспечить себе и семье достойный доход", type: "IN" },
-            { t: "В своей работе я — полный хозяин", type: "HO" },
-            { t: "У меня достаточно знаний и опыта для любых задач", type: "PR" },
-            { t: "Я ценный и незаменимый сотрудник", type: "PA" },
-            { t: "Я всегда делаю то, что от меня требуют", type: "LU" }
-        ]
-    },
-    {
-        q: "Как вам комфортнее работать?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Делать то, что знакомо и привычно", type: "LU" },
-            { t: "Чтобы постоянно появлялось что-то новое", type: "PR" },
-            { t: "Чётко знать, что нужно сделать и что за это получу", type: "IN" },
-            { t: "Работать под полную личную ответственность", type: "HO" },
-            { t: "Делать всё, что нужно для команды и общего дела", type: "PA" }
-        ]
-    },
-    {
-        q: "Вам предлагают другую работу в компании. При каких условиях согласитесь?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Если зарплата будет заметно выше", type: "IN" },
-            { t: "Если работа будет интереснее и творчески", type: "PR" },
-            { t: "Если дадут больше самостоятельности", type: "HO" },
-            { t: "Если это очень нужно для общего дела", type: "PA" },
-            { t: "Останусь на прежней — к ней привык(ла)", type: "LU" }
-        ]
-    },
-    {
-        q: "Что для вас означает ваш заработок?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Оплата за время и усилия", type: "IN" },
-            { t: "Плата за знания и квалификацию", type: "PR" },
-            { t: "Вклад в общий результат компании", type: "PA" },
-            { t: "Гарантированный доход — пусть небольшой, но стабильный", type: "LU" },
-            { t: "Сколько бы ни был — я его заработал(а) сам(а)", type: "HO" }
-        ]
-    }
+var SCALE_LABELS = [
+    { v: 1, t: "Совершенно не согласен" },
+    { v: 2, t: "Скорее не согласен" },
+    { v: 3, t: "Затрудняюсь ответить" },
+    { v: 4, t: "Скорее согласен" },
+    { v: 5, t: "Полностью согласен" }
 ];
 
-/* Остальные вопросы добавляются программно — чтобы не дублировать длинные блоки */
-QUESTIONS.push(
-    {
-        q: "Насколько для вас важна зарплата и премии?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "IN" },
-            { t: "Не очень важно", type: "PR" },
-            { t: "Совсем не важно", type: "PA" }
-        ]
-    },
-    {
-        q: "Насколько важны доплаты за квалификацию?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "PR" },
-            { t: "Не очень важно", type: "IN" },
-            { t: "Совсем не важно", type: "LU" }
-        ]
-    },
-    {
-        q: "Насколько важны доплаты за тяжёлые или вредные условия?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "IN" },
-            { t: "Не очень важно", type: "LU" },
-            { t: "Совсем не важно", type: "PR" }
-        ]
-    },
-    {
-        q: "Насколько важны социальные выплаты и льготы?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "LU" },
-            { t: "Не очень важно", type: "PA" },
-            { t: "Совсем не важно", type: "HO" }
-        ]
-    },
-    {
-        q: "Насколько важен доход от капитала, акций?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "HO" },
-            { t: "Не очень важно", type: "IN" },
-            { t: "Совсем не важно", type: "LU" }
-        ]
-    },
-    {
-        q: "Насколько важны любые дополнительные приработки?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "IN" },
-            { t: "Не очень важно", type: "HO" },
-            { t: "Совсем не важно", type: "PR" }
-        ]
-    },
-    {
-        q: "Насколько важны приработки именно по вашей специальности?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "PR" },
-            { t: "Не очень важно", type: "IN" },
-            { t: "Совсем не важно", type: "LU" }
-        ]
-    },
-    {
-        q: "Насколько важен доход от личного хозяйства, дачи?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "HO" },
-            { t: "Не очень важно", type: "LU" },
-            { t: "Совсем не важно", type: "PR" }
-        ]
-    },
-    {
-        q: "Насколько важен выигрыш в лотерею, казино?",
-        hint: "Дайте один ответ",
-        options: [
-            { t: "Очень важно", type: "LU" },
-            { t: "Не очень важно", type: "IN" },
-            { t: "Совсем не важно", type: "HO" }
-        ]
-    },
-    {
-        q: "На каких принципах, по-вашему, должны строиться отношения сотрудника и компании?",
-        hint: "Выберите 1 вариант",
-        options: [
-            { t: "Компания — как второй дом: вместе трудности и победы", type: "PA" },
-            { t: "Я продаю свой труд — ищу лучшую цену, если платят мало", type: "IN" },
-            { t: "Компания — место для самореализации и роста", type: "PR" },
-            { t: "Я трачу силы — компания гарантирует зарплату и льготы", type: "LU" }
-        ]
-    },
-    {
-        q: "Почему, по-вашему, люди проявляют инициативу на работе?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Чувствуют ответственность за свою работу", type: "HO" },
-            { t: "Хотят реализовать знания и выйти за рамки", type: "PR" },
-            { t: "Хотят улучшить работу компании", type: "PA" },
-            { t: "Хотят выделиться или понравиться начальству", type: "LU" },
-            { t: "Хотят заработать — инициатива должна вознаграждаться", type: "IN" }
-        ]
-    },
-    {
-        q: "Какое суждение о коллективной работе вам ближе?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Команда важна — в одиночку результата не достичь", type: "PA" },
-            { t: "Люблю автономию, но и с интересными людьми работать хорошо", type: "HO" },
-            { t: "Нужна свобода действий — коллектив её часто ограничивает", type: "PR" },
-            { t: "Можно и в команде, но платить должны по личным результатам", type: "IN" },
-            { t: "Нравится в коллективе — там я среди своих", type: "LU" }
-        ]
-    },
-    {
-        q: "Появилась возможность стать владельцем компании. Воспользуетесь?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Да — смогу участвовать в управлении", type: "HO" },
-            { t: "Да — это может увеличить доход", type: "IN" },
-            { t: "Да — настоящий работник должен быть совладельцем", type: "PA" },
-            { t: "Вряд ли — на доходе не скажется, а забот прибавится", type: "LU" },
-            { t: "Нет — лишние заботы мне не нужны", type: "LU" }
-        ]
-    },
-    {
-        q: "Вы ищете работу. Вам предлагают несколько вариантов. Какой выберете?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Самую интересную и творческую", type: "PR" },
-            { t: "Самую самостоятельную и независимую", type: "HO" },
-            { t: "Ту, где больше платят", type: "IN" },
-            { t: "Ту, где за небольшие деньги не нужно перенапрягаться", type: "LU" },
-            { t: "Не могу представить, что уйду из нашей компании", type: "PA" }
-        ]
-    },
-    {
-        q: "Что вы в первую очередь оцениваете в успехах другого сотрудника?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Зарплату и материальное положение", type: "IN" },
-            { t: "Уровень профессионализма", type: "PR" },
-            { t: "Насколько хорошо он «устроился»", type: "LU" },
-            { t: "Насколько его уважают в компании", type: "PA" },
-            { t: "Насколько он самостоятелен и независим", type: "HO" }
-        ]
-    },
-    {
-        q: "Если положение в компании ухудшится, на какие перемены вы согласитесь, чтобы остаться?",
-        hint: "Можно выбрать сколько угодно вариантов",
-        options: [
-            { t: "Освоить новую профессию", type: "PR" },
-            { t: "Работать неполный день или на менее квалифицированной должности", type: "LU" },
-            { t: "Перейти на менее удобный график", type: "PA" },
-            { t: "Работать более интенсивно", type: "IN" },
-            { t: "Просто терпеть, потому что деваться некуда", type: "LU" },
-            { t: "Скорее всего, уйду из компании", type: "HO" }
-        ]
-    },
-    {
-        q: "Если вы руководитель, что вас привлекает в этой роли?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Возможность принимать самостоятельные решения", type: "HO" },
-            { t: "Возможность принести пользу компании", type: "PA" },
-            { t: "Высокий уровень оплаты", type: "IN" },
-            { t: "Возможность организовывать работу других", type: "HO" },
-            { t: "Возможность применить знания и умения", type: "PR" },
-            { t: "Ничего особенного — за должность не держусь", type: "LU" }
-        ]
-    },
-    {
-        q: "Если вы не руководитель, хотели бы им стать?",
-        hint: "Можно выбрать 1 или 2 варианта",
-        options: [
-            { t: "Да — чтобы принимать самостоятельные решения", type: "HO" },
-            { t: "Не против, если это нужно для общего дела", type: "PA" },
-            { t: "Да — смогу лучше применить знания и умения", type: "PR" },
-            { t: "Да — если это будет хорошо оплачиваться", type: "IN" },
-            { t: "Нет — профессионал отвечает только за себя", type: "PR" },
-            { t: "Нет — руководство не привлекает, хорошо заработать можно и на своём месте", type: "HO" },
-            { t: "Да — чем я хуже других?", type: "LU" },
-            { t: "Нет — это слишком большая нагрузка", type: "LU" }
-        ]
-    }
-);
+var STATEMENTS = [
+    { id: "И1", t: "Главное для меня в работе — это размер заработка.", type: "IN" },
+    { id: "П1", t: "Мне важно, чтобы работа была интересной и давала возможность развиваться.", type: "PR" },
+    { id: "Па1", t: "Стабильность и надёжность работы для меня важнее, чем высокая зарплата.", type: "PA" },
+    { id: "Х1", t: "Я хочу сам принимать решения и нести за них ответственность.", type: "HO" },
+    { id: "Л1", t: "Я работаю только потому, что без работы нельзя.", type: "LU" },
 
-/* ============================================================
-   СОСТОЯНИЕ
-============================================================ */
-var answers = new Array(QUESTIONS.length).fill(null);
+    { id: "И2", t: "Я работаю прежде всего ради денег, а не ради интереса к делу.", type: "IN" },
+    { id: "П2", t: "Признание моих профессиональных заслуг для меня ценнее, чем просто высокая зарплата.", type: "PR" },
+    { id: "Па2", t: "Я чувствую преданность своей организации и готов работать здесь долго.", type: "PA" },
+    { id: "Х2", t: "Я отношусь к работе как к собственному делу, даже если работаю по найму.", type: "HO" },
+    { id: "Л2", t: "Главное — поменьше делать и побольше получать.", type: "LU" },
+
+    { id: "И3", t: "Если мне предложат заметно больше платить — перейду на другую работу без сожалений.", type: "IN" },
+    { id: "П3", t: "Я готов выполнять сложную работу, даже если за неё не доплачивают, — ради опыта и роста.", type: "PR" },
+    { id: "Па3", t: "Работа — это мой долг перед коллективом и руководством.", type: "PA" },
+    { id: "Х3", t: "Мне нужна самостоятельность — когда говорят только что делать, но не как.", type: "HO" },
+    { id: "Л3", t: "Мне в общем безразлично, каким будет результат моей работы.", type: "LU" },
+
+    { id: "И4", t: "Премия или бонус для меня важнее, чем похвала или грамота.", type: "IN" },
+    { id: "П4", t: "Мне важно чувствовать, что я становлюсь профессионалом своего дела.", type: "PR" },
+    { id: "Па4", t: "Для меня важно, чтобы на работе был хороший, сплочённый коллектив.", type: "PA" },
+    { id: "Х4", t: "Я готов вложить дополнительные усилия, потому что результат — это мой личный вклад.", type: "HO" },
+    { id: "Л4", t: "Я не хочу брать на себя никаких дополнительных обязанностей.", type: "LU" },
+
+    { id: "И5", t: "Справедливость оплаты — это когда платят пропорционально тому, сколько я реально работаю.", type: "IN" },
+    { id: "П5", t: "Качество моей работы важнее, сколько за неё платят.", type: "PR" },
+    { id: "Па5", t: "Я готов терпеть неудобства в работе, если отношения с руководством и коллегами хорошие.", type: "PA" },
+    { id: "Х5", t: "Для меня важно видеть, что мой труд реально меняет ситуацию к лучшему.", type: "HO" },
+    { id: "Л5", t: "Дополнительная ответственность и новые задачи — это лишняя головная боль, а не возможность.", type: "LU" }
+];
+
+var answers = new Array(STATEMENTS.length).fill(null);
 var currentQ = 0;
-var STORAGE_KEY = "psyGerbV2";
+var STORAGE_KEY = "psyGerbV3";
 
 function $(id) { return document.getElementById(id); }
+
 function esc(t) {
     return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-/* ============================================================
-   РЕНДЕР ВОПРОСА
-============================================================ */
 function renderQuestion() {
-    var q = QUESTIONS[currentQ];
-    var total = QUESTIONS.length;
+    var st = STATEMENTS[currentQ];
+    var total = STATEMENTS.length;
 
-    $("qNumber").textContent = "ВОПРОС " + (currentQ + 1);
-    $("progressText").textContent = "Вопрос " + (currentQ + 1) + " из " + total;
+    $("qNumber").textContent = "УТВЕРЖДЕНИЕ " + (currentQ + 1);
+    $("progressText").textContent = "Утверждение " + (currentQ + 1) + " из " + total;
     var percent = Math.round((currentQ + 1) / total * 100);
     $("progressPercent").textContent = percent + "%";
     $("progressBar").style.width = percent + "%";
-    $("qTitle").textContent = q.q;
+    $("qText").textContent = st.t;
 
-    var container = $("qOptions");
+    var container = $("scale");
     container.innerHTML = "";
 
-    for (var i = 0; i < q.options.length; i++) {
-        (function (opt, idx) {
+    for (var i = 0; i < SCALE_LABELS.length; i++) {
+        (function (sc) {
             var btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "q-option";
-            if (answers[currentQ] === idx) { btn.classList.add("selected"); }
-            btn.innerHTML = '<span class="q-option-marker"></span><span class="q-option-text">' + esc(opt.t) + '</span>';
+            btn.className = "scale-option";
+            if (answers[currentQ] === sc.v) { btn.classList.add("selected"); }
+            btn.innerHTML = '<span class="scale-num">' + sc.v + '</span><span class="scale-label">' + esc(sc.t) + '</span>';
             btn.addEventListener("click", function () {
-                answers[currentQ] = idx;
+                answers[currentQ] = sc.v;
                 save();
                 renderQuestion();
             });
             container.appendChild(btn);
-        })(q.options[i], i);
+        })(SCALE_LABELS[i]);
     }
 
     var backBtn = $("backBtn");
@@ -481,7 +274,7 @@ function prevQuestion() {
 
 function nextQuestion() {
     if (answers[currentQ] === null) { return; }
-    if (currentQ < QUESTIONS.length - 1) {
+    if (currentQ < STATEMENTS.length - 1) {
         currentQ++;
         renderQuestion();
     } else {
@@ -489,38 +282,40 @@ function nextQuestion() {
     }
 }
 
-/* ============================================================
-   ПОДСЧЁТ
-============================================================ */
 function calculateScores() {
     var scores = { IN: 0, PR: 0, PA: 0, HO: 0, LU: 0 };
-    for (var i = 0; i < QUESTIONS.length; i++) {
+    for (var i = 0; i < STATEMENTS.length; i++) {
         var ans = answers[i];
         if (ans === null) { continue; }
-        var type = QUESTIONS[i].options[ans].type;
-        if (scores[type] !== undefined) { scores[type]++; }
+        var type = STATEMENTS[i].type;
+        if (scores[type] !== undefined) { scores[type] += ans; }
     }
     return scores;
 }
 
-function scoresToPercent(scores) {
+/* Проценты:
+   - share — доля типа в общей сумме баллов (сумма = 100%)
+   - strength — сила типа относительно максимума (5..25 → 20..100%)
+*/
+function scoresToData(scores) {
     var total = 0;
     var keys = Object.keys(scores);
     for (var i = 0; i < keys.length; i++) { total += scores[keys[i]]; }
-    var result = {};
+    var data = {};
     for (var j = 0; j < keys.length; j++) {
-        var pct = total > 0 ? Math.round(scores[keys[j]] / total * 100) : 0;
-        result[keys[j]] = { count: scores[keys[j]], percent: pct };
+        var k = keys[j];
+        var s = scores[k];
+        var share = total > 0 ? Math.round(s / total * 100) : 0;
+        var strength = Math.round(s / 25 * 100);
+        data[k] = { count: s, share: share, strength: strength };
     }
-    return result;
+    return { data: data, total: total };
 }
 
-/* ============================================================
-   РЕЗУЛЬТАТЫ
-============================================================ */
 function showResults() {
     var scores = calculateScores();
-    var data = scoresToPercent(scores);
+    var res = scoresToData(scores);
+    var data = res.data;
 
     $("testScreen").classList.add("hidden");
     $("resultScreen").classList.remove("hidden");
@@ -531,21 +326,18 @@ function showResults() {
         ordered.push({ code: keys[i], data: data[keys[i]], meta: TYPES[keys[i]] });
     }
     ordered.sort(function (a, b) {
-        if (b.data.percent !== a.data.percent) { return b.data.percent - a.data.percent; }
-        return b.data.count - a.data.count;
+        if (b.data.count !== a.data.count) { return b.data.count - a.data.count; }
+        return b.data.share - a.data.share;
     });
 
     drawRadar(data);
     renderTypesList(ordered);
     renderInterpretation(ordered);
-    renderRecommendations(ordered[0].code);
+    renderRecommendations(ordered[0].code, ordered[1].code);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* ============================================================
-   РАДАР
-============================================================ */
 function drawRadar(data) {
     var canvas = $("radar");
     if (!canvas) { return; }
@@ -562,13 +354,15 @@ function drawRadar(data) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, size, size);
 
-    var cx = size / 2, cy = size / 2;
+    var cx = size / 2;
+    var cy = size / 2;
     var radius = Math.min(size, size) * 0.30;
-    var labelRadius = radius + 78;
+    var labelRadius = radius + 82;
     var order = ["IN", "PR", "PA", "HO", "LU"];
     var count = order.length;
     var angleStep = (Math.PI * 2) / count;
 
+    /* Сетка 20/40/60/80/100 */
     for (var lvl = 1; lvl <= 5; lvl++) {
         var r = radius * lvl / 5;
         ctx.beginPath();
@@ -584,24 +378,42 @@ function drawRadar(data) {
         ctx.stroke();
     }
 
+    /* Оси */
     for (var k = 0; k < count; k++) {
         var a = -Math.PI / 2 + k * angleStep;
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius);
         ctx.strokeStyle = "rgba(255,255,255,.08)";
+        ctx.lineWidth = 1;
         ctx.stroke();
     }
 
+    /* Точки данных */
     var points = [];
     for (var p = 0; p < order.length; p++) {
         var code = order[p];
-        var val = data[code] ? data[code].percent : 0;
+        var share = data[code] ? data[code].share : 0;
+        /* Шкала радара: share от 0 до 40% (так как при равномерном 20%, а максимум обычно ~35-40%) */
+        /* Используем strength для большей наглядности */
+        var strength = data[code] ? data[code].strength : 0;
+        /* Нормализуем strength 20..100 в 0..1 */
+        var normVal = (strength - 20) / 80;
+        if (normVal < 0) { normVal = 0; }
+        if (normVal > 1) { normVal = 1; }
         var ang2 = -Math.PI / 2 + p * angleStep;
-        var r2 = radius * val / 100;
-        points.push({ x: cx + Math.cos(ang2) * r2, y: cy + Math.sin(ang2) * r2, value: val, color: TYPES[code].color });
+        var r2 = radius * normVal;
+        points.push({
+            x: cx + Math.cos(ang2) * r2,
+            y: cy + Math.sin(ang2) * r2,
+            share: share,
+            strength: strength,
+            count: data[code] ? data[code].count : 0,
+            color: TYPES[code].color
+        });
     }
 
+    /* Свечение */
     ctx.save();
     ctx.shadowColor = "rgba(124,140,255,.45)";
     ctx.shadowBlur = 22;
@@ -614,6 +426,7 @@ function drawRadar(data) {
     ctx.fill();
     ctx.restore();
 
+    /* Градиент */
     var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
     fg.addColorStop(0, "rgba(156,124,255,.40)");
     fg.addColorStop(1, "rgba(124,140,255,.12)");
@@ -625,11 +438,13 @@ function drawRadar(data) {
     ctx.fillStyle = fg;
     ctx.fill();
 
+    /* Контур */
     ctx.strokeStyle = "#9ca7ff";
     ctx.lineWidth = 2.5;
     ctx.lineJoin = "round";
     ctx.stroke();
 
+    /* Точки с процентами */
     for (var t = 0; t < points.length; t++) {
         var pt = points[t];
 
@@ -651,17 +466,19 @@ function drawRadar(data) {
         ctx.fill();
 
         var ang3 = -Math.PI / 2 + t * angleStep;
-        var lx = cx + Math.cos(ang3) * (radius * pt.value / 100 + 26);
-        var ly = cy + Math.sin(ang3) * (radius * pt.value / 100 + 26);
-        var text = pt.value + "%";
+        var lx = cx + Math.cos(ang3) * (radius * ((pt.strength - 20) / 80) + 28);
+        var ly = cy + Math.sin(ang3) * (radius * ((pt.strength - 20) / 80) + 28);
+        var text = pt.share + "%";
 
-        ctx.font = "800 14px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.font = "800 13px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         var metrics = ctx.measureText(text);
         var bw = metrics.width + 16;
         var bh = 24;
         ctx.fillStyle = "rgba(11,13,18,.92)";
         ctx.beginPath();
-        var bx = lx - bw / 2, by = ly - bh / 2, rr = 7;
+        var bx = lx - bw / 2;
+        var by = ly - bh / 2;
+        var rr = 7;
         ctx.moveTo(bx + rr, by);
         ctx.lineTo(bx + bw - rr, by);
         ctx.arcTo(bx + bw, by, bx + bw, by + rr, rr);
@@ -683,6 +500,7 @@ function drawRadar(data) {
         ctx.fillText(text, lx, ly + 1);
     }
 
+    /* Подписи осей */
     for (var lb = 0; lb < order.length; lb++) {
         var meta = TYPES[order[lb]];
         var angLb = -Math.PI / 2 + lb * angleStep;
@@ -691,29 +509,31 @@ function drawRadar(data) {
 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+        ctx.font = "16px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = "#f3f5f7";
+        ctx.fillText(meta.icon, lxLb, lyLb - 16);
+
         ctx.font = "800 12.5px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+        ctx.fillStyle = meta.color;
 
         var words = meta.name.split(" ");
         var lines = [];
         var cur = "";
         for (var wi = 0; wi < words.length; wi++) {
             var test = cur ? cur + " " + words[wi] : words[wi];
-            if (ctx.measureText(test).width > 110) { if (cur) { lines.push(cur); } cur = words[wi]; }
-            else { cur = test; }
+            if (ctx.measureText(test).width > 110) {
+                if (cur) { lines.push(cur); }
+                cur = words[wi];
+            } else {
+                cur = test;
+            }
         }
         if (cur) { lines.push(cur); }
 
         var lineH = 15;
         var totalH = lines.length * lineH;
-
-        ctx.font = "16px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.fillStyle = "#f3f5f7";
-        ctx.fillText(meta.icon, lxLb, lyLb - totalH / 2 - 12);
-
-        ctx.font = "800 12.5px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
-        ctx.fillStyle = meta.color;
         for (var li = 0; li < lines.length; li++) {
-            ctx.fillText(lines[li], lxLb, lyLb + li * lineH - (totalH - lineH) / 2);
+            ctx.fillText(lines[li], lxLb, lyLb + li * lineH - (totalH - lineH) / 2 + 2);
         }
     }
 
@@ -723,9 +543,6 @@ function drawRadar(data) {
     ctx.fill();
 }
 
-/* ============================================================
-   СПИСОК ТИПОВ
-============================================================ */
 function renderTypesList(ordered) {
     var container = $("typesList");
     container.innerHTML = "";
@@ -736,10 +553,18 @@ function renderTypesList(ordered) {
         div.style.borderLeftColor = item.meta.color;
         div.innerHTML =
             '<div class="type-head">' +
-                '<div class="type-name"><span style="font-size:18px">' + item.meta.icon + '</span><span>' + esc(item.meta.name) + '</span></div>' +
-                '<div class="type-score" style="color:' + item.meta.color + '">' + item.data.percent + '%</div>' +
+                '<div class="type-name">' +
+                    '<span style="font-size:18px">' + item.meta.icon + '</span>' +
+                    '<span>' + esc(item.meta.name) + '</span>' +
+                '</div>' +
+                '<div class="type-score">' +
+                    '<span class="type-score-main" style="color:' + item.meta.color + '">' + item.data.share + '%</span>' +
+                    '<span class="type-score-sub">' + item.data.count + ' / 25 баллов</span>' +
+                '</div>' +
             '</div>' +
-            '<div class="type-bar"><div class="type-bar-fill" style="width:' + item.data.percent + '%;background:' + item.meta.color + '"></div></div>' +
+            '<div class="type-bar">' +
+                '<div class="type-bar-fill" style="width:' + item.data.share + '%;background:' + item.meta.color + '"></div>' +
+            '</div>' +
             '<div class="type-desc">' + esc(item.meta.desc) + '</div>';
         container.appendChild(div);
     }
@@ -755,94 +580,174 @@ function renderInterpretation(ordered) {
     var top = ordered[0];
     var second = ordered[1];
     var third = ordered[2];
-    var last = ordered[ordered.length - 1];
+    var last = ordered[4];
 
     var diff1_2 = top.data.count - second.data.count;
     var diff1_3 = top.data.count - third.data.count;
-
-    if (top.data.percent >= 40) {
-        html += '<p>С <strong>высокой вероятностью</strong> у вас выражен <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.percent + '%.</p>';
-        html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.percent + '%). Он проявляется слабее, но может усиливаться в определённых ситуациях.</p>';
-    } else if (diff1_2 <= 1 && diff1_3 <= 2) {
-        html += '<p>Ваш профиль — <strong>смешанный</strong>. С высокой вероятностью в вас сочетаются сразу три ведущих типа мотивации:</p>';
-        html += '<div class="block"><strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.percent + '%<br>' +
-                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.percent + '%<br>' +
-                '<strong>' + third.meta.icon + ' ' + esc(third.meta.name) + '</strong> — ' + third.data.percent + '%</div>';
-        html += '<p>Такое сочетание означает <strong>гибкую мотивацию</strong>: в разных ситуациях вас включают разные стимулы. Это даёт широту, но может мешать чётко определить приоритеты.</p>';
-    } else if (diff1_2 <= 2) {
-        html += '<p>С высокой вероятностью у вас <strong>смешанный профиль</strong> из двух ведущих типов мотивации:</p>';
-        html += '<div class="block"><strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.percent + '%<br>' +
-                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.percent + '%</div>';
-        html += '<p>Это означает, что в работе вам важно сочетание двух вещей. Например, ' + describePair(top.code, second.code) + '.</p>';
-    } else {
-        html += '<p>Наиболее вероятно у вас <strong>доминирует</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.percent + '%.</p>';
-        html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.percent + '%). Он проявляется слабее, но может усиливаться в определённых ситуациях.</p>';
-    }
-
-    if (top.data.percent < 40 && diff1_2 > 2) {
-        html += '<p>Третья по выраженности черта — <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.percent + '%).</p>';
-    }
-
-    if (last.data.percent <= 10) {
-        html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + ' тип</strong> (' + last.data.percent + '%). Это значит, что данный стимул почти не влияет на вашу мотивацию к работе.</p>';
-    }
-
     var spread = top.data.count - last.data.count;
-    if (spread <= 2 && top.data.percent < 35) {
-        html += '<div class="block">⚠️ <strong>Обратите внимание:</strong> профиль распределён почти равномерно. Чётко доминирующий тип не выявлен. Возможные причины: вы ещё формируете приоритеты, отвечали не вдумчиво, или ваша мотивация действительно ситуативная.</div>';
+
+    /* ---------- СЦЕНАРИЙ 1: размытый профиль ---------- */
+    var allMid = spread <= 4;
+    if (allMid && top.data.strength < 60) {
+        html += '<p>Ваш профиль <strong>выражен слабо</strong> — нет ни одного ярко доминирующего типа. Это может означать, что:</p>';
+        html += '<div class="block">' +
+                '• Вы ещё формируете свои карьерные приоритеты<br>' +
+                '• Ваша мотивация действительно <strong>ситуативная</strong> — зависит от конкретного места и условий<br>' +
+                '• Вы отвечали не вдумчиво, не «проецируя» утверждения на свою реальную работу' +
+                '</div>';
+        html += '<p>С <strong>наибольшей вероятностью</strong> у вас всё же присутствуют черты <span class="hl">' + esc(top.meta.name.toLowerCase()) + '</span> (' + top.data.share + '%) и <span class="hl">' + esc(second.meta.name.toLowerCase()) + '</span> (' + second.data.share + '%).</p>';
+        container.innerHTML = html;
+        return;
+    }
+
+    /* ---------- СЦЕНАРИЙ 2: явный доминант ---------- */
+    if (diff1_2 >= 4 && top.data.strength >= 70) {
+        html += '<p>У вас <strong>отчётливо выражен</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.share + '% (' + top.data.count + '/25 баллов).</p>';
+        html += '<p>Это означает, что ведущий стимул для вас — ' + getShortPhrase(top.code) + '. ' + getTypeSentence(top.code) + '</p>';
+        html += '<p>Второй по выраженности — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.share + '%, ' + second.data.count + '/25). Он заметно слабее, но может усиливаться в определённых ситуациях.</p>';
+
+        if (third.data.count >= 15) {
+            html += '<p>Дополнительно проявляется <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.share + '%). Это третья по значимости черта вашего профиля.</p>';
+        }
+
+        if (last.data.count <= 10) {
+            html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%) — этот стимул практически не влияет на вашу мотивацию.</p>';
+        }
+
+        container.innerHTML = html;
+        return;
+    }
+
+    /* ---------- СЦЕНАРИЙ 3: двойной профиль ---------- */
+    if (diff1_2 <= 3 && diff1_3 >= 4) {
+        html += '<p>С <strong>высокой вероятностью</strong> у вас <strong>смешанный профиль</strong> из двух ведущих типов мотивации — они выражены примерно одинаково:</p>';
+        html += '<div class="block">' +
+                '<strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.share + '% (' + top.data.count + '/25)<br>' +
+                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.share + '% (' + second.data.count + '/25)' +
+                '</div>';
+        html += '<p>Это означает, что в работе вам важно сочетание двух вещей: <strong>' + describePair(top.code, second.code) + '</strong>.</p>';
+        html += '<p>Третий тип — <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.share + '%) — существенно слабее, но не отсутствует.</p>';
+
+        if (last.data.count <= 10) {
+            html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>';
+        }
+
+        container.innerHTML = html;
+        return;
+    }
+
+    /* ---------- СЦЕНАРИЙ 4: тройной профиль ---------- */
+    if (diff1_2 <= 3 && diff1_3 <= 3) {
+        html += '<p>Ваш профиль — <strong>множественный</strong>. С высокой вероятностью в вас сочетаются сразу три ведущих типа мотивации:</p>';
+        html += '<div class="block">' +
+                '<strong>' + top.meta.icon + ' ' + esc(top.meta.name) + '</strong> — ' + top.data.share + '%<br>' +
+                '<strong>' + second.meta.icon + ' ' + esc(second.meta.name) + '</strong> — ' + second.data.share + '%<br>' +
+                '<strong>' + third.meta.icon + ' ' + esc(third.meta.name) + '</strong> — ' + third.data.share + '%' +
+                '</div>';
+        html += '<p>Такое сочетание означает <strong>гибкую, многогранную мотивацию</strong>: в разных ситуациях вас могут включать разные стимулы. Это даёт широту, но может мешать чётко определить, чего именно вы хотите от работы.</p>';
+        html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%) — этот стимул вас практически не мотивирует.</p>';
+        container.innerHTML = html;
+        return;
+    }
+
+    /* ---------- СЦЕНАРИЙ 5: общий (fallback) ---------- */
+    html += '<p>Наиболее вероятно у вас <strong>доминирует</strong> <span class="hl">' + esc(top.meta.name.toLowerCase()) + ' тип мотивации</span> — ' + top.data.share + '% (' + top.data.count + '/25 баллов).</p>';
+    html += '<p>Второй по силе — <strong>' + esc(second.meta.name.toLowerCase()) + '</strong> (' + second.data.share + '%). ' + getShortPhrase(second.code) + '.</p>';
+    if (third.data.count >= 15) {
+        html += '<p>Третий — <strong>' + esc(third.meta.name.toLowerCase()) + '</strong> (' + third.data.share + '%).</p>';
+    }
+    if (last.data.count <= 10) {
+        html += '<p>Наименее выражен <strong>' + esc(last.meta.name.toLowerCase()) + '</strong> (' + last.data.share + '%).</p>';
     }
 
     container.innerHTML = html;
+}
+
+function getShortPhrase(code) {
+    var m = {
+        IN: "размер и справедливость оплаты",
+        PR: "содержание работы и профессиональный рост",
+        PA: "стабильность, коллектив и преданность организации",
+        HO: "самостоятельность и личная ответственность за результат",
+        LU: "минимум усилий и отсутствие давления"
+    };
+    return m[code] || "";
+}
+
+function getTypeSentence(code) {
+    var m = {
+        IN: "Вы работаете прежде всего ради денег и готовы сменить работу, если предложат больше.",
+        PR: "Вам важнее интересные задачи и рост, чем просто высокая зарплата.",
+        PA: "Вы цените надёжность, хорошие отношения в коллективе и преданность компании.",
+        HO: "Вы относитесь к работе как к своему делу и хотите влиять на результат.",
+        LU: "Вы стремитесь минимизировать усилия и избегать лишней ответственности."
+    };
+    return m[code] || "";
 }
 
 function describePair(codeA, codeB) {
     var arr = [codeA, codeB].sort();
     var key = arr[0] + "-" + arr[1];
     var map = {
-        "IN-PR": "интересные задачи и достойная оплата одновременно",
-        "IN-PA": "общий результат команды и личное вознаграждение",
-        "HO-IN": "самостоятельность и прямая связь усилий с доходом",
+        "IN-PR": "достойная оплата и интересные задачи одновременно",
+        "IN-PA": "стабильность компании и личный доход",
+        "HO-IN": "самостоятельность при прямой связи усилий с вознаграждением",
         "IN-LU": "хороший заработок при отсутствии лишней нагрузки",
-        "PA-PR": "профессиональный рост в кругу единомышленников",
-        "HO-PA": "ответственность за общее дело в своей команде",
+        "PA-PR": "профессиональный рост в сплочённой команде",
+        "HO-PA": "ответственность за общее дело в «своей» компании",
         "LU-PA": "спокойная работа с ощущением причастности к общему",
-        "HO-PR": "самостоятельная работа с постоянным профессиональным ростом",
+        "HO-PR": "самостоятельная работа с постоянным профессиональным развитием",
         "LU-PR": "интересная работа без перегрузок",
         "HO-LU": "самостоятельность без лишнего напряжения"
     };
-    return map[key] || "сочетание двух разных стимулов, что делает вашу мотивацию многогранной";
+    return map[key] || "сочетание двух разных стимулов — это делает мотивацию многогранной";
 }
 
-/* ============================================================
-   РЕКОМЕНДАЦИИ
-============================================================ */
-function renderRecommendations(topCode) {
+function renderRecommendations(topCode, secondCode) {
     var container = $("recommendations");
     var posMap = {
-        IN: ["Прозрачная система оплаты", "Бонусы и премии за результат", "Понятные KPI и метрики", "Возможность зарабатывать больше", "Соревновательный элемент"],
-        PR: ["Интересные сложные задачи", "Возможность учиться и расти", "Признание экспертизы", "Доступ к новым знаниям", "Автономия в работе"],
-        PA: ["Команда единомышленников", "Общая миссия и ценности", "Публичное признание вклада", "Ощущение причастности", "Поддержка коллег"],
-        HO: ["Автономия и свобода решений", "Личная ответственность за результат", "Возможность влиять на процессы", "Отсутствие мелочного контроля", "Роль лидера или организатора"],
-        LU: ["Стабильность и предсказуемость", "Минимум переработок", "Чёткие инструкции и правила", "Комфортные условия", "Гарантированный оклад"]
+        IN: ["Прозрачная система оплаты", "Бонусы и премии за конкретный результат", "Понятные KPI", "Возможность зарабатывать больше", "Справедливая оценка вклада"],
+        PR: ["Интересные сложные задачи", "Обучение и доступ к новым знаниям", "Признание экспертизы", "Автономия в методах работы", "Публичное признание достижений"],
+        PA: ["Стабильность компании", "Команда единомышленников", "Признание верности и вклада", "Хорошие отношения с руководством", "Понятные долгосрочные перспективы"],
+        HO: ["Свобода в принятии решений", "Личная ответственность за результат", "Возможность влиять на процессы", "Отсутствие микроменеджмента", "Роль лидера или владельца"],
+        LU: ["Стабильность и предсказуемость", "Минимум переработок", "Чёткие инструкции", "Комфортные условия", "Гарантированный оклад"]
     };
     var negMap = {
-        IN: ["Уравниловка в оплате", "«Работа за идею» без денег", "Размытые критерии результата", "Несправедливая оценка вклада"],
+        IN: ["Уравниловка в оплате", "«Работа за идею» без денег", "Размытые критерии результата", "Задержки зарплаты"],
         PR: ["Рутина и однообразие", "Отсутствие развития", "Работа без смысла", "Жёсткий контроль процесса"],
-        PA: ["Индивидуализм и разобщённость", "Конфликты в коллективе", "Обесценивание общего дела", "Частая смена команды"],
+        PA: ["Частые перемены в компании", "Конфликты в коллективе", "Неуважение к стажу", "Обесценивание вклада «старичков»"],
         HO: ["Мелочный контроль", "Отсутствие самостоятельности", "Бюрократия и согласования", "Работа «на побегушках»"],
         LU: ["Постоянные изменения", "Высокие требования", "Частые переработки", "Стресс и неопределённость"]
     };
 
-    var pos = posMap[topCode] || [];
-    var neg = negMap[topCode] || [];
+    var posTop = posMap[topCode] || [];
+    var negTop = negMap[topCode] || [];
+    var posSecond = posMap[secondCode] || [];
 
     var html = '<div class="reco-grid">';
-    html += '<div class="reco-col pos"><div class="reco-col-title">✓ Что мотивирует</div><ul>';
-    for (var i = 0; i < pos.length; i++) { html += '<li>' + esc(pos[i]) + '</li>'; }
+
+    html += '<div class="reco-col pos">';
+    html += '<div class="reco-col-title">Что мотивирует — ' + esc(TYPES[topCode].name) + '</div><ul>';
+    for (var i = 0; i < posTop.length; i++) {
+        html += '<li>' + esc(posTop[i]) + '</li>';
+    }
     html += '</ul></div>';
-    html += '<div class="reco-col neg"><div class="reco-col-title">✗ Что демотивирует</div><ul>';
-    for (var j = 0; j < neg.length; j++) { html += '<li>' + esc(neg[j]) + '</li>'; }
-    html += '</ul></div></div>';
+
+    html += '<div class="reco-col pos">';
+    html += '<div class="reco-col-title">Что мотивирует — ' + esc(TYPES[secondCode].name) + '</div><ul>';
+    for (var k = 0; k < posSecond.length; k++) {
+        html += '<li>' + esc(posSecond[k]) + '</li>';
+    }
+    html += '</ul></div>';
+
+    html += '</div>';
+
+    html += '<div class="reco-col neg" style="margin-top:10px;background:var(--card2);border-radius:12px;padding:12px 14px">';
+    html += '<div class="reco-col-title" style="color:var(--danger);font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">Что демотивирует</div><ul style="margin:0;padding-left:16px">';
+    for (var j = 0; j < negTop.length; j++) {
+        html += '<li style="margin-bottom:4px;color:var(--muted)">' + esc(negTop[j]) + '</li>';
+    }
+    html += '</ul></div>';
 
     container.innerHTML = html;
 }
@@ -851,8 +756,11 @@ function renderRecommendations(topCode) {
    СОХРАНЕНИЕ
 ============================================================ */
 function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ })); } catch (e) {}
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ }));
+    } catch (e) {}
 }
+
 function load() {
     try {
         var raw = localStorage.getItem(STORAGE_KEY);
@@ -860,8 +768,8 @@ function load() {
         var data = JSON.parse(raw);
         if (data && Array.isArray(data.answers)) {
             answers = data.answers;
-            while (answers.length < QUESTIONS.length) { answers.push(null); }
-            if (typeof data.currentQ === "number" && data.currentQ >= 0 && data.currentQ < QUESTIONS.length) {
+            while (answers.length < STATEMENTS.length) { answers.push(null); }
+            if (typeof data.currentQ === "number" && data.currentQ >= 0 && data.currentQ < STATEMENTS.length) {
                 currentQ = data.currentQ;
             }
         }
@@ -876,10 +784,11 @@ function backToTest() {
     $("testScreen").classList.remove("hidden");
     renderQuestion();
 }
+
 function resetAll() {
     var ok = window.confirm("Удалить все ответы и начать заново?");
     if (!ok) { return; }
-    answers = new Array(QUESTIONS.length).fill(null);
+    answers = new Array(STATEMENTS.length).fill(null);
     currentQ = 0;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     $("resultScreen").classList.add("hidden");
@@ -887,10 +796,17 @@ function resetAll() {
     renderQuestion();
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
 function exportResults() {
     var scores = calculateScores();
-    var data = scoresToPercent(scores);
-    var out = { title: "Мотивация по Герчикову", date: new Date().toLocaleString("ru-RU"), answers: answers, scores: scores, percents: data };
+    var res = scoresToData(scores);
+    var out = {
+        title: "Мотивация по Герчикову",
+        date: new Date().toLocaleString("ru-RU"),
+        answers: answers,
+        scores: scores,
+        percent: res.data
+    };
     var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
