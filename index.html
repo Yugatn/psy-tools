@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -24,7 +24,7 @@ body {
 }
 
 body {
-    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
     color: #e8faff;
     background:
         radial-gradient(circle at 50% 45%, rgba(0, 150, 255, .08), transparent 32%),
@@ -171,8 +171,6 @@ body {
     margin-top: clamp(70px, 8vw, 110px);
 }
 
-/* Новый заголовок раздела — без эмодзи, с номером-бейджем */
-
 .section-title {
     position: relative;
 
@@ -243,7 +241,7 @@ body {
 }
 
 /* =========================================================
-   CARDS — ЦЕНТРИРОВАНИЕ В ВЕБ-ВЕРСИИ
+   CARDS
 ========================================================= */
 
 .cards {
@@ -251,7 +249,6 @@ body {
 
     display: grid;
 
-    /* auto-fit + фиксированная ширина = карточки всегда по центру */
     grid-template-columns: repeat(auto-fit, 215px);
 
     justify-content: center;
@@ -288,8 +285,7 @@ body {
 }
 
 /* =========================================================
-   CYBERPUNK WATER RIPPLES
-   — у каждой 3-й карточки своя форма и скорость
+   RIPPLES
 ========================================================= */
 
 .ripples {
@@ -336,8 +332,6 @@ body {
 .ripple:nth-child(2) { animation-delay: 1.8s; }
 .ripple:nth-child(3) { animation-delay: 3.6s; }
 
-/* Неравномерная форма и скорость волн — по номеру карточки */
-
 .card:nth-child(3n+1) .ripple {
     border-radius: 48% 52% 51% 49%;
     animation-duration: 5.5s;
@@ -374,7 +368,7 @@ body {
 }
 
 /* =========================================================
-   ANGULAR CYBERPUNK SEGMENTS
+   CYBER RING
 ========================================================= */
 
 .cyber-ring {
@@ -470,11 +464,6 @@ body {
     }
 }
 
-/* =========================================================
-   НЕРАВНОМЕРНАЯ ПУЛЬСАЦИЯ — РАЗНЫЕ ДЛИТЕЛЬНОСТИ ДЛЯ КАЖДОГО РАЗДЕЛА
-========================================================= */
-
-/* Внешнее кольцо ::before */
 .card:nth-child(3n+1) .cyber-ring::before {
     animation-duration: 4.2s;
     animation-delay: -0.3s;
@@ -488,7 +477,6 @@ body {
     animation-delay: -2.7s;
 }
 
-/* Внутреннее кольцо ::after */
 .card:nth-child(3n+1) .cyber-ring::after {
     animation-duration: 5.3s;
     animation-delay: -1.4s;
@@ -503,7 +491,7 @@ body {
 }
 
 /* =========================================================
-   DENDRITE LINES
+   DENDRITES
 ========================================================= */
 
 .dendrites {
@@ -537,27 +525,19 @@ body {
 }
 
 .dendrites span:nth-child(1) {
-    width: 90px;
-    left: 20%;
-    top: 35%;
+    width: 90px; left: 20%; top: 35%;
     transform: rotate(-25deg);
 }
 .dendrites span:nth-child(2) {
-    width: 75px;
-    right: 15%;
-    top: 30%;
+    width: 75px; right: 15%; top: 30%;
     transform: rotate(24deg);
 }
 .dendrites span:nth-child(3) {
-    width: 95px;
-    left: 18%;
-    bottom: 28%;
+    width: 95px; left: 18%; bottom: 28%;
     transform: rotate(25deg);
 }
 .dendrites span:nth-child(4) {
-    width: 70px;
-    right: 18%;
-    bottom: 32%;
+    width: 70px; right: 18%; bottom: 32%;
     transform: rotate(-27deg);
 }
 
@@ -615,6 +595,8 @@ body {
 
     box-shadow:
         inset 0 0 25px rgba(30, 220, 255, .08);
+
+    pointer-events: none;
 }
 
 /* =========================================================
@@ -712,6 +694,39 @@ body {
 }
 
 /* =========================================================
+   CIRCLE TITLE (SVG-текст по дуге)
+========================================================= */
+
+.circle-title {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 5;
+
+    overflow: visible;
+}
+
+.circle-title text {
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    fill: #dff7ff;
+
+    letter-spacing: 0.02em;
+
+    text-shadow: 0 0 8px rgba(50, 210, 255, .45);
+}
+
+.card:hover .circle-title text,
+.card.active .circle-title text {
+    fill: #ffffff;
+}
+
+/* =========================================================
    ICON
 ========================================================= */
 
@@ -762,34 +777,25 @@ body {
 }
 
 /* =========================================================
-   CARD TITLE
+   HIDDEN CARD TITLE (для accessibility)
 ========================================================= */
 
 .card-title {
     position: absolute;
 
-    left: 50%;
-    top: 50%;
+    width: 1px;
+    height: 1px;
 
-    width: 82%;
+    padding: 0;
+    margin: -1px;
 
-    transform: translate(-50%, 65px);
+    overflow: hidden;
 
-    z-index: 7;
+    clip: rect(0, 0, 0, 0);
 
-    text-align: center;
+    white-space: nowrap;
 
-    color: #e6fbff;
-
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .01em;
-
-    line-height: 1.3;
-
-    text-shadow:
-        0 0 8px rgba(50, 210, 255, .45);
+    border: 0;
 }
 
 /* =========================================================
@@ -844,10 +850,10 @@ body {
 
     color: #dffaff;
 
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: 13px;
 
-    line-height: 1.45;
+    line-height: 1.5;
 
     text-align: center;
 
@@ -950,12 +956,6 @@ body {
         height: 58px;
     }
 
-    .card-title {
-        font-size: 12px;
-        transform: translate(-50%, 52px);
-        width: 90%;
-    }
-
     .description {
         top: auto;
         bottom: 70%;
@@ -998,11 +998,6 @@ body {
     .icon {
         width: 52px;
         height: 52px;
-    }
-
-    .card-title {
-        font-size: 11px;
-        transform: translate(-50%, 49px);
     }
 
     .description {
@@ -1058,13 +1053,11 @@ body {
 
             <a class="card"
                href="./cattell/"
+               aria-label="16 факторов Кеттелла"
                data-description="Исследование структуры личности по 16 личностным факторам.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1082,11 +1075,8 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <circle cx="32" cy="32" r="9"/>
-
                             <path d="
                                 M23 32
                                 C12 32 10 24 16 19
@@ -1095,27 +1085,21 @@ body {
                                 C41 17 48 14 51 20
                                 C55 28 48 34 42 34
                             "/>
-
                             <path d="
                                 M23 34
                                 C14 37 14 47 21 50
                                 C27 53 29 47 32 48
                             "/>
-
                             <path d="M17 20L10 15"/>
                             <path d="M39 12L43 5"/>
                             <path d="M50 21L58 18"/>
                             <path d="M21 50L17 58"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    16 факторов Кеттелла
-                </span>
+                <span class="card-title">16 факторов Кеттелла</span>
 
                 <div class="description">
                     Исследование структуры личности по 16 личностным факторам.
@@ -1128,13 +1112,11 @@ body {
 
             <a class="card"
                href="./luscher/"
+               aria-label="Тест Люшера"
                data-description="Исследование предпочтений цвета и связанных с ними психологических состояний.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1152,43 +1134,20 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <circle cx="32" cy="32" r="20"/>
-
                             <path d="M32 12V52"/>
                             <path d="M12 32H52"/>
-
-                            <path d="
-                                M18 18
-                                C24 24 27 27 32 32
-                            "/>
-
-                            <path d="
-                                M46 18
-                                C40 24 37 27 32 32
-                            "/>
-
-                            <path d="
-                                M18 46
-                                C24 40 27 37 32 32
-                            "/>
-
-                            <path d="
-                                M46 46
-                                C40 40 37 37 32 32
-                            "/>
-
+                            <path d="M18 18C24 24 27 27 32 32"/>
+                            <path d="M46 18C40 24 37 27 32 32"/>
+                            <path d="M18 46C24 40 27 37 32 32"/>
+                            <path d="M46 46C40 40 37 37 32 32"/>
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Тест Люшера
-                </span>
+                <span class="card-title">Тест Люшера</span>
 
                 <div class="description">
                     Исследование предпочтений цвета и связанных с ними психологических состояний.
@@ -1201,13 +1160,11 @@ body {
 
             <a class="card"
                href="./gerchikov/"
+               aria-label="Мотивация по Герчикову"
                data-description="Исследование структуры трудовой мотивации и ведущих мотивационных типов.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1225,9 +1182,7 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <path d="
                                 M32 8
                                 L37 25
@@ -1241,18 +1196,13 @@ body {
                                 L27 25
                                 Z
                             "/>
-
                             <circle cx="32" cy="32" r="5"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Мотивация по Герчикову
-                </span>
+                <span class="card-title">Мотивация по Герчикову</span>
 
                 <div class="description">
                     Исследование структуры трудовой мотивации и ведущих мотивационных типов.
@@ -1278,18 +1228,15 @@ body {
 
         <div class="cards">
 
-
             <!-- КОЛЕСО -->
 
             <a class="card"
                href="./wheel/"
+               aria-label="Колесо баланса"
                data-description="Оценка удовлетворённости основными сферами жизни и поиск зон для развития.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1307,31 +1254,23 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <circle cx="32" cy="32" r="22"/>
                             <circle cx="32" cy="32" r="10"/>
-
                             <path d="M32 10V22"/>
                             <path d="M32 42V54"/>
                             <path d="M10 32H22"/>
                             <path d="M42 32H54"/>
-
                             <path d="M17 17L25 25"/>
                             <path d="M39 39L47 47"/>
                             <path d="M47 17L39 25"/>
                             <path d="M25 39L17 47"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Колесо баланса
-                </span>
+                <span class="card-title">Колесо баланса</span>
 
                 <div class="description">
                     Оценка удовлетворённости основными сферами жизни и поиск зон для развития.
@@ -1344,13 +1283,11 @@ body {
 
             <a class="card"
                href="./skills/"
+               aria-label="Рефлексия навыков"
                data-description="Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1368,37 +1305,26 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <circle cx="32" cy="32" r="7"/>
-
                             <path d="M32 25V9"/>
                             <path d="M32 39V55"/>
-
                             <path d="M25 32H9"/>
                             <path d="M39 32H55"/>
-
                             <path d="M27 27L16 16"/>
                             <path d="M37 37L48 48"/>
-
                             <path d="M37 27L48 16"/>
                             <path d="M27 37L16 48"/>
-
                             <circle cx="32" cy="9" r="3"/>
                             <circle cx="32" cy="55" r="3"/>
                             <circle cx="9" cy="32" r="3"/>
                             <circle cx="55" cy="32" r="3"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Рефлексия навыков
-                </span>
+                <span class="card-title">Рефлексия навыков</span>
 
                 <div class="description">
                     Осмысление собственных навыков, опыта и компетенций для дальнейшего развития.
@@ -1411,13 +1337,11 @@ body {
 
             <a class="card"
                href="./career/"
+               aria-label="Профориентация"
                data-description="Исследование интересов и склонностей для поиска подходящих профессиональных направлений.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1435,11 +1359,8 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
                             <circle cx="32" cy="32" r="21"/>
-
                             <path d="
                                 M32 11
                                 L36 28
@@ -1451,18 +1372,13 @@ body {
                                 L28 28
                                 Z
                             "/>
-
                             <circle cx="32" cy="32" r="4"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Профориентация
-                </span>
+                <span class="card-title">Профориентация</span>
 
                 <div class="description">
                     Исследование интересов и склонностей для поиска подходящих профессиональных направлений.
@@ -1488,18 +1404,15 @@ body {
 
         <div class="cards">
 
-
             <!-- ВАКАНСИИ -->
 
             <a class="card"
                href="./work/vacancies/"
+               aria-label="Вакансии"
                data-description="Поиск и просмотр подходящих предложений о работе.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1517,16 +1430,8 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
-                            <rect
-                                x="10"
-                                y="18"
-                                width="44"
-                                height="34"
-                                rx="5"/>
-
+                            <rect x="10" y="18" width="44" height="34" rx="5"/>
                             <path d="
                                 M23 18
                                 V13
@@ -1534,19 +1439,14 @@ body {
                                 C38 8 41 10 41 13
                                 V18
                             "/>
-
                             <path d="M10 31H54"/>
                             <path d="M27 31V37H37V31"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Вакансии
-                </span>
+                <span class="card-title">Вакансии</span>
 
                 <div class="description">
                     Поиск и просмотр подходящих предложений о работе.
@@ -1559,13 +1459,11 @@ body {
 
             <a class="card"
                href="./work/resume/"
+               aria-label="Моё резюме"
                data-description="Создание и ведение собственного профессионального профиля.">
 
                 <div class="dendrites">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
 
                 <div class="ripples">
@@ -1583,37 +1481,17 @@ body {
                     </div>
 
                     <div class="icon">
-
                         <svg viewBox="0 0 64 64">
-
-                            <rect
-                                x="15"
-                                y="8"
-                                width="34"
-                                height="48"
-                                rx="4"/>
-
-                            <circle
-                                cx="32"
-                                cy="24"
-                                r="7"/>
-
-                            <path d="
-                                M22 39
-                                C22 34 42 34 42 39
-                            "/>
-
+                            <rect x="15" y="8" width="34" height="48" rx="4"/>
+                            <circle cx="32" cy="24" r="7"/>
+                            <path d="M22 39C22 34 42 34 42 39"/>
                             <path d="M23 47H41"/>
-
                         </svg>
-
                     </div>
 
                 </div>
 
-                <span class="card-title">
-                    Моё резюме
-                </span>
+                <span class="card-title">Моё резюме</span>
 
                 <div class="description">
                     Создание и ведение собственного профессионального профиля.
@@ -1631,6 +1509,83 @@ body {
 <script>
 
 /* =========================================================
+   CIRCULAR TITLES — Текст по верхней дуге внутри сферы
+   ========================================================= */
+
+function initCircularTitles() {
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const XLINK_NS = 'http://www.w3.org/1999/xlink';
+
+    const isMobile =
+        window.innerWidth < 700 ||
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    document.querySelectorAll('.card').forEach(function(card, idx) {
+
+        const body = card.querySelector('.neuron-body');
+        const titleEl = card.querySelector('.card-title');
+
+        if (!body || !titleEl) return;
+
+        const text = titleEl.textContent.replace(/\s+/g, ' ').trim();
+        if (!text) return;
+
+        /* Базовая высота шрифта в единицах viewBox (200×200) */
+        let fontSize = isMobile ? 16 : 14;
+
+        /* Уменьшаем для длинных названий */
+        if (text.length > 16) fontSize -= 1;
+        if (text.length > 20) fontSize -= 1;
+        if (text.length > 24) fontSize -= 1;
+
+        /* --- SVG --- */
+        const svg = document.createElementNS(SVG_NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 200 200');
+        svg.setAttribute('class', 'circle-title');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+        /* --- Defs + path --- */
+        const defs = document.createElementNS(SVG_NS, 'defs');
+        const pathId = 'circ-title-path-' + idx + '-' + Math.floor(Math.random() * 1e6);
+        const path = document.createElementNS(SVG_NS, 'path');
+
+        path.setAttribute('id', pathId);
+        /* Дуга от левой точки через верх к правой:
+           M (22,100) — старт слева
+           A rx ry rotation large-arc sweep x y
+           r = 78 → верхняя дуга, проходящая через (100,22) */
+        path.setAttribute('d', 'M 22,100 A 78,78 0 0 1 178,100');
+        defs.appendChild(path);
+
+        /* --- Text on path --- */
+        const textEl = document.createElementNS(SVG_NS, 'text');
+        textEl.setAttribute('font-size', String(fontSize));
+        textEl.setAttribute('font-family', '"Manrope", -apple-system, BlinkMacSystemFont, sans-serif');
+        textEl.setAttribute('font-weight', '600');
+        textEl.setAttribute('fill', '#dff7ff');
+        textEl.setAttribute('letter-spacing', '0.5');
+
+        const textPath = document.createElementNS(SVG_NS, 'textPath');
+        textPath.setAttribute('startOffset', '50%');
+        textPath.setAttribute('text-anchor', 'middle');
+
+        /* Двойная установка href — для старых Safari и современных браузеров */
+        textPath.setAttributeNS(XLINK_NS, 'xlink:href', '#' + pathId);
+        textPath.setAttribute('href', '#' + pathId);
+
+        textPath.textContent = text;
+
+        textEl.appendChild(textPath);
+        svg.appendChild(defs);
+        svg.appendChild(textEl);
+
+        body.appendChild(svg);
+    });
+}
+
+/* =========================================================
    MATRIX CHARACTERS
 ========================================================= */
 
@@ -1642,70 +1597,35 @@ const matrixChars =
 
 function createMatrix(card) {
 
-    const container =
-        card.querySelector(".matrix-swirl");
-
+    const container = card.querySelector('.matrix-swirl');
     if (!container) return;
 
-    container.innerHTML = "";
+    container.innerHTML = '';
 
     const count = 90;
 
     for (let i = 0; i < count; i++) {
 
-        const char =
-            document.createElement("span");
-
-        char.className = "matrix-char";
+        const char = document.createElement('span');
+        char.className = 'matrix-char';
 
         char.textContent =
-            matrixChars[
-                Math.floor(
-                    Math.random() *
-                    matrixChars.length
-                )
-            ];
+            matrixChars[Math.floor(Math.random() * matrixChars.length)];
 
-        const angle =
-            i * 0.55 +
-            Math.random() * .7;
+        const angle = i * 0.55 + Math.random() * .7;
+        const radius = 5 + i * 1.45;
 
-        const radius =
-            5 +
-            i * 1.45;
+        const x = 50 + Math.cos(angle) * radius;
+        const y = 50 + Math.sin(angle) * radius;
 
-        const x =
-            50 +
-            Math.cos(angle) *
-            radius;
+        const size = 8 + Math.random() * 7;
+        const opacity = .25 + Math.random() * .75;
 
-        const y =
-            50 +
-            Math.sin(angle) *
-            radius;
-
-        const size =
-            8 +
-            Math.random() * 7;
-
-        const opacity =
-            .25 +
-            Math.random() * .75;
-
-        char.style.left =
-            x + "%";
-
-        char.style.top =
-            y + "%";
-
-        char.style.fontSize =
-            size + "px";
-
-        char.style.opacity =
-            opacity;
-
-        char.style.transform =
-            `rotate(${angle * 57.3 + 90}deg)`;
+        char.style.left = x + '%';
+        char.style.top = y + '%';
+        char.style.fontSize = size + 'px';
+        char.style.opacity = opacity;
+        char.style.transform = 'rotate(' + (angle * 57.3 + 90) + 'deg)';
 
         container.appendChild(char);
     }
@@ -1713,12 +1633,11 @@ function createMatrix(card) {
 
 
 /* =========================================================
-   INITIALIZE MATRIX
+   INITIALIZE
 ========================================================= */
 
-document
-    .querySelectorAll(".card")
-    .forEach(createMatrix);
+document.querySelectorAll('.card').forEach(createMatrix);
+initCircularTitles();
 
 
 /* =========================================================
@@ -1726,54 +1645,37 @@ document
 ========================================================= */
 
 const isTouchDevice =
-    window.matchMedia("(hover: none)").matches ||
-    "ontouchstart" in window;
+    window.matchMedia('(hover: none)').matches ||
+    'ontouchstart' in window;
 
 if (isTouchDevice) {
 
-    document
-        .querySelectorAll(".card")
-        .forEach(card => {
+    document.querySelectorAll('.card').forEach(function(card) {
 
-            card.addEventListener(
-                "click",
-                function(event) {
+        card.addEventListener('click', function(event) {
 
-                    if (!card.classList.contains("active")) {
+            if (!card.classList.contains('active')) {
 
-                        event.preventDefault();
+                event.preventDefault();
 
-                        document
-                            .querySelectorAll(".card.active")
-                            .forEach(other => {
+                document.querySelectorAll('.card.active').forEach(function(other) {
+                    other.classList.remove('active');
+                });
 
-                                other.classList.remove("active");
-
-                            });
-
-                        card.classList.add("active");
-                    }
-                }
-            );
-        });
-
-
-    document.addEventListener(
-        "click",
-        function(event) {
-
-            if (!event.target.closest(".card")) {
-
-                document
-                    .querySelectorAll(".card.active")
-                    .forEach(card => {
-
-                        card.classList.remove("active");
-
-                    });
+                card.classList.add('active');
             }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+
+        if (!event.target.closest('.card')) {
+
+            document.querySelectorAll('.card.active').forEach(function(card) {
+                card.classList.remove('active');
+            });
         }
-    );
+    });
 }
 
 
@@ -1781,32 +1683,24 @@ if (isTouchDevice) {
    KEYBOARD
 ========================================================= */
 
-document
-    .querySelectorAll(".card")
-    .forEach(card => {
+document.querySelectorAll('.card').forEach(function(card) {
 
-        card.addEventListener(
-            "focus",
-            () => card.classList.add("active")
-        );
-
-        card.addEventListener(
-            "blur",
-            () => card.classList.remove("active")
-        );
-
+    card.addEventListener('focus', function() {
+        card.classList.add('active');
     });
+
+    card.addEventListener('blur', function() {
+        card.classList.remove('active');
+    });
+});
 
 
 /* =========================================================
    NEURAL NETWORK CANVAS
 ========================================================= */
 
-const canvas =
-    document.getElementById("neuralCanvas");
-
-const ctx =
-    canvas.getContext("2d");
+const canvas = document.getElementById('neuralCanvas');
+const ctx = canvas.getContext('2d');
 
 let width = 0;
 let height = 0;
@@ -1817,29 +1711,16 @@ let pulses = [];
 
 function resizeCanvas() {
 
-    width =
-        canvas.width =
-        window.innerWidth *
-        window.devicePixelRatio;
+    width = canvas.width = window.innerWidth * window.devicePixelRatio;
+    height = canvas.height = window.innerHeight * window.devicePixelRatio;
 
-    height =
-        canvas.height =
-        window.innerHeight *
-        window.devicePixelRatio;
-
-    canvas.style.width =
-        window.innerWidth + "px";
-
-    canvas.style.height =
-        window.innerHeight + "px";
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
 
     ctx.setTransform(
-        window.devicePixelRatio,
-        0,
-        0,
-        window.devicePixelRatio,
-        0,
-        0
+        window.devicePixelRatio, 0,
+        0, window.devicePixelRatio,
+        0, 0
     );
 
     createBackgroundNodes();
@@ -1850,85 +1731,43 @@ function createBackgroundNodes() {
 
     nodes = [];
 
-    const count =
-        Math.min(
-            65,
-            Math.max(
-                28,
-                Math.floor(
-                    window.innerWidth / 24
-                )
-            )
-        );
+    const count = Math.min(65, Math.max(28, Math.floor(window.innerWidth / 24)));
 
     for (let i = 0; i < count; i++) {
-
         nodes.push({
-            x:
-                Math.random() *
-                window.innerWidth,
-            y:
-                Math.random() *
-                window.innerHeight,
-            r:
-                .7 +
-                Math.random() * 1.7,
-            phase:
-                Math.random() *
-                Math.PI *
-                2
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: .7 + Math.random() * 1.7,
+            phase: Math.random() * Math.PI * 2
         });
     }
 }
 
 
 function getCardCenters() {
-
-    return [
-        ...document
-            .querySelectorAll(".card")
-    ]
-    .map(card => {
-
-        const rect =
-            card.getBoundingClientRect();
-
+    return Array.from(document.querySelectorAll('.card')).map(function(card) {
+        const rect = card.getBoundingClientRect();
         return {
-            x:
-                rect.left +
-                rect.width / 2,
-            y:
-                rect.top +
-                rect.height / 2
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
         };
     });
 }
 
 
 function distance(a, b) {
-
-    const dx =
-        a.x - b.x;
-
-    const dy =
-        a.y - b.y;
-
-    return Math.sqrt(
-        dx * dx +
-        dy * dy
-    );
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.sqrt(dx * dx + dy * dy);
 }
 
 
 function createPulse(a, b) {
-
     pulses.push({
-        a,
-        b,
+        a: a,
+        b: b,
         progress: 0,
-        speed:
-            .0015 +
-            Math.random() * .0018,
+        speed: .0015 + Math.random() * .0018,
         life: 1
     });
 }
@@ -1936,333 +1775,151 @@ function createPulse(a, b) {
 
 function drawNetwork(time) {
 
-    ctx.clearRect(
-        0,
-        0,
-        window.innerWidth,
-        window.innerHeight
-    );
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-    const cardCenters =
-        getCardCenters();
+    const cardCenters = getCardCenters();
 
 
-    /* -----------------------------------------------------
-       BACKGROUND NEURONS
-    ----------------------------------------------------- */
+    /* --- BACKGROUND NEURONS --- */
 
     for (let i = 0; i < nodes.length; i++) {
 
-        const node =
-            nodes[i];
-
+        const node = nodes[i];
         node.phase += .004;
 
-        const glow =
-            .35 +
-            Math.sin(node.phase) *
-            .15;
+        const glow = .35 + Math.sin(node.phase) * .15;
 
         ctx.beginPath();
-
-        ctx.arc(
-            node.x,
-            node.y,
-            node.r,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle =
-            `rgba(70,210,255,${glow})`;
-
+        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(70,210,255,' + glow + ')';
         ctx.fill();
 
+        for (let j = i + 1; j < nodes.length; j++) {
 
-        for (
-            let j = i + 1;
-            j < nodes.length;
-            j++
-        ) {
-
-            const other =
-                nodes[j];
-
-            const dist =
-                distance(node, other);
+            const other = nodes[j];
+            const dist = distance(node, other);
 
             if (dist < 170) {
 
-                const alpha =
-                    (1 - dist / 170) *
-                    .13;
+                const alpha = (1 - dist / 170) * .13;
 
                 ctx.beginPath();
-
-                ctx.moveTo(
-                    node.x,
-                    node.y
-                );
-
-                ctx.lineTo(
-                    other.x,
-                    other.y
-                );
-
-                ctx.strokeStyle =
-                    `rgba(50,190,240,${alpha})`;
-
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(other.x, other.y);
+                ctx.strokeStyle = 'rgba(50,190,240,' + alpha + ')';
                 ctx.lineWidth = .7;
-
                 ctx.stroke();
             }
         }
     }
 
 
-    /* -----------------------------------------------------
-       SPHERE CONNECTIONS
-    ----------------------------------------------------- */
+    /* --- SPHERE CONNECTIONS --- */
 
-    for (
-        let i = 0;
-        i < cardCenters.length;
-        i++
-    ) {
+    for (let i = 0; i < cardCenters.length; i++) {
 
-        for (
-            let j = i + 1;
-            j < cardCenters.length;
-            j++
-        ) {
+        for (let j = i + 1; j < cardCenters.length; j++) {
 
-            const a =
-                cardCenters[i];
-
-            const b =
-                cardCenters[j];
-
-            const dist =
-                distance(a, b);
+            const a = cardCenters[i];
+            const b = cardCenters[j];
+            const dist = distance(a, b);
 
             if (dist < 620) {
 
-                const alpha =
-                    Math.max(
-                        .04,
-                        1 -
-                        dist / 620
-                    ) * .32;
+                const alpha = Math.max(.04, 1 - dist / 620) * .32;
 
                 ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
 
-                ctx.moveTo(
-                    a.x,
-                    a.y
-                );
+                const midX = (a.x + b.x) / 2;
+                const midY = (a.y + b.y) / 2;
 
-                const midX =
-                    (a.x + b.x) / 2;
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
 
-                const midY =
-                    (a.y + b.y) / 2;
+                const nx = -dy / length;
+                const ny = dx / length;
 
-                const dx =
-                    b.x - a.x;
-
-                const dy =
-                    b.y - a.y;
-
-                const length =
-                    Math.sqrt(
-                        dx * dx +
-                        dy * dy
-                    );
-
-                const nx =
-                    -dy / length;
-
-                const ny =
-                    dx / length;
-
-                const bend =
-                    Math.sin(
-                        time * .0004 +
-                        i * 2 +
-                        j
-                    ) * 12;
+                const bend = Math.sin(time * .0004 + i * 2 + j) * 12;
 
                 ctx.quadraticCurveTo(
-                    midX +
-                    nx * bend,
-                    midY +
-                    ny * bend,
-                    b.x,
-                    b.y
+                    midX + nx * bend,
+                    midY + ny * bend,
+                    b.x, b.y
                 );
 
-                ctx.strokeStyle =
-                    `rgba(50,205,245,${alpha})`;
-
+                ctx.strokeStyle = 'rgba(50,205,245,' + alpha + ')';
                 ctx.lineWidth = 1;
-
                 ctx.stroke();
 
-
-                if (
-                    Math.random() <
-                    .0008
-                ) {
-
-                    createPulse(
-                        a,
-                        b
-                    );
+                if (Math.random() < .0008) {
+                    createPulse(a, b);
                 }
             }
         }
     }
 
 
-    /* -----------------------------------------------------
-       PULSES
-    ----------------------------------------------------- */
+    /* --- PULSES --- */
 
-    for (
-        let i = pulses.length - 1;
-        i >= 0;
-        i--
-    ) {
+    for (let i = pulses.length - 1; i >= 0; i--) {
 
-        const pulse =
-            pulses[i];
+        const pulse = pulses[i];
+        pulse.progress += pulse.speed * 16;
 
-        pulse.progress +=
-            pulse.speed *
-            16;
-
-        if (
-            pulse.progress >= 1
-        ) {
-
+        if (pulse.progress >= 1) {
             pulses.splice(i, 1);
-
             continue;
         }
 
-        const x =
-            pulse.a.x +
-            (
-                pulse.b.x -
-                pulse.a.x
-            ) *
-            pulse.progress;
+        const x = pulse.a.x + (pulse.b.x - pulse.a.x) * pulse.progress;
+        const y = pulse.a.y + (pulse.b.y - pulse.a.y) * pulse.progress;
 
-        const y =
-            pulse.a.y +
-            (
-                pulse.b.y -
-                pulse.a.y
-            ) *
-            pulse.progress;
-
-        const gradient =
-            ctx.createRadialGradient(
-                x,
-                y,
-                0,
-                x,
-                y,
-                14
-            );
-
-        gradient.addColorStop(
-            0,
-            "rgba(130,255,255,.95)"
-        );
-
-        gradient.addColorStop(
-            1,
-            "rgba(40,200,255,0)"
-        );
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 14);
+        gradient.addColorStop(0, 'rgba(130,255,255,.95)');
+        gradient.addColorStop(1, 'rgba(40,200,255,0)');
 
         ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            14,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle =
-            gradient;
-
+        ctx.arc(x, y, 14, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
         ctx.fill();
     }
 
 
-    /* -----------------------------------------------------
-       SMALL SYNAPTIC PARTICLES
-    ----------------------------------------------------- */
+    /* --- SMALL SYNAPTIC PARTICLES --- */
 
-    for (
-        let i = 0;
-        i < cardCenters.length;
-        i++
-    ) {
+    for (let i = 0; i < cardCenters.length; i++) {
 
-        const p =
-            cardCenters[i];
-
-        const pulse =
-            1 +
-            Math.sin(
-                time * .002 +
-                i
-            ) * .4;
+        const p = cardCenters[i];
+        const pulse = 1 + Math.sin(time * .002 + i) * .4;
 
         ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            2.2 * pulse,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle =
-            "rgba(90,230,255,.55)";
-
+        ctx.arc(p.x, p.y, 2.2 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(90,230,255,.55)';
         ctx.shadowBlur = 12;
-
-        ctx.shadowColor =
-            "rgba(50,220,255,.7)";
-
+        ctx.shadowColor = 'rgba(50,220,255,.7)';
         ctx.fill();
-
         ctx.shadowBlur = 0;
     }
 
 
-    requestAnimationFrame(
-        drawNetwork
-    );
+    requestAnimationFrame(drawNetwork);
 }
 
 
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+window.addEventListener('resize', function() {
+    resizeCanvas();
+    /* При изменении размера пересобираем заголовки (для корректного
+       размера шрифта при переходе mobile/desktop) */
+    document.querySelectorAll('.circle-title').forEach(function(svg) {
+        svg.remove();
+    });
+    initCircularTitles();
+});
 
 resizeCanvas();
-
-requestAnimationFrame(
-    drawNetwork
-);
+requestAnimationFrame(drawNetwork);
 
 </script>
 
