@@ -6,9 +6,11 @@
 
 <title>PSY-TOOLS</title>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
+<style>
 * {
     box-sizing: border-box;
     margin: 0;
@@ -22,7 +24,7 @@ body {
 }
 
 body {
-    font-family: "Manrope", sans-serif;
+    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
     color: #e8faff;
     background:
         radial-gradient(circle at 50% 45%, rgba(0, 150, 255, .08), transparent 32%),
@@ -30,6 +32,7 @@ body {
         radial-gradient(circle at 85% 80%, rgba(100, 0, 255, .05), transparent 30%),
         #020509;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================================
@@ -62,6 +65,11 @@ body {
     background-size: 70px 70px;
 
     mask-image: radial-gradient(
+        circle at center,
+        black 20%,
+        transparent 85%
+    );
+    -webkit-mask-image: radial-gradient(
         circle at center,
         black 20%,
         transparent 85%
@@ -100,9 +108,10 @@ body {
 
     text-align: center;
 
-    font-size: clamp(32px, 5vw, 58px);
+    font-family: "Unbounded", sans-serif;
+    font-size: clamp(30px, 4.6vw, 56px);
     font-weight: 800;
-    letter-spacing: .22em;
+    letter-spacing: .18em;
 
     color: transparent;
 
@@ -149,15 +158,8 @@ body {
 }
 
 @keyframes logoPulse {
-
-    0%,
-    100% {
-        opacity: .82;
-    }
-
-    50% {
-        opacity: 1;
-    }
+    0%, 100% { opacity: .82; }
+    50% { opacity: 1; }
 }
 
 /* =========================================================
@@ -169,31 +171,65 @@ body {
     margin-top: clamp(70px, 8vw, 110px);
 }
 
+/* Новый заголовок раздела — без эмодзи, с номером-бейджем */
+
 .section-title {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    margin: 0 auto 55px;
+
+    width: 100%;
+
     text-align: center;
+}
 
-    font-size: clamp(18px, 2vw, 25px);
-    font-weight: 700;
+.section-title .num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
 
-    letter-spacing: .12em;
+    color: rgba(120, 235, 255, .85);
+
+    padding: 5px 13px 5px 15px;
+
+    border: 1px solid rgba(80, 220, 255, .35);
+    border-radius: 100px;
+
+    background: rgba(80, 220, 255, .05);
+
+    text-shadow: 0 0 8px rgba(80, 220, 255, .6);
+
+    flex-shrink: 0;
+}
+
+.section-title .name {
+    font-family: "Unbounded", sans-serif;
+    font-size: clamp(17px, 1.9vw, 24px);
+    font-weight: 600;
+    letter-spacing: .06em;
 
     color: #d9faff;
 
-    margin-bottom: 45px;
-
-    text-shadow:
-        0 0 10px rgba(50, 210, 255, .4);
+    text-shadow: 0 0 12px rgba(50, 210, 255, .5);
 }
 
 .section-title::after {
     content: "";
 
-    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: -26px;
+
+    transform: translateX(-50%);
 
     width: 180px;
     height: 1px;
-
-    margin: 14px auto 0;
 
     background:
         linear-gradient(
@@ -203,12 +239,11 @@ body {
             transparent
         );
 
-    box-shadow:
-        0 0 10px rgba(40, 220, 255, .5);
+    box-shadow: 0 0 10px rgba(40, 220, 255, .5);
 }
 
 /* =========================================================
-   CARDS GRID
+   CARDS — ЦЕНТРИРОВАНИЕ В ВЕБ-ВЕРСИИ
 ========================================================= */
 
 .cards {
@@ -216,8 +251,10 @@ body {
 
     display: grid;
 
-    grid-template-columns:
-        repeat(4, minmax(180px, 1fr));
+    /* auto-fit + фиксированная ширина = карточки всегда по центру */
+    grid-template-columns: repeat(auto-fit, 215px);
+
+    justify-content: center;
 
     justify-items: center;
     align-items: center;
@@ -252,6 +289,7 @@ body {
 
 /* =========================================================
    CYBERPUNK WATER RIPPLES
+   — у каждой 3-й карточки своя форма и скорость
 ========================================================= */
 
 .ripples {
@@ -295,41 +333,42 @@ body {
         rippleExpand 5.5s ease-out infinite;
 }
 
-.ripple:nth-child(2) {
-    animation-delay: 1.8s;
-}
+.ripple:nth-child(2) { animation-delay: 1.8s; }
+.ripple:nth-child(3) { animation-delay: 3.6s; }
 
-.ripple:nth-child(3) {
-    animation-delay: 3.6s;
+/* Неравномерная форма и скорость волн — по номеру карточки */
+
+.card:nth-child(3n+1) .ripple {
+    border-radius: 48% 52% 51% 49%;
+    animation-duration: 5.5s;
+}
+.card:nth-child(3n+2) .ripple {
+    border-radius: 53% 47% 49% 51%;
+    animation-duration: 6.4s;
+}
+.card:nth-child(3n+3) .ripple {
+    border-radius: 51% 49% 53% 47%;
+    animation-duration: 5.9s;
 }
 
 @keyframes rippleExpand {
-
     0% {
         width: 85%;
         height: 85%;
-
         opacity: 0;
-
         border-color: rgba(50, 230, 255, .0);
     }
-
     15% {
         opacity: .5;
-
         border-color: rgba(50, 230, 255, .55);
     }
-
     65% {
         opacity: .22;
     }
-
     100% {
         width: 245%;
         height: 245%;
-
         opacity: 0;
-
         border-color: rgba(50, 190, 255, .0);
     }
 }
@@ -370,39 +409,22 @@ body {
     background:
         conic-gradient(
             from 0deg,
-
             transparent 0deg 14deg,
-
             rgba(62, 226, 255, .8) 14deg 15deg,
-
             transparent 15deg 42deg,
-
             rgba(68, 190, 255, .55) 42deg 43deg,
-
             transparent 43deg 76deg,
-
             rgba(100, 255, 215, .7) 76deg 77deg,
-
             transparent 77deg 112deg,
-
             rgba(60, 190, 255, .55) 112deg 113deg,
-
             transparent 113deg 156deg,
-
             rgba(65, 225, 255, .75) 156deg 157deg,
-
             transparent 157deg 210deg,
-
             rgba(70, 190, 255, .5) 210deg 211deg,
-
             transparent 211deg 270deg,
-
             rgba(65, 230, 255, .8) 270deg 271deg,
-
             transparent 271deg 315deg,
-
             rgba(90, 255, 220, .55) 315deg 316deg,
-
             transparent 316deg
         );
 
@@ -438,17 +460,46 @@ body {
 }
 
 @keyframes cyberPulse {
-
-    0%,
-    100% {
+    0%, 100% {
         transform: scale(.96);
         opacity: .25;
     }
-
     50% {
         transform: scale(1.04);
         opacity: .65;
     }
+}
+
+/* =========================================================
+   НЕРАВНОМЕРНАЯ ПУЛЬСАЦИЯ — РАЗНЫЕ ДЛИТЕЛЬНОСТИ ДЛЯ КАЖДОГО РАЗДЕЛА
+========================================================= */
+
+/* Внешнее кольцо ::before */
+.card:nth-child(3n+1) .cyber-ring::before {
+    animation-duration: 4.2s;
+    animation-delay: -0.3s;
+}
+.card:nth-child(3n+2) .cyber-ring::before {
+    animation-duration: 5.6s;
+    animation-delay: -1.9s;
+}
+.card:nth-child(3n+3) .cyber-ring::before {
+    animation-duration: 3.9s;
+    animation-delay: -2.7s;
+}
+
+/* Внутреннее кольцо ::after */
+.card:nth-child(3n+1) .cyber-ring::after {
+    animation-duration: 5.3s;
+    animation-delay: -1.4s;
+}
+.card:nth-child(3n+2) .cyber-ring::after {
+    animation-duration: 4.1s;
+    animation-delay: -2.2s;
+}
+.card:nth-child(3n+3) .cyber-ring::after {
+    animation-duration: 6.0s;
+    animation-delay: -0.8s;
 }
 
 /* =========================================================
@@ -491,21 +542,18 @@ body {
     top: 35%;
     transform: rotate(-25deg);
 }
-
 .dendrites span:nth-child(2) {
     width: 75px;
     right: 15%;
     top: 30%;
     transform: rotate(24deg);
 }
-
 .dendrites span:nth-child(3) {
     width: 95px;
     left: 18%;
     bottom: 28%;
     transform: rotate(25deg);
 }
-
 .dendrites span:nth-child(4) {
     width: 70px;
     right: 18%;
@@ -531,7 +579,6 @@ body {
             rgba(255, 255, 255, .18),
             transparent 12%
         ),
-
         radial-gradient(
             circle at 50% 50%,
             rgba(30, 150, 210, .3),
@@ -542,13 +589,9 @@ body {
         1px solid rgba(100, 235, 255, .65);
 
     box-shadow:
-
         0 0 15px rgba(30, 210, 255, .35),
-
         0 0 40px rgba(30, 180, 255, .2),
-
         inset 0 0 35px rgba(20, 170, 230, .18),
-
         inset 12px 12px 30px rgba(130, 245, 255, .07);
 
     transition:
@@ -558,10 +601,6 @@ body {
 
     z-index: 1;
 }
-
-/* =========================================================
-   NEURON INTERNAL MEMBRANE
-========================================================= */
 
 .neuron-body::before {
     content: "";
@@ -606,7 +645,6 @@ body {
 .card:hover .matrix-code,
 .card.active .matrix-code {
     opacity: .9;
-
     clip-path: circle(72% at 50% 50%);
 }
 
@@ -626,10 +664,6 @@ body {
 
     z-index: 1;
 }
-
-/* =========================================================
-   MATRIX VORTEX
-========================================================= */
 
 .matrix-swirl {
     position: absolute;
@@ -654,14 +688,8 @@ body {
 }
 
 @keyframes matrixSlowSpin {
-
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .matrix-char {
@@ -669,10 +697,7 @@ body {
 
     color: #48ffc4;
 
-    font-family:
-        "Courier New",
-        monospace;
-
+    font-family: "JetBrains Mono", monospace;
     font-weight: 700;
 
     line-height: 1;
@@ -729,11 +754,8 @@ body {
 
 .card:hover .icon,
 .card.active .icon {
-
     transform: scale(1.08);
-
     color: #eaffff;
-
     filter:
         drop-shadow(0 0 8px rgba(80, 235, 255, .8))
         drop-shadow(0 0 20px rgba(30, 180, 255, .5));
@@ -751,8 +773,7 @@ body {
 
     width: 82%;
 
-    transform:
-        translate(-50%, 65px);
+    transform: translate(-50%, 65px);
 
     z-index: 7;
 
@@ -760,10 +781,12 @@ body {
 
     color: #e6fbff;
 
+    font-family: "Space Grotesk", sans-serif;
     font-size: 14px;
     font-weight: 600;
+    letter-spacing: .01em;
 
-    line-height: 1.25;
+    line-height: 1.3;
 
     text-shadow:
         0 0 8px rgba(50, 210, 255, .45);
@@ -775,20 +798,14 @@ body {
 
 .card:hover .neuron-body,
 .card.active .neuron-body {
-
     transform: scale(1.075);
 
-    border-color:
-        rgba(120, 255, 245, .9);
+    border-color: rgba(120, 255, 245, .9);
 
     box-shadow:
-
         0 0 20px rgba(30, 230, 255, .6),
-
         0 0 55px rgba(30, 190, 255, .4),
-
         0 0 100px rgba(0, 150, 255, .18),
-
         inset 0 0 45px rgba(40, 255, 210, .15);
 }
 
@@ -797,7 +814,6 @@ body {
 ========================================================= */
 
 .description {
-
     position: absolute;
 
     left: 50%;
@@ -828,6 +844,7 @@ body {
 
     color: #dffaff;
 
+    font-family: "Space Grotesk", sans-serif;
     font-size: 13px;
 
     line-height: 1.45;
@@ -850,7 +867,6 @@ body {
 
 .card:hover .description,
 .card.active .description {
-
     opacity: 1;
 
     transform:
@@ -860,24 +876,12 @@ body {
 }
 
 /* =========================================================
-   SECTION LAST CARD
-========================================================= */
-
-.cards .card:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-    justify-self: center;
-}
-
-/* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 1050px) {
-
     .cards {
-        grid-template-columns:
-            repeat(3, minmax(170px, 1fr));
-
+        grid-template-columns: repeat(auto-fit, 200px);
         gap:
             100px
             30px;
@@ -891,15 +895,14 @@ body {
 @media (max-width: 700px) {
 
     .main {
-
         padding:
             35px 14px
             80px;
     }
 
     .logo {
-        font-size: 34px;
-        letter-spacing: .17em;
+        font-size: 30px;
+        letter-spacing: .14em;
     }
 
     .section {
@@ -907,16 +910,29 @@ body {
     }
 
     .section-title {
-        margin-bottom: 38px;
-        font-size: 18px;
+        gap: 10px;
+        margin-bottom: 42px;
+    }
+
+    .section-title .num {
+        font-size: 10px;
+        padding: 4px 10px 4px 12px;
+    }
+
+    .section-title .name {
+        font-size: 15px;
+        letter-spacing: .04em;
+    }
+
+    .section-title::after {
+        bottom: -20px;
+        width: 140px;
     }
 
     .cards {
-
         width: 100%;
 
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
         column-gap: 15px;
         row-gap: 105px;
@@ -925,36 +941,28 @@ body {
     }
 
     .card {
-
         width: min(155px, 42vw);
         height: min(155px, 42vw);
     }
 
     .icon {
-
         width: 58px;
         height: 58px;
     }
 
     .card-title {
-
         font-size: 12px;
-
-        transform:
-            translate(-50%, 52px);
-
+        transform: translate(-50%, 52px);
         width: 90%;
     }
 
     .description {
-
         top: auto;
         bottom: 70%;
 
         width: 92%;
 
-        padding:
-            11px 12px;
+        padding: 11px 12px;
 
         font-size: 13px;
 
@@ -978,33 +986,26 @@ body {
 @media (max-width: 390px) {
 
     .cards {
-
         column-gap: 8px;
         row-gap: 100px;
     }
 
     .card {
-
         width: 140px;
         height: 140px;
     }
 
     .icon {
-
         width: 52px;
         height: 52px;
     }
 
     .card-title {
-
         font-size: 11px;
-
-        transform:
-            translate(-50%, 49px);
+        transform: translate(-50%, 49px);
     }
 
     .description {
-
         font-size: 12px;
         width: 94%;
     }
@@ -1015,14 +1016,11 @@ body {
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
-
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-
         transition-duration: .01ms !important;
     }
 }
@@ -1050,7 +1048,8 @@ body {
     <section class="section">
 
         <h2 class="section-title">
-            🧠 Психодиагностика
+            <span class="num">01</span>
+            <span class="name">Психодиагностика</span>
         </h2>
 
         <div class="cards">
@@ -1273,7 +1272,8 @@ body {
     <section class="section">
 
         <h2 class="section-title">
-            🧭 Саморазвитие
+            <span class="num">02</span>
+            <span class="name">Саморазвитие</span>
         </h2>
 
         <div class="cards">
@@ -1311,7 +1311,6 @@ body {
                         <svg viewBox="0 0 64 64">
 
                             <circle cx="32" cy="32" r="22"/>
-
                             <circle cx="32" cy="32" r="10"/>
 
                             <path d="M32 10V22"/>
@@ -1483,7 +1482,8 @@ body {
     <section class="section">
 
         <h2 class="section-title">
-            💼 Найти работу
+            <span class="num">03</span>
+            <span class="name">Найти работу</span>
         </h2>
 
         <div class="cards">
@@ -1536,7 +1536,6 @@ body {
                             "/>
 
                             <path d="M10 31H54"/>
-
                             <path d="M27 31V37H37V31"/>
 
                         </svg>
@@ -1667,10 +1666,6 @@ function createMatrix(card) {
                 )
             ];
 
-        /*
-         * Создаём спиральное распределение.
-         */
-
         const angle =
             i * 0.55 +
             Math.random() * .7;
@@ -1708,11 +1703,6 @@ function createMatrix(card) {
 
         char.style.opacity =
             opacity;
-
-        /*
-         * Небольшой наклон символов
-         * по направлению спирали.
-         */
 
         char.style.transform =
             `rotate(${angle * 57.3 + 90}deg)`;
@@ -1825,10 +1815,6 @@ let nodes = [];
 let pulses = [];
 
 
-/* =========================================================
-   RESIZE
-========================================================= */
-
 function resizeCanvas() {
 
     width =
@@ -1860,10 +1846,6 @@ function resizeCanvas() {
 }
 
 
-/* =========================================================
-   BACKGROUND NODES
-========================================================= */
-
 function createBackgroundNodes() {
 
     nodes = [];
@@ -1882,32 +1864,23 @@ function createBackgroundNodes() {
     for (let i = 0; i < count; i++) {
 
         nodes.push({
-
             x:
                 Math.random() *
                 window.innerWidth,
-
             y:
                 Math.random() *
                 window.innerHeight,
-
             r:
                 .7 +
                 Math.random() * 1.7,
-
             phase:
                 Math.random() *
                 Math.PI *
                 2
-
         });
     }
 }
 
-
-/* =========================================================
-   CARD CENTERS
-========================================================= */
 
 function getCardCenters() {
 
@@ -1921,11 +1894,9 @@ function getCardCenters() {
             card.getBoundingClientRect();
 
         return {
-
             x:
                 rect.left +
                 rect.width / 2,
-
             y:
                 rect.top +
                 rect.height / 2
@@ -1933,10 +1904,6 @@ function getCardCenters() {
     });
 }
 
-
-/* =========================================================
-   DISTANCE
-========================================================= */
 
 function distance(a, b) {
 
@@ -1953,31 +1920,19 @@ function distance(a, b) {
 }
 
 
-/* =========================================================
-   PULSES
-========================================================= */
-
 function createPulse(a, b) {
 
     pulses.push({
-
         a,
         b,
-
         progress: 0,
-
         speed:
             .0015 +
             Math.random() * .0018,
-
         life: 1
     });
 }
 
-
-/* =========================================================
-   DRAW
-========================================================= */
 
 function drawNetwork(time) {
 
@@ -2106,12 +2061,6 @@ function drawNetwork(time) {
                     a.y
                 );
 
-                /*
-                 * Немного изгибаем линию,
-                 * чтобы она не выглядела
-                 * обычным прямым проводом.
-                 */
-
                 const midX =
                     (a.x + b.x) / 2;
 
@@ -2144,13 +2093,10 @@ function drawNetwork(time) {
                     ) * 12;
 
                 ctx.quadraticCurveTo(
-
                     midX +
                     nx * bend,
-
                     midY +
                     ny * bend,
-
                     b.x,
                     b.y
                 );
@@ -2162,11 +2108,6 @@ function drawNetwork(time) {
 
                 ctx.stroke();
 
-
-                /*
-                 * Периодически запускаем
-                 * импульс по соединению.
-                 */
 
                 if (
                     Math.random() <
@@ -2311,10 +2252,6 @@ function drawNetwork(time) {
     );
 }
 
-
-/* =========================================================
-   START
-========================================================= */
 
 window.addEventListener(
     "resize",
