@@ -218,7 +218,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
     transform: translateY(-2px) scale(.97);
 }
 
-/* Сфера */
 .door-sphere {
     position: relative;
 
@@ -229,7 +228,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 
     border-radius: 50%;
 
-    /* Основной цвет — реальный */
     background-color: var(--c, #888);
 
     background-image:
@@ -308,7 +306,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
     transition: opacity .35s ease;
 }
 
-/* Бейдж с номером выбора */
 .door-rank {
     position: absolute;
 
@@ -350,7 +347,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
     transform: scale(1);
 }
 
-/* Hover / focus */
 .door:hover .door-sphere,
 .door:focus-visible .door-sphere {
     box-shadow:
@@ -362,7 +358,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
         0 0 0 1px rgba(255,255,255,.18);
 }
 
-/* Уже выбранный цвет — мягкое свечение, без пульсации */
 .door.picked .door-sphere {
     box-shadow:
         inset -14px -18px 32px rgba(0,0,0,.55),
@@ -396,30 +391,80 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 }
 
 /* ============================================================
-   CONTEXTS
+   CONTEXT — ONE QUESTION AT A TIME
 ============================================================ */
 
-.contexts-list { display: flex; flex-direction: column; gap: 14px; }
-.context-item {
-    background: rgba(255,255,255,.035);
+.context-question {
+    background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
     border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 16px;
-    transition: border-color .2s;
+    border-radius: 22px;
+
+    padding: 34px 24px;
+
+    text-align: center;
+
+    min-height: 210px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 22px;
+
+    animation: fade .3s ease;
 }
-.context-item.answered { border-color: rgba(125,211,252,.35); }
-.context-item h4 { margin: 0 0 4px; font-size: 15px; }
-.context-item .context-hint {
-    font-size: 12px; color: var(--muted); margin-bottom: 12px;
+
+.context-group {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-weight: 700;
+
+    padding: 5px 12px;
+    border-radius: 999px;
+
+    background: rgba(125,211,252,.10);
+    border: 1px solid rgba(125,211,252,.25);
+
+    color: var(--accent);
 }
+
+.context-counter {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    color: var(--muted);
+}
+
+.context-label {
+    font-size: clamp(19px, 5.2vw, 25px);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text);
+}
+
+.context-hint {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 420px;
+}
+
 .context-options {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 14px;
+    max-width: 440px;
+    margin: 0 auto;
+    animation: fade .3s ease;
 }
+
 .context-option {
     aspect-ratio: 1 / 1;
-    border-radius: 14px;
+    border-radius: 18px;
     border: 3px solid transparent;
     cursor: pointer;
     position: relative;
@@ -427,14 +472,25 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
     transition: border-color .2s, transform .15s, box-shadow .2s;
     overflow: hidden;
 }
+
 .context-option:active { transform: scale(.94); }
+
+.context-option:hover,
+.context-option:focus-visible {
+    transform: scale(1.05);
+}
+
 .context-option.selected {
     border-color: #fff;
-    box-shadow: 0 0 0 3px rgba(125,211,252,.7);
+    box-shadow:
+        0 0 0 4px rgba(125,211,252,.7),
+        0 0 24px rgba(125,211,252,.5);
+    transform: scale(1.06);
 }
+
 .context-option .opt-label {
     position: absolute;
-    bottom: 5px; left: 50%;
+    bottom: 6px; left: 50%;
     transform: translateX(-50%);
     font-size: 10px;
     color: #111827;
@@ -467,12 +523,11 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 .rating-number {
     min-width: 42px; text-align: right;
     font-size: 20px; font-weight: 800;
-    /* цвет задаётся inline в JS */
 }
 input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
 /* ============================================================
-   TEMPERAMENT — one question at a time
+   TEMPERAMENT — ONE QUESTION AT A TIME
 ============================================================ */
 
 .trait-question {
@@ -509,8 +564,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
 
     background: rgba(255,255,255,.06);
     border: 1px solid rgba(255,255,255,.10);
-
-    /* цвет задаётся inline */
 }
 
 .trait-counter {
@@ -535,23 +588,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
     margin-top: 12px;
 }
 
-.btn-yes {
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    color: #fff;
-    border: 0;
-    border-radius: 16px;
-    padding: 18px 20px;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform .12s, box-shadow .2s;
-}
-.btn-yes:active { transform: scale(.97); }
-.btn-yes.active {
-    box-shadow: 0 0 0 3px rgba(34,197,94,.55),
-                0 0 24px rgba(34,197,94,.35);
-}
-
 .btn-no {
     background: rgba(255,255,255,.06);
     color: var(--text);
@@ -569,6 +605,23 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
     border-color: rgba(251,113,133,.5);
     box-shadow: 0 0 0 3px rgba(251,113,133,.35),
                 0 0 20px rgba(251,113,133,.25);
+}
+
+.btn-yes {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: #fff;
+    border: 0;
+    border-radius: 16px;
+    padding: 18px 20px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .2s;
+}
+.btn-yes:active { transform: scale(.97); }
+.btn-yes.active {
+    box-shadow: 0 0 0 3px rgba(34,197,94,.55),
+                0 0 24px rgba(34,197,94,.35);
 }
 
 /* RESULT */
@@ -850,9 +903,13 @@ canvas { max-width: 100%; height: auto; display: block; }
         top: -4px;
         right: -4px;
     }
-    .trait-question {
-        padding: 28px 18px;
-        min-height: 200px;
+    .trait-question,
+    .context-question {
+        padding: 26px 18px;
+        min-height: 190px;
+    }
+    .context-options {
+        gap: 10px;
     }
 }
 
@@ -885,9 +942,10 @@ canvas { max-width: 100%; height: auto; display: block; }
             <strong>Как проходит тест</strong>
             <p>
                 Пять этапов: ранжирование 6 цветов по привлекательности,
-                ранжирование 4 основных цветов, контекстный выбор,
-                оценка привлекательности 1–10 и 80 утверждений
-                о привычках и реакциях (по одному, «Да» / «Нет»).
+                ранжирование 4 основных, ассоциативный выбор
+                (16 категорий — ситуации и философские добродетели),
+                оценка цветов 1–10 и 80 утверждений о темпераменте
+                (по одному, «Нет» / «Да»).
             </p>
         </div>
         <div class="info-box">
@@ -927,27 +985,31 @@ canvas { max-width: 100%; height: auto; display: block; }
         <div id="doors" class="doors"></div>
     </section>
 
-    <!-- CONTEXTS (Этап 3) -->
+    <!-- CONTEXTS (Этап 3) — по одному критерию -->
     <section id="contexts" class="screen hidden">
         <div class="progress">
             <div id="contextsProgressBar" class="progress-bar"></div>
         </div>
         <div class="test-header">
             <div class="header-top">
-                <button class="back-btn" id="backBtnContexts" type="button" aria-label="Вернуться к предыдущему этапу">← Назад</button>
+                <button class="back-btn" id="backBtnContexts" type="button" aria-label="Вернуться к предыдущему шагу">← Назад</button>
                 <span class="stage">Этап 3 из 5</span>
             </div>
-            <h2>Контекстный выбор</h2>
+            <h2>Ассоциативный выбор</h2>
             <p class="instruction">
-                Для каждой ситуации выберите цвет, который сейчас
-                кажется наиболее подходящим. Используйте стрелки ←/→
-                для навигации по вариантам.
+                Выберите цвет, который у вас ассоциируется
+                с этой категорией.
             </p>
         </div>
-        <div id="contextsContainer" class="contexts-list"></div>
-        <div class="section-actions">
-            <button class="btn btn-primary" id="toRatingsBtn" type="button" disabled>Далее → Оценка цветов</button>
+
+        <div class="context-question" id="contextQuestion">
+            <div class="context-group" id="contextGroup">—</div>
+            <div class="context-counter" id="contextCounter">1 / 16</div>
+            <div class="context-label" id="contextLabel">—</div>
+            <div class="context-hint" id="contextHint"></div>
         </div>
+
+        <div id="contextOptions" class="context-options"></div>
     </section>
 
     <!-- RATINGS (Этап 4) -->
@@ -957,7 +1019,7 @@ canvas { max-width: 100%; height: auto; display: block; }
         </div>
         <div class="test-header">
             <div class="header-top">
-                <button class="back-btn" id="backBtnRatings" type="button" aria-label="Вернуться к контекстному выбору">← Назад</button>
+                <button class="back-btn" id="backBtnRatings" type="button" aria-label="Вернуться к ассоциативному выбору">← Назад</button>
                 <span class="stage">Этап 4 из 5</span>
             </div>
             <h2>Оценка привлекательности</h2>
@@ -973,7 +1035,7 @@ canvas { max-width: 100%; height: auto; display: block; }
         </div>
     </section>
 
-    <!-- TEMPERAMENT (Этап 5) — по одному утверждению -->
+    <!-- TEMPERAMENT (Этап 5) -->
     <section id="temperament" class="screen hidden">
         <div class="progress">
             <div id="tempProgressBar" class="progress-bar"></div>
@@ -986,7 +1048,6 @@ canvas { max-width: 100%; height: auto; display: block; }
             <h2>Формула темперамента</h2>
             <p class="instruction">
                 Подходит ли вам это утверждение?
-                Отвечайте «Да» или «Нет».
             </p>
         </div>
 
@@ -997,8 +1058,8 @@ canvas { max-width: 100%; height: auto; display: block; }
         </div>
 
         <div class="trait-actions">
-            <button class="btn-yes" id="traitYesBtn" type="button">Да</button>
             <button class="btn-no" id="traitNoBtn" type="button">Нет</button>
+            <button class="btn-yes" id="traitYesBtn" type="button">Да</button>
         </div>
     </section>
 
@@ -1127,7 +1188,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВСТАВЬТЕ_I
 const URL_IS_CONFIGURED = !GOOGLE_SCRIPT_URL.includes("ВСТАВЬТЕ");
 
 /* ============================================================
-   TELEGRAM WEB APP (safe init)
+   TELEGRAM WEB APP
 ============================================================ */
 let tg = null;
 try {
@@ -1150,7 +1211,7 @@ function haptic(type) {
 /* ============================================================
    КОНСТАНТЫ
 ============================================================ */
-const TEST_VERSION = "v3.3-rank-per-question";
+const TEST_VERSION = "v3.4-context-seq";
 
 const COLORS = [
     { id: "red", name: "Красный", short: "Красн", hex: "#ef4444",
@@ -1175,11 +1236,29 @@ const COLORS = [
 
 const BASIC_COLOR_IDS = ["red", "blue", "yellow", "green"];
 
+/* ============================================================
+   КОНТЕКСТЫ — ситуации и философские добродетели
+============================================================ */
 const CONTEXTS = [
-    { id: "work",   label: "Активная работа",         hint: "Деятельность, требующая концентрации и энергии" },
-    { id: "rest",   label: "Отдых и восстановление",  hint: "Когда нужно расслабиться и восстановить силы" },
-    { id: "social", label: "Общение с людьми",        hint: "Встречи, разговоры, взаимодействие" },
-    { id: "alone",  label: "Уединение",               hint: "Когда хочется побыть одному" }
+    /* ---- Ситуации ---- */
+    { id: "work",        group: "situation", groupLabel: "СИТУАЦИИ",    label: "Активная работа",         hint: "Деятельность, требующая концентрации и энергии" },
+    { id: "rest",        group: "situation", groupLabel: "СИТУАЦИИ",    label: "Отдых и восстановление",  hint: "Когда нужно расслабиться и восстановить силы" },
+    { id: "social",      group: "situation", groupLabel: "СИТУАЦИИ",    label: "Общение с людьми",        hint: "Встречи, разговоры, взаимодействие" },
+    { id: "alone",       group: "situation", groupLabel: "СИТУАЦИИ",    label: "Уединение",               hint: "Когда хочется побыть одному" },
+    { id: "creativity",  group: "situation", groupLabel: "СИТУАЦИИ",    label: "Творчество",              hint: "Создание нового, самовыражение" },
+    { id: "safety",      group: "situation", groupLabel: "СИТУАЦИИ",    label: "Безопасность",            hint: "Ощущение защиты и стабильности" },
+
+    /* ---- Философские добродетели ---- */
+    { id: "wisdom",      group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Мудрость",                hint: "Глубина понимания, знание сути вещей" },
+    { id: "justice",     group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Справедливость",          hint: "Равенство, честность, правильный порядок" },
+    { id: "courage",     group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Мужество",                hint: "Смелость перед лицом трудностей" },
+    { id: "temperance",  group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Умеренность",             hint: "Сдержанность, мера, самообладание" },
+    { id: "virtue",      group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Добродетель",             hint: "Нравственное совершенство, благо" },
+    { id: "honor",       group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Честь",                   hint: "Достоинство, уважение, репутация" },
+    { id: "love",        group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Любовь",                  hint: "Привязанность, близость, самоотдача" },
+    { id: "hope",        group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Надежда",                 hint: "Ожидание лучшего, устремлённость вперёд" },
+    { id: "faith",       group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Вера",                    hint: "Убеждённость, доверие, опора" },
+    { id: "mercy",       group: "virtue",    groupLabel: "ДОБРОДЕТЕЛИ", label: "Милосердие",              hint: "Сострадание, прощение, доброта" }
 ];
 
 const TEMPERAMENT_BLOCKS = [
@@ -1302,6 +1381,9 @@ let saveTimer = null;
 let temperamentFlat = [];
 let temperamentIndex = 0;
 
+// Контексты — по одному критерию
+let contextIndex = 0;
+
 const STORAGE_KEY = "eugene_color_temp_test_v3";
 
 /* ============================================================
@@ -1339,7 +1421,6 @@ function safeRemove(key) {
     try { localStorage.removeItem(key); } catch (e) {}
 }
 
-/* Осветление слишком тёмных цветов для читаемости на тёмном фоне */
 function readableColor(hex) {
     if (!hex || hex[0] !== "#") return hex;
     const h = hex.slice(1);
@@ -1354,7 +1435,7 @@ function readableColor(hex) {
         b = parseInt(h.slice(4,6), 16);
     }
     const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
-    if (lum < 0.30) return "#cbd5e1"; // для чёрного и очень тёмных
+    if (lum < 0.30) return "#cbd5e1";
     return hex;
 }
 
@@ -1376,7 +1457,7 @@ function hideLoading() {
 const FOCUS_SELECTORS = {
     intro: "#startBtn",
     game: "#doors .door",
-    contexts: "#contextsContainer .context-option",
+    contexts: "#contextOptions .context-option",
     ratings: "#ratingList input[type='range']",
     temperament: "#traitYesBtn",
     result: "#resultTitle"
@@ -1501,6 +1582,7 @@ function startTest() {
     isChoosing = false;
     temperamentFlat = [];
     temperamentIndex = 0;
+    contextIndex = 0;
     safeRemove(STORAGE_KEY);
 
     document.getElementById("resumeBox").classList.add("hidden");
@@ -1561,9 +1643,7 @@ function renderDoors(colors, isStage2) {
 
         const sphere = document.createElement("span");
         sphere.className = "door-sphere";
-        // Реальный цвет
         sphere.style.setProperty("--c", color.hex);
-        // Цвет свечения: для чёрного — светлый, чтобы неон был виден
         const glow = (color.id === "black") ? "#cbd5e1" : color.hex;
         sphere.style.setProperty("--glow", glow);
 
@@ -1578,7 +1658,6 @@ function renderDoors(colors, isStage2) {
         door.appendChild(sphere);
         door.appendChild(label);
 
-        // Восстановление уже выбранного
         const pickedIdx = order.indexOf(color.id);
         if (pickedIdx !== -1) {
             door.classList.add("picked");
@@ -1592,8 +1671,7 @@ function renderDoors(colors, isStage2) {
 
 function pickColor(id, isStage2, total) {
     const order = isStage2 ? state.stage2Order : state.stage1Order;
-
-    if (order.indexOf(id) !== -1) return; // уже выбран
+    if (order.indexOf(id) !== -1) return;
 
     haptic("selection");
     order.push(id);
@@ -1606,7 +1684,6 @@ function pickColor(id, isStage2, total) {
         if (badge) badge.textContent = String(rank);
     }
 
-    // Все выбраны — плавный переход
     if (order.length === total) {
         isChoosing = true;
 
@@ -1631,124 +1708,128 @@ function pickColor(id, isStage2, total) {
 }
 
 /* ============================================================
-   ЭТАП 3 — КОНТЕКСТЫ
+   ЭТАП 3 — АССОЦИАТИВНЫЙ ВЫБОР (по одному критерию)
 ============================================================ */
 function openContexts() {
     currentStage = 3;
     showScreen("contexts");
-    renderContexts();
-    updateContextsProgress();
+
+    // Первый неотвеченный
+    let first = -1;
+    for (let i = 0; i < CONTEXTS.length; i++) {
+        if (!state.contextChoices[CONTEXTS[i].id]) { first = i; break; }
+    }
+    contextIndex = (first === -1) ? CONTEXTS.length - 1 : first;
+
+    renderContextQuestion();
 }
 
-function renderContexts() {
-    const container = document.getElementById("contextsContainer");
-    if (!container) return;
-    container.innerHTML = "";
+function renderContextQuestion() {
+    const ctx = CONTEXTS[contextIndex];
+    if (!ctx) { openRatings(); return; }
+
+    document.getElementById("contextGroup").textContent = ctx.groupLabel;
+    document.getElementById("contextCounter").textContent =
+        `${contextIndex + 1} / ${CONTEXTS.length}`;
+    document.getElementById("contextLabel").textContent = ctx.label;
+    document.getElementById("contextHint").textContent = ctx.hint || "";
+
+    // прогресс этапа 3: 40 → 60
+    setProgress("contextsProgressBar",
+        40 + (contextIndex / CONTEXTS.length) * 20);
+
+    const optionsEl = document.getElementById("contextOptions");
+    optionsEl.innerHTML = "";
 
     const basic = COLORS.filter(c => BASIC_COLOR_IDS.includes(c.id));
 
-    CONTEXTS.forEach(ctx => {
-        const item = document.createElement("div");
-        item.className = "context-item";
-        if (state.contextChoices[ctx.id]) item.classList.add("answered");
-        item.dataset.ctxId = ctx.id;
+    basic.forEach(color => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "context-option";
+        btn.style.background = color.hex;
+        btn.dataset.colorId = color.id;
+        btn.setAttribute("aria-label", `Выбрать цвет ${color.name}`);
 
-        const h4 = document.createElement("h4");
-        h4.textContent = ctx.label;
-
-        const hint = document.createElement("div");
-        hint.className = "context-hint";
-        hint.textContent = ctx.hint;
-
-        const options = document.createElement("div");
-        options.className = "context-options";
-        options.setAttribute("role", "radiogroup");
-        options.setAttribute("aria-label", `Выбор цвета для ситуации: ${ctx.label}`);
-
-        const buttons = [];
-
-        basic.forEach(color => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "context-option";
-            btn.style.background = color.hex;
-            btn.dataset.colorId = color.id;
-
-            const isSelected = state.contextChoices[ctx.id] === color.id;
-
-            btn.setAttribute("role", "radio");
-            btn.setAttribute("aria-checked", isSelected ? "true" : "false");
-            btn.setAttribute("aria-label", color.name);
-            btn.tabIndex = isSelected ? 0 : -1;
-            if (isSelected) btn.classList.add("selected");
-            // для чёрного добавим светлый контур
-            if (color.id === "black") {
-                btn.style.boxShadow = "inset 0 0 0 1px rgba(255,255,255,.35)";
-            }
-
-            const label = document.createElement("span");
-            label.className = "opt-label";
-            label.textContent = color.short;
-            btn.appendChild(label);
-
-            btn.addEventListener("click", () => {
-                options.querySelectorAll(".context-option").forEach(o => {
-                    o.classList.remove("selected");
-                    o.setAttribute("aria-checked", "false");
-                    o.tabIndex = -1;
-                });
-                btn.classList.add("selected");
-                btn.setAttribute("aria-checked", "true");
-                btn.tabIndex = 0;
-
-                state.contextChoices[ctx.id] = color.id;
-                item.classList.add("answered");
-                scheduleSave();
-                updateContextsProgress();
-                haptic("selection");
-            });
-
-            buttons.push(btn);
-            options.appendChild(btn);
-        });
-
-        if (!state.contextChoices[ctx.id] && buttons.length > 0) {
-            buttons[0].tabIndex = 0;
+        const isSelected = state.contextChoices[ctx.id] === color.id;
+        if (isSelected) btn.classList.add("selected");
+        if (color.id === "black") {
+            btn.style.boxShadow = "inset 0 0 0 2px rgba(255,255,255,.35)";
         }
 
-        options.addEventListener("keydown", (e) => {
-            const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
-            if (!keys.includes(e.key)) return;
+        const label = document.createElement("span");
+        label.className = "opt-label";
+        label.textContent = color.short;
+        btn.appendChild(label);
 
-            const focused = document.activeElement;
-            const idx = buttons.indexOf(focused);
-            if (idx === -1) return;
-
-            e.preventDefault();
-            let nextIdx = idx;
-            if (e.key === "ArrowRight" || e.key === "ArrowDown") nextIdx = (idx + 1) % buttons.length;
-            else if (e.key === "ArrowLeft" || e.key === "ArrowUp") nextIdx = (idx - 1 + buttons.length) % buttons.length;
-            else if (e.key === "Home") nextIdx = 0;
-            else if (e.key === "End") nextIdx = buttons.length - 1;
-
-            buttons[nextIdx].focus();
-            buttons[nextIdx].click();
-        });
-
-        item.appendChild(h4);
-        item.appendChild(hint);
-        item.appendChild(options);
-        container.appendChild(item);
+        btn.addEventListener("click", () => answerContext(color.id));
+        optionsEl.appendChild(btn);
     });
+
+    // Перезапуск анимации
+    const q = document.getElementById("contextQuestion");
+    if (q) {
+        q.style.animation = "none";
+        void q.offsetWidth;
+        q.style.animation = "";
+    }
+    optionsEl.style.animation = "none";
+    void optionsEl.offsetWidth;
+    optionsEl.style.animation = "";
 }
 
-function updateContextsProgress() {
-    const answered = CONTEXTS.filter(c => state.contextChoices[c.id]).length;
-    const ratio = answered / CONTEXTS.length;
-    setProgress("contextsProgressBar", 40 + ratio * 20);
+function answerContext(colorId) {
+    const ctx = CONTEXTS[contextIndex];
+    if (!ctx) return;
 
-    const nextBtn = document.getElementById("toRatingsBtn");
-    if (nextBtn) nextBtn.disabled = answered < CONTEXTS.length;
+    state.contextChoices[ctx.id] = colorId;
+    scheduleSave();
+    haptic("selection");
+
+    // Подсветка выбора
+    const optionsEl = document.getElementById("contextOptions");
+    optionsEl.querySelectorAll(".context-option").forEach(b => {
+        b.classList.toggle("selected", b.dataset.colorId === colorId);
+    });
+
+    setTimeout(() => {
+        if (contextIndex < CONTEXTS.length - 1) {
+            contextIndex++;
+            renderContextQuestion();
+        } else {
+            // Все ли отвечены?
+            const allAnswered = CONTEXTS.every(c => state.contextChoices[c.id]);
+            if (allAnswered) {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    openRatings();
+                }, 250);
+            } else {
+                const idx = CONTEXTS.findIndex(c => !state.contextChoices[c.id]);
+                if (idx === -1) {
+                    showLoading();
+                    setTimeout(() => { hideLoading(); openRatings(); }, 250);
+                } else {
+                    contextIndex = idx;
+                    renderContextQuestion();
+                }
+            }
+        }
+    }, 280);
+}
+
+function backContext() {
+    if (contextIndex > 0) {
+        contextIndex--;
+        renderContextQuestion();
+    } else {
+        // Вернуться к этапу 2 — ранжирование 4 цветов
+        state.stage2Order = [];
+        state.stage2Choice = null;
+        scheduleSave();
+        renderStage2();
+    }
 }
 
 /* ============================================================
@@ -1792,7 +1873,6 @@ function openRatings() {
         value.className = "rating-number";
         value.id = `rating-${color.id}`;
         value.textContent = currentVal;
-        // Индикатор в цвете оцениваемого цвета (осветлённый для тёмных)
         value.style.color = readableColor(color.hex);
         value.setAttribute("aria-live", "polite");
 
@@ -1863,7 +1943,6 @@ function openTemperament() {
 
     temperamentFlat = buildTemperamentFlat();
 
-    // Найти первый неотвеченный
     let firstUnanswered = 0;
     for (let i = 0; i < temperamentFlat.length; i++) {
         const q = temperamentFlat[i];
@@ -1879,10 +1958,7 @@ function openTemperament() {
 
 function renderTemperamentQuestion() {
     const q = temperamentFlat[temperamentIndex];
-    if (!q) {
-        finishTest();
-        return;
-    }
+    if (!q) { finishTest(); return; }
 
     document.getElementById("traitBlock").textContent = q.blockName;
     document.getElementById("traitBlock").style.color = q.blockColor;
@@ -1890,11 +1966,9 @@ function renderTemperamentQuestion() {
         `${temperamentIndex + 1} / ${temperamentFlat.length}`;
     document.getElementById("traitText").textContent = q.text;
 
-    // прогресс этапа 5
     setProgress("tempProgressBar",
         80 + (temperamentIndex / temperamentFlat.length) * 20);
 
-    // Кнопки — показываем текущий ответ, если был
     const key = `${q.blockId}_${q.idx}`;
     const ans = state.temperamentAnswers[key];
     const yesBtn = document.getElementById("traitYesBtn");
@@ -1902,7 +1976,6 @@ function renderTemperamentQuestion() {
     yesBtn.classList.toggle("active", ans === true);
     noBtn.classList.toggle("active", ans === false);
 
-    // Перезапуск анимации карточки
     const card = document.getElementById("traitQuestion");
     if (card) {
         card.style.animation = "none";
@@ -1920,7 +1993,6 @@ function answerTrait(value) {
     scheduleSave();
     haptic("selection");
 
-    // Показать подсветку — короткая задержка перед следующим
     const yesBtn = document.getElementById("traitYesBtn");
     const noBtn = document.getElementById("traitNoBtn");
     yesBtn.classList.toggle("active", value === true);
@@ -1931,7 +2003,6 @@ function answerTrait(value) {
             temperamentIndex++;
             renderTemperamentQuestion();
         } else {
-            // Последний вопрос — проверить, все ли отвечены
             const allAnswered = temperamentFlat.every(
                 qq => state.temperamentAnswers[`${qq.blockId}_${qq.idx}`] !== undefined
             );
@@ -1961,7 +2032,7 @@ function backTemperament() {
 }
 
 /* ============================================================
-   РАСЧЁТ ТЕМПЕРАМЕНТА (чистая функция)
+   РАСЧЁТ ТЕМПЕРАМЕНТА
 ============================================================ */
 function computeTemperament(answers) {
     const counts = { choleric: 0, sanguine: 0, phlegmatic: 0, melancholic: 0 };
@@ -2180,7 +2251,6 @@ function renderSelectedResults() {
     const container = document.getElementById("selectedResults");
     container.innerHTML = "";
 
-    // Этап 1 — полный порядок
     if (state.stage1Order && state.stage1Order.length) {
         const card = document.createElement("div");
         card.className = "result-card";
@@ -2195,7 +2265,6 @@ function renderSelectedResults() {
         container.appendChild(card);
     }
 
-    // Этап 2 — порядок из 4
     if (state.stage2Order && state.stage2Order.length) {
         const card = document.createElement("div");
         card.className = "result-card";
@@ -2344,7 +2413,7 @@ function renderResearchIndicators() {
 }
 
 /* ============================================================
-   CONTEXT RESULTS
+   CONTEXT RESULTS — все 16 ассоциаций
 ============================================================ */
 function renderContextResults() {
     const container = document.getElementById("contextResults");
@@ -2358,7 +2427,7 @@ function renderContextResults() {
     card.className = "result-card";
 
     const h4 = document.createElement("h4");
-    h4.textContent = "Контекстный выбор (этап 3)";
+    h4.textContent = `Ассоциативный выбор (${answered.length} из ${CONTEXTS.length})`;
     card.appendChild(h4);
 
     answered.forEach(ctx => {
@@ -2392,7 +2461,7 @@ function renderContextResults() {
     const note = document.createElement("p");
     note.className = "psychology-note";
     note.style.marginTop = "10px";
-    note.textContent = "Контекстный слой — независимый. Он сохраняется в базе для будущего анализа связи «ситуация → цвет».";
+    note.textContent = "Ассоциативный слой — независимый. Он сохраняется в базе для будущего анализа связи «категория → цвет».";
     card.appendChild(note);
 
     container.appendChild(card);
@@ -2446,7 +2515,6 @@ function renderChart() {
         const bar = document.createElement("div");
         bar.className = "bar";
         bar.style.background = color.hex;
-        // Для чёрного добавим светлую обводку, чтобы полоса была видна
         if (color.id === "black") {
             bar.style.boxShadow = "inset 0 0 0 1px rgba(255,255,255,.40)";
         }
@@ -2823,6 +2891,7 @@ function restartTest() {
     isChoosing = false;
     temperamentFlat = [];
     temperamentIndex = 0;
+    contextIndex = 0;
     safeRemove(STORAGE_KEY);
     document.getElementById("resumeBox").classList.add("hidden");
     showScreen("intro");
@@ -2836,15 +2905,12 @@ function goBack() {
         state.stage2Choice = null;
         scheduleSave();
         renderStage1();
-    } else if (currentStage === 3) {
-        state.stage2Order = [];
-        state.stage2Choice = null;
-        scheduleSave();
-        renderStage2();
     } else if (currentStage === 4) {
+        // Вернуться к последнему вопросу ассоциаций
         openContexts();
     }
-    // currentStage === 5 обрабатывается в backTemperament
+    // currentStage 3 → backContext
+    // currentStage 5 → backTemperament
 }
 
 /* ============================================================
@@ -2930,11 +2996,10 @@ function bindEvents() {
     bind("toTemperamentBtn", openTemperament);
     bind("toResultBtn", finishTest);
     bind("backBtnGame", goBack);
-    bind("backBtnContexts", goBack);
+    bind("backBtnContexts", backContext);
     bind("backBtnRatings", goBack);
     bind("backBtnTemp", backTemperament);
 
-    // Кнопки темперамента
     bind("traitYesBtn", () => answerTrait(true));
     bind("traitNoBtn", () => answerTrait(false));
 }
