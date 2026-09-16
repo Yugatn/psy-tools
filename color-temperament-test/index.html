@@ -36,14 +36,12 @@ body {
 button, input { font: inherit; }
 button { touch-action: manipulation; }
 
-/* SR-ONLY */
 .sr-only {
     position: absolute !important;
     width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
-/* FOCUS */
 button:focus-visible,
 input:focus-visible,
 .door:focus-visible,
@@ -51,7 +49,7 @@ input:focus-visible,
 .trait-item:focus-within,
 .consent-box:focus-within {
     outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline-offset: 4px;
     border-radius: 8px;
 }
 
@@ -66,7 +64,6 @@ input:focus-visible,
 .screen { padding: 30px; }
 .hidden { display: none !important; }
 
-/* STORAGE WARNING */
 .storage-warning {
     background: rgba(251,191,36,.10);
     border-bottom: 1px solid rgba(251,191,36,.30);
@@ -78,7 +75,6 @@ input:focus-visible,
 }
 .storage-warning strong { color: #fff; }
 
-/* INTRO */
 .logo {
     width: clamp(56px, 18vw, 74px);
     height: clamp(56px, 18vw, 74px);
@@ -101,7 +97,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 .info-box strong { color: var(--text); }
 .info-box p { color: var(--muted); line-height: 1.55; margin: 8px 0 0; }
 
-/* BUTTONS */
 .btn {
     width: 100%; border: 0; border-radius: 16px;
     padding: 16px 20px; font-weight: 700; font-size: 16px;
@@ -124,7 +119,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 .section-actions { margin-top: 24px; }
 .section-actions .btn + .btn { margin-top: 12px; }
 
-/* HEADER */
 .test-header { text-align: center; margin-bottom: 26px; }
 .header-top {
     display: flex; align-items: center; justify-content: center;
@@ -152,7 +146,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 .test-header h2 { margin: 13px 0 8px; font-size: clamp(20px, 5vw, 30px); }
 .instruction { margin: 0; color: var(--muted); line-height: 1.55; }
 
-/* PROGRESS */
 .progress {
     height: 5px; background: rgba(255,255,255,.07);
     border-radius: 999px; margin-bottom: 28px; overflow: hidden;
@@ -164,42 +157,240 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
     will-change: width;
 }
 
-/* DOORS */
+/* ============================================================
+   SPHERICAL COLOR CHOICE
+============================================================ */
+
 .doors {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-}
-@media (min-width: 540px) {
-    .doors { grid-template-columns: repeat(3, 1fr); }
-}
-.door {
-    min-height: 185px;
-    border: 2px solid rgba(255,255,255,.12);
-    border-radius: 20px;
-    cursor: pointer;
-    position: relative; overflow: hidden;
-    display: flex; align-items: flex-end; justify-content: center;
-    padding: 14px;
-    transition: transform .18s ease, filter .18s ease, opacity .2s ease;
-}
-.door:hover { transform: translateY(-3px); filter: brightness(1.08); }
-.door:active { transform: scale(.97); }
-.door::after {
-    content: ""; position: absolute;
-    left: 14%; right: 14%; top: 13%; bottom: 0;
-    border: 2px solid rgba(255,255,255,.25);
-    border-bottom: 0;
-    border-radius: 13px 13px 0 0;
-    background: rgba(0,0,0,.10);
-}
-.door-label {
-    position: relative; z-index: 2;
-    padding: 7px 13px; border-radius: 999px;
-    background: rgba(0,0,0,.45);
-    backdrop-filter: blur(8px);
-    color: white; font-size: 14px; font-weight: 700;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 34px 22px;
+
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 12px 6px 18px;
+
+    justify-items: center;
+    align-items: end;
+
+    /* Плавное появление / исчезновение всей сетки */
+    transition:
+        opacity .38s ease,
+        transform .38s ease;
 }
 
-/* CONTEXTS */
+/* Режим «4 основных цвета» — 2 колонки, компактнее */
+.doors.stage2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 380px;
+    gap: 38px 32px;
+}
+
+/* Затухание при выборе */
+.doors.fade-out {
+    opacity: 0;
+    transform: scale(.92);
+    pointer-events: none;
+}
+
+/* ============================================================
+   SPHERE BUTTON
+============================================================ */
+
+.door {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    cursor: pointer;
+
+    width: 100%;
+    max-width: 130px;
+
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+    will-change: transform;
+}
+
+.door:hover,
+.door:focus-visible {
+    transform: translateY(-6px);
+}
+
+.door:active {
+    transform: translateY(-2px) scale(.97);
+}
+
+/* Сфера */
+.door-sphere {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 50%;
+
+    /* Основной цвет */
+    background-color: var(--c, #888);
+
+    /* Объём: блик сверху-слева, тень снизу-справа */
+    background-image:
+        radial-gradient(
+            circle at 32% 28%,
+            rgba(255,255,255,.55) 0%,
+            rgba(255,255,255,.18) 14%,
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 72% 78%,
+            rgba(0,0,0,.35) 0%,
+            transparent 55%
+        );
+
+    box-shadow:
+        /* внутренняя тень по краям — объём */
+        inset -14px -18px 32px rgba(0,0,0,.45),
+        inset 10px 12px 22px rgba(255,255,255,.16),
+        /* внешняя тень-«подставка» */
+        0 14px 26px rgba(0,0,0,.5),
+        0 4px 8px rgba(0,0,0,.35),
+        /* тонкий контур */
+        0 0 0 1px rgba(255,255,255,.08);
+
+    transition:
+        box-shadow .4s ease,
+        transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Верхний блик — тонкая полоска света */
+.door-sphere::before {
+    content: "";
+    position: absolute;
+
+    left: 22%;
+    top: 14%;
+
+    width: 34%;
+    height: 22%;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255,255,255,.65),
+        rgba(255,255,255,.15) 55%,
+        transparent 80%
+    );
+
+    filter: blur(3px);
+
+    pointer-events: none;
+}
+
+/* Лёгкая тень под сферой */
+.door-sphere::after {
+    content: "";
+    position: absolute;
+
+    left: 50%;
+    bottom: -14px;
+
+    transform: translateX(-50%);
+
+    width: 60%;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,.55),
+        transparent 70%
+    );
+
+    filter: blur(6px);
+
+    pointer-events: none;
+
+    transition: opacity .35s ease;
+}
+
+/* Hover / focus — свечение в цвете сферы */
+.door:hover .door-sphere,
+.door:focus-visible .door-sphere {
+    box-shadow:
+        inset -14px -18px 32px rgba(0,0,0,.45),
+        inset 10px 12px 22px rgba(255,255,255,.16),
+        0 18px 32px rgba(0,0,0,.55),
+        0 4px 10px rgba(0,0,0,.4),
+        0 0 24px var(--c, #888),
+        0 0 0 1px rgba(255,255,255,.14);
+}
+
+/* ВЫБРАННЫЙ ЦВЕТ — неоновое свечение */
+.door.selected .door-sphere {
+    transform: scale(1.08);
+
+    box-shadow:
+        inset -14px -18px 32px rgba(0,0,0,.45),
+        inset 10px 12px 22px rgba(255,255,255,.16),
+        /* белый контур — гарантирует видимость и для чёрного */
+        0 0 0 2px rgba(255,255,255,.75),
+        /* неоновое свечение в цвет */
+        0 0 24px var(--c, #fff),
+        0 0 60px var(--c, #fff),
+        0 0 100px var(--c, #fff);
+
+    animation: spherePulse 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes spherePulse {
+    from {
+        transform: scale(1.08);
+        filter: brightness(1);
+    }
+    to {
+        transform: scale(1.16);
+        filter: brightness(1.25);
+    }
+}
+
+/* Подпись под сферой */
+.door-label {
+    display: block;
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .02em;
+
+    color: var(--muted);
+
+    text-align: center;
+
+    transition: color .3s ease, transform .3s ease;
+}
+
+.door:hover .door-label,
+.door:focus-visible .door-label {
+    color: var(--text);
+}
+
+.door.selected .door-label {
+    color: var(--text);
+    transform: translateY(2px);
+}
+
+/* ============================================================
+   CONTEXTS
+============================================================ */
+
 .contexts-list { display: flex; flex-direction: column; gap: 14px; }
 .context-item {
     background: rgba(255,255,255,.035);
@@ -271,7 +462,6 @@ h1 { text-align: center; margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 34px); 
 }
 input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
-/* TEMPERAMENT */
 .temperament-block {
     background: rgba(255,255,255,.035);
     border: 1px solid var(--border);
@@ -304,7 +494,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
 }
 .trait-label { flex: 1; font-size: 14px; line-height: 1.45; color: var(--text); }
 
-/* RESULT */
 .result-title { text-align: center; margin-bottom: 8px; outline: none; }
 .result-subtitle { text-align: center; color: var(--muted); line-height: 1.5; margin-bottom: 28px; }
 .result-section { margin-bottom: 28px; }
@@ -538,7 +727,6 @@ canvas { max-width: 100%; height: auto; display: block; }
 .resume-box p { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
 .resume-box .btn { margin-top: 0; }
 
-/* LOADING */
 .loading-overlay {
     position: fixed; inset: 0;
     background: rgba(11,16,32,.65);
@@ -557,11 +745,26 @@ canvas { max-width: 100%; height: auto; display: block; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* FADE */
 .fade { animation: fade .25s ease; }
 @keyframes fade {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+    .doors {
+        gap: 26px 14px;
+        padding: 8px 4px 14px;
+    }
+    .doors.stage2 {
+        gap: 30px 22px;
+    }
+    .door {
+        max-width: 108px;
+    }
+    .door-label {
+        font-size: 12px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -592,7 +795,7 @@ canvas { max-width: 100%; height: auto; display: block; }
         <div class="info-box">
             <strong>Как проходит тест</strong>
             <p>
-                Пять этапов: спонтанный выбор из 6 цветов,
+                Пять этапов: выбор привлекательного цвета из 6,
                 повторный выбор из 4 основных, контекстный выбор,
                 оценка привлекательности 1–10 и 80 утверждений
                 о привычках и реакциях.
@@ -626,11 +829,11 @@ canvas { max-width: 100%; height: auto; display: block; }
                 <button class="back-btn" id="backBtnGame" type="button" aria-label="Вернуться на предыдущий этап">← Назад</button>
                 <span id="stageLabel" class="stage">Этап 1 из 5</span>
             </div>
-            <h2 id="gameTitle">Выбор из шести цветов</h2>
+            <h2 id="gameTitle">Наиболее привлекательный цвет</h2>
             <p id="gameInstruction" class="instruction">
-                Перед вами шесть дверей.
-                Выберите ту, которая сейчас кажется наиболее
-                подходящей для выхода.
+                Перед вами шесть цветов.
+                Выберите тот, который сейчас кажется
+                наиболее привлекательным.
             </p>
         </div>
         <div id="doors" class="doors"></div>
@@ -852,7 +1055,7 @@ function haptic(type) {
 /* ============================================================
    КОНСТАНТЫ
 ============================================================ */
-const TEST_VERSION = "v3.1-hypothesis";
+const TEST_VERSION = "v3.2-spheres";
 
 const COLORS = [
     { id: "red", name: "Красный", short: "Красн", hex: "#ef4444",
@@ -1136,13 +1339,11 @@ function getDominantColor() {
 }
 
 /* ============================================================
-   АВТОСОХРАНЕНИЕ (debounced)
+   АВТОСОХРАНЕНИЕ
 ============================================================ */
 function scheduleSave() {
     if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-        saveToStorage();
-    }, 400);
+    saveTimer = setTimeout(() => { saveToStorage(); }, 400);
 }
 
 function saveToStorage() {
@@ -1182,27 +1383,18 @@ function startTest() {
 }
 
 /* ============================================================
-   ПЕРЕХОД
-============================================================ */
-function transitionTo(fn) {
-    showLoading();
-    setTimeout(() => {
-        hideLoading();
-        fn();
-    }, 220);
-}
-
-/* ============================================================
    ЭТАП 1 / 2
 ============================================================ */
 function renderStage1() {
     currentStage = 1;
     document.getElementById("stageLabel").textContent = "Этап 1 из 5";
-    document.getElementById("gameTitle").textContent = "Выбор из шести цветов";
+    document.getElementById("gameTitle").textContent = "Наиболее привлекательный цвет";
     document.getElementById("gameInstruction").textContent =
-        "Перед вами шесть дверей. Выберите ту, которая сейчас кажется наиболее подходящей для выхода.";
+        "Перед вами шесть цветов. Выберите тот, который сейчас кажется наиболее привлекательным.";
     setProgress("progressBar", 10);
-    renderDoors([...COLORS].sort(() => Math.random() - 0.5));
+
+    const colors = [...COLORS].sort(() => Math.random() - 0.5);
+    renderDoors(colors, false);
 }
 
 function renderStage2() {
@@ -1211,33 +1403,46 @@ function renderStage2() {
     document.getElementById("stageLabel").textContent = "Этап 2 из 5";
     document.getElementById("gameTitle").textContent = "Повторный выбор";
     document.getElementById("gameInstruction").textContent =
-        "Теперь перед вами четыре основных цвета. Не ориентируйтесь на предыдущий выбор — выберите заново.";
+        "Теперь перед вами четыре основных цвета. Не ориентируйтесь на предыдущий выбор — выберите тот, что привлекателен именно сейчас.";
     setProgress("progressBar", 30);
-    const basic = COLORS.filter(c => BASIC_COLOR_IDS.includes(c.id)).sort(() => Math.random() - 0.5);
-    renderDoors(basic);
+
+    const colors = COLORS
+        .filter(c => BASIC_COLOR_IDS.includes(c.id))
+        .sort(() => Math.random() - 0.5);
+    renderDoors(colors, true);
 }
 
-function renderDoors(colors) {
+function renderDoors(colors, isStage2) {
     const container = document.getElementById("doors");
+    if (!container) return;
     container.innerHTML = "";
+    container.classList.remove("fade-out");
+    container.classList.toggle("stage2", !!isStage2);
+
     colors.forEach(color => {
         const door = document.createElement("button");
         door.type = "button";
         door.className = "door";
-        door.style.background = color.hex;
-        door.setAttribute("aria-label", `Выбрать цвет ${color.name}`);
         door.dataset.colorId = color.id;
+        door.setAttribute("aria-label", `Выбрать цвет ${color.name}`);
+
+        const sphere = document.createElement("span");
+        sphere.className = "door-sphere";
+        sphere.style.setProperty("--c", color.hex);
+        // Для белого и чёрного цветов делаем чуть более выразительный контур
+        if (color.id === "white") {
+            sphere.style.setProperty("--c", "#ffffff");
+        } else if (color.id === "black") {
+            sphere.style.setProperty("--c", "#6b7280");
+        }
 
         const label = document.createElement("span");
         label.className = "door-label";
         label.textContent = color.name;
 
-        if (color.id === "white") {
-            label.style.color = "#111827";
-            label.style.background = "rgba(255,255,255,.75)";
-        }
-
+        door.appendChild(sphere);
         door.appendChild(label);
+
         door.addEventListener("click", () => chooseColor(color.id));
         container.appendChild(door);
     });
@@ -1248,25 +1453,34 @@ function chooseColor(id) {
     isChoosing = true;
     haptic("selection");
 
-    if (currentStage === 1) {
-        state.stage1Choice = id;
-        scheduleSave();
-        transitionTo(() => {
+    const door = document.querySelector(`.door[data-color-id="${id}"]`);
+    if (door) door.classList.add("selected");
+
+    const container = document.getElementById("doors");
+
+    // Неоновое свечение + пульсация — короткая пауза
+    setTimeout(() => {
+        if (container) container.classList.add("fade-out");
+    }, 340);
+
+    // После затухания — переход к следующему этапу
+    setTimeout(() => {
+        if (currentStage === 1) {
+            state.stage1Choice = id;
+            scheduleSave();
             renderStage2();
             isChoosing = false;
-        });
-    } else if (currentStage === 2) {
-        state.stage2Choice = id;
-        scheduleSave();
-        transitionTo(() => {
+        } else if (currentStage === 2) {
+            state.stage2Choice = id;
+            scheduleSave();
             openContexts();
             isChoosing = false;
-        });
-    }
+        }
+    }, 720);
 }
 
 /* ============================================================
-   ЭТАП 3 — КОНТЕКСТЫ (полностью переписан)
+   ЭТАП 3 — КОНТЕКСТЫ
 ============================================================ */
 function openContexts() {
     currentStage = 3;
@@ -1314,7 +1528,6 @@ function renderContexts() {
             btn.setAttribute("role", "radio");
             btn.setAttribute("aria-checked", isSelected ? "true" : "false");
             btn.setAttribute("aria-label", color.name);
-            // roving tabindex: выбранная — 0, иначе -1
             btn.tabIndex = isSelected ? 0 : -1;
             if (isSelected) btn.classList.add("selected");
 
@@ -1324,7 +1537,6 @@ function renderContexts() {
             btn.appendChild(label);
 
             btn.addEventListener("click", () => {
-                // выделение
                 options.querySelectorAll(".context-option").forEach(o => {
                     o.classList.remove("selected");
                     o.setAttribute("aria-checked", "false");
@@ -1345,12 +1557,10 @@ function renderContexts() {
             options.appendChild(btn);
         });
 
-        // Если ни один не выбран — первая кнопка должна быть доступна с клавиатуры
         if (!state.contextChoices[ctx.id] && buttons.length > 0) {
             buttons[0].tabIndex = 0;
         }
 
-        // Keyboard-навигация по радиогруппе (стрелки)
         options.addEventListener("keydown", (e) => {
             const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
             if (!keys.includes(e.key)) return;
@@ -1537,7 +1747,7 @@ function updateTemperamentProgress() {
 }
 
 /* ============================================================
-   РАСЧЁТ ТЕМПЕРАМЕНТА (чистая функция — готова к unit-тестам)
+   РАСЧЁТ ТЕМПЕРАМЕНТА (чистая функция)
 ============================================================ */
 function computeTemperament(answers) {
     const counts = { choleric: 0, sanguine: 0, phlegmatic: 0, melancholic: 0 };
@@ -1679,7 +1889,6 @@ function renderTemperamentChart() {
         { key: "melancholic", name: "Меланхолик", color: "#22c55e", value: percentages.melancholic }
     ];
 
-    // aria-label + sr-only текст
     canvas.setAttribute("aria-label",
         "Диаграмма распределения типов темперамента: " +
         bars.map(b => `${b.name} — ${b.value}%`).join("; "));
@@ -1986,7 +2195,6 @@ function renderPieChart() {
     const total = COLORS.reduce((sum, c) => sum + (state.ratings[c.id] || 0), 0);
     if (total === 0) return;
 
-    // a11y: обновить aria-label
     const summary = COLORS.map(c => `${c.name}: ${Math.round(((state.ratings[c.id]||0)/total)*100)}%`).join("; ");
     canvas.setAttribute("aria-label", `Круговая диаграмма распределения оценок. ${summary}`);
     const alt = document.getElementById("pieChartAlt");
@@ -2448,7 +2656,6 @@ if (!URL_IS_CONFIGURED) {
     );
 }
 
-/* Экспорт чистых функций для unit-тестов (в Node) */
 if (typeof module !== "undefined" && module.exports) {
     module.exports = { computeTemperament, computeResearchIndicators };
 }
