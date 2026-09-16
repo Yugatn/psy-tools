@@ -46,9 +46,11 @@ h1{margin:0;font-size:28px;font-weight:750}
 .btn-success{background:var(--good);color:#08130d}
 .btn-danger{background:rgba(255,107,107,.12);color:var(--danger)}
 .radar-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:8px 0;margin-top:8px}
-#radar{display:block;max-width:100%;height:auto}
+#radar{display:block;max-width:100%;height:auto;cursor:pointer}
+.radar-hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:4px;font-style:italic}
 .types-list{display:flex;flex-direction:column;gap:10px}
-.type-item{background:var(--card2);border-radius:14px;padding:13px 15px;border-left:4px solid}
+.type-item{background:var(--card2);border-radius:14px;padding:13px 15px;border-left:4px solid;cursor:pointer;transition:transform .15s}
+.type-item:active{transform:scale(.99)}
 .type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .type-name{font-size:14.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
 .type-score{font-size:15px;font-weight:800;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
@@ -63,7 +65,6 @@ h1{margin:0;font-size:28px;font-weight:750}
 .interp .hl{color:var(--accent);font-weight:700}
 .interp .block{background:rgba(124,140,255,.06);border:1px solid rgba(124,140,255,.18);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:13.5px;line-height:1.55}
 .interp .block strong{color:var(--text)}
-.interp .warn{background:rgba(255,200,87,.06);border-color:rgba(255,200,87,.20)}
 .reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .reco-col{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.5}
 .reco-col-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
@@ -72,6 +73,29 @@ h1{margin:0;font-size:28px;font-weight:750}
 .reco-col ul{margin:0;padding-left:16px}
 .reco-col li{margin-bottom:4px;color:var(--muted)}
 .reco-col li:last-child{margin-bottom:0}
+
+/* Popup для диаграммы */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.popup-overlay.open{opacity:1;pointer-events:auto}
+.popup-sheet{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 20px 20px;max-width:420px;width:100%;position:relative;transform:scale(.92);transition:transform .22s cubic-bezier(.2,.9,.3,1);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.popup-overlay.open .popup-sheet{transform:scale(1)}
+.popup-close{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--muted);font-size:20px;border:none;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit}
+.popup-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.popup-icon{font-size:52px;margin-bottom:8px;line-height:1}
+.popup-title{font-size:22px;font-weight:800;margin-bottom:4px}
+.popup-score{font-size:13.5px;color:var(--muted);margin-bottom:16px;font-weight:600}
+.popup-score strong{font-size:16px;font-weight:800}
+.popup-desc{font-size:14px;line-height:1.55;color:var(--text);margin-bottom:16px;text-align:left;background:rgba(255,255,255,.03);border-radius:12px;padding:12px 14px;border:1px solid var(--border)}
+.popup-lists{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;text-align:left}
+.popup-list-title{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+.popup-list-title.pos{color:var(--good)}
+.popup-list-title.neg{color:var(--danger)}
+.popup-list{background:var(--card2);border-radius:10px;padding:10px 12px 10px 28px;margin:0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.popup-list li{margin-bottom:3px}
+.popup-list li:last-child{margin-bottom:0}
+.popup-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+.popup-btn:active{transform:scale(.98)}
+
 @media (max-width:560px){body{padding:14px 10px 35px}h1{font-size:23px}.logo{font-size:38px}.card{padding:14px;border-radius:17px}.q-text{font-size:15px}.scale-option{padding:10px 11px;font-size:13px}.scale-num{width:28px;height:28px;font-size:14px}.reco-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -110,11 +134,12 @@ h1{margin:0;font-size:28px;font-weight:750}
         <div class="section-title">Ваш профиль мотивации</div>
         <div class="section-description">Соотношение 5 типов трудовой мотивации по методике Герчикова</div>
         <div class="radar-wrap"><canvas id="radar"></canvas></div>
+        <div class="radar-hint">Нажмите на процент, чтобы увидеть подробнее</div>
     </div>
 
     <div class="card">
         <div class="section-title">Профиль по типам</div>
-        <div class="section-description">От наиболее выраженного к наименее выраженному</div>
+        <div class="section-description">От наиболее выраженного к наименее выраженному. Нажмите на карточку, чтобы открыть подробнее.</div>
         <div class="types-list" id="typesList"></div>
     </div>
 
@@ -141,6 +166,28 @@ h1{margin:0;font-size:28px;font-weight:750}
 <footer style="text-align:center;color:#656c78;font-size:12px;margin-top:20px">
     Мотивация по Герчикову • 5 типов трудовой мотивации
 </footer>
+</div>
+
+<!-- Popup с деталями типа -->
+<div class="popup-overlay" id="motivationPopup">
+    <div class="popup-sheet">
+        <button class="popup-close" onclick="closeMotivationPopup()">×</button>
+        <div class="popup-icon" id="popupIcon">💰</div>
+        <div class="popup-title" id="popupTitle">Инструментальный</div>
+        <div class="popup-score" id="popupScore">—</div>
+        <div class="popup-desc" id="popupDesc">—</div>
+        <div class="popup-lists">
+            <div>
+                <div class="popup-list-title pos">Что мотивирует</div>
+                <ul class="popup-list" id="popupPos"></ul>
+            </div>
+            <div>
+                <div class="popup-list-title neg">Что демотивирует</div>
+                <ul class="popup-list" id="popupNeg"></ul>
+            </div>
+        </div>
+        <button class="popup-btn" onclick="closeMotivationPopup()">Понятно</button>
+    </div>
 </div>
 
 <script>
@@ -218,6 +265,9 @@ var STATEMENTS = [
 var answers = new Array(STATEMENTS.length).fill(null);
 var currentQ = 0;
 var STORAGE_KEY = "psyGerbV3";
+
+var radarHitboxes = [];
+var lastData = null;
 
 function $(id) { return document.getElementById(id); }
 
@@ -319,6 +369,8 @@ function showResults() {
     var res = scoresToData(scores);
     var data = res.data;
 
+    lastData = data;
+
     $("testScreen").classList.add("hidden");
     $("resultScreen").classList.remove("hidden");
 
@@ -355,6 +407,8 @@ function drawRadar(data) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, size, size);
+
+    radarHitboxes = [];
 
     var isSmall = size < 420;
     var isMedium = size >= 420 && size < 540;
@@ -418,6 +472,7 @@ function drawRadar(data) {
             y: cy + Math.sin(ang2) * r2,
             share: share,
             color: TYPES[code].color,
+            code: code,
             angle: ang2,
             normVal: normVal
         });
@@ -474,13 +529,11 @@ function drawRadar(data) {
         ctx.fillStyle = "#ffffff";
         ctx.fill();
 
-        /* Позиция указателя */
         var ptDist = radius * pt.normVal;
         var labelDist = ptDist + 42;
         var lx = cx + Math.cos(pt.angle) * labelDist;
         var ly = cy + Math.sin(pt.angle) * labelDist;
 
-        /* Линия-указатель */
         ctx.beginPath();
         ctx.moveTo(pt.x, pt.y);
         ctx.lineTo(lx, ly);
@@ -490,7 +543,6 @@ function drawRadar(data) {
         ctx.stroke();
         ctx.globalAlpha = 1;
 
-        /* Кружок на конце указателя */
         ctx.beginPath();
         ctx.arc(lx, ly, 3, 0, Math.PI * 2);
         ctx.fillStyle = pt.color;
@@ -499,7 +551,6 @@ function drawRadar(data) {
         ctx.lineWidth = 1.2;
         ctx.stroke();
 
-        /* Плашка с процентом */
         var text = pt.share + "%";
         ctx.font = "800 " + percentFont + "px -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
         var metrics = ctx.measureText(text);
@@ -534,6 +585,15 @@ function drawRadar(data) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(text, bx, by + 1);
+
+        /* Записываем hitbox для клика */
+        radarHitboxes.push({
+            x: bx - bw / 2 - 12,
+            y: by - bh / 2 - 12,
+            w: bw + 24,
+            h: bh + 24,
+            code: pt.code
+        });
     }
 
     /* Подписи осей */
@@ -573,13 +633,88 @@ function drawRadar(data) {
         }
     }
 
-    /* Центр */
     ctx.beginPath();
     ctx.arc(cx, cy, 4, 0, Math.PI * 2);
     ctx.fillStyle = "#ffffff";
     ctx.fill();
 }
 
+/* ============================================================
+   КЛИК ПО ДИАГРАММЕ
+============================================================ */
+function setupRadarClick() {
+    var canvas = $("radar");
+    if (!canvas) { return; }
+    canvas.addEventListener("click", function (e) {
+        if (!radarHitboxes.length) { return; }
+        var rect = canvas.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+
+        for (var i = 0; i < radarHitboxes.length; i++) {
+            var h = radarHitboxes[i];
+            if (clickX >= h.x && clickX <= h.x + h.w && clickY >= h.y && clickY <= h.y + h.h) {
+                showMotivationPopup(h.code);
+                return;
+            }
+        }
+    });
+}
+
+/* ============================================================
+   POPUP С ДЕТАЛЯМИ
+============================================================ */
+var POPUP_POS = {
+    IN: ["Прозрачная система оплаты", "Бонусы и премии за конкретный результат", "Понятные KPI", "Возможность зарабатывать больше", "Справедливая оценка вклада"],
+    PR: ["Интересные сложные задачи", "Обучение и доступ к новым знаниям", "Признание экспертизы", "Автономия в методах работы", "Публичное признание достижений"],
+    PA: ["Стабильность компании", "Команда единомышленников", "Признание верности и вклада", "Хорошие отношения с руководством", "Понятные долгосрочные перспективы"],
+    HO: ["Свобода в принятии решений", "Личная ответственность за результат", "Возможность влиять на процессы", "Отсутствие микроменеджмента", "Роль лидера или владельца"],
+    LU: ["Стабильность и предсказуемость", "Минимум переработок", "Чёткие инструкции", "Комфортные условия", "Гарантированный оклад"]
+};
+var POPUP_NEG = {
+    IN: ["Уравниловка в оплате", "«Работа за идею» без денег", "Размытые критерии результата", "Задержки зарплаты"],
+    PR: ["Рутина и однообразие", "Отсутствие развития", "Работа без смысла", "Жёсткий контроль процесса"],
+    PA: ["Частые перемены в компании", "Конфликты в коллективе", "Неуважение к стажу", "Обесценивание вклада «старичков»"],
+    HO: ["Мелочный контроль", "Отсутствие самостоятельности", "Бюрократия и согласования", "Работа «на побегушках»"],
+    LU: ["Постоянные изменения", "Высокие требования", "Частые переработки", "Стресс и неопределённость"]
+};
+
+function showMotivationPopup(code) {
+    if (!TYPES[code]) { return; }
+    var meta = TYPES[code];
+    var d = lastData && lastData[code] ? lastData[code] : { share: 0, count: 0, strength: 0 };
+
+    $("popupIcon").textContent = meta.icon;
+    $("popupTitle").textContent = meta.name;
+    $("popupTitle").style.color = meta.color;
+    $("popupScore").innerHTML = '<strong style="color:' + meta.color + '">' + d.share + '%</strong> · ' + d.count + ' из 25 баллов';
+    $("popupDesc").textContent = meta.desc;
+
+    var posList = POPUP_POS[code] || [];
+    var negList = POPUP_NEG[code] || [];
+
+    var posHtml = "";
+    for (var i = 0; i < posList.length; i++) {
+        posHtml += "<li>" + esc(posList[i]) + "</li>";
+    }
+    $("popupPos").innerHTML = posHtml;
+
+    var negHtml = "";
+    for (var j = 0; j < negList.length; j++) {
+        negHtml += "<li>" + esc(negList[j]) + "</li>";
+    }
+    $("popupNeg").innerHTML = negHtml;
+
+    $("motivationPopup").classList.add("open");
+}
+
+function closeMotivationPopup() {
+    $("motivationPopup").classList.remove("open");
+}
+
+/* ============================================================
+   СПИСОК ТИПОВ
+============================================================ */
 function renderTypesList(ordered) {
     var container = $("typesList");
     container.innerHTML = "";
@@ -603,10 +738,18 @@ function renderTypesList(ordered) {
                 '<div class="type-bar-fill" style="width:' + item.data.share + '%;background:' + item.meta.color + '"></div>' +
             '</div>' +
             '<div class="type-desc">' + esc(item.meta.desc) + '</div>';
+        (function (code) {
+            div.addEventListener("click", function () {
+                showMotivationPopup(code);
+            });
+        })(item.code);
         container.appendChild(div);
     }
 }
 
+/* ============================================================
+   ИНТЕРПРЕТАЦИЯ
+============================================================ */
 function renderInterpretation(ordered) {
     var container = $("interpretation");
     var html = "";
@@ -734,20 +877,8 @@ function describePair(codeA, codeB) {
 
 function renderRecommendations(topCode, secondCode) {
     var container = $("recommendations");
-    var posMap = {
-        IN: ["Прозрачная система оплаты", "Бонусы и премии за конкретный результат", "Понятные KPI", "Возможность зарабатывать больше", "Справедливая оценка вклада"],
-        PR: ["Интересные сложные задачи", "Обучение и доступ к новым знаниям", "Признание экспертизы", "Автономия в методах работы", "Публичное признание достижений"],
-        PA: ["Стабильность компании", "Команда единомышленников", "Признание верности и вклада", "Хорошие отношения с руководством", "Понятные долгосрочные перспективы"],
-        HO: ["Свобода в принятии решений", "Личная ответственность за результат", "Возможность влиять на процессы", "Отсутствие микроменеджмента", "Роль лидера или владельца"],
-        LU: ["Стабильность и предсказуемость", "Минимум переработок", "Чёткие инструкции", "Комфортные условия", "Гарантированный оклад"]
-    };
-    var negMap = {
-        IN: ["Уравниловка в оплате", "«Работа за идею» без денег", "Размытые критерии результата", "Задержки зарплаты"],
-        PR: ["Рутина и однообразие", "Отсутствие развития", "Работа без смысла", "Жёсткий контроль процесса"],
-        PA: ["Частые перемены в компании", "Конфликты в коллективе", "Неуважение к стажу", "Обесценивание вклада «старичков»"],
-        HO: ["Мелочный контроль", "Отсутствие самостоятельности", "Бюрократия и согласования", "Работа «на побегушках»"],
-        LU: ["Постоянные изменения", "Высокие требования", "Частые переработки", "Стресс и неопределённость"]
-    };
+    var posMap = POPUP_POS;
+    var negMap = POPUP_NEG;
 
     var posTop = posMap[topCode] || [];
     var negTop = negMap[topCode] || [];
@@ -781,6 +912,9 @@ function renderRecommendations(topCode, secondCode) {
     container.innerHTML = html;
 }
 
+/* ============================================================
+   СОХРАНЕНИЕ
+============================================================ */
 function save() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: answers, currentQ: currentQ }));
@@ -802,6 +936,9 @@ function load() {
     } catch (e) {}
 }
 
+/* ============================================================
+   КНОПКИ
+============================================================ */
 function backToTest() {
     $("resultScreen").classList.add("hidden");
     $("testScreen").classList.remove("hidden");
@@ -839,8 +976,33 @@ function exportResults() {
     URL.revokeObjectURL(url);
 }
 
+/* ============================================================
+   СТАРТ
+============================================================ */
 load();
 renderQuestion();
+setupRadarClick();
+
+/* Закрытие попапа по клику на фон */
+document.getElementById("motivationPopup").addEventListener("click", function (e) {
+    if (e.target === this) { closeMotivationPopup(); }
+});
+
+/* Закрытие по Escape */
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeMotivationPopup(); }
+});
+
+/* Перерисовка при повороте/ресайзе */
+var resizeTimer = null;
+window.addEventListener("resize", function () {
+    if (resizeTimer) { clearTimeout(resizeTimer); }
+    resizeTimer = setTimeout(function () {
+        if (!$("resultScreen").classList.contains("hidden") && lastData) {
+            drawRadar(lastData);
+        }
+    }, 200);
+});
 </script>
 </body>
 </html>
