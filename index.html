@@ -2,16 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0,
+        maximum-scale=1.0, user-scalable=no"
+    >
 
     <title>PSY-TOOLS</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
+
+        /* =====================================================
+           ROOT
+        ===================================================== */
+
         :root {
             --bg: #02050a;
             --text: #eef7f5;
@@ -19,22 +32,32 @@
             --accent: #45f0c3;
         }
 
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+
         html {
             width: 100%;
             min-height: 100%;
+
             overflow-x: hidden;
+
             background: var(--bg);
         }
+
 
         body {
             width: 100%;
             min-height: 100vh;
+
             overflow-x: hidden;
 
             background:
@@ -51,31 +74,42 @@
                 var(--bg);
 
             color: var(--text);
+
             font-family: "Manrope", sans-serif;
         }
 
+
         /* =====================================================
-           BACKGROUND
+           BACKGROUND — NEURAL NETWORK
         ===================================================== */
 
         #neuralCanvas {
             position: fixed;
+
             inset: 0;
 
             width: 100%;
             height: 100%;
 
             z-index: 0;
+
             pointer-events: none;
 
             opacity: .48;
         }
 
+
+        /* =====================================================
+           MATRIX GRID BACKGROUND
+        ===================================================== */
+
         .grid-background {
             position: fixed;
+
             inset: 0;
 
             z-index: 1;
+
             pointer-events: none;
 
             overflow: hidden;
@@ -105,12 +139,14 @@
                 );
         }
 
+
         /* =====================================================
            MAIN
         ===================================================== */
 
         .main {
             position: relative;
+
             z-index: 5;
 
             width: 100%;
@@ -125,9 +161,12 @@
                 110px;
 
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
         }
+
 
         /* =====================================================
            HEADER
@@ -137,11 +176,14 @@
             width: 100%;
 
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
 
             text-align: center;
         }
+
 
         .logo {
             font-family: "Unbounded", sans-serif;
@@ -160,14 +202,18 @@
                 0 0 35px rgba(69, 240, 195, .08);
         }
 
+
         .logo span {
             color: var(--accent);
         }
 
+
         .subtitle {
             margin-top: 13px;
 
-            font-family: "JetBrains Mono", monospace;
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
             font-size:
                 clamp(10px, 1.3vw, 13px);
@@ -179,8 +225,10 @@
             color: var(--muted);
         }
 
+
         .header-line {
-            width: min(650px, 72vw);
+            width:
+                min(650px, 72vw);
 
             height: 1px;
 
@@ -195,8 +243,10 @@
                 );
 
             box-shadow:
-                0 0 15px rgba(69, 240, 195, .08);
+                0 0 15px
+                rgba(69, 240, 195, .08);
         }
+
 
         /* =====================================================
            SECTIONS
@@ -209,27 +259,36 @@
                 clamp(75px, 8vw, 110px);
 
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
 
             text-align: center;
         }
+
 
         .section:first-of-type {
             margin-top:
                 clamp(60px, 7vw, 85px);
         }
 
+
         .section-title {
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
 
             margin-bottom: 34px;
         }
 
+
         .section-number {
-            font-family: "JetBrains Mono", monospace;
+            font-family:
+                "JetBrains Mono",
+                monospace;
 
             font-size: 10px;
 
@@ -241,8 +300,11 @@
             margin-bottom: 10px;
         }
 
+
         .section-title h2 {
-            font-family: "Unbounded", sans-serif;
+            font-family:
+                "Unbounded",
+                sans-serif;
 
             font-size:
                 clamp(16px, 2vw, 22px);
@@ -252,10 +314,12 @@
             letter-spacing: .03em;
         }
 
+
         .section-title::after {
             content: "";
 
             width: 48px;
+
             height: 1px;
 
             margin-top: 13px;
@@ -265,8 +329,10 @@
             opacity: .5;
 
             box-shadow:
-                0 0 8px rgba(69, 240, 195, .35);
+                0 0 8px
+                rgba(69, 240, 195, .35);
         }
+
 
         /* =====================================================
            CARDS GRID
@@ -277,6 +343,7 @@
             --tile-gap: 55px;
 
             width: 100%;
+
             max-width: 100%;
 
             margin: 0 auto;
@@ -292,10 +359,14 @@
             gap: var(--tile-gap);
 
             justify-content: center;
+
             align-content: start;
 
             overflow: visible;
         }
+
+
+        /* 2 карточки */
 
         .cards:has(.card:nth-child(2)):not(
             :has(.card:nth-child(3))
@@ -304,6 +375,9 @@
                 repeat(2, var(--tile-size));
         }
 
+
+        /* 1 карточка */
+
         .cards:has(.card:nth-child(1)):not(
             :has(.card:nth-child(2))
         ) {
@@ -311,10 +385,14 @@
                 var(--tile-size);
         }
 
+
+        /* 4 карточки */
+
         .cards:has(.card:nth-child(4)) {
             grid-template-columns:
                 repeat(4, var(--tile-size));
         }
+
 
         /* =====================================================
            CARD
@@ -324,6 +402,7 @@
             position: relative;
 
             width: var(--tile-size);
+
             height: var(--tile-size);
 
             min-width: 0;
@@ -340,25 +419,38 @@
                 );
 
             border:
-                1px solid rgba(69, 240, 195, .14);
+                1px solid
+                rgba(69, 240, 195, .14);
 
             border-radius: 22px;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             text-align: center;
 
             isolation: isolate;
 
+            /*
+             * ВАЖНО:
+             * здесь больше нет transform.
+             * Используем top, чтобы position:fixed
+             * у всплывающего окна ориентировался
+             * относительно экрана.
+             */
+
+            top: 0;
+
             transition:
-                transform .35s ease,
+                top .35s ease,
                 border-color .35s ease,
                 box-shadow .35s ease,
                 background .35s ease;
         }
+
 
         .card::before {
             content: "";
@@ -383,6 +475,7 @@
             z-index: -1;
         }
 
+
         .card::after {
             content: "";
 
@@ -393,16 +486,21 @@
             border-radius: 21px;
 
             border:
-                1px solid rgba(255,255,255,.025);
+                1px solid
+                rgba(255,255,255,.025);
 
             pointer-events: none;
         }
 
+
+        /* =====================================================
+           CARD HOVER
+        ===================================================== */
+
         .card:hover,
         .card.active,
         .card:focus-visible {
-            transform:
-                translateY(-5px);
+            top: -5px;
 
             border-color:
                 rgba(69, 240, 195, .48);
@@ -416,12 +514,15 @@
 
             box-shadow:
                 0 0 0 1px
-                    rgba(69, 240, 195, .05),
+                rgba(69, 240, 195, .05),
+
                 0 15px 45px
-                    rgba(0, 0, 0, .35),
+                rgba(0, 0, 0, .35),
+
                 0 0 28px
-                    rgba(69, 240, 195, .08);
+                rgba(69, 240, 195, .08);
         }
+
 
         .card:focus-visible {
             outline:
@@ -430,6 +531,7 @@
 
             outline-offset: 4px;
         }
+
 
         /* =====================================================
            CARD CONTENT
@@ -441,6 +543,7 @@
             z-index: 5;
 
             display: flex;
+
             flex-direction: column;
 
             align-items: center;
@@ -450,6 +553,7 @@
             pointer-events: none;
         }
 
+
         /* =====================================================
            ICON
         ===================================================== */
@@ -458,6 +562,7 @@
             position: relative;
 
             width: 54px;
+
             height: 54px;
 
             margin-bottom: 16px;
@@ -476,6 +581,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 24px;
@@ -486,9 +592,10 @@
 
             box-shadow:
                 inset 0 0 20px
-                    rgba(69, 240, 195, .025),
+                rgba(69, 240, 195, .025),
+
                 0 0 20px
-                    rgba(69, 240, 195, .025);
+                rgba(69, 240, 195, .025);
 
             transition:
                 transform .35s ease,
@@ -496,11 +603,10 @@
                 box-shadow .35s ease;
         }
 
-        /*
-         =========================================================
-         MATRIX CODE — ВНУТРИ ИКОНКИ
-         =========================================================
-        */
+
+        /* =====================================================
+           MATRIX CODE INSIDE ICON
+        ===================================================== */
 
         .icon-matrix {
             position: absolute;
@@ -548,6 +654,7 @@
                 );
         }
 
+
         .icon-matrix::after {
             content: "";
 
@@ -566,6 +673,7 @@
             pointer-events: none;
         }
 
+
         .icon-symbol {
             position: relative;
 
@@ -575,6 +683,7 @@
                 opacity .3s ease,
                 transform .3s ease;
         }
+
 
         .card:hover .icon,
         .card.active .icon,
@@ -586,10 +695,12 @@
 
             box-shadow:
                 0 0 20px
-                    rgba(69, 240, 195, .12),
+                rgba(69, 240, 195, .12),
+
                 inset 0 0 20px
-                    rgba(69, 240, 195, .05);
+                rgba(69, 240, 195, .05);
         }
+
 
         .card:hover .icon-matrix,
         .card.active .icon-matrix,
@@ -600,6 +711,7 @@
                 matrixSpin 12s linear infinite;
         }
 
+
         .card:hover .icon-symbol,
         .card.active .icon-symbol,
         .card:focus-visible .icon-symbol {
@@ -609,8 +721,9 @@
 
             text-shadow:
                 0 0 8px
-                    rgba(69, 240, 195, .8);
+                rgba(69, 240, 195, .8);
         }
+
 
         @keyframes matrixSpin {
 
@@ -627,12 +740,15 @@
             }
         }
 
+
         /* =====================================================
            CARD TEXT
         ===================================================== */
 
         .card-title {
-            font-family: "Manrope", sans-serif;
+            font-family:
+                "Manrope",
+                sans-serif;
 
             font-size: 15px;
 
@@ -642,6 +758,7 @@
 
             max-width: 175px;
         }
+
 
         .card-index {
             margin-top: 9px;
@@ -658,52 +775,72 @@
                 rgba(145, 167, 167, .55);
         }
 
+
         /* =====================================================
            DESCRIPTION
+           
+           ГЛАВНОЕ ИЗМЕНЕНИЕ:
+           popup теперь fixed и всегда находится
+           в центре экрана.
         ===================================================== */
 
         .description {
-            --description-shift: 0px;
-
-            position: absolute;
+            position: fixed;
 
             left: 50%;
-            top: -14px;
+            top: 50%;
+
+            /*
+             * Ограничиваем ширину окна:
+             * никогда не выходит за пределы экрана.
+             */
 
             width:
-                min(340px, calc(100vw - 24px));
+                min(360px, calc(100vw - 32px));
 
             max-width:
-                calc(100vw - 24px);
+                calc(100vw - 32px);
 
-            padding: 15px 17px;
+            padding:
+                18px 20px;
 
-            border-radius: 14px;
+            border-radius: 16px;
 
             border:
                 1px solid
-                rgba(69, 240, 195, .22);
+                rgba(69, 240, 195, .28);
 
             background:
                 linear-gradient(
                     145deg,
-                    rgba(5, 15, 20, .98),
-                    rgba(2, 8, 12, .98)
+                    rgba(5, 15, 20, .985),
+                    rgba(2, 8, 12, .985)
                 );
 
             box-shadow:
-                0 18px 45px
-                    rgba(0, 0, 0, .45),
-                0 0 20px
-                    rgba(69, 240, 195, .04);
+                0 25px 70px
+                rgba(0, 0, 0, .62),
 
-            color: #b8c9c8;
+                0 0 35px
+                rgba(69, 240, 195, .08);
 
-            font-size: 12px;
+            color:
+                #c3d3d2;
 
-            line-height: 1.55;
+            font-size: 13px;
 
-            text-align: left;
+            line-height: 1.6;
+
+            text-align: center;
+
+            /*
+             * Начальное положение —
+             * немного ниже центра.
+             */
+
+            transform:
+                translate(-50%, calc(-50% + 15px))
+                scale(.94);
 
             opacity: 0;
 
@@ -711,72 +848,66 @@
 
             pointer-events: none;
 
-            transform:
-                translate3d(
-                    calc(
-                        -50% +
-                        var(--description-shift)
-                    ),
-                    -100%,
-                    0
-                )
-                scale(.95);
-
-            transform-origin:
-                bottom center;
-
             transition:
                 opacity .25s ease,
                 transform .25s ease,
                 visibility .25s ease;
 
-            z-index: 100;
+            z-index: 10000;
         }
 
-        .description::after {
+
+        /*
+         * Маленький декоративный элемент сверху.
+         */
+
+        .description::before {
             content: "";
 
             position: absolute;
 
             left: 50%;
-            bottom: -6px;
 
-            width: 11px;
-            height: 11px;
+            top: -5px;
+
+            width: 9px;
+
+            height: 9px;
 
             transform:
                 translateX(-50%)
                 rotate(45deg);
 
-            background: #061016;
+            background:
+                #061016;
 
-            border-right:
+            border-left:
                 1px solid
-                rgba(69, 240, 195, .22);
+                rgba(69, 240, 195, .28);
 
-            border-bottom:
+            border-top:
                 1px solid
-                rgba(69, 240, 195, .22);
+                rgba(69, 240, 195, .28);
         }
+
+
+        /*
+         * Открытие popup.
+         */
 
         .card:hover .description,
         .card.active .description,
         .card:focus-visible .description {
+
             opacity: 1;
 
             visibility: visible;
 
             transform:
-                translate3d(
-                    calc(
-                        -50% +
-                        var(--description-shift)
-                    ),
-                    calc(-100% - 12px),
-                    0
-                )
+                translate(-50%, -50%)
                 scale(1);
         }
+
 
         /* =====================================================
            FOOTER
@@ -805,6 +936,7 @@
                 rgba(145, 167, 167, .4);
         }
 
+
         /* =====================================================
            TABLET
         ===================================================== */
@@ -820,11 +952,13 @@
                     clamp(25px, 4vw, 45px);
             }
 
+
             .cards:has(.card:nth-child(4)) {
                 grid-template-columns:
                     repeat(3, var(--tile-size));
             }
         }
+
 
         /* =====================================================
            MOBILE
@@ -841,11 +975,13 @@
                     75px;
             }
 
+
             .logo {
                 font-size: 24px;
 
                 letter-spacing: .11em;
             }
+
 
             .subtitle {
                 font-size: 9px;
@@ -853,11 +989,13 @@
                 letter-spacing: .14em;
             }
 
+
             .header-line {
                 width: 78vw;
 
                 margin-top: 22px;
             }
+
 
             .section {
                 width: 100%;
@@ -865,17 +1003,25 @@
                 margin-top: 65px;
             }
 
+
             .section:first-of-type {
                 margin-top: 50px;
             }
+
 
             .section-title {
                 margin-bottom: 25px;
             }
 
+
             .section-title h2 {
                 font-size: 15px;
             }
+
+
+            /* ================================================
+               MOBILE GRID
+            ================================================ */
 
             .cards {
                 --mobile-gap: 12px;
@@ -905,6 +1051,7 @@
                 align-items: start;
             }
 
+
             .card {
                 width: 100%;
 
@@ -917,11 +1064,16 @@
                 border-radius: 18px;
             }
 
+
             /*
-             * Третья карточка — по центру
+             * Если три карточки:
+             *
+             * □ □
+             *  □
              */
 
             .card:last-child:nth-child(odd) {
+
                 grid-column: 1 / -1;
 
                 justify-self: center;
@@ -933,12 +1085,19 @@
                     );
             }
 
+
             .card-content {
                 padding: 12px;
             }
 
+
+            /* ================================================
+               MOBILE ICON
+            ================================================ */
+
             .icon {
                 width: 44px;
+
                 height: 44px;
 
                 margin-bottom: 12px;
@@ -948,11 +1107,13 @@
                 font-size: 20px;
             }
 
+
             .icon-matrix {
                 font-size: 6px;
 
                 letter-spacing: .8px;
             }
+
 
             .card-title {
                 font-size: 12px;
@@ -962,33 +1123,49 @@
                 max-width: 120px;
             }
 
+
             .card-index {
                 font-size: 8px;
 
                 margin-top: 7px;
             }
 
+
+            /* ================================================
+               MOBILE POPUP
+            ================================================ */
+
             .description {
+
                 width:
-                    min(
-                        310px,
-                        calc(100vw - 20px)
-                    );
+                    calc(100vw - 24px);
 
                 max-width:
-                    calc(100vw - 20px);
+                    calc(100vw - 24px);
 
-                padding: 13px 14px;
+                padding:
+                    16px 17px;
 
-                font-size: 11px;
+                border-radius: 15px;
 
-                line-height: 1.5;
+                font-size: 12px;
+
+                line-height: 1.55;
+
+                /*
+                 * Центр экрана.
+                 */
+
+                left: 50%;
+                top: 50%;
             }
+
 
             .footer {
                 margin-top: 75px;
             }
         }
+
 
         /* =====================================================
            VERY SMALL PHONES
@@ -998,8 +1175,10 @@
 
             .main {
                 padding-left: 9px;
+
                 padding-right: 9px;
             }
+
 
             .cards {
                 max-width: 360px;
@@ -1007,21 +1186,40 @@
                 --mobile-gap: 10px;
             }
 
+
             .card-title {
                 font-size: 11px;
             }
 
+
             .icon {
                 width: 40px;
+
                 height: 40px;
 
                 font-size: 18px;
             }
 
+
             .icon-matrix {
                 font-size: 5.5px;
             }
+
+
+            .description {
+                width:
+                    calc(100vw - 20px);
+
+                max-width:
+                    calc(100vw - 20px);
+
+                padding:
+                    15px 15px;
+
+                font-size: 11px;
+            }
         }
+
 
         /* =====================================================
            REDUCE MOTION
@@ -1032,24 +1230,39 @@
             *,
             *::before,
             *::after {
-                animation-duration: .01ms !important;
 
-                animation-iteration-count: 1 !important;
+                animation-duration:
+                    .01ms !important;
 
-                transition-duration: .01ms !important;
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    .01ms !important;
             }
         }
+
     </style>
 </head>
 
+
 <body>
+
+    <!-- =====================================================
+         BACKGROUND
+    ===================================================== -->
 
     <canvas id="neuralCanvas"></canvas>
 
     <div class="grid-background"></div>
 
 
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
     <main class="main">
+
 
         <!-- =================================================
              HEADER
@@ -1091,6 +1304,7 @@
 
             <div class="cards">
 
+
                 <!-- КОЛЕСО БАЛАНСА -->
 
                 <a
@@ -1103,7 +1317,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 ◉
@@ -1120,6 +1336,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Оцените основные сферы своей жизни,
@@ -1142,7 +1359,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 ◇
@@ -1159,6 +1378,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Проанализируйте свои знания, навыки,
@@ -1182,7 +1402,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 ⌘
@@ -1199,6 +1421,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Исследуйте интересы, способности,
@@ -1234,7 +1457,8 @@
 
             <div class="cards">
 
-                <!-- КЕТТЕЛЛ -->
+
+                <!-- ОЦЕНКА ЛИЧНОСТНЫХ СВОЙСТВ -->
 
                 <a
                     class="card"
@@ -1246,7 +1470,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 Ψ
@@ -1263,6 +1489,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Исследование личностных особенностей
@@ -1285,7 +1512,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 ◈
@@ -1302,6 +1531,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Цветовой тест для исследования
@@ -1324,7 +1554,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 △
@@ -1341,6 +1573,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Исследование ведущего типа трудовой
@@ -1376,6 +1609,7 @@
 
             <div class="cards">
 
+
                 <!-- СОСТАВИТЬ РЕЗЮМЕ -->
 
                 <a
@@ -1388,7 +1622,9 @@
 
                         <div class="icon">
 
-                            <div class="icon-matrix"></div>
+                            <div
+                                class="icon-matrix"
+                            ></div>
 
                             <div class="icon-symbol">
                                 ▣
@@ -1405,6 +1641,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="description">
                         Создайте структурированное
@@ -1435,7 +1672,7 @@
     <script>
 
         /* =====================================================
-           MATRIX CODE
+           MATRIX CHARACTERS
         ===================================================== */
 
         const matrixCharacters =
@@ -1450,8 +1687,14 @@
 
 
         const matrixIcons =
-            document.querySelectorAll(".icon-matrix");
+            document.querySelectorAll(
+                ".icon-matrix"
+            );
 
+
+        /* =====================================================
+           CREATE MATRIX CODE
+        ===================================================== */
 
         function createMatrixCode() {
 
@@ -1459,12 +1702,12 @@
 
                 let result = "";
 
-                /*
-                 * Большое количество символов создаёт
-                 * эффект плотного матричного поля.
-                 */
 
-                for (let i = 0; i < 180; i++) {
+                for (
+                    let i = 0;
+                    i < 180;
+                    i++
+                ) {
 
                     const character =
                         matrixCharacters[
@@ -1474,13 +1717,16 @@
                             )
                         ];
 
+
                     result += character;
+
 
                     if (i % 12 === 0) {
                         result += " ";
                     }
 
                 }
+
 
                 icon.textContent = result;
 
@@ -1490,125 +1736,6 @@
 
 
         createMatrixCode();
-
-
-        /* =====================================================
-           DESCRIPTION POSITIONING
-        ===================================================== */
-
-        function updateDescriptionPositions() {
-
-            const viewportWidth =
-                document.documentElement
-                    .clientWidth;
-
-
-            const edge =
-                window.innerWidth <= 760
-                    ? 8
-                    : 12;
-
-
-            cards.forEach(card => {
-
-                const description =
-                    card.querySelector(
-                        ".description"
-                    );
-
-
-                if (!description) return;
-
-
-                card.style.setProperty(
-                    "--description-shift",
-                    "0px"
-                );
-
-
-                const cardRect =
-                    card.getBoundingClientRect();
-
-
-                const descriptionRect =
-                    description.getBoundingClientRect();
-
-
-                const cardCenter =
-                    cardRect.left +
-                    cardRect.width / 2;
-
-
-                const descriptionWidth =
-                    Math.min(
-                        descriptionRect.width,
-                        viewportWidth -
-                        edge * 2
-                    );
-
-
-                const idealLeft =
-                    cardCenter -
-                    descriptionWidth / 2;
-
-
-                const minimumLeft =
-                    edge;
-
-
-                const maximumLeft =
-                    viewportWidth -
-                    edge -
-                    descriptionWidth;
-
-
-                const safeLeft =
-                    Math.max(
-                        minimumLeft,
-                        Math.min(
-                            idealLeft,
-                            maximumLeft
-                        )
-                    );
-
-
-                const shift =
-                    safeLeft -
-                    idealLeft;
-
-
-                card.style.setProperty(
-                    "--description-shift",
-                    shift + "px"
-                );
-
-            });
-
-        }
-
-
-        window.addEventListener(
-            "resize",
-            updateDescriptionPositions
-        );
-
-
-        window.addEventListener(
-            "orientationchange",
-            updateDescriptionPositions
-        );
-
-
-        window.addEventListener(
-            "load",
-            updateDescriptionPositions
-        );
-
-
-        setTimeout(
-            updateDescriptionPositions,
-            100
-        );
 
 
         /* =====================================================
@@ -1624,14 +1751,14 @@
                 "touchstart",
                 function(event) {
 
+                    /*
+                     * Первое касание:
+                     * показываем описание.
+                     */
+
                     if (
                         activeCard !== this
                     ) {
-
-                        /*
-                         * Первое касание —
-                         * показать описание.
-                         */
 
                         event.preventDefault();
 
@@ -1652,15 +1779,14 @@
                             "active"
                         );
 
+                    }
 
-                        updateDescriptionPositions();
+                    /*
+                     * Второе касание:
+                     * переход по ссылке.
+                     */
 
-                    } else {
-
-                        /*
-                         * Второе касание —
-                         * разрешить переход.
-                         */
+                    else {
 
                         this.classList.remove(
                             "active"
@@ -1678,6 +1804,10 @@
 
         });
 
+
+        /* =====================================================
+           CLOSE DESCRIPTION OUTSIDE CARD
+        ===================================================== */
 
         document.addEventListener(
             "touchstart",
@@ -1722,6 +1852,10 @@
         let nodes = [];
 
 
+        /* =====================================================
+           RESIZE CANVAS
+        ===================================================== */
+
         function resizeCanvas() {
 
             const dpr =
@@ -1759,10 +1893,15 @@
 
             createNodes();
 
+
             drawNetwork();
 
         }
 
+
+        /* =====================================================
+           CREATE NODES
+        ===================================================== */
 
         function createNodes() {
 
@@ -1776,7 +1915,9 @@
 
             const count =
                 width < 760
+
                     ? 24
+
                     : Math.min(
                         48,
                         Math.floor(
@@ -1818,6 +1959,10 @@
         }
 
 
+        /* =====================================================
+           DRAW NETWORK
+        ===================================================== */
+
         function drawNetwork() {
 
             const width =
@@ -1836,9 +1981,9 @@
             );
 
 
-            /*
-             * Соединения
-             */
+            /* -----------------------------------------------
+               CONNECTIONS
+            ------------------------------------------------ */
 
             for (
                 let i = 0;
@@ -1855,7 +2000,9 @@
                     j++
                 ) {
 
-                    if (i === j) continue;
+                    if (i === j) {
+                        continue;
+                    }
 
 
                     const dx =
@@ -1898,7 +2045,9 @@
 
                     if (
                         item.distance > 240
-                    ) return;
+                    ) {
+                        return;
+                    }
 
 
                     const node =
@@ -1948,9 +2097,9 @@
             }
 
 
-            /*
-             * Узлы
-             */
+            /* -----------------------------------------------
+               NODES
+            ------------------------------------------------ */
 
             nodes.forEach(node => {
 
@@ -1977,6 +2126,10 @@
         }
 
 
+        /* =====================================================
+           EVENTS
+        ===================================================== */
+
         window.addEventListener(
             "resize",
             resizeCanvas
@@ -1991,6 +2144,10 @@
             }
         );
 
+
+        /* =====================================================
+           START
+        ===================================================== */
 
         resizeCanvas();
 
