@@ -1,47 +1,341 @@
-<!-- ПСИХОГЕОМЕТРИЧЕСКИЙ ТЕСТ ДЕЛЛИНГЕР -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>PSY-TOOLS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;min-height:100%;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Manrope","Segoe UI",Arial,sans-serif;}
+body{min-height:100vh;min-height:100dvh;padding:12px;padding-bottom:60px;background-image:radial-gradient(1200px 800px at 15% -10%,#1e293b 0%,#0b1120 55%,#070c14 100%);background-repeat:no-repeat;overscroll-behavior:none;}
+a{color:inherit;text-decoration:none;}
 
-<a
-    class="card"
-    href="./dellinger.html"
-    data-card="dellinger"
->
+.wrap{max-width:1180px;margin:0 auto;padding:20px 0 40px;}
 
-    <div class="card-content">
+.logo{
+  text-align:center;
+  font-family:"Unbounded",sans-serif;
+  font-size:clamp(28px,4.6vw,52px);
+  font-weight:800;
+  letter-spacing:.18em;
+  color:transparent;
+  background:linear-gradient(90deg,#63f5ff,#8cffff,#56aaff,#72ffd9);
+  -webkit-background-clip:text;
+  background-clip:text;
+  filter:drop-shadow(0 0 10px rgba(40,220,255,.4)) drop-shadow(0 0 30px rgba(0,160,255,.2));
+  margin-bottom:40px;
+}
 
-        <div class="icon">
+.section{margin-top:50px;}
+.section-title{
+  text-align:center;
+  font-family:"Unbounded",sans-serif;
+  font-size:clamp(16px,2vw,22px);
+  font-weight:600;
+  letter-spacing:.08em;
+  color:#d9faff;
+  margin:0 0 30px;
+  position:relative;
+}
+.section-title::after{
+  content:"";
+  display:block;
+  width:160px;height:1px;
+  margin:12px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(55,220,255,.8),transparent);
+  box-shadow:0 0 10px rgba(40,220,255,.5);
+}
 
-            <div
-                class="icon-matrix"
-            ></div>
+/* Сетка карточек */
+.cards{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:flex-start;
+  gap:clamp(70px,7vw,110px) clamp(30px,4vw,60px);
+  margin:0 auto;
+}
 
-            <div class="icon-symbol">
-                ◈
-            </div>
+/* КАРТОЧКА — сфера */
+.card{
+  position:relative;
+  width:200px;
+  height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  isolation:isolate;
+  transition:transform .3s ease;
+}
+.card:active{transform:scale(0.97);}
 
+.neuron-body{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 32% 27%, rgba(255,255,255,.18), transparent 12%),
+    radial-gradient(circle at 50% 50%, rgba(30,150,210,.3), rgba(4,15,27,.96) 67%);
+  border:1px solid rgba(100,235,255,.65);
+  box-shadow:
+    0 0 15px rgba(30,210,255,.35),
+    0 0 40px rgba(30,180,255,.2),
+    inset 0 0 35px rgba(20,170,230,.18),
+    inset 12px 12px 30px rgba(130,245,255,.07);
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease, border-color .5s ease;
+  z-index:1;
+}
+.neuron-body::before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:50%;
+  border:1px solid rgba(75,210,255,.22);
+  box-shadow:inset 0 0 25px rgba(30,220,255,.08);
+  pointer-events:none;
+}
+.card:hover .neuron-body,
+.card:focus-visible .neuron-body{
+  transform:scale(1.06);
+  border-color:rgba(120,255,245,.9);
+  box-shadow:
+    0 0 20px rgba(30,230,255,.6),
+    0 0 55px rgba(30,190,255,.4),
+    0 0 100px rgba(0,150,255,.18),
+    inset 0 0 45px rgba(40,255,210,.15);
+}
+
+.sphere-content{
+  position:relative;
+  z-index:6;
+  width:84%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+  pointer-events:none;
+}
+
+.icon{
+  width:44px;
+  height:44px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  line-height:1;
+  color:#bdf7ff;
+  filter:drop-shadow(0 0 6px rgba(70,220,255,.4));
+  transition:transform .4s ease, filter .4s ease, color .4s ease;
+}
+.card:hover .icon,
+.card:focus-visible .icon{
+  transform:scale(1.1);
+  color:#eaffff;
+  filter:drop-shadow(0 0 8px rgba(80,235,255,.9)) drop-shadow(0 0 18px rgba(30,180,255,.55));
+}
+
+.card-title{
+  font-family:"Manrope",sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  color:#e6fbff;
+  line-height:1.28;
+  text-shadow:0 0 8px rgba(50,210,255,.5);
+  transition:transform .3s ease, color .3s ease, text-shadow .3s ease;
+}
+.card:hover .card-title,
+.card:focus-visible .card-title{
+  transform:scale(1.06);
+  color:#fff;
+  text-shadow:0 0 12px rgba(90,230,255,.9), 0 0 22px rgba(50,200,255,.45);
+}
+
+.card-index{
+  font-family:"JetBrains Mono",monospace;
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.16em;
+  color:rgba(120,235,255,.55);
+  margin-top:2px;
+}
+
+/* Мобильная адаптация */
+@media (max-width:640px){
+  body{padding:10px;}
+  .wrap{padding-top:14px;}
+  .logo{margin-bottom:26px;letter-spacing:.14em;}
+  .section{margin-top:40px;}
+  .section-title{margin-bottom:24px;}
+  .cards{gap:60px 20px;}
+  .card{width:min(150px,42vw);height:min(150px,42vw);}
+  .icon{width:36px;height:36px;font-size:26px;}
+  .card-title{font-size:11px;}
+  .sphere-content{gap:6px;}
+}
+@media (max-width:380px){
+  .card{width:min(140px,44vw);height:min(140px,44vw);}
+  .icon{width:32px;height:32px;font-size:22px;}
+  .card-title{font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="logo">PSY-TOOLS</div>
+
+  <!-- =====================================================
+       ПСИХОДИАГНОСТИКА
+  ====================================================== -->
+  <section class="section">
+
+    <h2 class="section-title">🧠 Психодиагностика</h2>
+
+    <div class="cards">
+
+      <!-- КЕТТЕЛЛ -->
+      <a class="card" href="./cattell/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">16 факторов Кеттелла</div>
+            <div class="card-index">PSY / 01</div>
+          </div>
         </div>
+      </a>
 
-        <div class="card-title">
-            Психогеометрический тест Сьюзен Деллингер
+      <!-- ДЕЛЛИНГЕР — исправленная ссылка -->
+      <a class="card" href="./dellinger.html">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Психогеометрический тест Деллингер</div>
+            <div class="card-index">PSY / 02</div>
+          </div>
         </div>
+      </a>
 
-        <div class="card-index">
-            PSY / 02
+      <!-- ЛЮШЕР -->
+      <a class="card" href="./luscher/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Тест Люшера</div>
+            <div class="card-index">PSY / 03</div>
+          </div>
         </div>
+      </a>
+
+      <!-- ГЕРЧИКОВ -->
+      <a class="card" href="./gerchikov/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Мотивация по Герчикову</div>
+            <div class="card-index">PSY / 04</div>
+          </div>
+        </div>
+      </a>
 
     </div>
 
+  </section>
 
-    <div class="description">
+  <!-- =====================================================
+       САМОРАЗВИТИЕ
+  ====================================================== -->
+  <section class="section">
 
-        <div class="description-matrix"></div>
+    <h2 class="section-title">🧭 Саморазвитие</h2>
 
-        <div class="description-text">
-            Простая психогеометрическая методика
-            выбора геометрических фигур для
-            ориентировочного исследования
-            особенностей личности.
+    <div class="cards">
+
+      <!-- КОЛЕСО БАЛАНСА -->
+      <a class="card" href="./wheel/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Колесо баланса</div>
+            <div class="card-index">DEV / 01</div>
+          </div>
         </div>
+      </a>
+
+      <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
+      <a class="card" href="./skills/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Рефлексия навыков</div>
+            <div class="card-index">DEV / 02</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- ПРОФОРИЕНТАЦИЯ -->
+      <a class="card" href="./career/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Профориентация</div>
+            <div class="card-index">DEV / 03</div>
+          </div>
+        </div>
+      </a>
 
     </div>
 
-</a>
+  </section>
+
+  <!-- =====================================================
+       НАЙТИ РАБОТУ
+  ====================================================== -->
+  <section class="section">
+
+    <h2 class="section-title">💼 Найти работу</h2>
+
+    <div class="cards">
+
+      <!-- ВАКАНСИИ -->
+      <a class="card" href="./work/vacancies/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Вакансии</div>
+            <div class="card-index">WORK / 01</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- РЕЗЮМЕ -->
+      <a class="card" href="./work/resume/">
+        <div class="neuron-body">
+          <div class="sphere-content">
+            <div class="icon">◈</div>
+            <div class="card-title">Моё резюме</div>
+            <div class="card-index">WORK / 02</div>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+  </section>
+
+</div>
+
+</body>
+</html>
