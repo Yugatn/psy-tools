@@ -1,341 +1,971 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PSY-TOOLS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;min-height:100%;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Manrope","Segoe UI",Arial,sans-serif;}
-body{min-height:100vh;min-height:100dvh;padding:12px;padding-bottom:60px;background-image:radial-gradient(1200px 800px at 15% -10%,#1e293b 0%,#0b1120 55%,#070c14 100%);background-repeat:no-repeat;overscroll-behavior:none;}
-a{color:inherit;text-decoration:none;}
+    <meta charset="UTF-8">
 
-.wrap{max-width:1180px;margin:0 auto;padding:20px 0 40px;}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0,
+        maximum-scale=1.0, user-scalable=no"
+    >
 
-.logo{
-  text-align:center;
-  font-family:"Unbounded",sans-serif;
-  font-size:clamp(28px,4.6vw,52px);
-  font-weight:800;
-  letter-spacing:.18em;
-  color:transparent;
-  background:linear-gradient(90deg,#63f5ff,#8cffff,#56aaff,#72ffd9);
-  -webkit-background-clip:text;
-  background-clip:text;
-  filter:drop-shadow(0 0 10px rgba(40,220,255,.4)) drop-shadow(0 0 30px rgba(0,160,255,.2));
-  margin-bottom:40px;
-}
+    <title>PSY-TOOLS</title>
 
-.section{margin-top:50px;}
-.section-title{
-  text-align:center;
-  font-family:"Unbounded",sans-serif;
-  font-size:clamp(16px,2vw,22px);
-  font-weight:600;
-  letter-spacing:.08em;
-  color:#d9faff;
-  margin:0 0 30px;
-  position:relative;
-}
-.section-title::after{
-  content:"";
-  display:block;
-  width:160px;height:1px;
-  margin:12px auto 0;
-  background:linear-gradient(90deg,transparent,rgba(55,220,255,.8),transparent);
-  box-shadow:0 0 10px rgba(40,220,255,.5);
-}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-/* Сетка карточек */
-.cards{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  align-items:flex-start;
-  gap:clamp(70px,7vw,110px) clamp(30px,4vw,60px);
-  margin:0 auto;
-}
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-/* КАРТОЧКА — сфера */
-.card{
-  position:relative;
-  width:200px;
-  height:200px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  isolation:isolate;
-  transition:transform .3s ease;
-}
-.card:active{transform:scale(0.97);}
+    <style>
 
-.neuron-body{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(circle at 32% 27%, rgba(255,255,255,.18), transparent 12%),
-    radial-gradient(circle at 50% 50%, rgba(30,150,210,.3), rgba(4,15,27,.96) 67%);
-  border:1px solid rgba(100,235,255,.65);
-  box-shadow:
-    0 0 15px rgba(30,210,255,.35),
-    0 0 40px rgba(30,180,255,.2),
-    inset 0 0 35px rgba(20,170,230,.18),
-    inset 12px 12px 30px rgba(130,245,255,.07);
-  transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease, border-color .5s ease;
-  z-index:1;
-}
-.neuron-body::before{
-  content:"";
-  position:absolute;
-  inset:7px;
-  border-radius:50%;
-  border:1px solid rgba(75,210,255,.22);
-  box-shadow:inset 0 0 25px rgba(30,220,255,.08);
-  pointer-events:none;
-}
-.card:hover .neuron-body,
-.card:focus-visible .neuron-body{
-  transform:scale(1.06);
-  border-color:rgba(120,255,245,.9);
-  box-shadow:
-    0 0 20px rgba(30,230,255,.6),
-    0 0 55px rgba(30,190,255,.4),
-    0 0 100px rgba(0,150,255,.18),
-    inset 0 0 45px rgba(40,255,210,.15);
-}
+        /* =====================================================
+           ROOT
+        ===================================================== */
 
-.sphere-content{
-  position:relative;
-  z-index:6;
-  width:84%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  text-align:center;
-  pointer-events:none;
-}
+        :root {
+            --bg: #02050a;
+            --text: #eef7f5;
+            --muted: #91a7a7;
+            --accent: #45f0c3;
+        }
 
-.icon{
-  width:44px;
-  height:44px;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:32px;
-  line-height:1;
-  color:#bdf7ff;
-  filter:drop-shadow(0 0 6px rgba(70,220,255,.4));
-  transition:transform .4s ease, filter .4s ease, color .4s ease;
-}
-.card:hover .icon,
-.card:focus-visible .icon{
-  transform:scale(1.1);
-  color:#eaffff;
-  filter:drop-shadow(0 0 8px rgba(80,235,255,.9)) drop-shadow(0 0 18px rgba(30,180,255,.55));
-}
 
-.card-title{
-  font-family:"Manrope",sans-serif;
-  font-size:12.5px;
-  font-weight:600;
-  color:#e6fbff;
-  line-height:1.28;
-  text-shadow:0 0 8px rgba(50,210,255,.5);
-  transition:transform .3s ease, color .3s ease, text-shadow .3s ease;
-}
-.card:hover .card-title,
-.card:focus-visible .card-title{
-  transform:scale(1.06);
-  color:#fff;
-  text-shadow:0 0 12px rgba(90,230,255,.9), 0 0 22px rgba(50,200,255,.45);
-}
+        /* =====================================================
+           RESET
+        ===================================================== */
 
-.card-index{
-  font-family:"JetBrains Mono",monospace;
-  font-size:9px;
-  font-weight:500;
-  letter-spacing:.16em;
-  color:rgba(120,235,255,.55);
-  margin-top:2px;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* Мобильная адаптация */
-@media (max-width:640px){
-  body{padding:10px;}
-  .wrap{padding-top:14px;}
-  .logo{margin-bottom:26px;letter-spacing:.14em;}
-  .section{margin-top:40px;}
-  .section-title{margin-bottom:24px;}
-  .cards{gap:60px 20px;}
-  .card{width:min(150px,42vw);height:min(150px,42vw);}
-  .icon{width:36px;height:36px;font-size:26px;}
-  .card-title{font-size:11px;}
-  .sphere-content{gap:6px;}
-}
-@media (max-width:380px){
-  .card{width:min(140px,44vw);height:min(140px,44vw);}
-  .icon{width:32px;height:32px;font-size:22px;}
-  .card-title{font-size:10.5px;}
-}
-</style>
-</head>
-<body>
 
-<div class="wrap">
+        html {
+            width: 100%;
+            min-height: 100%;
 
-  <div class="logo">PSY-TOOLS</div>
+            overflow-x: hidden;
 
-  <!-- =====================================================
-       ПСИХОДИАГНОСТИКА
-  ====================================================== -->
-  <section class="section">
+            background: var(--bg);
+        }
 
-    <h2 class="section-title">🧠 Психодиагностика</h2>
 
-    <div class="cards">
+        body {
+            width: 100%;
+            min-height: 100vh;
 
-      <!-- КЕТТЕЛЛ -->
-      <a class="card" href="./cattell/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">16 факторов Кеттелла</div>
-            <div class="card-index">PSY / 01</div>
-          </div>
-        </div>
-      </a>
+            overflow-x: hidden;
 
-      <!-- ДЕЛЛИНГЕР — исправленная ссылка -->
-      <a class="card" href="./dellinger.html">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Психогеометрический тест Деллингер</div>
-            <div class="card-index">PSY / 02</div>
-          </div>
-        </div>
-      </a>
+            background:
+                radial-gradient(
+                    circle at 50% 10%,
+                    rgba(69, 240, 195, .055),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 15% 80%,
+                    rgba(0, 180, 255, .035),
+                    transparent 28%
+                ),
+                var(--bg);
 
-      <!-- ЛЮШЕР -->
-      <a class="card" href="./luscher/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Тест Люшера</div>
-            <div class="card-index">PSY / 03</div>
-          </div>
-        </div>
-      </a>
+            color: var(--text);
 
-      <!-- ГЕРЧИКОВ -->
-      <a class="card" href="./gerchikov/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Мотивация по Герчикову</div>
-            <div class="card-index">PSY / 04</div>
-          </div>
-        </div>
-      </a>
+            font-family: "Manrope", sans-serif;
+        }
 
-    </div>
 
-  </section>
+        /* =====================================================
+           BACKGROUND — NEURAL NETWORK
+        ===================================================== */
 
-  <!-- =====================================================
-       САМОРАЗВИТИЕ
-  ====================================================== -->
-  <section class="section">
+        #neuralCanvas {
+            position: fixed;
 
-    <h2 class="section-title">🧭 Саморазвитие</h2>
+            inset: 0;
 
-    <div class="cards">
+            width: 100%;
+            height: 100%;
 
-      <!-- КОЛЕСО БАЛАНСА -->
-      <a class="card" href="./wheel/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Колесо баланса</div>
-            <div class="card-index">DEV / 01</div>
-          </div>
-        </div>
-      </a>
+            z-index: 0;
 
-      <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
-      <a class="card" href="./skills/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Рефлексия навыков</div>
-            <div class="card-index">DEV / 02</div>
-          </div>
-        </div>
-      </a>
+            pointer-events: none;
 
-      <!-- ПРОФОРИЕНТАЦИЯ -->
-      <a class="card" href="./career/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Профориентация</div>
-            <div class="card-index">DEV / 03</div>
-          </div>
-        </div>
-      </a>
+            opacity: .48;
+        }
 
-    </div>
 
-  </section>
+        /* =====================================================
+           MATRIX GRID BACKGROUND
+        ===================================================== */
 
-  <!-- =====================================================
-       НАЙТИ РАБОТУ
-  ====================================================== -->
-  <section class="section">
+        .grid-background {
+            position: fixed;
 
-    <h2 class="section-title">💼 Найти работу</h2>
+            inset: 0;
 
-    <div class="cards">
+            z-index: 1;
 
-      <!-- ВАКАНСИИ -->
-      <a class="card" href="./work/vacancies/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Вакансии</div>
-            <div class="card-index">WORK / 01</div>
-          </div>
-        </div>
-      </a>
+            pointer-events: none;
 
-      <!-- РЕЗЮМЕ -->
-      <a class="card" href="./work/resume/">
-        <div class="neuron-body">
-          <div class="sphere-content">
-            <div class="icon">◈</div>
-            <div class="card-title">Моё резюме</div>
-            <div class="card-index">WORK / 02</div>
-          </div>
-        </div>
-      </a>
+            overflow: hidden;
 
-    </div>
+            opacity: .17;
 
-  </section>
+            background-image:
+                linear-gradient(
+                    rgba(69, 240, 195, .055) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(69, 240, 195, .055) 1px,
+                    transparent 1px
+                );
 
-</div>
+            background-size: 42px 42px;
 
-</body>
-</html>
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    black 18%,
+                    black 80%,
+                    transparent 100%
+                );
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            position: relative;
+
+            z-index: 5;
+
+            width: 100%;
+            max-width: 1500px;
+
+            margin-left: auto;
+            margin-right: auto;
+
+            padding:
+                clamp(35px, 6vw, 75px)
+                0
+                110px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            width: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            text-align: center;
+        }
+
+
+        .logo {
+            font-family: "Unbounded", sans-serif;
+
+            font-size:
+                clamp(26px, 4vw, 48px);
+
+            font-weight: 600;
+
+            letter-spacing: .16em;
+
+            color: var(--text);
+
+            text-shadow:
+                0 0 15px rgba(69, 240, 195, .18),
+                0 0 35px rgba(69, 240, 195, .08);
+        }
+
+
+        .logo span {
+            color: var(--accent);
+        }
+
+
+        .subtitle {
+            margin-top: 13px;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size:
+                clamp(10px, 1.3vw, 13px);
+
+            letter-spacing: .22em;
+
+            text-transform: uppercase;
+
+            color: var(--muted);
+        }
+
+
+        .header-line {
+            width:
+                min(650px, 72vw);
+
+            height: 1px;
+
+            margin-top: 28px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(69, 240, 195, .4),
+                    transparent
+                );
+
+            box-shadow:
+                0 0 15px
+                rgba(69, 240, 195, .08);
+        }
+
+
+        /* =====================================================
+           SECTIONS
+        ===================================================== */
+
+        .section {
+            width: 100%;
+
+            margin-top:
+                clamp(75px, 8vw, 110px);
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            text-align: center;
+        }
+
+
+        .section:first-of-type {
+            margin-top:
+                clamp(60px, 7vw, 85px);
+        }
+
+
+        .section-title {
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            margin-bottom: 34px;
+        }
+
+
+        .section-number {
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 10px;
+
+            letter-spacing: .18em;
+
+            color:
+                rgba(69, 240, 195, .55);
+
+            margin-bottom: 10px;
+        }
+
+
+        .section-title h2 {
+            font-family:
+                "Unbounded",
+                sans-serif;
+
+            font-size:
+                clamp(16px, 2vw, 22px);
+
+            font-weight: 500;
+
+            letter-spacing: .03em;
+        }
+
+
+        .section-title::after {
+            content: "";
+
+            width: 48px;
+
+            height: 1px;
+
+            margin-top: 13px;
+
+            background: var(--accent);
+
+            opacity: .5;
+
+            box-shadow:
+                0 0 8px
+                rgba(69, 240, 195, .35);
+        }
+
+
+        /* =====================================================
+           CARDS GRID
+        ===================================================== */
+
+        .cards {
+            --tile-size: 220px;
+            --tile-gap: 55px;
+
+            width: 100%;
+
+            max-width: 100%;
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, var(--tile-size));
+
+            grid-auto-rows:
+                var(--tile-size);
+
+            gap: var(--tile-gap);
+
+            justify-content: center;
+
+            align-content: start;
+
+            overflow: visible;
+        }
+
+
+        .cards:has(.card:nth-child(2)):not(
+            :has(.card:nth-child(3))
+        ) {
+            grid-template-columns:
+                repeat(2, var(--tile-size));
+        }
+
+
+        .cards:has(.card:nth-child(1)):not(
+            :has(.card:nth-child(2))
+        ) {
+            grid-template-columns:
+                var(--tile-size);
+        }
+
+
+        .cards:has(.card:nth-child(4)) {
+            grid-template-columns:
+                repeat(4, var(--tile-size));
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            position: relative;
+
+            width: var(--tile-size);
+
+            height: var(--tile-size);
+
+            min-width: 0;
+
+            text-decoration: none;
+
+            color: var(--text);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 22, 28, .92),
+                    rgba(3, 8, 12, .86)
+                );
+
+            border:
+                1px solid
+                rgba(69, 240, 195, .14);
+
+            border-radius: 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            isolation: isolate;
+
+            top: 0;
+
+            z-index: 1;
+
+            transition:
+                top .35s ease,
+                border-color .35s ease,
+                box-shadow .35s ease,
+                background .35s ease,
+                z-index 0s;
+        }
+
+
+        .card::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            border-radius: inherit;
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(69, 240, 195, .08),
+                    transparent 58%
+                );
+
+            opacity: .45;
+
+            pointer-events: none;
+
+            z-index: -1;
+        }
+
+
+        .card::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 1px;
+
+            border-radius: 21px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.025);
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           CARD HOVER / ACTIVE
+        ===================================================== */
+
+        .card:hover,
+        .card.active,
+        .card:focus-visible {
+            top: -5px;
+
+            z-index: 1000;
+
+            border-color:
+                rgba(69, 240, 195, .48);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 26, 30, .97),
+                    rgba(3, 10, 14, .94)
+                );
+
+            box-shadow:
+                0 0 0 1px
+                rgba(69, 240, 195, .05),
+
+                0 15px 45px
+                rgba(0, 0, 0, .35),
+
+                0 0 28px
+                rgba(69, 240, 195, .08);
+        }
+
+
+        .card:focus-visible {
+            outline:
+                2px solid
+                rgba(69, 240, 195, .65);
+
+            outline-offset: 4px;
+        }
+
+
+        /* =====================================================
+           CARD CONTENT
+        ===================================================== */
+
+        .card-content {
+            position: relative;
+
+            z-index: 5;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            padding: 20px;
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           ICON
+        ===================================================== */
+
+        .icon {
+            position: relative;
+
+            width: 54px;
+
+            height: 54px;
+
+            margin-bottom: 16px;
+
+            border-radius: 16px;
+
+            border:
+                1px solid
+                rgba(69, 240, 195, .18);
+
+            background:
+                rgba(69, 240, 195, .035);
+
+            color: var(--accent);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 24px;
+
+            overflow: hidden;
+
+            isolation: isolate;
+
+            box-shadow:
+                inset 0 0 20px
+                rgba(69, 240, 195, .025),
+
+                0 0 20px
+                rgba(69, 240, 195, .025);
+
+            transition:
+                transform .35s ease,
+                border-color .35s ease,
+                box-shadow .35s ease;
+        }
+
+
+        /* =====================================================
+           MATRIX CODE INSIDE ICON
+        ===================================================== */
+
+        .icon-matrix {
+            position: absolute;
+
+            inset: -30px;
+
+            z-index: 1;
+
+            overflow: hidden;
+
+            opacity: 0;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 7px;
+
+            line-height: 1.25;
+
+            letter-spacing: 1px;
+
+            word-break: break-all;
+
+            text-align: center;
+
+            color:
+                rgba(69, 240, 195, .8);
+
+            transform:
+                rotate(0deg)
+                scale(1.05);
+
+            transition:
+                opacity .4s ease;
+
+            pointer-events: none;
+
+            mask-image:
+                radial-gradient(
+                    circle,
+                    black 20%,
+                    rgba(0,0,0,.8) 55%,
+                    transparent 75%
+                );
+        }
+
+
+        .icon-matrix::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    transparent 20%,
+                    rgba(2,5,10,.15) 55%,
+                    rgba(2,5,10,.7) 100%
+                );
+
+            pointer-events: none;
+        }
+
+
+        .icon-symbol {
+            position: relative;
+
+            z-index: 3;
+
+            transition:
+                opacity .3s ease,
+                transform .3s ease;
+        }
+
+
+        .card:hover .icon,
+        .card.active .icon,
+        .card:focus-visible .icon {
+            transform: scale(1.07);
+
+            border-color:
+                rgba(69, 240, 195, .48);
+
+            box-shadow:
+                0 0 20px
+                rgba(69, 240, 195, .12),
+
+                inset 0 0 20px
+                rgba(69, 240, 195, .05);
+        }
+
+
+        .card:hover .icon-matrix,
+        .card.active .icon-matrix,
+        .card:focus-visible .icon-matrix {
+            opacity: .72;
+
+            animation:
+                matrixSpin 12s linear infinite;
+        }
+
+
+        .card:hover .icon-symbol,
+        .card.active .icon-symbol,
+        .card:focus-visible .icon-symbol {
+            opacity: .85;
+
+            transform: scale(.9);
+
+            text-shadow:
+                0 0 8px
+                rgba(69, 240, 195, .8);
+        }
+
+
+        @keyframes matrixSpin {
+
+            from {
+                transform:
+                    rotate(0deg)
+                    scale(1.05);
+            }
+
+            to {
+                transform:
+                    rotate(360deg)
+                    scale(1.05);
+            }
+        }
+
+
+        /* =====================================================
+           CARD TEXT
+        ===================================================== */
+
+        .card-title {
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size: 15px;
+
+            line-height: 1.3;
+
+            font-weight: 600;
+
+            max-width: 175px;
+        }
+
+
+        .card-index {
+            margin-top: 9px;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 9px;
+
+            letter-spacing: .12em;
+
+            color:
+                rgba(145, 167, 167, .55);
+        }
+
+
+        /* =====================================================
+           DESCRIPTION POPUP
+        ===================================================== */
+
+        .description {
+            position: fixed;
+
+            left: 50%;
+            top: 50%;
+
+            width:
+                min(500px, calc(100vw - 40px));
+
+            max-width:
+                calc(100vw - 40px);
+
+            max-height:
+                calc(100vh - 80px);
+
+            padding:
+                28px 32px;
+
+            border-radius: 20px;
+
+            border:
+                1px solid
+                rgba(69, 240, 195, .42);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(3, 16, 19, .78),
+                    rgba(2, 8, 12, .72)
+                );
+
+            backdrop-filter:
+                blur(5px);
+
+            -webkit-backdrop-filter:
+                blur(5px);
+
+            box-shadow:
+                0 30px 90px
+                rgba(0, 0, 0, .72),
+
+                0 0 45px
+                rgba(69, 240, 195, .12),
+
+                inset 0 0 35px
+                rgba(69, 240, 195, .035);
+
+            color:
+                #d6e5e3;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+            font-weight: 500;
+
+            text-align: center;
+
+            overflow: hidden;
+
+            transform:
+                translate(-50%, calc(-50% + 18px))
+                scale(.94);
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            transition:
+                opacity .25s ease,
+                transform .25s ease,
+                visibility .25s ease;
+
+            z-index: 10000;
+        }
+
+
+        /* =====================================================
+           MATRIX BACKGROUND INSIDE POPUP
+        ===================================================== */
+
+        .description-matrix {
+            position: absolute;
+
+            inset: -45px;
+
+            z-index: 0;
+
+            overflow: hidden;
+
+            font-family:
+                "JetBrains Mono",
+                monospace;
+
+            font-size: 8px;
+
+            line-height: 1.3;
+
+            letter-spacing: 1.5px;
+
+            word-break: break-all;
+
+            text-align: center;
+
+            color:
+                rgba(69, 240, 195, .20);
+
+            opacity: .85;
+
+            transform:
+                rotate(-4deg)
+                scale(1.05);
+
+            pointer-events: none;
+
+            mask-image:
+                radial-gradient(
+                    ellipse at center,
+                    black 15%,
+                    rgba(0,0,0,.8) 55%,
+                    transparent 90%
+                );
+
+            animation:
+                popupMatrixMove 18s linear infinite;
+        }
+
+
+        .description-matrix::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(2,8,12,.25),
+                    transparent 30%,
+                    transparent 70%,
+                    rgba(2,8,12,.4)
+                );
+        }
+
+
+        @keyframes popupMatrixMove {
+
+            0% {
+                transform:
+                    rotate(-4deg)
+                    translate3d(0,0,0)
+                    scale(1.05);
+            }
+
+            50% {
+                transform:
+                    rotate(-2deg)
+                    translate3d(-10px,8px,0)
+                    scale(1.08);
+            }
+
+            100% {
+                transform:
+                    rotate(-4deg)
+                    translate3d(0,0,0)
+                    scale(1.05);
+            }
+        }
+
+
+        /* =====================================================
+           DESCRIPTION TEXT
+        ===================================================== */
+
+        .description-text {
+            position: relative;
+
+            z-index: 2;
+
+            display: block;
+
+            text-shadow:
+                0 1px 2px rgba(0,0,0,.9),
+                0 0 12px rgba(2,8,12,.85);
+        }
+
+
+        .description::before {
+            content: "";
+
+            position: 
