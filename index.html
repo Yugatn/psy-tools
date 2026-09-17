@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -47,9 +48,7 @@
         html {
             width: 100%;
             min-height: 100%;
-
             overflow-x: hidden;
-
             background: var(--bg);
         }
 
@@ -57,7 +56,6 @@
         body {
             width: 100%;
             min-height: 100vh;
-
             overflow-x: hidden;
 
             background:
@@ -85,16 +83,13 @@
 
         #neuralCanvas {
             position: fixed;
-
             inset: 0;
 
             width: 100%;
             height: 100%;
 
             z-index: 0;
-
             pointer-events: none;
-
             opacity: .48;
         }
 
@@ -105,15 +100,12 @@
 
         .grid-background {
             position: fixed;
-
             inset: 0;
 
             z-index: 1;
-
             pointer-events: none;
 
             overflow: hidden;
-
             opacity: .17;
 
             background-image:
@@ -146,7 +138,6 @@
 
         .main {
             position: relative;
-
             z-index: 5;
 
             width: 100%;
@@ -161,9 +152,7 @@
                 110px;
 
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
         }
 
@@ -176,9 +165,7 @@
             width: 100%;
 
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
 
             text-align: center;
@@ -192,7 +179,6 @@
                 clamp(26px, 4vw, 48px);
 
             font-weight: 600;
-
             letter-spacing: .16em;
 
             color: var(--text);
@@ -219,7 +205,6 @@
                 clamp(10px, 1.3vw, 13px);
 
             letter-spacing: .22em;
-
             text-transform: uppercase;
 
             color: var(--muted);
@@ -231,7 +216,6 @@
                 min(650px, 72vw);
 
             height: 1px;
-
             margin-top: 28px;
 
             background:
@@ -259,9 +243,7 @@
                 clamp(75px, 8vw, 110px);
 
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
 
             text-align: center;
@@ -276,9 +258,7 @@
 
         .section-title {
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
 
             margin-bottom: 34px;
@@ -291,7 +271,6 @@
                 monospace;
 
             font-size: 10px;
-
             letter-spacing: .18em;
 
             color:
@@ -310,7 +289,6 @@
                 clamp(16px, 2vw, 22px);
 
             font-weight: 500;
-
             letter-spacing: .03em;
         }
 
@@ -319,9 +297,7 @@
             content: "";
 
             width: 48px;
-
             height: 1px;
-
             margin-top: 13px;
 
             background: var(--accent);
@@ -343,7 +319,6 @@
             --tile-gap: 55px;
 
             width: 100%;
-
             max-width: 100%;
 
             margin: 0 auto;
@@ -359,7 +334,6 @@
             gap: var(--tile-gap);
 
             justify-content: center;
-
             align-content: start;
 
             overflow: visible;
@@ -396,13 +370,11 @@
             position: relative;
 
             width: var(--tile-size);
-
             height: var(--tile-size);
 
             min-width: 0;
 
             text-decoration: none;
-
             color: var(--text);
 
             background:
@@ -419,9 +391,7 @@
             border-radius: 22px;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             text-align: center;
@@ -429,7 +399,6 @@
             isolation: isolate;
 
             top: 0;
-
             z-index: 1;
 
             transition:
@@ -445,7 +414,6 @@
             content: "";
 
             position: absolute;
-
             inset: 0;
 
             border-radius: inherit;
@@ -460,7 +428,6 @@
             opacity: .45;
 
             pointer-events: none;
-
             z-index: -1;
         }
 
@@ -469,7 +436,6 @@
             content: "";
 
             position: absolute;
-
             inset: 1px;
 
             border-radius: 21px;
@@ -530,13 +496,10 @@
 
         .card-content {
             position: relative;
-
             z-index: 5;
 
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
 
             padding: 20px;
@@ -553,7 +516,6 @@
             position: relative;
 
             width: 54px;
-
             height: 54px;
 
             margin-bottom: 16px;
@@ -570,15 +532,12 @@
             color: var(--accent);
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             font-size: 24px;
 
             overflow: hidden;
-
             isolation: isolate;
 
             box-shadow:
@@ -601,7 +560,6 @@
 
         .icon-matrix {
             position: absolute;
-
             inset: -30px;
 
             z-index: 1;
@@ -615,13 +573,10 @@
                 monospace;
 
             font-size: 7px;
-
             line-height: 1.25;
-
             letter-spacing: 1px;
 
             word-break: break-all;
-
             text-align: center;
 
             color:
@@ -650,7 +605,6 @@
             content: "";
 
             position: absolute;
-
             inset: 0;
 
             background:
@@ -667,7 +621,6 @@
 
         .icon-symbol {
             position: relative;
-
             z-index: 3;
 
             transition:
@@ -742,9 +695,7 @@
                 sans-serif;
 
             font-size: 15px;
-
             line-height: 1.3;
-
             font-weight: 600;
 
             max-width: 175px;
@@ -759,7 +710,6 @@
                 monospace;
 
             font-size: 9px;
-
             letter-spacing: .12em;
 
             color:
@@ -826,9 +776,7 @@
                 sans-serif;
 
             font-size: 15px;
-
             line-height: 1.7;
-
             font-weight: 500;
 
             text-align: center;
@@ -840,7 +788,6 @@
                 scale(.94);
 
             opacity: 0;
-
             visibility: hidden;
 
             pointer-events: none;
@@ -860,7 +807,6 @@
 
         .description-matrix {
             position: absolute;
-
             inset: -45px;
 
             z-index: 0;
@@ -872,13 +818,10 @@
                 monospace;
 
             font-size: 8px;
-
             line-height: 1.3;
-
             letter-spacing: 1.5px;
 
             word-break: break-all;
-
             text-align: center;
 
             color:
@@ -909,7 +852,6 @@
             content: "";
 
             position: absolute;
-
             inset: 0;
 
             background:
@@ -954,7 +896,6 @@
 
         .description-text {
             position: relative;
-
             z-index: 2;
 
             display: block;
@@ -971,11 +912,9 @@
             position: absolute;
 
             left: 50%;
-
             top: -6px;
 
             width: 12px;
-
             height: 12px;
 
             transform:
@@ -1001,7 +940,6 @@
             content: "";
 
             position: absolute;
-
             inset: 7px;
 
             border-radius: 14px;
@@ -1025,7 +963,6 @@
         .card:focus-visible .description {
 
             opacity: 1;
-
             visibility: visible;
 
             transform:
@@ -1044,7 +981,6 @@
             margin-top: 105px;
 
             display: flex;
-
             justify-content: center;
 
             text-align: center;
@@ -1054,7 +990,6 @@
                 monospace;
 
             font-size: 9px;
-
             letter-spacing: .12em;
 
             color:
@@ -1117,28 +1052,24 @@
 
             .logo {
                 font-size: 24px;
-
                 letter-spacing: .11em;
             }
 
 
             .subtitle {
                 font-size: 9px;
-
                 letter-spacing: .14em;
             }
 
 
             .header-line {
                 width: 78vw;
-
                 margin-top: 22px;
             }
 
 
             .section {
                 width: 100%;
-
                 margin-top: 65px;
             }
 
@@ -1166,11 +1097,9 @@
                 --mobile-gap: 12px;
 
                 width: 100%;
-
                 max-width: 390px;
 
                 margin: 0 auto;
-
                 padding: 0;
 
                 display: grid;
@@ -1186,14 +1115,12 @@
                 gap: var(--mobile-gap);
 
                 justify-content: center;
-
                 align-items: start;
             }
 
 
             .card {
                 width: 100%;
-
                 height: auto;
 
                 aspect-ratio: 1 / 1;
@@ -1203,13 +1130,6 @@
                 border-radius: 18px;
             }
 
-
-            /*
-             * Нечётное количество карточек:
-             *
-             * □ □
-             *  □
-             */
 
             .card:last-child:nth-child(odd) {
 
@@ -1236,7 +1156,6 @@
 
             .icon {
                 width: 44px;
-
                 height: 44px;
 
                 margin-bottom: 12px;
@@ -1249,14 +1168,12 @@
 
             .icon-matrix {
                 font-size: 6px;
-
                 letter-spacing: .8px;
             }
 
 
             .card-title {
                 font-size: 12px;
-
                 line-height: 1.25;
 
                 max-width: 120px;
@@ -1265,7 +1182,6 @@
 
             .card-index {
                 font-size: 8px;
-
                 margin-top: 7px;
             }
 
@@ -1291,11 +1207,9 @@
                 border-radius: 18px;
 
                 font-size: 13px;
-
                 line-height: 1.6;
 
                 left: 50%;
-
                 top: 50%;
 
                 overflow-y: auto;
@@ -1308,9 +1222,7 @@
 
             .description-matrix {
                 font-size: 6px;
-
                 letter-spacing: .8px;
-
                 opacity: .7;
             }
 
@@ -1335,14 +1247,12 @@
 
             .main {
                 padding-left: 9px;
-
                 padding-right: 9px;
             }
 
 
             .cards {
                 max-width: 360px;
-
                 --mobile-gap: 10px;
             }
 
@@ -1354,9 +1264,7 @@
 
             .icon {
                 width: 40px;
-
                 height: 40px;
-
                 font-size: 18px;
             }
 
@@ -1381,7 +1289,6 @@
                     20px 17px;
 
                 font-size: 12px;
-
                 line-height: 1.55;
 
                 border-radius: 16px;
@@ -1390,7 +1297,6 @@
 
             .description-matrix {
                 font-size: 5px;
-
                 letter-spacing: .65px;
             }
         }
@@ -1699,12 +1605,12 @@
                 </a>
 
 
-                <!-- ЛЮШЕР -->
+                <!-- ПСИХОГЕОМЕТРИЧЕСКИЙ ТЕСТ ДЕЛЛИНГЕР -->
 
                 <a
                     class="card"
                     href="./luscher/"
-                    data-card="luscher"
+                    data-card="dellinger"
                 >
 
                     <div class="card-content">
@@ -1722,7 +1628,7 @@
                         </div>
 
                         <div class="card-title">
-                            Тест Люшера
+                            Психогеометрический тест Сьюзен Деллингер
                         </div>
 
                         <div class="card-index">
@@ -1737,60 +1643,10 @@
                         <div class="description-matrix"></div>
 
                         <div class="description-text">
-                            Цветовой тест для исследования
-                            субъективного отношения к цветам
-                            и особенностей актуального состояния.
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <!-- =================================================
-                     ЦВЕТОВОЙ ТЕСТ ЮДЖИНА
-                ================================================== -->
-
-                <a
-                    class="card"
-                    href="./color-temperament-test/"
-                    data-card="color-temperament-test"
-                >
-
-                    <div class="card-content">
-
-                        <div class="icon">
-
-                            <div
-                                class="icon-matrix"
-                            ></div>
-
-                            <div class="icon-symbol">
-                                ◉
-                            </div>
-
-                        </div>
-
-                        <div class="card-title">
-                            Цветовой тест Юджина
-                        </div>
-
-                        <div class="card-index">
-                            PSY / 03
-                        </div>
-
-                    </div>
-
-
-                    <div class="description">
-
-                        <div class="description-matrix"></div>
-
-                        <div class="description-text">
-                            Исследование цветовых предпочтений,
-                            их устойчивости и возможной связи
-                            с особенностями темперамента.
-                            Авторская исследовательская методика.
+                            Простая психогеометрическая методика
+                            выбора геометрических фигур для
+                            ориентировочного исследования
+                            особенностей личности.
                         </div>
 
                     </div>
@@ -1825,7 +1681,7 @@
                         </div>
 
                         <div class="card-index">
-                            PSY / 04
+                            PSY / 03
                         </div>
 
                     </div>
@@ -2446,3 +2302,4 @@
 
 </body>
 </html>
+```
