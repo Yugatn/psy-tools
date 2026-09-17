@@ -1,0 +1,2714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"
+>
+
+<title>Психогеометрический тест — PSY-TOOLS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<style>
+
+:root {
+    --bg: #02050a;
+    --panel: rgba(5, 12, 18, 0.92);
+    --panel2: rgba(8, 18, 25, 0.96);
+    --text: #eef7f5;
+    --muted: #91a7a7;
+    --accent: #45f0c3;
+    --accent-soft: rgba(69,240,195,.12);
+    --border: rgba(69,240,195,.22);
+    --danger: #ff6b7a;
+    --yellow: #e8dc68;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Manrope, sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+button {
+    font: inherit;
+}
+
+#neuralCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .42;
+}
+
+.matrix {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+    opacity: .055;
+}
+
+.matrix-column {
+    position: absolute;
+    top: -100%;
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    line-height: 18px;
+    animation: matrixFall linear infinite;
+    white-space: pre;
+}
+
+@keyframes matrixFall {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(220%);
+    }
+}
+
+.app {
+    position: relative;
+    z-index: 2;
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 60px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--muted);
+    text-decoration: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    transition: .2s ease;
+}
+
+.back:hover {
+    color: var(--accent);
+}
+
+.brand {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: .08em;
+}
+
+.hero {
+    border: 1px solid var(--border);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(69,240,195,.07),
+            rgba(2,5,10,.9) 45%
+        );
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 49.5%,
+            rgba(69,240,195,.035) 50%,
+            transparent 50.5%
+        ),
+        linear-gradient(
+            transparent 49.5%,
+            rgba(69,240,195,.035) 50%,
+            transparent 50.5%
+        );
+    background-size: 50px 50px;
+    pointer-events: none;
+}
+
+.eyebrow {
+    position: relative;
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    margin-bottom: 15px;
+    letter-spacing: .12em;
+}
+
+h1 {
+    position: relative;
+    margin: 0;
+    max-width: 850px;
+    font-family: Unbounded, sans-serif;
+    font-size: clamp(25px, 5vw, 44px);
+    line-height: 1.22;
+    font-weight: 500;
+}
+
+.subtitle {
+    position: relative;
+    max-width: 780px;
+    margin: 20px 0 0;
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+.notice {
+    margin-top: 18px;
+    position: relative;
+    border-left: 2px solid var(--accent);
+    padding: 12px 15px;
+    background: rgba(69,240,195,.045);
+    color: #b8c8c7;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.progress-area {
+    margin-top: 22px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.progress {
+    height: 3px;
+    background: rgba(255,255,255,.08);
+}
+
+.progress-fill {
+    height: 100%;
+    width: 20%;
+    background: var(--accent);
+    box-shadow: 0 0 14px rgba(69,240,195,.4);
+    transition: width .35s ease;
+}
+
+.stage {
+    margin-top: 18px;
+}
+
+.stage.hidden {
+    display: none;
+}
+
+.question-panel {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    padding: 28px;
+}
+
+.question-label {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .1em;
+    margin-bottom: 12px;
+}
+
+.question {
+    font-family: Unbounded, sans-serif;
+    font-size: clamp(18px, 3vw, 27px);
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.question-help {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    max-width: 760px;
+}
+
+.shapes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-top: 25px;
+}
+
+.shape-card {
+    position: relative;
+    min-height: 190px;
+    border: 1px solid rgba(69,240,195,.18);
+    background: rgba(3,9,14,.88);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.shape-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    background: rgba(69,240,195,.07);
+    box-shadow: 0 0 30px rgba(69,240,195,.08);
+}
+
+.shape-card:active {
+    transform: scale(.98);
+}
+
+.shape-visual {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.shape-svg {
+    width: 88px;
+    height: 88px;
+    overflow: visible;
+}
+
+.shape-svg * {
+    stroke: var(--accent);
+    stroke-width: 3;
+    fill: rgba(69,240,195,.045);
+    vector-effect: non-scaling-stroke;
+}
+
+.shape-name {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.shape-number {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    color: rgba(145,167,167,.45);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+}
+
+.selected-order {
+    margin-top: 22px;
+    border: 1px solid rgba(69,240,195,.12);
+    padding: 16px;
+    background: rgba(69,240,195,.025);
+}
+
+.selected-title {
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    margin-bottom: 12px;
+}
+
+.selected-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.selected-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(69,240,195,.18);
+    padding: 7px 10px;
+    color: var(--text);
+    font-size: 12px;
+    background: rgba(69,240,195,.04);
+}
+
+.selected-item strong {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+}
+
+.result {
+    border: 1px solid var(--border);
+    background: var(--panel);
+}
+
+.result-header {
+    padding: 30px;
+    border-bottom: 1px solid var(--border);
+}
+
+.result-code {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    margin-bottom: 12px;
+}
+
+.result-title {
+    font-family: Unbounded, sans-serif;
+    font-size: clamp(24px, 4vw, 38px);
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+.result-subtitle {
+    margin-top: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.result-body {
+    padding: 30px;
+}
+
+.profile-main {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 28px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(69,240,195,.12);
+}
+
+.primary-shape {
+    border: 1px solid var(--accent);
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(69,240,195,.035);
+}
+
+.primary-shape .shape-svg {
+    width: 120px;
+    height: 120px;
+}
+
+.profile-name {
+    font-family: Unbounded, sans-serif;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.profile-tag {
+    display: inline-block;
+    border: 1px solid rgba(69,240,195,.25);
+    color: var(--accent);
+    padding: 6px 9px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    margin-bottom: 17px;
+}
+
+.profile-lead {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #c9d6d5;
+}
+
+.rank-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 25px 0 30px;
+}
+
+.rank {
+    border: 1px solid rgba(69,240,195,.13);
+    padding: 12px;
+    background: rgba(69,240,195,.025);
+}
+
+.rank-number {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--accent);
+    font-size: 11px;
+}
+
+.rank-name {
+    margin-top: 7px;
+    font-size: 12px;
+}
+
+.section-block {
+    margin-top: 28px;
+}
+
+.section-block h3 {
+    font-family: Unbounded, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 15px;
+}
+
+.section-block p {
+    color: #c3d0cf;
+    line-height: 1.75;
+    font-size: 14px;
+    margin: 0;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.data-card {
+    border: 1px solid rgba(69,240,195,.13);
+    background: rgba(69,240,195,.025);
+    padding: 18px;
+}
+
+.data-label {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+    margin-bottom: 9px;
+    text-transform: uppercase;
+}
+
+.data-value {
+    color: #cbd8d7;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.trait {
+    border: 1px solid rgba(69,240,195,.16);
+    padding: 7px 10px;
+    font-size: 12px;
+    color: #cbd8d7;
+    background: rgba(69,240,195,.025);
+}
+
+.trait.positive {
+    border-color: rgba(69,240,195,.28);
+}
+
+.trait.caution {
+    border-color: rgba(232,220,104,.25);
+}
+
+.trait.risk {
+    border-color: rgba(255,107,122,.25);
+}
+
+.pair-box {
+    border: 1px solid rgba(69,240,195,.18);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(69,240,195,.05),
+            rgba(69,240,195,.01)
+        );
+    padding: 20px;
+}
+
+.pair-title {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--accent);
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.pair-text {
+    color: #c7d4d3;
+    line-height: 1.7;
+    font-size: 13px;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.order-table th,
+.order-table td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(69,240,195,.1);
+}
+
+.order-table th {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.order-table td {
+    color: #c4d1d0;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.btn {
+    border: 1px solid var(--accent);
+    background: rgba(69,240,195,.07);
+    color: var(--accent);
+    padding: 12px 17px;
+    cursor: pointer;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    transition: .2s ease;
+}
+
+.btn:hover {
+    background: rgba(69,240,195,.14);
+}
+
+.btn.secondary {
+    border-color: rgba(145,167,167,.3);
+    color: var(--muted);
+    background: transparent;
+}
+
+.footer {
+    margin-top: 22px;
+    color: rgba(145,167,167,.55);
+    text-align: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+@media (max-width: 850px) {
+
+    .shapes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shape-card:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .profile-main {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-shape {
+        min-height: 150px;
+    }
+
+    .rank-strip {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .app {
+        width: min(100% - 20px, 1100px);
+        padding-top: 15px;
+    }
+
+    .topbar {
+        margin-bottom: 15px;
+    }
+
+    .hero {
+        padding: 22px 17px;
+    }
+
+    .question-panel,
+    .result-header,
+    .result-body {
+        padding: 20px 15px;
+    }
+
+    .shapes {
+        gap: 9px;
+    }
+
+    .shape-card {
+        min-height: 165px;
+        padding: 12px;
+    }
+
+    .shape-visual {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 12px;
+    }
+
+    .shape-svg {
+        width: 72px;
+        height: 72px;
+    }
+
+    .data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rank-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .rank {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .rank-name {
+        margin-top: 0;
+    }
+
+    .order-table {
+        font-size: 12px;
+    }
+
+    .order-table th,
+    .order-table td {
+        padding: 9px 6px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="neuralCanvas"></canvas>
+<div class="matrix" id="matrix"></div>
+
+<main class="app">
+
+    <div class="topbar">
+
+        <a class="back" href="../">
+            ← PSY-TOOLS
+        </a>
+
+        <div class="brand">
+            PSY / 02
+        </div>
+
+    </div>
+
+
+    <!-- INTRO -->
+
+    <section class="hero">
+
+        <div class="eyebrow">
+            PSYCHOGEOMETRICS / DELLINGER
+        </div>
+
+        <h1>
+            Психогеометрический тест
+            Сьюзен Деллингер
+        </h1>
+
+        <p class="subtitle">
+            Выберите пять геометрических фигур в порядке их
+            субъективного соответствия вам. Не пытайтесь
+            анализировать себя логически — ориентируйтесь
+            на первое ощущение.
+        </p>
+
+        <div class="notice">
+            Методика является ориентировочным инструментом
+            саморефлексии. Результат не является клиническим
+            диагнозом и не должен использоваться как единственное
+            основание для важных решений о человеке.
+        </div>
+
+        <div class="progress-area">
+
+            <div class="progress-info">
+                <span id="progressText">ШАГ 1 / 5</span>
+                <span id="progressPercent">20%</span>
+            </div>
+
+            <div class="progress">
+                <div
+                    class="progress-fill"
+                    id="progressFill"
+                ></div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TEST -->
+
+    <section
+        class="stage"
+        id="testStage"
+    >
+
+        <div class="question-panel">
+
+            <div class="question-label">
+                SUBJECTIVE FORM / SELECTION
+            </div>
+
+            <div
+                class="question"
+                id="question"
+            >
+                Какая фигура больше всего похожа на вас?
+            </div>
+
+            <div class="question-help">
+                Выберите одну фигуру. Не выбирайте ту,
+                которая кажется вам «правильной» или
+                красивой. Попробуйте определить ту,
+                с которой возникает наиболее непосредственное
+                ощущение «это похоже на меня».
+            </div>
+
+
+            <div
+                class="shapes"
+                id="shapes"
+            ></div>
+
+
+            <div class="selected-order">
+
+                <div class="selected-title">
+                    ВАШ ПОРЯДОК ВЫБОРА
+                </div>
+
+                <div
+                    class="selected-list"
+                    id="selectedList"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESULT -->
+
+    <section
+        class="stage hidden"
+        id="resultStage"
+    >
+
+        <div class="result">
+
+            <div class="result-header">
+
+                <div class="result-code">
+                    PSY / 02 / PROFILE
+                </div>
+
+                <div
+                    class="result-title"
+                    id="resultTitle"
+                ></div>
+
+                <div
+                    class="result-subtitle"
+                    id="resultSubtitle"
+                ></div>
+
+            </div>
+
+
+            <div class="result-body">
+
+                <div class="profile-main">
+
+                    <div
+                        class="primary-shape"
+                        id="primaryShape"
+                    ></div>
+
+                    <div>
+
+                        <div
+                            class="profile-name"
+                            id="primaryName"
+                        ></div>
+
+                        <div class="profile-tag">
+                            ВЕДУЩАЯ ФИГУРА
+                        </div>
+
+                        <div
+                            class="profile-lead"
+                            id="primaryLead"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDER -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Структура профиля
+                    </h3>
+
+                    <div
+                        class="rank-strip"
+                        id="rankStrip"
+                    ></div>
+
+                </div>
+
+
+                <!-- GENERAL -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Общая характеристика
+                    </h3>
+
+                    <div
+                        class="data-grid"
+                        id="generalGrid"
+                    ></div>
+
+                </div>
+
+
+                <!-- TRAITS -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Характерные качества
+                    </h3>
+
+                    <div
+                        class="traits"
+                        id="traits"
+                    ></div>
+
+                </div>
+
+
+                <!-- FUNCTIONAL AREAS -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Поведенческий профиль
+                    </h3>
+
+                    <div
+                        class="data-grid"
+                        id="behaviorGrid"
+                    ></div>
+
+                </div>
+
+
+                <!-- SECONDARY -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Влияние второй фигуры
+                    </h3>
+
+                    <div
+                        class="pair-box"
+                        id="secondaryBox"
+                    ></div>
+
+                </div>
+
+
+                <!-- THIRD -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Дополнительный контур
+                    </h3>
+
+                    <div
+                        class="data-grid"
+                        id="thirdGrid"
+                    ></div>
+
+                </div>
+
+
+                <!-- LAST -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Пятая фигура
+                    </h3>
+
+                    <div
+                        class="pair-box"
+                        id="lastBox"
+                    ></div>
+
+                </div>
+
+
+                <!-- INTERACTION -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Внутренняя комбинация
+                    </h3>
+
+                    <div
+                        class="pair-box"
+                        id="combinationBox"
+                    ></div>
+
+                </div>
+
+
+                <!-- DEVELOPMENT -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Потенциал развития
+                    </h3>
+
+                    <p id="developmentText"></p>
+
+                </div>
+
+
+                <!-- STRESS -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Возможные трудности
+                    </h3>
+
+                    <div
+                        class="data-grid"
+                        id="riskGrid"
+                    ></div>
+
+                </div>
+
+
+                <!-- ORDER TABLE -->
+
+                <div class="section-block">
+
+                    <h3>
+                        Полная последовательность
+                    </h3>
+
+                    <table class="order-table">
+
+                        <thead>
+                            <tr>
+                                <th>ПОЗИЦИЯ</th>
+                                <th>ФИГУРА</th>
+                                <th>РОЛЬ</th>
+                                <th>ИНТЕРПРЕТАЦИЯ</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="orderTable"></tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="btn"
+                        onclick="restartTest()"
+                    >
+                        ПРОЙТИ ЗАНОВО
+                    </button>
+
+                    <button
+                        class="btn secondary"
+                        onclick="window.print()"
+                    >
+                        СОХРАНИТЬ / ПЕЧАТЬ
+                    </button>
+
+                    <button
+                        class="btn secondary"
+                        onclick="goHome()"
+                    >
+                        В МЕНЮ
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+
+        PSY-TOOLS · Психогеометрический профиль ·
+        ориентировочная методика саморефлексии
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* ============================================================
+   SHAPES
+============================================================ */
+
+const SHAPES = {
+
+    square: {
+
+        name: "Квадрат",
+
+        short: "Структура",
+
+        svg: `
+            <svg class="shape-svg"
+                 viewBox="0 0 100 100">
+                <rect
+                    x="14"
+                    y="14"
+                    width="72"
+                    height="72"
+                    rx="1"
+                />
+            </svg>
+        `,
+
+        lead:
+            "Квадратный профиль связан с потребностью в порядке, ясности, структуре и предсказуемости. В поведении обычно заметны последовательность, практичность, внимание к деталям и стремление доводить начатое до понятного результата.",
+
+        strengths: [
+            "организованность",
+            "системность",
+            "ответственность",
+            "настойчивость",
+            "терпение",
+            "внимание к деталям",
+            "практичность",
+            "последовательность",
+            "надёжность",
+            "дисциплина"
+        ],
+
+        caution: [
+            "излишняя осторожность",
+            "ригидность",
+            "перфекционизм",
+            "трудность быстрой адаптации",
+            "фиксация на правилах"
+        ],
+
+        thinking:
+            "Последовательное, структурированное, ориентированное на факты, порядок и проверяемые детали.",
+
+        work:
+            "Лучше раскрывается там, где есть понятные задачи, критерии качества, система и возможность контролировать процесс.",
+
+        communication:
+            "Сдержанная и предметная коммуникация. Предпочтение ясным формулировкам, договорённостям и конкретике.",
+
+        decisions:
+            "Склонность собирать информацию, проверять детали и принимать решение после структурирования ситуации.",
+
+        stress:
+            "При перегрузке может усиливаться контроль, критичность к ошибкам и стремление вернуть ситуацию к привычному порядку.",
+
+        relationships:
+            "Ценит надёжность, предсказуемость, верность договорённостям и устойчивость отношений.",
+
+        development:
+            "Полезно развивать гибкость, способность принимать неполную информацию и экспериментировать без предварительной гарантии результата.",
+
+        rejected:
+            "Если квадрат оказывается последним, чрезмерная регламентация, рутинность и жёсткая структура могут восприниматься как ограничение.",
+
+        role:
+            "организатор"
+    },
+
+
+    triangle: {
+
+        name: "Треугольник",
+
+        short: "Цель",
+
+        svg: `
+            <svg class="shape-svg"
+                 viewBox="0 0 100 100">
+                <polygon
+                    points="50,10 90,86 10,86"
+                />
+            </svg>
+        `,
+
+        lead:
+            "Треугольный профиль ориентирован на цель, результат, направление и влияние. В нём заметны энергичность, решительность, стремление определять приоритеты и двигаться к конкретному результату.",
+
+        strengths: [
+            "целеустремлённость",
+            "решительность",
+            "инициативность",
+            "амбициозность",
+            "энергичность",
+            "концентрация на результате",
+            "лидерская позиция",
+            "соревновательность",
+            "смелость",
+            "быстрота решений"
+        ],
+
+        caution: [
+            "нетерпеливость",
+            "давление на окружающих",
+            "конкурентность",
+            "переоценка собственных сил",
+            "ориентация на победу любой ценой"
+        ],
+
+        thinking:
+            "Целевое и стратегическое мышление: сначала определяется направление, затем подбираются средства достижения.",
+
+        work:
+            "Подходят задачи с ответственностью, самостоятельностью, конкуренцией, развитием и измеримым результатом.",
+
+        communication:
+            "Прямая, энергичная, ориентированная на действие и достижение цели.",
+
+        decisions:
+            "Способность быстро определить приоритет и перейти к действию, иногда до полного анализа деталей.",
+
+        stress:
+            "При перегрузке может усиливаться давление, раздражительность, стремление всё контролировать и ускорять.",
+
+        relationships:
+            "Ценит уважение, самостоятельность, честность и наличие общей цели.",
+
+        development:
+            "Полезно развивать терпение, слушание, эмпатию и способность учитывать темп и потребности других людей.",
+
+        rejected:
+            "Если треугольник оказывается последним, давление, конкуренция, борьба за лидерство или жёсткая ориентация на результат могут быть неприятны.",
+
+        role:
+            "стратег"
+    },
+
+
+    rectangle: {
+
+        name: "Прямоугольник",
+
+        short: "Изменение",
+
+        svg: `
+            <svg class="shape-svg"
+                 viewBox="0 0 100 100">
+                <rect
+                    x="29"
+                    y="8"
+                    width="42"
+                    height="84"
+                    rx="1"
+                />
+            </svg>
+        `,
+
+        lead:
+            "Прямоугольник в классической интерпретации выделяется как фигура переходного состояния. Он связан с изменениями, поиском нового образа действий, экспериментированием и перестройкой привычного поведения.",
+
+        strengths: [
+            "адаптивность",
+            "открытость новому",
+            "поиск",
+            "обучаемость",
+            "экспериментирование",
+            "любознательность",
+            "гибкость",
+            "готовность менять стратегию",
+            "самоисследование",
+            "восприимчивость к опыту"
+        ],
+
+        caution: [
+            "неопределённость",
+            "колебания",
+            "неустойчивость",
+            "смена решений",
+            "поиск внешней опоры"
+        ],
+
+        thinking:
+            "Исследовательское мышление. Человек рассматривает несколько вариантов и может менять представление о ситуации по мере накопления опыта.",
+
+        work:
+            "Особенно естественны периоды обучения, перехода, освоения новой профессии или перестройки рабочего процесса.",
+
+        communication:
+            "Может менять стиль общения в зависимости от ситуации и собеседника.",
+
+        decisions:
+            "Решения могут формироваться постепенно. Важен процесс поиска подходящего варианта.",
+
+        stress:
+            "При перегрузке возможны сомнения, метания, ощущение потери прежней опоры и трудности с фиксацией решения.",
+
+        relationships:
+            "В отношениях может особенно ценить возможность роста, обновления и принятия изменений.",
+
+        development:
+            "Главная задача — превращать экспериментирование в осознанное обучение, постепенно формируя собственные критерии выбора.",
+
+        rejected:
+            "Если прямоугольник последний, постоянные перемены, неопределённость и необходимость заново искать себя могут восприниматься как дискомфорт.",
+
+        role:
+            "исследователь"
+    },
+
+
+    circle: {
+
+        name: "Круг",
+
+        short: "Гармония",
+
+        svg: `
+            <svg class="shape-svg"
+                 viewBox="0 0 100 100">
+                <circle
+                    cx="50"
+                    cy="50"
+                    r="38"
+                />
+            </svg>
+        `,
+
+        lead:
+            "Круг связан с ориентацией на отношения, эмоциональный контакт, гармонию и согласование интересов. В центре внимания оказывается не только задача, но и то, как её решение влияет на людей.",
+
+        strengths: [
+            "эмпатия",
+            "чуткость",
+            "коммуникативность",
+            "сотрудничество",
+            "дипломатичность",
+            "поддержка",
+            "умение слушать",
+            "социальная интуиция",
+            "миротворчество",
+            "ориентация на отношения"
+        ],
+
+        caution: [
+            "избегание конфликта",
+            "излишняя уступчивость",
+            "зависимость от одобрения",
+            "трудность жёсткого отказа",
+            "эмоциональная перегрузка"
+        ],
+
+        thinking:
+            "Контекстное и социально ориентированное мышление с учётом отношений, эмоций и интересов участников.",
+
+        work:
+            "Сильные стороны раскрываются там, где важны взаимодействие, поддержка, переговоры, помощь людям и командная работа.",
+
+        communication:
+            "Мягкая, контактная, ориентированная на взаимопонимание и эмоциональный контекст.",
+
+        decisions:
+            "При выборе учитываются не только рациональные последствия, но и влияние решения на отношения.",
+
+        stress:
+            "При перегрузке может усиливаться стремление всем угодить, избегать конфликта или брать на себя слишком много эмоциональной нагрузки.",
+
+        relationships:
+            "Высока значимость близости, взаимного понимания, доверия и эмоциональной безопасности.",
+
+        development:
+            "Полезно укреплять личные границы, способность говорить «нет» и выдерживать конструктивный конфликт.",
+
+        rejected:
+            "Если круг последний, чрезмерная эмоциональность, социальная вовлечённость или зависимость от отношений могут восприниматься как обременительные.",
+
+        role:
+            "медиатор"
+    },
+
+
+    zigzag: {
+
+        name: "Зигзаг",
+
+        short: "Идея",
+
+        svg: `
+            <svg class="shape-svg"
+                 viewBox="0 0 100 100">
+                <polyline
+                    points="8,72 28,28 44,61 63,20 90,70"
+                    fill="none"
+                />
+            </svg>
+        `,
+
+        lead:
+            "Зигзаг связан с поиском новых идей, нестандартными решениями, творческим подходом и стремлением выйти за пределы привычного. Для него характерна динамика и интеллектуальная свобода.",
+
+        strengths: [
+            "креативность",
+            "воображение",
+            "нестандартность",
+            "генерация идей",
+            "интуитивность",
+            "гибкость",
+            "новаторство",
+            "видение альтернатив",
+            "экспрессивность",
+            "интерес к экспериментам"
+        ],
+
+        caution: [
+            "непоследовательность",
+            "нетерпение к рутине",
+            "разброс внимания",
+            "склонность начинать больше, чем заканчивать",
+            "непредсказуемость"
+        ],
+
+        thinking:
+            "Ассоциативное и дивергентное мышление с поиском нескольких необычных вариантов.",
+
+        work:
+            "Особенно естественны творчество, концептуальные задачи, разработка новых идей, дизайн, предпринимательство и проекты с высокой степенью свободы.",
+
+        communication:
+            "Выразительная, образная, эмоционально насыщенная и иногда скачкообразная.",
+
+        decisions:
+            "Решение может возникать через интуитивное объединение разрозненных идей и быстрый переход к новому варианту.",
+
+        stress:
+            "При перегрузке возможны хаотичность, раздражение от ограничений, потеря интереса и резкая смена направления.",
+
+        relationships:
+            "Важны интеллектуальный интерес, свобода, эмоциональная живость и возможность оставаться собой.",
+
+        development:
+            "Полезно сочетать генерацию идей со структурированием, приоритизацией и доведением проектов до завершения.",
+
+        rejected:
+            "Если зигзаг последний, хаотичность, непредсказуемость, постоянные эксперименты и отсутствие стабильного плана могут восприниматься негативно.",
+
+        role:
+            "инноватор"
+    }
+
+};
+
+
+/* ============================================================
+   PAIR INTERPRETATIONS
+============================================================ */
+
+const PAIRS = {
+
+    "square-triangle":
+        "Структура + цель. Практичный стратегический профиль: стремление определить направление и одновременно выстроить систему его реализации. Возможна сильная ориентация на результат и порядок.",
+
+    "square-circle":
+        "Структура + отношения. Потребность сочетать надёжность с заботой о людях. Человек может стремиться создавать устойчивую и предсказуемую среду для себя и окружающих.",
+
+    "square-zigzag":
+        "Структура + новизна. Внутреннее сочетание системности и творческого импульса. Может давать способность превращать нестандартные идеи в работающие системы.",
+
+    "square-rectangle":
+        "Структура + изменение. Конфликт между потребностью в стабильности и необходимостью перестройки. Изменения могут приниматься лучше, когда получают понятную структуру.",
+
+    "triangle-circle":
+        "Цель + отношения. Способность соединять влияние и социальную чувствительность. Возможна потребность достигать результата, не разрушая отношения.",
+
+    "triangle-zigzag":
+        "Цель + идея. Энергичный инновационный профиль: идеи быстро превращаются в инициативы. Риск — начинать много направлений одновременно.",
+
+    "triangle-rectangle":
+        "Цель + изменение. Сильный импульс к развитию и продвижению. Человек может использовать период перемен как возможность для роста.",
+
+    "circle-zigzag":
+        "Отношения + творчество. Сочетание эмоциональной чувствительности и нестандартности. Возможна высокая выразительность и интерес к людям, искусству и новым впечатлениям.",
+
+    "circle-rectangle":
+        "Отношения + изменение. Изменения могут проходить через переоценку отношений, окружения и эмоциональных потребностей.",
+
+    "zigzag-rectangle":
+        "Новизна + изменение. Очень динамичный профиль поиска. Сильная потребность в опыте, экспериментах и смене способов действия.",
+
+    "triangle-square":
+        "Цель + структура. Лидерский импульс получает организационную опору. Человек может стремиться не просто поставить задачу, а выстроить систему достижения.",
+
+    "circle-square":
+        "Отношения + структура. Эмоциональная вовлечённость сочетается с потребностью в устойчивости. Важны доверие, правила и предсказуемость.",
+
+    "zigzag-square":
+        "Идея + структура. Творческий импульс встречается с потребностью оформить результат. Это может быть продуктивным сочетанием для проектной и интеллектуальной работы.",
+
+    "rectangle-square":
+        "Изменение + структура. Переходное состояние стремится найти новую систему координат. Важен баланс между экспериментом и стабилизацией.",
+
+    "circle-triangle":
+        "Отношения + цель. Социальная чувствительность соединяется с направленностью на результат. Возможна сильная ориентация на командное достижение.",
+
+    "zigzag-triangle":
+        "Идея + цель. Творческая энергия получает направление. Потенциально сильная комбинация для запуска новых проектов.",
+
+    "rectangle-triangle":
+        "Изменение + цель. Потребность двигаться вперёд сочетается с активным поиском новой стратегии.",
+
+    "zigzag-circle":
+        "Идея + отношения. Креативность окрашена эмоциональной и социальной чувствительностью.",
+
+    "rectangle-circle":
+        "Изменение + отношения. Период трансформации может быть тесно связан с отношениями, окружением и эмоциональными потребностями.",
+
+    "rectangle-zigzag":
+        "Изменение + идея. Высокая потребность в новизне, эксперименте и пересмотре привычных способов действия."
+};
+
+
+/* ============================================================
+   TEST STATE
+============================================================ */
+
+let order = [];
+
+const shapeKeys = [
+    "square",
+    "triangle",
+    "rectangle",
+    "circle",
+    "zigzag"
+];
+
+
+/* ============================================================
+   INIT
+============================================================ */
+
+function initTest() {
+
+    order = [];
+
+    document
+        .getElementById("testStage")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("resultStage")
+        .classList.add("hidden");
+
+    renderShapes();
+    updateProgress();
+    updateSelected();
+
+}
+
+
+/* ============================================================
+   RENDER SHAPES
+============================================================ */
+
+function renderShapes() {
+
+    const container =
+        document.getElementById("shapes");
+
+    container.innerHTML = "";
+
+    shapeKeys
+        .filter(key => !order.includes(key))
+        .forEach((key, index) => {
+
+            const shape = SHAPES[key];
+
+            const card =
+                document.createElement("div");
+
+            card.className = "shape-card";
+
+            card.innerHTML = `
+
+                <div class="shape-number">
+                    ${index + 1}
+                </div>
+
+                <div class="shape-visual">
+                    ${shape.svg}
+                </div>
+
+                <div class="shape-name">
+                    ${shape.name}
+                </div>
+
+            `;
+
+            card.addEventListener(
+                "click",
+                () => selectShape(key)
+            );
+
+            container.appendChild(card);
+
+        });
+}
+
+
+/* ============================================================
+   SELECT
+============================================================ */
+
+function selectShape(key) {
+
+    if (order.includes(key)) return;
+
+    order.push(key);
+
+    updateSelected();
+    updateProgress();
+
+    if (order.length === 5) {
+
+        setTimeout(
+            showResult,
+            350
+        );
+
+        return;
+    }
+
+    renderShapes();
+
+}
+
+
+/* ============================================================
+   SELECTED ORDER
+============================================================ */
+
+function updateSelected() {
+
+    const container =
+        document.getElementById("selectedList");
+
+    container.innerHTML = "";
+
+    order.forEach((key, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "selected-item";
+
+        item.innerHTML = `
+            <strong>${index + 1}</strong>
+            ${SHAPES[key].name}
+        `;
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* ============================================================
+   PROGRESS
+============================================================ */
+
+function updateProgress() {
+
+    const step =
+        Math.min(order.length + 1, 5);
+
+    const percent =
+        order.length === 0
+            ? 20
+            : Math.round((order.length / 5) * 100);
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+        order.length < 5
+            ? `ШАГ ${step} / 5`
+            : "АНАЛИЗ";
+
+    document.getElementById(
+        "progressPercent"
+    ).textContent =
+        `${percent}%`;
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        `${percent}%`;
+
+}
+
+
+/* ============================================================
+   RESULT
+============================================================ */
+
+function showResult() {
+
+    document
+        .getElementById("testStage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("resultStage")
+        .classList.remove("hidden");
+
+    const primary = SHAPES[order[0]];
+    const secondary = SHAPES[order[1]];
+    const third = SHAPES[order[2]];
+    const fourth = SHAPES[order[3]];
+    const last = SHAPES[order[4]];
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        `Ваш профиль: ${primary.name}`;
+
+    document.getElementById(
+        "resultSubtitle"
+    ).textContent =
+        `Ведущая фигура — ${primary.name}. Дополнительные особенности профиля формируются последовательностью ${secondary.name} → ${third.name} → ${fourth.name} → ${last.name}.`;
+
+    document.getElementById(
+        "primaryShape"
+    ).innerHTML =
+        primary.svg;
+
+    document.getElementById(
+        "primaryName"
+    ).textContent =
+        primary.name;
+
+    document.getElementById(
+        "primaryLead"
+    ).textContent =
+        primary.lead;
+
+    renderRankStrip();
+
+    renderGeneral(primary);
+
+    renderTraits(primary);
+
+    renderBehavior(primary);
+
+    renderSecondary(primary, secondary);
+
+    renderThird(primary, third);
+
+    renderLast(last);
+
+    renderCombination(primary, secondary);
+
+    document.getElementById(
+        "developmentText"
+    ).textContent =
+        primary.development;
+
+    renderRisks(primary);
+
+    renderOrderTable();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* ============================================================
+   RANK STRIP
+============================================================ */
+
+function renderRankStrip() {
+
+    const container =
+        document.getElementById("rankStrip");
+
+    container.innerHTML = "";
+
+    order.forEach((key, index) => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "rank";
+
+        div.innerHTML = `
+            <div class="rank-number">
+                ${index + 1}
+            </div>
+
+            <div class="rank-name">
+                ${SHAPES[key].name}
+            </div>
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* ============================================================
+   GENERAL
+============================================================ */
+
+function renderGeneral(shape) {
+
+    const grid =
+        document.getElementById("generalGrid");
+
+    grid.innerHTML = "";
+
+    const items = [
+
+        [
+            "КЛЮЧЕВОЙ МОТИВ",
+            shape.short
+        ],
+
+        [
+            "СТИЛЬ МЫШЛЕНИЯ",
+            shape.thinking
+        ],
+
+        [
+            "РАБОЧАЯ СРЕДА",
+            shape.work
+        ],
+
+        [
+            "ПРИНЯТИЕ РЕШЕНИЙ",
+            shape.decisions
+        ],
+
+        [
+            "КОММУНИКАЦИЯ",
+            shape.communication
+        ],
+
+        [
+            "ОТНОШЕНИЯ",
+            shape.relationships
+        ]
+
+    ];
+
+    items.forEach(([label, value]) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "data-card";
+
+        card.innerHTML = `
+            <div class="data-label">
+                ${label}
+            </div>
+
+            <div class="data-value">
+                ${value}
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ============================================================
+   TRAITS
+============================================================ */
+
+function renderTraits(shape) {
+
+    const container =
+        document.getElementById("traits");
+
+    container.innerHTML = "";
+
+    shape.strengths.forEach(trait => {
+
+        const span =
+            document.createElement("span");
+
+        span.className =
+            "trait positive";
+
+        span.textContent =
+            trait;
+
+        container.appendChild(span);
+
+    });
+
+    shape.caution.forEach(trait => {
+
+        const span =
+            document.createElement("span");
+
+        span.className =
+            "trait caution";
+
+        span.textContent =
+            trait;
+
+        container.appendChild(span);
+
+    });
+
+}
+
+
+/* ============================================================
+   BEHAVIOR
+============================================================ */
+
+function renderBehavior(shape) {
+
+    const grid =
+        document.getElementById("behaviorGrid");
+
+    grid.innerHTML = "";
+
+    const items = [
+
+        [
+            "СИЛЬНАЯ СТОРОНА",
+            shape.strengths.slice(0, 5).join(", ")
+        ],
+
+        [
+            "РАБОЧИЙ СТИЛЬ",
+            shape.work
+        ],
+
+        [
+            "СТИЛЬ ОБЩЕНИЯ",
+            shape.communication
+        ],
+
+        [
+            "ПОВЕДЕНИЕ ПОД ДАВЛЕНИЕМ",
+            shape.stress
+        ]
+
+    ];
+
+    items.forEach(([label, value]) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "data-card";
+
+        card.innerHTML = `
+            <div class="data-label">
+                ${label}
+            </div>
+
+            <div class="data-value">
+                ${value}
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ============================================================
+   SECONDARY
+============================================================ */
+
+function renderSecondary(primary, secondary) {
+
+    const box =
+        document.getElementById("secondaryBox");
+
+    const key1 =
+        primary.name === "Квадрат" ? "square" :
+        primary.name === "Треугольник" ? "triangle" :
+        primary.name === "Прямоугольник" ? "rectangle" :
+        primary.name === "Круг" ? "circle" :
+        "zigzag";
+
+    const key2 =
+        secondary.name === "Квадрат" ? "square" :
+        secondary.name === "Треугольник" ? "triangle" :
+        secondary.name === "Прямоугольник" ? "rectangle" :
+        secondary.name === "Круг" ? "circle" :
+        "zigzag";
+
+    const text =
+        getPairText(
+            key1,
+            key2
+        );
+
+    box.innerHTML = `
+
+        <div class="pair-title">
+            ${primary.name.toUpperCase()}
+            +
+            ${secondary.name.toUpperCase()}
+        </div>
+
+        <div class="pair-text">
+            ${text}
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   THIRD
+============================================================ */
+
+function renderThird(primary, third) {
+
+    const grid =
+        document.getElementById("thirdGrid");
+
+    grid.innerHTML = "";
+
+    const items = [
+
+        [
+            "ТРЕТЬЯ ФИГУРА",
+            third.name
+        ],
+
+        [
+            "ДОПОЛНИТЕЛЬНАЯ ТЕНДЕНЦИЯ",
+            `Черта «${third.short.toLowerCase()}» может проявляться ситуативно, особенно когда ведущего стиля недостаточно для решения задачи.`
+        ],
+
+        [
+            "РОЛЬ В ПРОФИЛЕ",
+            "Дополняет ведущую стратегию и расширяет диапазон поведения."
+        ],
+
+        [
+            "ВОЗМОЖНОСТЬ РАЗВИТИЯ",
+            `Использование качеств типа «${third.short.toLowerCase()}» может расширять поведенческий репертуар.`
+        ]
+
+    ];
+
+    items.forEach(([label, value]) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "data-card";
+
+        card.innerHTML = `
+            <div class="data-label">
+                ${label}
+            </div>
+
+            <div class="data-value">
+                ${value}
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ============================================================
+   LAST
+============================================================ */
+
+function renderLast(last) {
+
+    const box =
+        document.getElementById("lastBox");
+
+    box.innerHTML = `
+
+        <div class="pair-title">
+            НАИМЕНЕЕ ПРИВЛЕКАТЕЛЬНАЯ ФИГУРА:
+            ${last.name.toUpperCase()}
+        </div>
+
+        <div class="pair-text">
+
+            ${last.rejected}
+
+            <br><br>
+
+            Это не означает отсутствие соответствующих
+            качеств. Скорее, данный стиль поведения может
+            восприниматься как менее естественный,
+            менее привлекательный или менее привычный.
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   COMBINATION
+============================================================ */
+
+function renderCombination(primary, secondary) {
+
+    const box =
+        document.getElementById("combinationBox");
+
+    const key1 = keyFromName(primary.name);
+    const key2 = keyFromName(secondary.name);
+
+    box.innerHTML = `
+
+        <div class="pair-title">
+            ${primary.name.toUpperCase()}
+            →
+            ${secondary.name.toUpperCase()}
+        </div>
+
+        <div class="pair-text">
+
+            ${getPairText(key1, key2)}
+
+            <br><br>
+
+            В вашем профиле вторая фигура не заменяет
+            ведущую, а показывает дополнительный способ
+            реагирования, который может усиливать,
+            смягчать или направлять качества ведущего типа.
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   RISKS
+============================================================ */
+
+function renderRisks(shape) {
+
+    const grid =
+        document.getElementById("riskGrid");
+
+    grid.innerHTML = "";
+
+    const items = [
+
+        [
+            "ВОЗМОЖНЫЕ ТРУДНОСТИ",
+            shape.caution.join(", ")
+        ],
+
+        [
+            "РЕАКЦИЯ НА СТРЕСС",
+            shape.stress
+        ],
+
+        [
+            "ЗОНА ДИСБАЛАНСА",
+            shape.caution[0] +
+            ", " +
+            shape.caution[1] +
+            " и чрезмерное усиление ведущей стратегии."
+        ],
+
+        [
+            "НАПРАВЛЕНИЕ РАЗВИТИЯ",
+            shape.development
+        ]
+
+    ];
+
+    items.forEach(([label, value]) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "data-card";
+
+        card.innerHTML = `
+            <div class="data-label">
+                ${label}
+            </div>
+
+            <div class="data-value">
+                ${value}
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+function renderOrderTable() {
+
+    const tbody =
+        document.getElementById("orderTable");
+
+    tbody.innerHTML = "";
+
+    const roles = [
+
+        "Ведущая фигура",
+        "Основной модификатор",
+        "Дополнительный контур",
+        "Слабо выраженная тенденция",
+        "Наименее привлекательный стиль"
+
+    ];
+
+    order.forEach((key, index) => {
+
+        const tr =
+            document.createElement("tr");
+
+        tr.innerHTML = `
+
+            <td>
+                ${index + 1}
+            </td>
+
+            <td>
+                ${SHAPES[key].name}
+            </td>
+
+            <td>
+                ${roles[index]}
+            </td>
+
+            <td>
+                ${getPositionInterpretation(
+                    key,
+                    index
+                )}
+            </td>
+
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* ============================================================
+   POSITION INTERPRETATION
+============================================================ */
+
+function getPositionInterpretation(
+    key,
+    position
+) {
+
+    const shape =
+        SHAPES[key];
+
+    if (position === 0) {
+
+        return `Ключевой стиль: ${shape.short.toLowerCase()}. ${shape.lead}`;
+
+    }
+
+    if (position === 1) {
+
+        return `Сильный дополнительный стиль. Качества типа «${shape.short.toLowerCase()}» способны заметно влиять на поведение и дополнять ведущую стратегию.`;
+
+    }
+
+    if (position === 2) {
+
+        return `Умеренно выраженная тенденция. Может проявляться в отдельных ситуациях или задачах.`;
+
+    }
+
+    if (position === 3) {
+
+        return `Менее предпочтительный стиль. Может использоваться ситуативно, но обычно не является основным способом поведения.`;
+
+    }
+
+    return shape.rejected;
+
+}
+
+
+/* ============================================================
+   PAIR HELPERS
+============================================================ */
+
+function keyFromName(name) {
+
+    const map = {
+
+        "Квадрат": "square",
+        "Треугольник": "triangle",
+        "Прямоугольник": "rectangle",
+        "Круг": "circle",
+        "Зигзаг": "zigzag"
+
+    };
+
+    return map[name];
+
+}
+
+
+function getPairText(a, b) {
+
+    if (a === b) {
+
+        return `
+            Повторение одного типа усиливает его
+            основные характеристики. Это может давать
+            высокую последовательность поведения, но
+            одновременно уменьшать гибкость при
+            сильном перекосе в одну стратегию.
+        `;
+
+    }
+
+    return (
+        PAIRS[`${a}-${b}`] ||
+        PAIRS[`${b}-${a}`] ||
+        "Два поведенческих направления взаимодействуют, формируя смешанный профиль."
+    );
+
+}
+
+
+/* ============================================================
+   RESTART
+============================================================ */
+
+function restartTest() {
+
+    order = [];
+
+    document
+        .getElementById("resultStage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("testStage")
+        .classList.remove("hidden");
+
+    initTest();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* ============================================================
+   HOME
+============================================================ */
+
+function goHome() {
+
+    window.location.href = "../";
+
+}
+
+
+/* ============================================================
+   MATRIX
+============================================================ */
+
+function createMatrix() {
+
+    const matrix =
+        document.getElementById("matrix");
+
+    const chars =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZΨΣΔΩΦΛ";
+
+    const count =
+        Math.ceil(window.innerWidth / 30);
+
+    for (let i = 0; i < count; i++) {
+
+        const column =
+            document.createElement("div");
+
+        column.className =
+            "matrix-column";
+
+        column.style.left =
+            `${i * 30}px`;
+
+        column.style.animationDuration =
+            `${7 + Math.random() * 12}s`;
+
+        column.style.animationDelay =
+            `${-Math.random() * 15}s`;
+
+        let text = "";
+
+        for (let j = 0; j < 45; j++) {
+
+            text +=
+                chars[
+                    Math.floor(
+                        Math.random() * chars.length
+                    )
+                ] + "\n";
+
+        }
+
+        column.textContent = text;
+
+        matrix.appendChild(column);
+
+    }
+
+}
+
+
+/* ============================================================
+   NEURAL CANVAS
+============================================================ */
+
+const canvas =
+    document.getElementById("neuralCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+let nodes = [];
+
+function resizeCanvas() {
+
+    canvas.width =
+        window.innerWidth *
+        window.devicePixelRatio;
+
+    canvas.height =
+        window.innerHeight *
+        window.devicePixelRatio;
+
+    canvas.style.width =
+        window.innerWidth + "px";
+
+    canvas.style.height =
+        window.innerHeight + "px";
+
+    ctx.setTransform(
+        window.devicePixelRatio,
+        0,
+        0,
+        window.devicePixelRatio,
+        0,
+        0
+    );
+
+    nodes = [];
+
+    const count =
+        Math.min(
+            65,
+            Math.floor(
+                window.innerWidth *
+                window.innerHeight /
+                18000
+            )
+        );
+
+    for (let i = 0; i < count; i++) {
+
+        nodes.push({
+
+            x: Math.random() *
+                window.innerWidth,
+
+            y: Math.random() *
+                window.innerHeight,
+
+            vx:
+                (Math.random() - .5) *
+                .18,
+
+            vy:
+                (Math.random() - .5) *
+                .18
+
+        });
+
+    }
+
+}
+
+function animateNetwork() {
+
+    ctx.clearRect(
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    nodes.forEach(node => {
+
+        node.x += node.vx;
+        node.y += node.vy;
+
+        if (
+            node.x < 0 ||
+            node.x > window.innerWidth
+        ) {
+            node.vx *= -1;
+        }
+
+        if (
+            node.y < 0 ||
+            node.y > window.innerHeight
+        ) {
+            node.vy *= -1;
+        }
+
+    });
+
+
+    for (
+        let i = 0;
+        i < nodes.length;
+        i++
+    ) {
+
+        for (
+            let j = i + 1;
+            j < nodes.length;
+            j++
+        ) {
+
+            const a = nodes[i];
+            const b = nodes[j];
+
+            const dx =
+                a.x - b.x;
+
+            const dy =
+                a.y - b.y;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if (distance < 150) {
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    a.x,
+                    a.y
+                );
+
+                ctx.lineTo(
+                    b.x,
+                    b.y
+                );
+
+                ctx.strokeStyle =
+                    `rgba(
+                        69,
+                        240,
+                        195,
+                        ${0.08 *
+                        (1 - distance / 150)}
+                    )`;
+
+                ctx.lineWidth = .6;
+
+                ctx.stroke();
+
+            }
+
+        }
+
+    }
+
+
+    nodes.forEach(node => {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            node.x,
+            node.y,
+            1.3,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "rgba(69,240,195,.25)";
+
+        ctx.fill();
+
+    });
+
+
+    requestAnimationFrame(
+        animateNetwork
+    );
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+createMatrix();
+resizeCanvas();
+animateNetwork();
+initTest();
+
+</script>
+
+</body>
+</html>
