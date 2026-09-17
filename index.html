@@ -366,6 +366,8 @@
         }
 
 
+        /* 2 карточки */
+
         .cards:has(.card:nth-child(2)):not(
             :has(.card:nth-child(3))
         ) {
@@ -374,6 +376,8 @@
         }
 
 
+        /* 1 карточка */
+
         .cards:has(.card:nth-child(1)):not(
             :has(.card:nth-child(2))
         ) {
@@ -381,6 +385,8 @@
                 var(--tile-size);
         }
 
+
+        /* 4 карточки */
 
         .cards:has(.card:nth-child(4)) {
             grid-template-columns:
@@ -430,14 +436,11 @@
 
             top: 0;
 
-            z-index: 1;
-
             transition:
                 top .35s ease,
                 border-color .35s ease,
                 box-shadow .35s ease,
-                background .35s ease,
-                z-index 0s;
+                background .35s ease;
         }
 
 
@@ -483,15 +486,13 @@
 
 
         /* =====================================================
-           CARD HOVER / ACTIVE
+           CARD HOVER
         ===================================================== */
 
         .card:hover,
         .card.active,
         .card:focus-visible {
             top: -5px;
-
-            z-index: 1000;
 
             border-color:
                 rgba(69, 240, 195, .48);
@@ -768,7 +769,7 @@
 
 
         /* =====================================================
-           DESCRIPTION POPUP
+           DESCRIPTION
         ===================================================== */
 
         .description {
@@ -778,65 +779,45 @@
             top: 50%;
 
             width:
-                min(500px, calc(100vw - 40px));
+                min(360px, calc(100vw - 32px));
 
             max-width:
-                calc(100vw - 40px);
-
-            max-height:
-                calc(100vh - 80px);
+                calc(100vw - 32px);
 
             padding:
-                28px 32px;
+                18px 20px;
 
-            border-radius: 20px;
+            border-radius: 16px;
 
             border:
                 1px solid
-                rgba(69, 240, 195, .42);
+                rgba(69, 240, 195, .28);
 
             background:
                 linear-gradient(
                     145deg,
-                    rgba(3, 16, 19, .78),
-                    rgba(2, 8, 12, .72)
+                    rgba(5, 15, 20, .985),
+                    rgba(2, 8, 12, .985)
                 );
 
-            backdrop-filter:
-                blur(5px);
-
-            -webkit-backdrop-filter:
-                blur(5px);
-
             box-shadow:
-                0 30px 90px
-                rgba(0, 0, 0, .72),
+                0 25px 70px
+                rgba(0, 0, 0, .62),
 
-                0 0 45px
-                rgba(69, 240, 195, .12),
-
-                inset 0 0 35px
-                rgba(69, 240, 195, .035);
+                0 0 35px
+                rgba(69, 240, 195, .08);
 
             color:
-                #d6e5e3;
+                #c3d3d2;
 
-            font-family:
-                "Manrope",
-                sans-serif;
+            font-size: 13px;
 
-            font-size: 15px;
-
-            line-height: 1.7;
-
-            font-weight: 500;
+            line-height: 1.6;
 
             text-align: center;
 
-            overflow: hidden;
-
             transform:
-                translate(-50%, calc(-50% + 18px))
+                translate(-50%, calc(-50% + 15px))
                 scale(.94);
 
             opacity: 0;
@@ -854,118 +835,1332 @@
         }
 
 
-        /* =====================================================
-           MATRIX BACKGROUND INSIDE POPUP
-        ===================================================== */
+        .description::before {
+            content: "";
 
-        .description-matrix {
             position: absolute;
 
-            inset: -45px;
+            left: 50%;
 
-            z-index: 0;
+            top: -5px;
 
-            overflow: hidden;
+            width: 9px;
+
+            height: 9px;
+
+            transform:
+                translateX(-50%)
+                rotate(45deg);
+
+            background:
+                #061016;
+
+            border-left:
+                1px solid
+                rgba(69, 240, 195, .28);
+
+            border-top:
+                1px solid
+                rgba(69, 240, 195, .28);
+        }
+
+
+        .card:hover .description,
+        .card.active .description,
+        .card:focus-visible .description {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1);
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            width: 100%;
+
+            margin-top: 105px;
+
+            display: flex;
+
+            justify-content: center;
+
+            text-align: center;
 
             font-family:
                 "JetBrains Mono",
                 monospace;
 
-            font-size: 8px;
+            font-size: 9px;
 
-            line-height: 1.3;
-
-            letter-spacing: 1.5px;
-
-            word-break: break-all;
-
-            text-align: center;
+            letter-spacing: .12em;
 
             color:
-                rgba(69, 240, 195, .20);
-
-            opacity: .85;
-
-            transform:
-                rotate(-4deg)
-                scale(1.05);
-
-            pointer-events: none;
-
-            mask-image:
-                radial-gradient(
-                    ellipse at center,
-                    black 15%,
-                    rgba(0,0,0,.8) 55%,
-                    transparent 90%
-                );
-
-            animation:
-                popupMatrixMove 18s linear infinite;
+                rgba(145, 167, 167, .4);
         }
 
 
-        .description-matrix::after {
-            content: "";
+        /* =====================================================
+           TABLET
+        ===================================================== */
 
-            position: absolute;
+        @media (max-width: 1150px)
+        and (min-width: 761px) {
 
-            inset: 0;
+            .cards {
+                --tile-size:
+                    min(200px, 25vw);
 
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(2,8,12,.25),
-                    transparent 30%,
-                    transparent 70%,
-                    rgba(2,8,12,.4)
-                );
-        }
-
-
-        @keyframes popupMatrixMove {
-
-            0% {
-                transform:
-                    rotate(-4deg)
-                    translate3d(0,0,0)
-                    scale(1.05);
+                --tile-gap:
+                    clamp(25px, 4vw, 45px);
             }
 
-            50% {
-                transform:
-                    rotate(-2deg)
-                    translate3d(-10px,8px,0)
-                    scale(1.08);
-            }
 
-            100% {
-                transform:
-                    rotate(-4deg)
-                    translate3d(0,0,0)
-                    scale(1.05);
+            .cards:has(.card:nth-child(4)) {
+                grid-template-columns:
+                    repeat(3, var(--tile-size));
             }
         }
 
 
         /* =====================================================
-           DESCRIPTION TEXT
+           MOBILE
         ===================================================== */
 
-        .description-text {
-            position: relative;
+        @media (max-width: 760px) {
 
-            z-index: 2;
+            .main {
+                width: 100%;
 
-            display: block;
+                padding:
+                    30px
+                    12px
+                    75px;
+            }
 
-            text-shadow:
-                0 1px 2px rgba(0,0,0,.9),
-                0 0 12px rgba(2,8,12,.85);
+
+            .logo {
+                font-size: 24px;
+
+                letter-spacing: .11em;
+            }
+
+
+            .subtitle {
+                font-size: 9px;
+
+                letter-spacing: .14em;
+            }
+
+
+            .header-line {
+                width: 78vw;
+
+                margin-top: 22px;
+            }
+
+
+            .section {
+                width: 100%;
+
+                margin-top: 65px;
+            }
+
+
+            .section:first-of-type {
+                margin-top: 50px;
+            }
+
+
+            .section-title {
+                margin-bottom: 25px;
+            }
+
+
+            .section-title h2 {
+                font-size: 15px;
+            }
+
+
+            /* ================================================
+               MOBILE GRID
+            ================================================ */
+
+            .cards {
+                --mobile-gap: 12px;
+
+                width: 100%;
+
+                max-width: 390px;
+
+                margin: 0 auto;
+
+                padding: 0;
+
+                display: grid;
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                grid-auto-rows: auto;
+
+                gap: var(--mobile-gap);
+
+                justify-content: center;
+
+                align-items: start;
+            }
+
+
+            .card {
+                width: 100%;
+
+                height: auto;
+
+                aspect-ratio: 1 / 1;
+
+                min-width: 0;
+
+                border-radius: 18px;
+            }
+
+
+            /*
+             * Если три карточки:
+             *
+             * □ □
+             *  □
+             */
+
+            .card:last-child:nth-child(odd) {
+
+                grid-column: 1 / -1;
+
+                justify-self: center;
+
+                width:
+                    calc(
+                        (100% - var(--mobile-gap))
+                        / 2
+                    );
+            }
+
+
+            .card-content {
+                padding: 12px;
+            }
+
+
+            /* ================================================
+               MOBILE ICON
+            ================================================ */
+
+            .icon {
+                width: 44px;
+
+                height: 44px;
+
+                margin-bottom: 12px;
+
+                border-radius: 13px;
+
+                font-size: 20px;
+            }
+
+
+            .icon-matrix {
+                font-size: 6px;
+
+                letter-spacing: .8px;
+            }
+
+
+            .card-title {
+                font-size: 12px;
+
+                line-height: 1.25;
+
+                max-width: 120px;
+            }
+
+
+            .card-index {
+                font-size: 8px;
+
+                margin-top: 7px;
+            }
+
+
+            /* ================================================
+               MOBILE POPUP
+            ================================================ */
+
+            .description {
+
+                width:
+                    calc(100vw - 24px);
+
+                max-width:
+                    calc(100vw - 24px);
+
+                padding:
+                    16px 17px;
+
+                border-radius: 15px;
+
+                font-size: 12px;
+
+                line-height: 1.55;
+
+                left: 50%;
+                top: 50%;
+            }
+
+
+            .footer {
+                margin-top: 75px;
+            }
         }
 
 
-        .description::before {
-            content: "";
+        /* =====================================================
+           VERY SMALL PHONES
+        ===================================================== */
 
-            position: 
+        @media (max-width: 390px) {
+
+            .main {
+                padding-left: 9px;
+
+                padding-right: 9px;
+            }
+
+
+            .cards {
+                max-width: 360px;
+
+                --mobile-gap: 10px;
+            }
+
+
+            .card-title {
+                font-size: 11px;
+            }
+
+
+            .icon {
+                width: 40px;
+
+                height: 40px;
+
+                font-size: 18px;
+            }
+
+
+            .icon-matrix {
+                font-size: 5.5px;
+            }
+
+
+            .description {
+                width:
+                    calc(100vw - 20px);
+
+                max-width:
+                    calc(100vw - 20px);
+
+                padding:
+                    15px 15px;
+
+                font-size: 11px;
+            }
+        }
+
+
+        /* =====================================================
+           REDUCE MOTION
+        ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation-duration:
+                    .01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    .01ms !important;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         BACKGROUND
+    ===================================================== -->
+
+    <canvas id="neuralCanvas"></canvas>
+
+    <div class="grid-background"></div>
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+            <div class="logo">
+                PSY<span>-</span>TOOLS
+            </div>
+
+            <div class="subtitle">
+                инструменты самопознания и развития
+            </div>
+
+            <div class="header-line"></div>
+
+        </header>
+
+
+        <!-- =================================================
+             01 — САМОРАЗВИТИЕ
+        ================================================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <div class="section-number">
+                    01 / DEVELOPMENT
+                </div>
+
+                <h2>
+                    Саморазвитие
+                </h2>
+
+            </div>
+
+
+            <div class="cards">
+
+
+                <!-- КОЛЕСО БАЛАНСА -->
+
+                <a
+                    class="card"
+                    href="./wheel/"
+                    data-card="wheel"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ◉
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Колесо баланса
+                        </div>
+
+                        <div class="card-index">
+                            SELF / 01
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Оцените основные сферы своей жизни,
+                        определите зоны внимания и сформируйте
+                        направление дальнейшего развития.
+                    </div>
+
+                </a>
+
+
+                <!-- РЕФЛЕКСИЯ НАВЫКОВ -->
+
+                <a
+                    class="card"
+                    href="./skills/"
+                    data-card="skills"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ◇
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Рефлексия навыков
+                        </div>
+
+                        <div class="card-index">
+                            SELF / 02
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Проанализируйте свои знания, навыки,
+                        опыт и сильные стороны. Результат можно
+                        использовать для формирования
+                        профессионального профиля.
+                    </div>
+
+                </a>
+
+
+                <!-- ПРОФОРИЕНТАЦИЯ -->
+
+                <a
+                    class="card"
+                    href="./career/"
+                    data-card="career"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ⌘
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Профориентация
+                        </div>
+
+                        <div class="card-index">
+                            SELF / 03
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Исследуйте интересы, способности,
+                        профессиональные склонности и возможные
+                        направления развития карьеры.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             02 — ПСИХОДИАГНОСТИКА
+        ================================================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <div class="section-number">
+                    02 / DIAGNOSTICS
+                </div>
+
+                <h2>
+                    Психодиагностика
+                </h2>
+
+            </div>
+
+
+            <div class="cards">
+
+
+                <!-- ОЦЕНКА ЛИЧНОСТНЫХ СВОЙСТВ -->
+
+                <a
+                    class="card"
+                    href="./cattell/"
+                    data-card="cattell"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                Ψ
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Оценка личностных свойств
+                        </div>
+
+                        <div class="card-index">
+                            PSY / 01
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Исследование личностных особенностей
+                        с использованием многомерного
+                        психодиагностического подхода.
+                    </div>
+
+                </a>
+
+
+                <!-- ЛЮШЕР -->
+
+                <a
+                    class="card"
+                    href="./luscher/"
+                    data-card="luscher"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ◈
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Тест Люшера
+                        </div>
+
+                        <div class="card-index">
+                            PSY / 02
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Цветовой тест для исследования
+                        субъективного отношения к цветам
+                        и особенностей актуального состояния.
+                    </div>
+
+                </a>
+
+
+                <!-- ГЕРЧИКОВ -->
+
+                <a
+                    class="card"
+                    href="./gerchikov/"
+                    data-card="gerchikov"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                △
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Мотивация по Герчикову
+                        </div>
+
+                        <div class="card-index">
+                            PSY / 03
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Исследование ведущего типа трудовой
+                        мотивации и особенностей отношения
+                        человека к профессиональной деятельности.
+                    </div>
+
+                </a>
+
+
+                <!-- ДЕЛЛИНГЕР -->
+
+                <a
+                    class="card"
+                    href="./dellinger.html"
+                    data-card="dellinger"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ◬
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Психогеометрический тест Деллингер
+                        </div>
+
+                        <div class="card-index">
+                            PSY / 04
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Простая психогеометрическая методика
+                        выбора геометрических фигур для
+                        ориентировочного исследования
+                        особенностей личности.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             03 — РАБОТА
+        ================================================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <div class="section-number">
+                    03 / CAREER
+                </div>
+
+                <h2>
+                    Работа
+                </h2>
+
+            </div>
+
+
+            <div class="cards">
+
+
+                <!-- СОСТАВИТЬ РЕЗЮМЕ -->
+
+                <a
+                    class="card"
+                    href="./work/resume/"
+                    data-card="resume"
+                >
+
+                    <div class="card-content">
+
+                        <div class="icon">
+
+                            <div
+                                class="icon-matrix"
+                            ></div>
+
+                            <div class="icon-symbol">
+                                ▣
+                            </div>
+
+                        </div>
+
+                        <div class="card-title">
+                            Составить резюме
+                        </div>
+
+                        <div class="card-index">
+                            CAREER / 01
+                        </div>
+
+                    </div>
+
+
+                    <div class="description">
+                        Создайте структурированное
+                        профессиональное резюме для отправки
+                        работодателю. В дальнейшем результаты
+                        оценки навыков можно использовать
+                        при формировании профессионального профиля.
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="footer">
+            PSY-TOOLS · SELF KNOWLEDGE · DEVELOPMENT
+        </footer>
+
+    </main>
+
+
+    <script>
+
+        /* =====================================================
+           MATRIX CHARACTERS
+        ===================================================== */
+
+        const matrixCharacters =
+            "01アイウエオカキクケコサシスセソ" +
+            "タチツテトナニヌネノハヒフヘホ" +
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "ΨΣΔΩΦΛ";
+
+
+        const cards =
+            document.querySelectorAll(".card");
+
+
+        const matrixIcons =
+            document.querySelectorAll(
+                ".icon-matrix"
+            );
+
+
+        /* =====================================================
+           CREATE MATRIX CODE
+        ===================================================== */
+
+        function createMatrixCode() {
+
+            matrixIcons.forEach(icon => {
+
+                let result = "";
+
+
+                for (
+                    let i = 0;
+                    i < 180;
+                    i++
+                ) {
+
+                    const character =
+                        matrixCharacters[
+                            Math.floor(
+                                Math.random() *
+                                matrixCharacters.length
+                            )
+                        ];
+
+
+                    result += character;
+
+
+                    if (i % 12 === 0) {
+                        result += " ";
+                    }
+
+                }
+
+
+                icon.textContent = result;
+
+            });
+
+        }
+
+
+        createMatrixCode();
+
+
+        /* =====================================================
+           TOUCH INTERACTION
+        ===================================================== */
+
+        let activeCard = null;
+
+
+        cards.forEach(card => {
+
+            card.addEventListener(
+                "touchstart",
+                function(event) {
+
+                    /*
+                     * Первое касание:
+                     * показываем описание.
+                     */
+
+                    if (
+                        activeCard !== this
+                    ) {
+
+                        event.preventDefault();
+
+
+                        if (activeCard) {
+
+                            activeCard.classList.remove(
+                                "active"
+                            );
+
+                        }
+
+
+                        activeCard = this;
+
+
+                        this.classList.add(
+                            "active"
+                        );
+
+                    }
+
+                    /*
+                     * Второе касание:
+                     * переход по ссылке.
+                     */
+
+                    else {
+
+                        this.classList.remove(
+                            "active"
+                        );
+
+                        activeCard = null;
+
+                    }
+
+                },
+                {
+                    passive: false
+                }
+            );
+
+        });
+
+
+        /* =====================================================
+           CLOSE DESCRIPTION OUTSIDE CARD
+        ===================================================== */
+
+        document.addEventListener(
+            "touchstart",
+            function(event) {
+
+                if (
+                    activeCard &&
+                    !activeCard.contains(
+                        event.target
+                    )
+                ) {
+
+                    activeCard.classList.remove(
+                        "active"
+                    );
+
+                    activeCard = null;
+
+                }
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =====================================================
+           NEURAL NETWORK
+        ===================================================== */
+
+        const canvas =
+            document.getElementById(
+                "neuralCanvas"
+            );
+
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        let nodes = [];
+
+
+        /* =====================================================
+           RESIZE CANVAS
+        ===================================================== */
+
+        function resizeCanvas() {
+
+            const dpr =
+                Math.min(
+                    window.devicePixelRatio || 1,
+                    2
+                );
+
+
+            canvas.width =
+                window.innerWidth * dpr;
+
+
+            canvas.height =
+                window.innerHeight * dpr;
+
+
+            canvas.style.width =
+                window.innerWidth + "px";
+
+
+            canvas.style.height =
+                window.innerHeight + "px";
+
+
+            ctx.setTransform(
+                dpr,
+                0,
+                0,
+                dpr,
+                0,
+                0
+            );
+
+
+            createNodes();
+
+
+            drawNetwork();
+
+        }
+
+
+        /* =====================================================
+           CREATE NODES
+        ===================================================== */
+
+        function createNodes() {
+
+            const width =
+                window.innerWidth;
+
+
+            const height =
+                window.innerHeight;
+
+
+            const count =
+                width < 760
+
+                    ? 24
+
+                    : Math.min(
+                        48,
+                        Math.floor(
+                            width *
+                            height /
+                            26000
+                        )
+                    );
+
+
+            nodes = [];
+
+
+            for (
+                let i = 0;
+                i < count;
+                i++
+            ) {
+
+                nodes.push({
+
+                    x:
+                        Math.random() *
+                        width,
+
+                    y:
+                        Math.random() *
+                        height,
+
+                    radius:
+                        Math.random() *
+                        1.4 +
+                        .45
+
+                });
+
+            }
+
+        }
+
+
+        /* =====================================================
+           DRAW NETWORK
+        ===================================================== */
+
+        function drawNetwork() {
+
+            const width =
+                window.innerWidth;
+
+
+            const height =
+                window.innerHeight;
+
+
+            ctx.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            /* -----------------------------------------------
+               CONNECTIONS
+            ------------------------------------------------ */
+
+            for (
+                let i = 0;
+                i < nodes.length;
+                i++
+            ) {
+
+                const distances = [];
+
+
+                for (
+                    let j = 0;
+                    j < nodes.length;
+                    j++
+                ) {
+
+                    if (i === j) {
+                        continue;
+                    }
+
+
+                    const dx =
+                        nodes[i].x -
+                        nodes[j].x;
+
+
+                    const dy =
+                        nodes[i].y -
+                        nodes[j].y;
+
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    distances.push({
+                        index: j,
+                        distance
+                    });
+
+                }
+
+
+                distances.sort(
+                    (a, b) =>
+                        a.distance -
+                        b.distance
+                );
+
+
+                const nearest =
+                    distances.slice(0, 2);
+
+
+                nearest.forEach(item => {
+
+                    if (
+                        item.distance > 240
+                    ) {
+                        return;
+                    }
+
+
+                    const node =
+                        nodes[item.index];
+
+
+                    const alpha =
+                        Math.max(
+                            0,
+                            .085 -
+                            item.distance /
+                            4000
+                        );
+
+
+                    ctx.beginPath();
+
+
+                    ctx.moveTo(
+                        nodes[i].x,
+                        nodes[i].y
+                    );
+
+
+                    ctx.lineTo(
+                        node.x,
+                        node.y
+                    );
+
+
+                    ctx.strokeStyle =
+                        `rgba(
+                            69,
+                            240,
+                            195,
+                            ${alpha}
+                        )`;
+
+
+                    ctx.lineWidth = .55;
+
+
+                    ctx.stroke();
+
+                });
+
+            }
+
+
+            /* -----------------------------------------------
+               NODES
+            ------------------------------------------------ */
+
+            nodes.forEach(node => {
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    node.x,
+                    node.y,
+                    node.radius,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fillStyle =
+                    "rgba(69,240,195,.28)";
+
+
+                ctx.fill();
+
+            });
+
+        }
+
+
+        /* =====================================================
+           EVENTS
+        ===================================================== */
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+
+
+        window.addEventListener(
+            "scroll",
+            drawNetwork,
+            {
+                passive: true
+            }
+        );
+
+
+        /* =====================================================
+           START
+        ===================================================== */
+
+        resizeCanvas();
+
+    </script>
+
+</body>
+</html>
