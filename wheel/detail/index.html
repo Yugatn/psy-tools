@@ -71,6 +71,11 @@ dims.forEach((name,i)=>{
   row.append(labelEl,valueEl,input); sliders.appendChild(row);
   const a=document.createElement("a"); a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected); a.textContent="i · "+name; links.appendChild(a);
 });
+// После открытия детального колеса браузер должен показывать его начало,
+// а не восстанавливать прежнюю позицию прокрутки страницы.
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+requestAnimationFrame(() => window.scrollTo({top: 0, left: 0, behavior: "instant"}));
+
 Object.entries(NAMES).forEach(([slug,name])=>{
   const a=document.createElement("a"); a.href="../"+slug+"/"; a.textContent=name; if(slug===parent)a.className="current"; wheelList.appendChild(a);
 });
