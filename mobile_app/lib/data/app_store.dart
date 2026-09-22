@@ -31,7 +31,11 @@ class AppStore {
       return;
     }
     final legacy = p.getString(key);
-    if (legacy == null) return;
+    if (legacy == null) {
+      _seedDefaultWheels();
+      await save();
+      return;
+    }
     final migrated = Schema.migrate(Map<String,dynamic>.from(jsonDecode(legacy) as Map));
     Schema.validate(migrated);
     data = migrated;
@@ -48,8 +52,48 @@ class AppStore {
   List<Wheel> wheels() => ((data['wheels'] as List?) ?? <dynamic>[])
       .map((e) => Wheel.fromJson(Map<String,dynamic>.from(e as Map))).toList();
 
+  List<WheelScore> scores() => ((data['scores'] as List?) ?? const [])
+      .map((e) => WheelScore.fromJson(Map<String,dynamic>.from(e as Map))).toList();
+
   List<MoodEntry> moods() => ((data['mood'] as List?) ?? <dynamic>[])
       .map((e) => MoodEntry.fromJson(Map<String,dynamic>.from(e as Map))).toList();
+
+  void _seedDefaultWheels() {
+    final wheels = data['wheels'] as List;
+    if (wheels.isNotEmpty) return;
+    final templates = <Map<String, List<String>>>{
+      'Жизнь': ['Здоровье', 'Работа', 'Отношения', 'Финансы', 'Отдых', 'Развитие', 'Среда жизни', 'Смысл и ценности'],
+      'Здоровье и активность': ['Питание', 'Сон', 'Отдых', 'Физическая активность', 'Энергия', 'Самочувствие', 'Профилактика', 'Восстановление'],
+      'Работа и профессиональная деятельность': ['Коллеги', 'Зарплата', 'Рабочее время', 'Руководство', 'Задачи', 'Развитие навыков', 'Карьерные перспективы', 'Баланс работы и жизни'],
+      'Отношения': ['Партнёрство', 'Семья', 'Друзья', 'Общение', 'Поддержка', 'Близость', 'Границы', 'Совместный отдых'],
+    };
+    final created = <String, String>{};
+    var wheelIndex = 0;
+    for (final entry in templates.entries) {
+      final wheelId = 'wheel_default_${wheelIndex++}';
+      created[entry.key] = wheelId;
+      wheels.add({
+        'id': wheelId,
+        'title': entry.key,
+        'parentId': null,
+        'rays': [
+          for (var i = 0; i < entry.value.length; i++)
+            {'id': '${wheelId}_ray_$i', 'title': entry.value[i], 'childWheelId': null},
+        ],
+      });
+    }
+    final life = wheels.firstWhere((w) => w['id'] == created['Жизнь']) as Map<String,dynamic>;
+    final link = <String,String>{
+      'Здоровье': created['Здоровье и активность']!,
+      'Работа': created['Работа и профессиональная деятельность']!,
+      'Отношения': created['Отношения']!,
+    };
+    final rays = (life['rays'] as List).cast<Map<String,dynamic>>();
+    for (final ray in rays) {
+      final child = link[ray['title']];
+      if (child != null) ray['childWheelId'] = child;
+    }
+  }
 
   Future<void> replaceFromBackup(Map<String,dynamic> backup) async {
     final migrated = Schema.migrate(backup);
