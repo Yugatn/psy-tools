@@ -42,5 +42,44 @@ class Schema {
         throw FormatException('Missing $key');
       }
     }
+    final wheels = data['wheels'] as List;
+    final wheelIds = <String>{};
+    for (final raw in wheels) {
+      final wheel = Map<String, dynamic>.from(raw as Map);
+      final id = wheel['id'];
+      if (id is! String || id.isEmpty || !wheelIds.add(id)) {
+        throw const FormatException('Invalid or duplicate wheel id');
+      }
+      if (wheel['title'] is! String || (wheel['title'] as String).trim().isEmpty) {
+        throw const FormatException('Wheel title is required');
+      }
+      if (wheel['rays'] is! List) {
+        throw const FormatException('Wheel rays are required');
+      }
+      for (final rayRaw in wheel['rays'] as List) {
+        final ray = Map<String, dynamic>.from(rayRaw as Map);
+        if (ray['id'] is! String || ray['title'] is! String) {
+          throw const FormatException('Invalid wheel ray');
+        }
+        final child = ray['childWheelId'];
+        if (child != null && child is! String) {
+          throw const FormatException('Invalid child wheel reference');
+        }
+      }
+    }
+    for (final raw in data['scores'] as List) {
+      final score = Map<String, dynamic>.from(raw as Map);
+      final value = (score['value'] as num?)?.toDouble();
+      if (value == null || value < 0 || value > 10) {
+        throw const FormatException('Wheel score must be between 0 and 10');
+      }
+    }
+    for (final raw in data['mood'] as List) {
+      final mood = Map<String, dynamic>.from(raw as Map);
+      final value = mood['value'];
+      if (value is! int || value < 1 || value > 5) {
+        throw const FormatException('Mood must be between 1 and 5');
+      }
+    }
   }
 }
