@@ -12,6 +12,7 @@ class AppStore {
     'scores': <Map<String,dynamic>>[],
     'journal': <Map<String,dynamic>>[],
     'calendar': <Map<String,dynamic>>[],
+    'mood': <Map<String,dynamic>>[],
     'settings': <String,dynamic>{},
   };
 
@@ -34,6 +35,8 @@ class AppStore {
   List<Wheel> wheels() => ((data['wheels'] as List?) ?? <dynamic>[])
       .map((e) => Wheel.fromJson(Map<String,dynamic>.from(e as Map)))
       .toList();
+
+  List<MoodEntry> moods() => ((data['mood'] as List?) ?? <dynamic>[]).map((e) => MoodEntry.fromJson(Map<String,dynamic>.from(e as Map))).toList();
 
   Future<void> replaceFromBackup(Map<String,dynamic> backup) async {
     final migrated = Schema.migrate(backup);
