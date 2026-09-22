@@ -1,0 +1,27 @@
+name: PSY-TOOLS Flutter
+
+on:
+  push:
+    paths:
+      - 'mobile_app/**'
+      - '.github/workflows/flutter-mobile.yml'
+  pull_request:
+    paths:
+      - 'mobile_app/**'
+      - '.github/workflows/flutter-mobile.yml'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
