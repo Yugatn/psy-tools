@@ -272,6 +272,14 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
   .spoiler-toggle{font-size:11.5px;padding:5px 10px 5px 12px;}
   .spoiler.expanded .spoiler-toggle{padding:4px 9px 4px 11px;}
 }
+
+.wheel-wrapper{position:relative;}
+.wheel-detail-links{position:absolute;inset:0;pointer-events:none;}
+.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:0 0 0 4px rgba(85,230,176,0.10),0 3px 12px rgba(0,0,0,0.35);pointer-events:auto;transition:transform .15s ease,background .15s ease;z-index:3;}
+.wheel-detail-link:hover,.wheel-detail-link:focus{transform:translate(-50%,-50%) scale(1.08);background:#16483f;outline:none;}
+.wheel-detail-link:active{transform:translate(-50%,-50%) scale(.96);}
+.wheel-detail-label{position:absolute;transform:translate(-50%,0);margin-top:20px;white-space:nowrap;font-size:10px;font-weight:700;color:#8ff5cf;background:rgba(16,44,42,.92);padding:3px 6px;border-radius:6px;pointer-events:none;}
+@media(max-width:520px){.wheel-detail-link{width:30px;height:30px;font-size:13px}.wheel-detail-label{font-size:9px;margin-top:17px}}
 </style>
 </head>
 <body>
@@ -311,10 +319,10 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
     <section id="resultSection" class="hidden">
         <div class="card">
             <h2>🌀 Ваше колесо баланса</h2>
-            <div class="wheel-wrapper"><canvas id="wheel"></canvas></div>
+            <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация сфер"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
-            <div class="wheel-hint">Нажмите на <strong>синее число</strong> — текущая оценка. На <strong>фиолетовый маркер</strong> — детали заметки.</div>
-            <div class="wheel-legend">
+            <div class="wheel-hint">Нажмите на <strong>зелёный маркер «i»</strong> на луче — подробное колесо этой сферы. Синие числа показывают текущие оценки, фиолетовые маркеры — цели улучшения.</div>
+            <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
             </div>
@@ -851,6 +859,40 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
+const DETAIL_LINKS = [
+    "./health/", "./work/", "./finance/", "./relationships/",
+    "./social/", "./development/", "./rest/", "./creativity/"
+];
+function updateDetailLinks() {
+    const stage = $("wheelStage"), layer = $("detailLinks");
+    if (!stage || !layer) return;
+    const canvas = $("wheel");
+    const rect = canvas.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
+    const scaleX = rect.width / 760, scaleY = rect.height / 760;
+    const cx = 380, cy = 380, radius = 380 - 105, n = categories.length;
+    layer.innerHTML = "";
+    for (let i = 0; i < n; i++) {
+        const a = i * (Math.PI * 2 / n) - Math.PI / 2;
+        const rr = radius * 0.91;
+        const x = (rect.left - stageRect.left) + (cx + Math.cos(a) * rr) * scaleX;
+        const y = (rect.top - stageRect.top) + (cy + Math.sin(a) * rr) * scaleY;
+        const link = document.createElement("a");
+        link.className = "wheel-detail-link";
+        link.href = DETAIL_LINKS[i];
+        link.title = "Подробнее: " + categories[i];
+        link.setAttribute("aria-label", "Открыть подробное колесо: " + categories[i]);
+        link.textContent = "i";
+        const label = document.createElement("span");
+        label.className = "wheel-detail-label";
+        label.textContent = "деталь";
+        link.style.left = x + "px";
+        link.style.top = y + "px";
+        layer.appendChild(link);
+        label.style.left = x + "px";
+        label.style.top = y + "px";
+        layer.appendChild(label);
+    }
+}
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
@@ -1004,6 +1046,7 @@ function drawWheel(canvas, vals, imps) {
             ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
         });
     }
+    updateDetailLinks();
 }
 
 function hasMeaningfulContent(imp, idx) {
@@ -1814,6 +1857,7 @@ function showResultsIfCompleted() {
         showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
     }
 })();
+window.addEventListener("resize", () => { updateDetailLinks(); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
 <div class="card" style="margin-top:8px"><h3>Детализация сфер</h3><p class="subtitle" style="margin:0 0 12px">Каждый луч основного колеса можно открыть как отдельное подробное колесо.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><a href="./health/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Здоровье</a><a href="./work/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Работа и карьера</a><a href="./finance/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Финансы</a><a href="./relationships/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отношения и семья</a><a href="./social/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Друзья и общение</a><a href="./development/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Личное развитие</a><a href="./rest/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отдых и восстановление</a><a href="./creativity/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Творчество и самореализация</a></div></div></body>
