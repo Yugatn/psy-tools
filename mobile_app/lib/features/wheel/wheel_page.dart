@@ -36,6 +36,49 @@ class _WheelPageState extends State<WheelPage> {
     return 0;
   }
 
+  Future<void> _createChildWheel(Wheel parent, WheelRay ray) async {
+    final controller = TextEditingController(text: '${ray.title}: подробное колесо');
+    final title = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Дочернее колесо'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Название'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Создать')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (title == null || title.isEmpty) return;
+
+    final childId = 'wheel_${DateTime.now().microsecondsSinceEpoch}';
+    final child = <String, dynamic>{
+      'id': childId,
+      'title': title,
+      'parentId': parent.id,
+      'rays': [
+        for (var i = 0; i < 8; i++)
+          {
+            'id': '${childId}_ray_$i',
+            'title': 'Новый аспект ${i + 1}',
+            'childWheelId': null,
+          },
+      ],
+    };
+    (widget.store.data['wheels'] as List).add(child);
+    final parentRaw = (widget.store.data['wheels'] as List).firstWhere((w) => w['id'] == parent.id);
+    final rays = (parentRaw['rays'] as List);
+    final rayRaw = rays.firstWhere((r) => r['id'] == ray.id);
+    rayRaw['childWheelId'] = childId;
+    await widget.store.save();
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final wheel = widget.store.wheels().where((w) => w.id == widget.wheelId).firstOrNull;
@@ -91,23 +134,28 @@ class _WheelPageState extends State<WheelPage> {
                       },
                       onChangeEnd: (value) => _saveScore(wheel, ray, value),
                     ),
-                    if (ray.childWheelId != null)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => WheelPage(
-                                store: widget.store,
-                                wheelId: ray.childWheelId!,
-                              ),
-                            ),
-                          ).then((_) => setState(() {})),
-                          icon: const Icon(Icons.account_tree),
-                          label: const Text('Открыть подробное колесо'),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => ray.childWheelId == null
+                            ? _createChildWheel(wheel, ray)
+                            : Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => WheelPage(
+                                    store: widget.store,
+                                    wheelId: ray.childWheelId!,
+                                  ),
+                                ),
+                              ).then((_) => setState(() {})),
+                        icon: const Icon(Icons.account_tree),
+                        label: Text(
+                          ray.childWheelId == null
+                              ? 'Создать подробное колесо'
+                              : 'Открыть подробное колесо',
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
