@@ -1,0 +1,50 @@
+name: Agent Integrity Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify mandatory context files
+        run: |
+          test -f AGENTS.md
+          test -f docs/AS_CONTEXT_BOOTSTRAP_v0.1.md
+          test -f docs/AS_CONCEPT_RECONSTRUCTION_TEST_v0.1.md
+
+      - name: Verify mandatory invariants
+        run: |
+          grep -Fq 'Другой — реален' AGENTS.md
+          grep -Fq 'Reality = Model + Residual' AGENTS.md
+          grep -Fq 'UNKNOWN != ABSENT' AGENTS.md
+          grep -Fq 'NOT_TESTED != FALSE' AGENTS.md
+          grep -Fq 'ACCESS_FAILURE != OBJECT_ABSENCE' AGENTS.md
+          grep -Fq 'AGENT_ASSERTION != PRIMARY_EVIDENCE' AGENTS.md
+          grep -Fq 'GITHUB_CANON != GITVERSE_WORKSPACE' AGENTS.md
+          grep -Fq 'IMPLEMENTED != VERIFIED' AGENTS.md
+          grep -Fq 'SELF_TEST != INDEPENDENT_VERIFICATION' AGENTS.md
+
+      - name: Detect prohibited automatic authority claims
+        run: |
+          if grep -RniE 'self[-_ ]?authorized|autonomous authority|agent is final authority|implementation proves|self-test is independent verification'             --exclude-dir=.git --exclude='agent-integrity-check.yml' .; then
+            echo "Potential authority/integrity violation detected."
+            exit 1
+          fi
+
+      - name: Verify bootstrap entry sequence
+        run: |
+          grep -Fq 'AS_CONTEXT_BOOTSTRAP_v0.1.md' AGENTS.md
+          grep -Fq 'AS_CONCEPT_RECONSTRUCTION_TEST_v0.1.md' AGENTS.md
+          grep -Fq 'A reconstruction failure blocks implementation' AGENTS.md
