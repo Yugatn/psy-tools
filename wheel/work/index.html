@@ -273,14 +273,20 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
   .spoiler.expanded .spoiler-toggle{padding:4px 9px 4px 11px;}
 }
 
-.wheel-wrapper{position:relative}.wheel-detail-links{position:absolute;inset:0;pointer-events:none}.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;pointer-events:auto;box-shadow:0 0 0 4px rgba(85,230,176,.1)}
+.wheel-wrapper{position:relative;}
+.wheel-detail-links{position:absolute;inset:0;pointer-events:none;}
+.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:0 0 0 4px rgba(85,230,176,0.10),0 3px 12px rgba(0,0,0,0.35);pointer-events:auto;transition:transform .15s ease,background .15s ease;z-index:3;}
+.wheel-detail-link:hover,.wheel-detail-link:focus{transform:translate(-50%,-50%) scale(1.08);background:#16483f;outline:none;}
+.wheel-detail-link:active{transform:translate(-50%,-50%) scale(.96);}
+.wheel-detail-label{position:absolute;transform:translate(-50%,0);margin-top:20px;white-space:nowrap;font-size:10px;font-weight:700;color:#8ff5cf;background:rgba(16,44,42,.92);padding:3px 6px;border-radius:6px;pointer-events:none;}
+@media(max-width:520px){.wheel-detail-link{width:30px;height:30px;font-size:13px}.wheel-detail-label{font-size:9px;margin-top:17px}}
 </style>
 </head>
 <body>
 
 <!-- MAIN -->
 <div class="container" id="mainContainer">
-    <h1>🌀 Колесо: Работа и карьера</h1>
+    <h1>🌀 Колесо баланса</h1>
     <div class="subtitle">Небольшая рефлексия о том, как вы воспринимаете разные сферы своей жизни сейчас.</div>
 
     <section id="testSection">
@@ -312,11 +318,11 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
 
     <section id="resultSection" class="hidden">
         <div class="card">
-            <h2>🌀 Ваше колесо баланса</h2>
-            <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация сфер"></div></div>
+            <h2>🌀 Колесо: Работа и карьера</h2>
+            <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация: Работа и карьера"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
-            <div class="wheel-hint">Нажмите на <strong>синее число</strong> — текущая оценка. На <strong>фиолетовый маркер</strong> — детали заметки.</div>
-            <div class="wheel-legend">
+            <div class="wheel-hint">Нажмите на <strong>зелёный маркер «i»</strong> на луче — подробное колесо этой сферы. Синие числа показывают текущие оценки, фиолетовые маркеры — цели улучшения.</div>
+            <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
             </div>
@@ -578,18 +584,16 @@ const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : 
 if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
 const spheres = [
-    { name: "Содержание работы", question: "Насколько вы удовлетворены сферой «содержание работы» в своей жизни сейчас?" },
-    { name: "Заработок", question: "Насколько вы удовлетворены сферой «заработок» в своей жизни сейчас?" },
-    { name: "Руководство", question: "Насколько вы удовлетворены сферой «руководство» в своей жизни сейчас?" },
-    { name: "Коллеги", question: "Насколько вы удовлетворены сферой «коллеги» в своей жизни сейчас?" },
-    { name: "Рабочее время", question: "Насколько вы удовлетворены сферой «рабочее время» в своей жизни сейчас?" },
-    { name: "Нагрузка", question: "Насколько вы удовлетворены сферой «нагрузка» в своей жизни сейчас?" },
-    { name: "Карьерный рост", question: "Насколько вы удовлетворены сферой «карьерный рост» в своей жизни сейчас?" },
-    { name: "Профессиональное развитие", question: "Насколько вы удовлетворены сферой «профессиональное развитие» в своей жизни сейчас?" }
+    { name: "Содержание работы", question: "Насколько вы удовлетворены сферой «содержание работы» сейчас?" },
+    { name: "Заработок", question: "Насколько вы удовлетворены сферой «заработок» сейчас?" },
+    { name: "Руководство", question: "Насколько вы удовлетворены сферой «руководство» сейчас?" },
+    { name: "Коллеги", question: "Насколько вы удовлетворены сферой «коллеги» сейчас?" },
+    { name: "Рабочее время", question: "Насколько вы удовлетворены сферой «рабочее время» сейчас?" },
+    { name: "Нагрузка", question: "Насколько вы удовлетворены сферой «нагрузка» сейчас?" },
+    { name: "Карьерный рост", question: "Насколько вы удовлетворены сферой «карьерный рост» сейчас?" },
+    { name: "Профессиональное развитие", question: "Насколько вы удовлетворены сферой «профессиональное развитие» сейчас?" }
 ];
 const categories = spheres.map(s => s.name);
-const DETAIL_LINKS = categories.map((_, i) => "../detail/?parent=work&ray=" + i);
-
 const SHORT_NAMES = ["Содержание работы","Заработок","Руководство","Коллеги","Рабочее время","Нагрузка","Карьерный рост","Профессиональное развитие"];
 const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
@@ -604,12 +608,12 @@ let vertexHits = [];
 
 const $ = id => document.getElementById(id);
 
-const VALUES_KEY = "wheelNestedV1_work_Values";
-const JOURNAL_KEY = "wheelNestedV1_work_Journal";
-const IMPROVE_KEY = "wheelNestedV1_work_Improvements";
-const REFLECT_KEY = "wheelNestedV1_work_Reflections";
-const SHARE_KEY = "wheelNestedV1_work_Share";
-const SPOILER_KEY = "wheelNestedV1_work_SpoilerPlan";
+const VALUES_KEY = "wheelNestedV2_work_Values";
+const JOURNAL_KEY = "wheelNestedV2_work_Journal";
+const IMPROVE_KEY = "wheelNestedV2_work_Improvements";
+const REFLECT_KEY = "wheelNestedV2_work_Reflections";
+const SHARE_KEY = "wheelNestedV2_work_Share";
+const SPOILER_KEY = "wheelNestedV2_work_SpoilerPlan";
 const JOURNAL_LIMIT = 50;
 
 function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
@@ -855,8 +859,37 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
-
-function updateDetailLinks(){const stage=$("wheelStage"),layer=$("detailLinks"),canvas=$("wheel");if(!stage||!layer||!canvas)return;const rect=canvas.getBoundingClientRect(),sr=stage.getBoundingClientRect(),scaleX=rect.width/760,scaleY=rect.height/760,cx=380,cy=380,radius=380-105,n=categories.length,step=Math.PI*2/n;layer.innerHTML="";for(let i=0;i<n;i++){const a=i*step-Math.PI/2,rr=radius*.91,x=(rect.left-sr.left)+(cx+Math.cos(a)*rr)*scaleX,y=(rect.top-sr.top)+(cy+Math.sin(a)*rr)*scaleY;const l=document.createElement("a");l.className="wheel-detail-link";l.href=DETAIL_LINKS[i];l.title="Подробнее: "+categories[i];l.setAttribute("aria-label","Открыть подробное колесо: "+categories[i]);l.textContent="i";l.style.left=x+"px";l.style.top=y+"px";layer.appendChild(l)}}
+const DETAIL_LINKS = categories.map((_, i) => "../detail/?parent="work"&ray=" + i);
+function updateDetailLinks() {
+    const stage = $("wheelStage"), layer = $("detailLinks");
+    if (!stage || !layer) return;
+    const canvas = $("wheel");
+    const rect = canvas.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
+    const scaleX = rect.width / 760, scaleY = rect.height / 760;
+    const cx = 380, cy = 380, radius = 380 - 105, n = categories.length;
+    layer.innerHTML = "";
+    for (let i = 0; i < n; i++) {
+        const a = i * (Math.PI * 2 / n) - Math.PI / 2;
+        const rr = radius * 0.91;
+        const x = (rect.left - stageRect.left) + (cx + Math.cos(a) * rr) * scaleX;
+        const y = (rect.top - stageRect.top) + (cy + Math.sin(a) * rr) * scaleY;
+        const link = document.createElement("a");
+        link.className = "wheel-detail-link";
+        link.href = DETAIL_LINKS[i];
+        link.title = "Подробнее: " + categories[i];
+        link.setAttribute("aria-label", "Открыть подробное колесо: " + categories[i]);
+        link.textContent = "i";
+        const label = document.createElement("span");
+        label.className = "wheel-detail-label";
+        label.textContent = "деталь";
+        link.style.left = x + "px";
+        link.style.top = y + "px";
+        layer.appendChild(link);
+        label.style.left = x + "px";
+        label.style.top = y + "px";
+        layer.appendChild(label);
+    }
+}
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
@@ -1010,8 +1043,6 @@ function drawWheel(canvas, vals, imps) {
             ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
         });
     }
-}
-
     updateDetailLinks();
 }
 
@@ -1433,8 +1464,8 @@ $("modal").addEventListener("click", e => { if (e.target === $("modal")) $("moda
 $("exportJsonBtn").addEventListener("click", () => {
     try {
         const data = {
-            app: "wheel-nested",
-            version: 1,
+            app: "wheel-balance",
+            version: 3,
             exportedAt: new Date().toISOString(),
             values: values.slice(),
             improvements: JSON.parse(JSON.stringify(improvements)),
@@ -1445,7 +1476,7 @@ $("exportJsonBtn").addEventListener("click", () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "wheel-work-" + localDateISO() + ".json";
+        a.download = "wheel-balance-" + localDateISO() + ".json";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1551,10 +1582,10 @@ function buildShareMessage() {
     const friend = $("friendName").value.trim();
     const deadline = $("shareDeadline").value;
     const comment = $("friendComment").value.trim();
-    const appUrl = "https://yugatn.github.io/psy-tools/work/";
-    let msg = "🌀 Колесо: Работа и карьера\n\n";
+    const appUrl = "https://yugatn.github.io/wheel-balance/";
+    let msg = "🌀 Колесо баланса\n\n";
     msg += friend ? ("Привет, " + friend + "!\n\n") : "Привет!\n\n";
-    msg += "Я заполнил(а) «Колесо: Работа и карьера» " + formatDateShort(localDateISO()) + ".\n\n";
+    msg += "Я заполнил(а) «Колесо баланса» " + formatDateShort(localDateISO()) + ".\n\n";
     msg += "Моё среднее значение: " + getAverage() + "/10.\n\n";
     msg += "Мои оценки:\n";
     categories.forEach((n, i) => { msg += "• " + n + " — " + values[i] + "/10\n"; });
@@ -1573,7 +1604,7 @@ function buildShareMessage() {
     }
     if (deadline) msg += "\n📅 Предлагаю вернуться к этому результату до " + formatDateShort(deadline) + ".";
     if (comment) msg += "\n\n💬 Договорённость:\n" + comment;
-    msg += "\n\n🔗 Открыть «Колесо: Работа и карьера»:\n" + appUrl;
+    msg += "\n\n🔗 Открыть «Колесо баланса»:\n" + appUrl;
     return msg;
 }
 function updateSharePreview() { $("sharePreview").textContent = buildShareMessage(); }
@@ -1610,7 +1641,7 @@ $("shareFriendBtn").addEventListener("click", () => {
 });
 $("telegramShareBtn").addEventListener("click", () => {
     const text = buildShareMessage();
-    const url = "https://t.me/share/url?url=" + encodeURIComponent("https://yugatn.github.io/psy-tools/work/") + "&text=" + encodeURIComponent(text);
+    const url = "https://t.me/share/url?url=" + encodeURIComponent("https://yugatn.github.io/wheel-balance/") + "&text=" + encodeURIComponent(text);
     if (tg && typeof tg.openTelegramLink === "function") { try { tg.openTelegramLink(url); } catch(e) { window.open(url, "_blank"); } }
     else window.open(url, "_blank");
     haptic("success");
@@ -1823,7 +1854,8 @@ function showResultsIfCompleted() {
         showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
     }
 })();
+window.addEventListener("resize", () => { updateDetailLinks(); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
-<div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Главное колесо</a><div style="color:#8fa0b8;font-size:12px;margin-top:8px">Детальная сфера: Работа и карьера</div></div><div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Уровень выше</a><div style="color:#8fa0b8;font-size:12px;margin-top:8px">Детализация сферы: Работа и карьера</div></div></body>
+<div class="card" style="margin-top:8px"><h3>Детализация: Работа и карьера</h3><p class="subtitle" style="margin:0 0 12px">Каждый луч основного колеса можно открыть как отдельное подробное колесо.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><a href="./health/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Здоровье</a><a href="./work/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Работа и карьера</a><a href="./finance/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Финансы</a><a href="./relationships/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отношения и семья</a><a href="./social/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Друзья и общение</a><a href="./development/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Личное развитие</a><a href="./rest/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отдых и восстановление</a><a href="./creativity/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Творчество и самореализация</a></div></div></body>
 </html>
