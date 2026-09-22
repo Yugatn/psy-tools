@@ -20,3 +20,9 @@ JournalEntry — рефлексия, которую можно связать с
 
 ## 6. Future modules
 WheelRenderer, WheelEditor, ScoreHistory, ReflectionPrompts, Goals, Insights, ImportExport, CloudSync, UpdateService.
+
+
+## Security and data protection
+Local application data is encrypted at rest with AES-256-GCM. The encryption key is generated per installation and stored in platform secure storage (Keychain/Keystore-backed storage through flutter_secure_storage). Legacy plaintext storage is migrated once and removed after successful encrypted save. Encryption is authenticated, so tampering with ciphertext causes decryption failure.
+
+This protects stored data on the device; it does not make the application invulnerable to a compromised device, malicious code, screenshots, backups, or a user who has unlocked the device. Exported backups require a separate password-based encryption layer before they are treated as encrypted backups.
