@@ -588,7 +588,7 @@ const spheres = [
     { name: "Результаты", question: "Насколько вы удовлетворены сферой «результаты» в своей жизни сейчас?" }
 ];
 const categories = spheres.map(s => s.name);
-const DETAIL_LINKS = categories.map((_, i) => "./detail-" + i + "/");
+const DETAIL_LINKS = categories.map((_, i) => "../detail/?parent=development&ray=" + i);
 
 const SHORT_NAMES = ["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"];
 const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
