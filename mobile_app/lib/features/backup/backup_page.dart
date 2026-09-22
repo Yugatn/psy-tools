@@ -1,0 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import '../../data/app_store.dart';
+import '../../services/backup_service.dart';
+class BackupPage extends StatelessWidget { final AppStore store; const BackupPage({super.key,required this.store}); @override Widget build(BuildContext context){ final service=BackupService(store); return Scaffold(appBar:AppBar(title:const Text('Резервные копии')),body:ListView(padding:const EdgeInsets.all(16),children:[const Text('Данные принадлежат пользователю. Перед импортом архив проверяется.',style:TextStyle(fontSize:16)),const SizedBox(height:16),FilledButton.icon(onPressed:(){final raw=service.exportJson();showDialog(context:context,builder:(_)=>AlertDialog(title:const Text('Backup готов'),content:SingleChildScrollView(child:Text(const JsonEncoder.withIndent('  ').convert(jsonDecode(raw)))),actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('Закрыть'))]));},icon:const Icon(Icons.backup),label:const Text('Создать резервную копию')),const SizedBox(height:8),OutlinedButton.icon(onPressed:null,icon:const Icon(Icons.restore),label:const Text('Импортировать архив — следующий этап'))])); } }
