@@ -272,6 +272,8 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
   .spoiler-toggle{font-size:11.5px;padding:5px 10px 5px 12px;}
   .spoiler.expanded .spoiler-toggle{padding:4px 9px 4px 11px;}
 }
+
+.wheel-wrapper{position:relative}.wheel-detail-links{position:absolute;inset:0;pointer-events:none}.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;pointer-events:auto;box-shadow:0 0 0 4px rgba(85,230,176,.1)}
 </style>
 </head>
 <body>
@@ -311,7 +313,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
     <section id="resultSection" class="hidden">
         <div class="card">
             <h2>🌀 Ваше колесо баланса</h2>
-            <div class="wheel-wrapper"><canvas id="wheel"></canvas></div>
+            <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация сфер"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
             <div class="wheel-hint">Нажмите на <strong>синее число</strong> — текущая оценка. На <strong>фиолетовый маркер</strong> — детали заметки.</div>
             <div class="wheel-legend">
@@ -586,6 +588,8 @@ const spheres = [
     { name: "Результаты", question: "Насколько вы удовлетворены сферой «результаты» в своей жизни сейчас?" }
 ];
 const categories = spheres.map(s => s.name);
+const DETAIL_LINKS = categories.map((_, i) => "./detail-" + i + "/");
+
 const SHORT_NAMES = ["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"];
 const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
@@ -851,6 +855,8 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
+
+function updateDetailLinks(){const stage=$("wheelStage"),layer=$("detailLinks"),canvas=$("wheel");if(!stage||!layer||!canvas)return;const rect=canvas.getBoundingClientRect(),sr=stage.getBoundingClientRect(),scaleX=rect.width/760,scaleY=rect.height/760,cx=380,cy=380,radius=380-105,n=categories.length,step=Math.PI*2/n;layer.innerHTML="";for(let i=0;i<n;i++){const a=i*step-Math.PI/2,rr=radius*.91,x=(rect.left-sr.left)+(cx+Math.cos(a)*rr)*scaleX,y=(rect.top-sr.top)+(cy+Math.sin(a)*rr)*scaleY;const l=document.createElement("a");l.className="wheel-detail-link";l.href=DETAIL_LINKS[i];l.title="Подробнее: "+categories[i];l.setAttribute("aria-label","Открыть подробное колесо: "+categories[i]);l.textContent="i";l.style.left=x+"px";l.style.top=y+"px";layer.appendChild(l)}}
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
@@ -1004,6 +1010,9 @@ function drawWheel(canvas, vals, imps) {
             ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
         });
     }
+}
+
+    updateDetailLinks();
 }
 
 function hasMeaningfulContent(imp, idx) {
@@ -1816,5 +1825,5 @@ function showResultsIfCompleted() {
 })();
 window.addEventListener("resize", updateBubblePosition);
 </script>
-<div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Главное колесо</a><div style="color:#8fa0b8;font-size:12px;margin-top:8px">Детальная сфера: Личное развитие</div></div></body>
+<div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Главное колесо</a><div style="color:#8fa0b8;font-size:12px;margin-top:8px">Детальная сфера: Личное развитие</div></div><div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Уровень выше</a><div style="color:#8fa0b8;font-size:12px;margin-top:8px">Детализация сферы: Личное развитие</div></div></body>
 </html>
