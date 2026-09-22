@@ -15,6 +15,12 @@ class WheelScore {
   const WheelScore({required this.wheelId,required this.rayId,required this.value,required this.at});
   Map<String,dynamic> toJson()=>{'wheelId':wheelId,'rayId':rayId,'value':value,'at':at.toIso8601String()};
 }
+class MoodEntry {
+  final int value; final DateTime at; final String? note;
+  const MoodEntry({required this.value,required this.at,this.note});
+  Map<String,dynamic> toJson()=>{'value':value,'at':at.toIso8601String(),'note':note};
+  factory MoodEntry.fromJson(Map<String,dynamic> j)=>MoodEntry(value:(j['value'] as num).toInt(),at:DateTime.parse(j['at'] as String),note:j['note'] as String?);
+}
 class JournalEntry {
   final String id,text; final DateTime createdAt; final List<String> wheelIds,rayIds;
   const JournalEntry({required this.id,required this.text,required this.createdAt,this.wheelIds=const[],this.rayIds=const[]});
