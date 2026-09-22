@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Колесо: Рабочее время</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;min-height:100%;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;}
+body{min-height:100vh;min-height:100dvh;padding:10px;}
+button,input,textarea{font-family:inherit;}
+button{border:none;cursor:pointer;color:#fff;}
+button:active{transform:scale(0.98);}
+.container{width:100%;max-width:900px;margin:0 auto;}
+h1{text-align:center;font-size:27px;margin:8px 0 5px;}
+h2{font-size:20px;margin:0 0 15px;}
+h3{font-size:17px;margin:0 0 10px;}
+.subtitle{text-align:center;color:#aab4c3;font-size:14px;line-height:1.45;margin-bottom:15px;}
+.card{background:#111a2e;border:1px solid #26324a;border-radius:20px;padding:16px;margin-bottom:14px;}
+.hidden{display:none !important;}
+@keyframes questionFade{from{opacity:0.35;}to{opacity:1;}}
+#testSection .card.fade-in{animation:questionFade 0.28s ease;}
+
+/* PROGRESS */
+.progress-wrapper{margin-bottom:14px;}
+.progress-top{display:flex;justify-content:space-between;color:#9da9bb;font-size:13px;margin-bottom:7px;}
+.progress-track{width:100%;height:9px;background:#24314b;border-radius:20px;overflow:hidden;}
+.progress-bar{height:100%;width:0%;background:#6ea8fe;border-radius:20px;transition:width 0.25s ease;}
+.sphere-number{color:#7faeff;font-size:13px;font-weight:700;margin-bottom:5px;}
+.sphere-title{font-size:25px;font-weight:700;margin-bottom:12px;}
+.question{color:#c1cada;font-size:16px;line-height:1.55;margin-bottom:20px;}
+.scale-label{text-align:center;color:#9da9bb;font-size:13px;margin-bottom:9px;}
+.score-display{text-align:center;font-size:56px;line-height:1;font-weight:800;margin:12px 0 18px;}
+.slider-wrapper{position:relative;margin-top:12px;padding-top:34px;}
+.score-slider{-webkit-appearance:none;appearance:none;width:100%;height:8px;background:#24314b;border-radius:20px;outline:none;cursor:pointer;}
+.score-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+.score-slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer;}
+.score-slider::-moz-range-track{height:8px;background:#24314b;border-radius:20px;}
+.slider-current-value{position:absolute;top:0;background:#315fa8;color:#fff;padding:5px 11px;border-radius:9px;font-size:14px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:10;}
+.slider-current-value.show{opacity:1;}
+.slider-marks{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;margin-top:10px;}
+.slider-mark{color:#9da9bb;font-size:12px;font-weight:600;text-align:center;padding:5px 0;cursor:pointer;}
+.slider-mark.active{color:#fff;background:#315fa8;border-radius:7px;}
+.scale-ends{display:flex;justify-content:space-between;color:#718099;font-size:11px;margin-top:6px;}
+.navigation{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
+.nav-button{padding:14px 10px;border-radius:14px;background:#24314b;font-size:15px;font-weight:700;}
+.nav-button.primary{background:#315fa8;}
+
+/* WHEEL */
+.wheel-wrapper{width:100%;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:4px 0;}
+canvas{display:block;width:min(96vw,720px);height:min(96vw,720px);max-width:100%;touch-action:none;cursor:pointer;}
+.scale-info{text-align:center;color:#9da9bb;font-size:13px;margin-top:3px;line-height:1.45;}
+.wheel-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 20px;margin-top:9px;color:#9da9bb;font-size:13px;}
+.legend-item{display:inline-flex;align-items:center;gap:6px;}
+.legend-swatch-fill{width:15px;height:15px;border-radius:4px;}
+.wheel-hint{margin-top:12px;padding:11px 13px;background:rgba(110,168,254,0.10);border:1px solid rgba(110,168,254,0.35);border-radius:12px;color:#b8cce8;font-size:13px;line-height:1.45;text-align:center;}
+.wheel-hint strong{color:#cfe1ff;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px;}
+.stat{background:#18233a;border-radius:13px;padding:10px 4px;text-align:center;}
+.stat-value{font-size:20px;font-weight:800;}
+.stat-label{color:#9da9bb;font-size:11px;margin-top:3px;}
+.interpretation{color:#c2ccda;font-size:15px;line-height:1.6;}
+.interpretation p{margin:0 0 11px;}
+.range-list{display:grid;gap:8px;margin-top:12px;}
+.range-item{background:#18233a;border-radius:12px;padding:10px 12px;color:#b9c4d5;font-size:13px;line-height:1.45;}
+.range-item strong{color:#fff;}
+
+/* CHART */
+.results-chart{display:flex;gap:6px;height:220px;padding:24px 4px 0;align-items:stretch;margin-top:6px;}
+.rc-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;cursor:pointer;}
+.rc-value{font-size:13px;font-weight:800;color:#fff;flex-shrink:0;display:flex;flex-direction:column;align-items:center;line-height:1.1;}
+.rc-pct{font-size:9.5px;color:#8fa0b8;font-weight:600;margin-top:2px;}
+.rc-track{flex:1;width:100%;max-width:34px;min-height:0;background:rgba(36,49,75,0.55);border-radius:9px;position:relative;overflow:visible;display:flex;align-items:flex-end;transition:background 0.2s ease;}
+.rc-fill{width:100%;border-radius:9px;transition:height 0.5s cubic-bezier(0.4,0,0.2,1);min-height:6px;box-shadow:inset 0 0 8px rgba(255,255,255,0.15);}
+.rc-goal-marker{position:absolute;left:-3px;right:-3px;height:3px;background:#c28cff;border-radius:3px;box-shadow:0 0 8px rgba(194,140,255,0.85);z-index:2;pointer-events:none;transform:translateY(50%);}
+.rc-goal-label{position:absolute;right:-2px;font-size:9px;font-weight:800;color:#e4ccff;background:rgba(26,12,42,0.95);border:1px solid rgba(194,140,255,0.5);padding:1px 4px;border-radius:5px;z-index:3;pointer-events:none;transform:translate(100%, 50%);white-space:nowrap;}
+.rc-label{font-size:10px;font-weight:600;color:#8fa0b8;text-align:center;line-height:1.1;height:26px;display:flex;align-items:flex-start;justify-content:center;flex-shrink:0;}
+.rc-bar.best .rc-label{color:#22c55e;}
+.rc-bar.worst .rc-label{color:#ef4444;}
+.chart-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 16px;margin-top:12px;font-size:11.5px;color:#8fa0b8;}
+.chart-legend-item{display:inline-flex;align-items:center;gap:6px;}
+.chart-legend-dot{width:10px;height:10px;border-radius:3px;}
+.chart-legend-line{width:14px;height:3px;border-radius:3px;background:#c28cff;box-shadow:0 0 6px rgba(194,140,255,0.8);}
+
+/* PLAN */
+.im-summary-bar{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(194,140,255,0.14),rgba(110,168,254,0.10));border:1px solid rgba(194,140,255,0.35);border-radius:13px;padding:11px 13px;margin-bottom:12px;}
+.im-summary-count{font-size:24px;font-weight:800;color:#d7b6ff;min-width:34px;text-align:center;}
+.im-summary-text{color:#c7d3e6;font-size:13px;line-height:1.4;}
+.im-card{background:#18233a;border:1px solid #2a3a5a;border-left:4px solid #c28cff;border-radius:12px;padding:13px 14px;margin-top:10px;cursor:pointer;transition:background 0.15s ease;}
+.im-card:hover{background:#1d2942;}
+.im-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;}
+.im-name{font-size:15.5px;font-weight:700;}
+.im-progress-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(194,140,255,0.16);border:1px solid rgba(194,140,255,0.45);color:#e0c7ff;font-size:13px;font-weight:800;padding:4px 10px;border-radius:9px;white-space:nowrap;}
+.im-block{background:rgba(11,17,32,0.5);border-radius:9px;padding:9px 11px;margin-top:7px;}
+.im-block-label{color:#8fa0b8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;display:block;margin-bottom:4px;}
+.im-block-value{color:#e8eef8;font-size:13.5px;line-height:1.5;word-break:break-word;}
+.im-block-value.date-val{color:#d7b6ff;font-weight:700;font-size:13px;}
+.im-block-value.reward-val{color:#ffd580;}
+.im-block-value.consequence-val{color:#ffb4b4;}
+.im-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px;}
+.im-actions button{padding:10px;border-radius:11px;background:#24314b;font-size:13px;font-weight:600;}
+.im-actions .edit{background:#2a4a80;}
+.im-actions .delete{background:#5b3440;}
+.im-empty{color:#8fa0b8;text-align:center;padding:16px 8px;font-size:13.5px;line-height:1.5;background:rgba(11,17,32,0.4);border-radius:12px;border:1px dashed #2a3a5a;}
+
+/* SPOILER */
+.spoiler-header{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;user-select:none;padding:2px 0;transition:opacity 0.15s ease;}
+.spoiler-header:hover{opacity:0.85;}
+.spoiler-header:active{transform:none;opacity:0.75;}
+.spoiler-title{font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;margin:0;flex-wrap:wrap;min-width:0;}
+.spoiler-badge{font-size:11.5px;font-weight:700;background:rgba(194,140,255,0.16);border:1px solid rgba(194,140,255,0.4);color:#d7b6ff;padding:2px 9px;border-radius:9px;flex-shrink:0;}
+.spoiler-toggle{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 14px;border-radius:10px;background:rgba(36,49,75,0.5);color:#8fa0b8;font-size:12.5px;font-weight:700;flex-shrink:0;transition:background 0.15s ease,color 0.15s ease;}
+.spoiler-header:hover .spoiler-toggle{background:rgba(36,49,75,0.85);color:#c7d3e6;}
+.spoiler.expanded .spoiler-toggle{background:rgba(194,140,255,0.14);color:#d7b6ff;border:1px solid rgba(194,140,255,0.35);padding:5px 11px 5px 13px;}
+.spoiler-toggle-label{white-space:nowrap;line-height:1;}
+.spoiler-arrow{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}
+.spoiler.expanded .spoiler-arrow{transform:rotate(180deg);}
+.spoiler-body{overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.25s ease,margin-top 0.3s ease;max-height:0;opacity:0;margin-top:0;}
+.spoiler.expanded .spoiler-body{max-height:5000px;opacity:1;margin-top:14px;}
+.spoiler-hint{color:#8fa0b8;font-size:12.5px;line-height:1.5;margin-bottom:12px;}
+
+/* REFLECTIONS */
+.reflection-block{margin-top:16px;}
+.reflection-block:first-of-type{margin-top:10px;}
+.reflection-label{display:block;color:#cfe1ff;font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.4;}
+.reflection-hint{color:#8fa0b8;font-size:12px;line-height:1.45;margin-bottom:8px;}
+.reflection-hint em{color:#a9b8cc;font-style:normal;}
+.reflection-block textarea{min-height:110px;}
+.reflection-info{background:rgba(110,168,254,0.08);border:1px solid rgba(110,168,254,0.3);border-radius:11px;padding:10px 12px;color:#b8cce8;font-size:12.5px;line-height:1.5;margin-bottom:12px;}
+
+/* FORMS */
+textarea,input[type="text"],input[type="email"],input[type="hidden"]{width:100%;border:1px solid #33425f;border-radius:12px;background:#0e1729;color:#fff;padding:11px;font-size:14px;outline:none;}
+textarea{min-height:90px;resize:vertical;}
+input[type="text"],input[type="email"]{min-height:45px;}
+textarea:focus,input:focus{border-color:#6ea8fe;}
+
+.date-field{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:11px 14px;border:1px solid #33425f;border-radius:12px;background:#0e1729;cursor:pointer;transition:border-color 0.15s ease,background 0.15s ease;user-select:none;}
+.date-field:active{background:#131f36;}
+.date-field.has-value{border-color:#5a3d8a;}
+.date-field-value{color:#c3cedd;font-size:13.5px;flex:1;text-align:left;line-height:1.35;}
+.date-field-value.empty{color:#6d7a92;}
+.date-field.has-value .date-field-value{color:#e4ccff;font-weight:600;}
+.date-field-icon{font-size:16px;opacity:0.75;color:#8fa0b8;flex-shrink:0;}
+
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.main-button{padding:14px 10px;border-radius:14px;background:#24314b;font-size:14px;font-weight:700;}
+.main-button.primary{background:#315fa8;}
+.main-button.success{background:#285d55;}
+.main-button.danger{background:#713c49;}
+.main-button.purple{background:#5a3d8a;}
+
+/* JOURNAL */
+.journal-entry{background:#18233a;border-radius:14px;padding:13px;margin-top:10px;}
+.journal-date{color:#8fa0b8;font-size:12px;margin-bottom:7px;}
+.journal-score{font-size:14px;line-height:1.5;word-break:break-word;}
+.journal-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.journal-buttons button{padding:10px;border-radius:11px;background:#24314b;font-size:13px;}
+.journal-buttons .delete{background:#5b3440;}
+.empty{color:#8fa0b8;text-align:center;padding:10px;font-size:14px;}
+
+/* MODALS */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.90);display:none;align-items:center;justify-content:center;padding:15px;z-index:1000;overflow-y:auto;}
+.modal.active{display:flex;}
+.modal-content{width:100%;max-width:720px;max-height:95vh;overflow:auto;background:#111a2e;border-radius:20px;padding:15px;margin:auto;}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.modal-description{color:#aeb9ca;font-size:13px;line-height:1.5;margin-bottom:14px;}
+.modal-section{margin-bottom:14px;}
+.modal-section label{display:block;color:#b5c0d0;font-size:13px;margin-bottom:7px;}
+
+/* INFO */
+.info-hero{text-align:center;background:linear-gradient(135deg,rgba(110,168,254,0.12),rgba(194,140,255,0.12));border:1px solid rgba(194,140,255,0.3);border-radius:14px;padding:16px 14px;margin-bottom:14px;}
+.info-hero-sphere{font-size:20px;font-weight:800;color:#fff;margin-bottom:12px;}
+.info-hero-progress{display:flex;align-items:center;justify-content:center;gap:18px;}
+.info-hero-block{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.info-hero-num{font-size:34px;font-weight:800;line-height:1;min-width:46px;text-align:center;}
+.info-hero-from .info-hero-num{color:#7faeff;}
+.info-hero-to .info-hero-num{color:#d7b6ff;}
+.info-hero-label{font-size:11px;color:#8fa0b8;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;}
+.info-hero-arrow{font-size:24px;color:#4a5771;font-weight:300;}
+.info-hero-arrow.hidden{visibility:hidden;}
+.info-hero-diff{display:inline-block;margin-top:12px;font-size:12.5px;color:#d7b6ff;background:rgba(194,140,255,0.14);border:1px solid rgba(194,140,255,0.35);padding:3px 11px;border-radius:9px;font-weight:700;}
+.info-empty{text-align:center;padding:20px 16px;color:#aeb9ca;font-size:14px;line-height:1.5;background:rgba(11,17,32,0.4);border-radius:12px;border:1px dashed #2a3a5a;margin-bottom:14px;}
+.info-empty strong{color:#cfe1ff;display:block;margin-bottom:6px;font-size:15px;}
+
+/* IMPROVE */
+.im-sphere-slider{-webkit-appearance:none;appearance:none;width:100%;height:8px;background:#24314b;border-radius:20px;outline:none;cursor:pointer;margin:6px 0 10px;}
+.im-sphere-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.5);}
+.im-sphere-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer;}
+.im-sphere-slider::-moz-range-track{height:8px;background:#24314b;border-radius:20px;}
+.im-sphere-ticks{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;margin-bottom:10px;}
+.im-sphere-tick{color:#8fa0b8;font-size:11px;font-weight:700;text-align:center;padding:3px 0;cursor:pointer;border-radius:6px;}
+.im-sphere-tick.active{color:#fff;background:#2a4a80;}
+.im-sphere-info{text-align:center;background:rgba(11,17,32,0.55);border:1px solid #2a3a5a;border-radius:12px;padding:11px 13px;margin-bottom:4px;}
+.im-sphere-name{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;}
+.im-sphere-score{font-size:13px;color:#9fb0c8;}
+.im-sphere-score b{color:#7faeff;font-weight:800;font-size:15px;}
+.im-sphere-hasplan{display:inline-block;margin-top:6px;font-size:11.5px;color:#d7b6ff;background:rgba(194,140,255,0.14);border:1px solid rgba(194,140,255,0.35);padding:2px 9px;border-radius:8px;}
+.im-target-slider{-webkit-appearance:none;appearance:none;width:100%;height:8px;background:#2a1f45;border-radius:20px;outline:none;cursor:pointer;margin:8px 0 6px;}
+.im-target-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:#c28cff;border:3px solid #fff;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.5);}
+.im-target-slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#c28cff;border:3px solid #fff;cursor:pointer;}
+.im-target-slider::-moz-range-track{height:8px;background:#2a1f45;border-radius:20px;}
+.im-modal-score{text-align:center;font-size:48px;font-weight:800;line-height:1;margin:8px 0 4px;color:#d7b6ff;}
+.im-modal-score-label{text-align:center;color:#8fa0b8;font-size:12px;margin-bottom:8px;}
+.im-modal-marks{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;margin-bottom:8px;}
+.im-modal-marks span{text-align:center;color:#8fa0b8;font-size:11px;font-weight:600;padding:3px 0;cursor:pointer;}
+.im-modal-marks span.active{color:#fff;background:#5a3d8a;border-radius:6px;}
+.im-modal-warning{color:#ffb4b4;font-size:12.5px;line-height:1.45;margin-top:4px;min-height:0;}
+
+/* SHARE */
+.share-preview{background:#0e1729;border:1px solid #33425f;border-radius:13px;padding:12px;color:#c3cedd;font-size:13px;line-height:1.55;white-space:pre-wrap;max-height:230px;overflow:auto;word-break:break-word;}
+.share-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px;}
+.share-buttons .full{grid-column:1 / -1;}
+
+/* CALENDAR */
+.calendar-modal{z-index:1200;}
+.calendar-content{max-width:420px;padding:16px;}
+.calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.calendar-nav{width:42px;height:42px;border-radius:12px;background:#24314b;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff;line-height:1;flex-shrink:0;}
+.calendar-nav:active{background:#315fa8;}
+.calendar-nav:disabled{opacity:0.3;cursor:not-allowed;}
+.calendar-title{flex:1;text-align:center;font-size:16px;font-weight:800;color:#fff;text-transform:capitalize;min-height:22px;}
+.calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;}
+.calendar-weekdays span{text-align:center;font-size:11px;font-weight:700;color:#718099;text-transform:uppercase;letter-spacing:0.06em;padding:4px 0;}
+.calendar-weekdays span.weekend{color:#b0885a;}
+.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:12px;}
+.calendar-day{aspect-ratio:1 / 1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:14px;font-weight:600;color:#e8eef8;background:rgba(36,49,75,0.5);cursor:pointer;transition:background 0.12s ease,color 0.12s ease;user-select:none;}
+.calendar-day:not(.empty):not(.disabled):hover{background:#2a4a80;}
+.calendar-day:active:not(.disabled):not(.empty){transform:scale(0.94);}
+.calendar-day.empty{background:transparent;cursor:default;pointer-events:none;}
+.calendar-day.disabled{color:#4a5771;background:rgba(20,28,46,0.35);cursor:not-allowed;pointer-events:none;}
+.calendar-day.today{border:2px solid #6ea8fe;color:#cfe1ff;}
+.calendar-day.selected{background:#c28cff;color:#0b1120;font-weight:800;box-shadow:0 0 0 3px rgba(194,140,255,0.28);}
+.calendar-day.selected.today{border-color:#fff;}
+.calendar-preview{background:rgba(194,140,255,0.08);border:1px solid rgba(194,140,255,0.3);border-radius:11px;padding:11px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px;min-height:44px;}
+.calendar-preview-icon{font-size:18px;flex-shrink:0;}
+.calendar-preview-text{font-size:13.5px;color:#c3cedd;line-height:1.4;}
+.calendar-preview-text.has-value{color:#e4ccff;font-weight:700;}
+.calendar-preview-text.empty{color:#6d7a92;}
+.calendar-actions{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;}
+.calendar-actions button{padding:11px 8px;border-radius:12px;background:#24314b;font-size:13px;font-weight:700;white-space:nowrap;}
+.calendar-actions .primary{background:#315fa8;}
+.calendar-actions .danger{background:#5b3440;}
+
+/* TOAST */
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(100px);background:#263653;color:#fff;padding:11px 16px;border-radius:13px;font-size:13px;z-index:6000;opacity:0;transition:all 0.25s ease;max-width:calc(100vw - 30px);text-align:center;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (max-width:600px){
+  body{padding:8px;}
+  h1{font-size:24px;}
+  .card{padding:12px;border-radius:17px;}
+  .sphere-title{font-size:22px;}
+  .question{font-size:15px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .buttons,.navigation{grid-template-columns:1fr 1fr;}
+  .share-buttons{grid-template-columns:1fr;}
+  .share-buttons .full{grid-column:1;}
+  .modal-content{padding:12px;border-radius:16px;}
+  .im-summary-count{font-size:22px;}
+  .calendar-content{padding:14px;}
+  .calendar-day{font-size:13px;}
+  .results-chart{height:200px;gap:5px;padding-top:22px;}
+  .rc-label{font-size:9.5px;}
+  .rc-value{font-size:12px;}
+  .rc-pct{font-size:9px;}
+  .rc-goal-label{font-size:8.5px;padding:1px 3px;}
+  .info-hero-num{font-size:30px;min-width:40px;}
+  .info-hero-sphere{font-size:18px;}
+  .spoiler-title{font-size:16px;gap:8px;}
+  .spoiler-badge{font-size:10.5px;padding:2px 8px;}
+  .spoiler-toggle{font-size:11.5px;padding:5px 10px 5px 12px;}
+  .spoiler.expanded .spoiler-toggle{padding:4px 9px 4px 11px;}
+}
+
+.wheel-wrapper{position:relative}.wheel-detail-links{position:absolute;inset:0;pointer-events:none}.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;pointer-events:auto;box-shadow:0 0 0 4px rgba(85,230,176,.1)}
+</style>
+</head>
+<body>
+
+<!-- MAIN -->
+<div class="container" id="mainContainer">
+    <h1>🌀 Колесо: Рабочее время</h1>
+    <div class="subtitle">Небольшая рефлексия о том, как вы воспринимаете разные сферы своей жизни сейчас.</div>
+
+    <section id="testSection">
+        <div class="card">
+            <div class="progress-wrapper">
+                <div class="progress-top">
+                    <span id="progressText">Сфера 1 из 8</span>
+                    <span id="progressPercent">13%</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+            </div>
+            <div class="sphere-number" id="sphereNumber">СФЕРА 1</div>
+            <div class="sphere-title" id="sphereTitle">Здоровье</div>
+            <div class="question" id="question"></div>
+            <div class="scale-label">Насколько вы удовлетворены этой сферой сейчас?</div>
+            <div class="score-display" id="scoreDisplay">5</div>
+            <div class="slider-wrapper">
+                <div class="slider-current-value" id="sliderBubble">5</div>
+                <input type="range" class="score-slider" id="scoreSlider" min="0" max="10" step="1" value="5">
+                <div class="slider-marks" id="sliderMarks"></div>
+            </div>
+            <div class="scale-ends"><span>0 — совсем не устраивает</span><span>10 — полностью устраивает</span></div>
+            <div class="navigation">
+                <button class="nav-button" id="backBtn">← Назад</button>
+                <button class="nav-button primary" id="nextBtn">Далее →</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="resultSection" class="hidden">
+        <div class="card">
+            <h2>🌀 Ваше колесо баланса</h2>
+            <div class="wheel-wrapper"><canvas id="wheel"></canvas></div>
+            <div class="scale-info">Центр = 0 · внешний круг = 10</div>
+            <div class="wheel-hint">Нажмите на <strong>синее число</strong> — текущая оценка. На <strong>фиолетовый маркер</strong> — детали заметки.</div>
+            <div class="wheel-legend">
+                <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
+                <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
+            </div>
+            <div class="stats">
+                <div class="stat"><div class="stat-value" id="average">5.0</div><div class="stat-label">Среднее</div></div>
+                <div class="stat"><div class="stat-value" id="maximum">5</div><div class="stat-label">Максимум</div></div>
+                <div class="stat"><div class="stat-value" id="minimum">5</div><div class="stat-label">Минимум</div></div>
+                <div class="stat"><div class="stat-value" id="gap">0</div><div class="stat-label">Разрыв</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Что показывает результат</h2>
+            <div class="interpretation" id="interpretation"></div>
+            <div class="range-list">
+                <div class="range-item"><strong>8–10</strong> — относительно сильная сфера.</div>
+                <div class="range-item"><strong>6–7</strong> — относительно стабильная сфера.</div>
+                <div class="range-item"><strong>4–5</strong> — сфера, которой может быть полезно уделить внимание.</div>
+                <div class="range-item"><strong>0–3</strong> — выраженный текущий приоритет.</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💭 Вопросы для себя</h2>
+            <div class="reflection-info">
+                Эти вопросы — не для отчёта. Отвечать <em>не обязательно</em>, но полезно честно ответить самому себе.
+                Если захотите — зафиксируйте ответ здесь, чтобы вернуться к нему позже.
+            </div>
+            <div class="reflection-block">
+                <label class="reflection-label" for="refInspiration">💡 Что Вас вдохновляет?</label>
+                <div class="reflection-hint">Ответ не обязателен, но важно знать его для самого себя. Что даёт вам энергию, желание двигаться, ради чего всё это?</div>
+                <textarea id="refInspiration" placeholder="Подумайте спокойно. Если хотите — запишите свой ответ..."></textarea>
+            </div>
+            <div class="reflection-block">
+                <label class="reflection-label" for="refRecipe">🧭 Как Вы думаете, что нужно сделать для того, чтобы всё всегда получалось так, как планируется?</label>
+                <div class="reflection-hint">Тоже не обязательный ответ. Но полезно сформулировать для себя.</div>
+                <textarea id="refRecipe" placeholder="Сформулируйте собственную «формулу». Если хотите — зафиксируйте её здесь..."></textarea>
+            </div>
+        </div>
+
+        <!-- SPOILER -->
+        <div class="card spoiler" id="improvementsCard">
+            <div class="spoiler-header" id="improvementsHeader" role="button" tabindex="0" aria-expanded="true" aria-controls="improvementsBody">
+                <h2 class="spoiler-title">
+                    🌱 Мои заметки по улучшению
+                    <span class="spoiler-badge" id="spoilerCount">0</span>
+                </h2>
+                <div class="spoiler-toggle">
+                    <span class="spoiler-toggle-label" id="spoilerToggleLabel">Скрыть</span>
+                    <span class="spoiler-arrow">▾</span>
+                </div>
+            </div>
+            <div class="spoiler-body" id="improvementsBody">
+                <div class="spoiler-hint">
+                    Здесь собраны ваши заметки: что и когда вы хотите улучшить, с какого шага планируете начать,
+                    чем вознаградите себя и что будет, если цель не достигнете. Нажмите карточку для подробностей.
+                </div>
+                <div id="improvementsList"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📈 Сферы результата</h2>
+            <div class="interpretation" style="margin-bottom:8px;">Текущие оценки (столбики) и ваши цели (фиолетовые метки). Нажмите на столбик для подробностей.</div>
+            <div class="results-chart" id="resultsChart"></div>
+            <div class="chart-legend">
+                <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#ef4444;"></span>0–3 (приоритет)</span>
+                <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#f59e0b;"></span>4–5 (внимание)</span>
+                <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#6ea8fe;"></span>6–7 (стабильно)</span>
+                <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#22c55e;"></span>8–10 (сильно)</span>
+                <span class="chart-legend-item"><span class="chart-legend-line"></span>ваша цель</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="buttons">
+                <button class="main-button purple" id="addPlanBtn">🌱 Добавить заметку</button>
+                <button class="main-button primary" id="saveBtn">💾 Сохранить результат</button>
+                <button class="main-button success" id="shareFriendBtn">🤝 Зафиксировать с другом</button>
+                <button class="main-button" id="pngBtn">🖼 Сохранить PNG</button>
+                <button class="main-button" id="exportJsonBtn">📤 Экспорт данных</button>
+                <button class="main-button" id="importJsonBtn">📥 Импорт данных</button>
+                <button class="main-button" id="restartBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📖 История</h2>
+            <div id="journal"></div>
+        </div>
+
+        <div class="card">
+            <div class="interpretation">
+                <p><strong>Важно:</strong> результат отражает ваше текущее субъективное восприятие различных сфер жизни.</p>
+                <p>Это не оценка качества вашей жизни и не психологическая диагностика.</p>
+            </div>
+            <div style="text-align:center;margin-top:14px;">
+                <button class="main-button danger" id="resetBtn" style="max-width:240px;margin:0 auto;width:100%;">🗑 Очистить все данные</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- PNG -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div class="modal-title">🖼 Ваш результат</div>
+        <img id="pngPreview" alt="Колесо баланса" style="width:100%;border-radius:12px;background:#fff;">
+        <div class="modal-description">На iPhone можно нажать и удерживать изображение, чтобы сохранить его.</div>
+        <button class="main-button primary" id="closeModal">Закрыть</button>
+    </div>
+</div>
+
+<!-- SHARE -->
+<div class="modal" id="shareModal">
+    <div class="modal-content">
+        <div class="modal-title">🤝 Зафиксировать результат с другом</div>
+        <div class="modal-description">Выберите дату, до которой хотите вернуться к результату, и отправьте другу фиксацию договорённости.</div>
+        <div class="modal-section"><label for="friendName">Имя друга</label><input type="text" id="friendName" placeholder="Например: Алексей"></div>
+        <div class="modal-section">
+            <label>Дедлайн повторного взгляда</label>
+            <div class="date-field" id="shareDeadlineField">
+                <span class="date-field-value empty" id="shareDeadlineDisplay">Выберите дату</span>
+                <span class="date-field-icon">📅</span>
+            </div>
+            <input type="hidden" id="shareDeadline">
+        </div>
+        <div class="modal-section"><label for="friendEmail">Email друга — необязательно</label><input type="email" id="friendEmail" placeholder="friend@example.com"></div>
+        <div class="modal-section"><label for="friendComment">Что хотите зафиксировать?</label><textarea id="friendComment" placeholder="Например: через две недели сравнить результат..."></textarea></div>
+        <div class="modal-section"><label>Предпросмотр сообщения</label><div class="share-preview" id="sharePreview"></div></div>
+        <div class="share-buttons">
+            <button class="main-button success" id="telegramShareBtn">✈️ Telegram</button>
+            <button class="main-button primary" id="emailShareBtn">✉️ Email</button>
+            <button class="main-button" id="whatsappShareBtn" style="background:#1f6d4a;">🟢 WhatsApp</button>
+            <button class="main-button" id="copyShareBtn">📋 Скопировать текст</button>
+            <button class="main-button full" id="closeShareModal">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- INFO -->
+<div class="modal" id="infoModal">
+    <div class="modal-content">
+        <div class="modal-title">ℹ️ Информация о сфере</div>
+        <div class="info-hero">
+            <div class="info-hero-sphere" id="infoSphereName">Здоровье</div>
+            <div class="info-hero-progress">
+                <div class="info-hero-block info-hero-from"><div class="info-hero-num" id="infoFromNum">5</div><div class="info-hero-label">сейчас</div></div>
+                <div class="info-hero-arrow" id="infoArrow">→</div>
+                <div class="info-hero-block info-hero-to"><div class="info-hero-num" id="infoToNum">8</div><div class="info-hero-label">цель</div></div>
+            </div>
+            <div id="infoDiffWrap"></div>
+        </div>
+        <div id="infoWithPlan">
+            <div class="im-block" id="infoDateBlock"><span class="im-block-label">📅 Желаемая дата</span><div class="im-block-value date-val" id="infoDate"></div></div>
+            <div class="im-block" id="infoNoteBlock"><span class="im-block-label">📝 Что хочется улучшить</span><div class="im-block-value" id="infoNote"></div></div>
+            <div class="im-block" id="infoStepBlock"><span class="im-block-label">👣 Первый шаг</span><div class="im-block-value" id="infoStep"></div></div>
+            <div class="im-block" id="infoRewardBlock"><span class="im-block-label">🎁 Вознаграждение за достижение</span><div class="im-block-value reward-val" id="infoReward"></div></div>
+            <div class="im-block" id="infoConsequenceBlock"><span class="im-block-label">⚠️ Если цель не будет достигнута</span><div class="im-block-value consequence-val" id="infoConsequence"></div></div>
+        </div>
+        <div id="infoNoPlan" class="info-empty hidden">
+            <strong>Заметки пока нет</strong>
+            Хотите добавить заметку к этой сфере — что хочется улучшить, какой первый шаг, чем вознаградите себя?
+        </div>
+        <div class="im-actions" style="margin-top:14px;">
+            <button class="edit" id="infoEdit">✚ Добавить заметку</button>
+            <button id="infoClose">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- IMPROVE MODAL -->
+<div class="modal" id="improveModal">
+    <div class="modal-content">
+        <div class="modal-title">🌱 Заметка по улучшению</div>
+        <div class="modal-description">Выберите сферу, поставьте цель, выберите дату и запишите, что поможет вам двигаться.</div>
+        <div class="modal-section">
+            <label>Сфера для улучшения</label>
+            <input type="range" class="im-sphere-slider" id="imSphereSlider" min="0" max="7" step="1" value="0">
+            <div class="im-sphere-ticks" id="imSphereTicks"></div>
+            <div class="im-sphere-info">
+                <div class="im-sphere-name" id="imSphereName">Здоровье</div>
+                <div class="im-sphere-score" id="imSphereScore">Текущая оценка: <b>5</b>/10</div>
+                <div id="imSphereHasPlan"></div>
+            </div>
+        </div>
+        <div class="modal-section">
+            <label>Желаемая оценка</label>
+            <div class="im-modal-score" id="imTargetDisplay">8</div>
+            <div class="im-modal-score-label" id="imTargetDiffLabel">+3 к текущей оценке</div>
+            <input type="range" class="im-target-slider" id="imTargetSlider" min="0" max="10" step="1" value="8">
+            <div class="im-modal-marks" id="imTargetMarks"></div>
+            <div class="im-modal-warning" id="imTargetWarning"></div>
+        </div>
+        <div class="modal-section">
+            <label>Желаемая дата реализации</label>
+            <div class="date-field" id="imDateField">
+                <span class="date-field-value empty" id="imDateDisplay">Выберите дату в календаре</span>
+                <span class="date-field-icon">📅</span>
+            </div>
+            <input type="hidden" id="imDate">
+        </div>
+        <div class="modal-section">
+            <label for="imNote">📝 Что именно хочется улучшить?</label>
+            <textarea id="imNote" placeholder="Например: хочу выстроить регулярный режим сна, больше двигаться..."></textarea>
+        </div>
+        <div class="modal-section">
+            <label for="imStep">👣 Какой первый шаг вы готовы сделать?</label>
+            <textarea id="imStep" placeholder="Например: на этой неделе лечь спать до 23:00 три раза..."></textarea>
+        </div>
+        <div class="modal-section">
+            <label for="imReward">🎁 Чем вы готовы вознаградить себя за достижение?</label>
+            <textarea id="imReward" placeholder="Например: куплю то, что давно хотел, съезжу в поездку, устрою день без дел..."></textarea>
+        </div>
+        <div class="modal-section">
+            <label for="imConsequence">⚠️ Что будет, если цель не будет достигнута?</label>
+            <textarea id="imConsequence" placeholder="Например: останусь в прежней ситуации, потеряю время, буду жалеть..."></textarea>
+        </div>
+        <div class="im-actions">
+            <button class="edit" id="imSave">💾 Сохранить</button>
+            <button class="delete" id="imDelete">🗑 Удалить заметку</button>
+        </div>
+        <div class="im-actions" style="grid-template-columns:1fr;margin-top:8px;"><button id="imClose">Закрыть</button></div>
+    </div>
+</div>
+
+<!-- CALENDAR -->
+<div class="modal calendar-modal" id="calendarModal">
+    <div class="modal-content calendar-content">
+        <div class="modal-title" style="margin-bottom:14px;">📅 Выберите дату</div>
+        <div class="calendar-header">
+            <button class="calendar-nav" id="calPrev" type="button">‹</button>
+            <div class="calendar-title" id="calTitle">—</div>
+            <button class="calendar-nav" id="calNext" type="button">›</button>
+        </div>
+        <div class="calendar-weekdays">
+            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span>
+            <span>Пт</span><span class="weekend">Сб</span><span class="weekend">Вс</span>
+        </div>
+        <div class="calendar-days" id="calDays"></div>
+        <div class="calendar-preview">
+            <span class="calendar-preview-icon">🗓</span>
+            <span class="calendar-preview-text empty" id="calPreviewText">Дата не выбрана</span>
+        </div>
+        <div class="calendar-actions">
+            <button id="calToday" type="button">Сегодня</button>
+            <button class="danger" id="calClear" type="button">Очистить</button>
+            <button class="primary" id="calDone" type="button">Готово</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="importFileInput" accept="application/json,.json" style="display:none">
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+
+const spheres = [
+    { name: "Удовлетворённость", question: "Насколько вы удовлетворены параметром «удовлетворённость» в сфере «рабочее время» сейчас?" },
+    { name: "Качество", question: "Насколько вы удовлетворены параметром «качество» в сфере «рабочее время» сейчас?" },
+    { name: "Регулярность", question: "Насколько вы удовлетворены параметром «регулярность» в сфере «рабочее время» сейчас?" },
+    { name: "Ресурс", question: "Насколько вы удовлетворены параметром «ресурс» в сфере «рабочее время» сейчас?" },
+    { name: "Свобода выбора", question: "Насколько вы удовлетворены параметром «свобода выбора» в сфере «рабочее время» сейчас?" },
+    { name: "Возможность улучшения", question: "Насколько вы удовлетворены параметром «возможность улучшения» в сфере «рабочее время» сейчас?" }
+];
+const categories = spheres.map(s => s.name);
+const DETAIL_LINKS = categories.map(() => null);
+
+const SHORT_NAMES = ["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения"];
+const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const WEEKDAYS_ACC = ['в воскресенье','в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу'];
+
+let values = Array(categories.length).fill(5);
+let currentQuestion = 0;
+let improvements = {};
+let reflections = { inspiration: '', recipe: '' };
+let activeImIdx = -1;
+let vertexHits = [];
+
+const $ = id => document.getElementById(id);
+
+const VALUES_KEY = "wheelNestedV1_work_4_Values";
+const JOURNAL_KEY = "wheelNestedV1_work_4_Journal";
+const IMPROVE_KEY = "wheelNestedV1_work_4_Improvements";
+const REFLECT_KEY = "wheelNestedV1_work_4_Reflections";
+const SHARE_KEY = "wheelNestedV1_work_4_Share";
+const SPOILER_KEY = "wheelNestedV1_work_4_SpoilerPlan";
+const JOURNAL_LIMIT = 50;
+
+function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
+function saveValues() { try { localStorage.setItem(VALUES_KEY, JSON.stringify(values)); } catch(e){} }
+function loadValues() {
+    const s = localStorage.getItem(VALUES_KEY);
+    if (!s) return;
+    const p = safeParse(s, null);
+    if (Array.isArray(p) && p.length === categories.length)
+        values = p.map(v => Math.max(0, Math.min(10, Number(v) || 0)));
+}
+function saveImprovements() { try { localStorage.setItem(IMPROVE_KEY, JSON.stringify(improvements)); } catch(e){} }
+function loadImprovements() {
+    const s = localStorage.getItem(IMPROVE_KEY);
+    if (!s) { improvements = {}; return; }
+    const p = safeParse(s, null);
+    if (p && typeof p === "object" && !Array.isArray(p)) improvements = p;
+    else improvements = {};
+}
+function saveReflections() {
+    reflections.inspiration = $("refInspiration").value;
+    reflections.recipe = $("refRecipe").value;
+    try { localStorage.setItem(REFLECT_KEY, JSON.stringify(reflections)); } catch(e){}
+}
+function loadReflections() {
+    const s = localStorage.getItem(REFLECT_KEY);
+    if (!s) return;
+    const p = safeParse(s, null);
+    if (p && typeof p === "object") {
+        reflections.inspiration = p.inspiration || '';
+        reflections.recipe = p.recipe || '';
+    }
+    $("refInspiration").value = reflections.inspiration;
+    $("refRecipe").value = reflections.recipe;
+}
+
+function haptic(type) {
+    try {
+        if (!tg || !tg.HapticFeedback) return;
+        if (type === "success" && typeof tg.HapticFeedback.notificationOccurred === "function")
+            tg.HapticFeedback.notificationOccurred("success");
+        else if (typeof tg.HapticFeedback.selectionChanged === "function")
+            tg.HapticFeedback.selectionChanged();
+    } catch(e){}
+}
+
+let toastTimer = null;
+function showToast(text) {
+    const t = $("toast");
+    t.textContent = text;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+function localDateISO(date) {
+    if (typeof date === "string") {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+        date = new Date(date);
+    }
+    if (!(date instanceof Date) || isNaN(date.getTime())) date = new Date();
+    return date.getFullYear() + "-" + String(date.getMonth()+1).padStart(2,"0") + "-" + String(date.getDate()).padStart(2,"0");
+}
+function addDays(date, days) { const r = new Date(date); r.setDate(r.getDate()+days); return r; }
+function startOfDay(d) { const r = new Date(d); r.setHours(0,0,0,0); return r; }
+function formatDateShort(iso) { if (!iso) return ""; const p = iso.split("-"); return p.length===3 ? p[2]+"."+p[1]+"."+p[0] : iso; }
+function formatDateFull(iso) {
+    if (!iso) return "";
+    const p = iso.split("-");
+    if (p.length !== 3) return iso;
+    const year = Number(p[0]), month = Number(p[1]) - 1, day = Number(p[2]);
+    const d = new Date(year, month, day);
+    const dd = String(day).padStart(2, '0');
+    const mm = String(month + 1).padStart(2, '0');
+    const weekday = WEEKDAYS_ACC[d.getDay()];
+    return dd + '.' + mm + '.' + year + ' | ' + day + ' ' + MONTHS_GENITIVE[month] + ' ' + year + ', ' + weekday;
+}
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+}
+
+/* SPOILER */
+function updateSpoilerCount() {
+    const count = Object.keys(improvements).filter(i => improvements[i] && hasMeaningfulContent(improvements[i], Number(i))).length;
+    const badge = $("spoilerCount");
+    if (badge) badge.textContent = String(count);
+}
+function setSpoilerState(expanded, save) {
+    const card = $("improvementsCard");
+    const header = $("improvementsHeader");
+    const label = $("spoilerToggleLabel");
+    if (!card || !header) return;
+    if (expanded) {
+        card.classList.add("expanded");
+        header.setAttribute("aria-expanded", "true");
+        if (label) label.textContent = "Скрыть";
+    } else {
+        card.classList.remove("expanded");
+        header.setAttribute("aria-expanded", "false");
+        if (label) label.textContent = "Показать";
+    }
+    if (save !== false) {
+        try { localStorage.setItem(SPOILER_KEY, expanded ? "1" : "0"); } catch(e){}
+    }
+}
+function toggleSpoiler() {
+    const card = $("improvementsCard");
+    if (!card) return;
+    const isExpanded = card.classList.contains("expanded");
+    setSpoilerState(!isExpanded, true);
+    haptic("selection");
+}
+function initSpoiler() {
+    const header = $("improvementsHeader");
+    if (!header) return;
+    header.addEventListener("click", toggleSpoiler);
+    header.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSpoiler(); }
+    });
+    const saved = localStorage.getItem(SPOILER_KEY);
+    let initial;
+    if (saved === "1") initial = true;
+    else if (saved === "0") initial = false;
+    else {
+        const count = Object.keys(improvements).filter(i => improvements[i] && hasMeaningfulContent(improvements[i], Number(i))).length;
+        initial = count > 0;
+    }
+    setSpoilerState(initial, false);
+}
+
+/* TEST */
+function createSliderMarks() {
+    const c = $("sliderMarks");
+    c.innerHTML = "";
+    for (let i = 0; i <= 10; i++) {
+        const m = document.createElement("span");
+        m.className = "slider-mark";
+        m.textContent = i;
+        m.dataset.value = i;
+        m.addEventListener("click", () => {
+            $("scoreSlider").value = i;
+            values[currentQuestion] = i;
+            $("scoreDisplay").textContent = i;
+            $("sliderBubble").textContent = i;
+            updateSliderMarkActive();
+            updateBubblePosition();
+            saveValues();
+            haptic("selection");
+        });
+        c.appendChild(m);
+    }
+}
+function updateSliderMarkActive() {
+    const cur = Number($("scoreSlider").value);
+    document.querySelectorAll(".slider-mark").forEach(m => {
+        m.classList.toggle("active", Number(m.dataset.value) === cur);
+    });
+}
+function updateBubblePosition() {
+    const sl = $("scoreSlider"), bu = $("sliderBubble");
+    const pct = (Number(sl.value) - Number(sl.min)) / (Number(sl.max) - Number(sl.min));
+    const sw = sl.offsetWidth, bw = bu.offsetWidth || 30;
+    const off = pct * (sw - bw);
+    bu.style.left = (off + bw/2) + "px";
+    bu.style.transform = "translateX(-50%)";
+    bu.textContent = sl.value;
+}
+function triggerQuestionFade() {
+    const card = document.querySelector("#testSection .card");
+    if (!card) return;
+    card.classList.remove("fade-in");
+    void card.offsetWidth;
+    card.classList.add("fade-in");
+}
+function updateQuestionUI(animate) {
+    const idx = currentQuestion, sp = spheres[idx];
+    $("sphereNumber").textContent = "СФЕРА " + (idx + 1);
+    $("sphereTitle").textContent = sp.name;
+    $("question").textContent = sp.question;
+    $("scoreSlider").value = values[idx];
+    $("scoreDisplay").textContent = values[idx];
+    $("sliderBubble").textContent = values[idx];
+    updateBubblePosition();
+    updateSliderMarkActive();
+    const pr = Math.round(((idx+1)/spheres.length)*100);
+    $("progressText").textContent = "Сфера " + (idx+1) + " из " + spheres.length;
+    $("progressPercent").textContent = pr + "%";
+    $("progressBar").style.width = pr + "%";
+    $("backBtn").style.visibility = idx === 0 ? "hidden" : "visible";
+    $("nextBtn").textContent = idx === spheres.length - 1 ? "Готово ✓" : "Далее →";
+    if (animate) triggerQuestionFade();
+}
+$("scoreSlider").addEventListener("input", function() {
+    const v = Number(this.value);
+    $("scoreDisplay").textContent = v;
+    $("sliderBubble").textContent = v;
+    values[currentQuestion] = v;
+    saveValues();
+    updateBubblePosition();
+    updateSliderMarkActive();
+    $("sliderBubble").classList.add("show");
+    haptic("selection");
+});
+$("scoreSlider").addEventListener("mousedown", () => $("sliderBubble").classList.add("show"));
+$("scoreSlider").addEventListener("touchstart", () => $("sliderBubble").classList.add("show"), { passive: true });
+function hideBubble() { setTimeout(() => $("sliderBubble").classList.remove("show"), 1200); }
+$("scoreSlider").addEventListener("mouseup", hideBubble);
+$("scoreSlider").addEventListener("touchend", hideBubble);
+$("backBtn").addEventListener("click", () => {
+    if (currentQuestion > 0) { currentQuestion--; updateQuestionUI(true); haptic("selection"); }
+});
+$("nextBtn").addEventListener("click", () => {
+    values[currentQuestion] = Number($("scoreSlider").value);
+    saveValues();
+    if (currentQuestion < spheres.length - 1) {
+        currentQuestion++;
+        updateQuestionUI(true);
+        haptic("selection");
+    } else {
+        $("testSection").classList.add("hidden");
+        $("resultSection").classList.remove("hidden");
+        showResults();
+        haptic("success");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+});
+
+/* WHEEL */
+function drawRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+}
+function getScorePoint(cx, cy, radius, angle, value) {
+    const r = radius * (value / 10);
+    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+}
+
+function updateDetailLinks(){const stage=$("wheelStage"),layer=$("detailLinks"),canvas=$("wheel");if(!stage||!layer||!canvas)return;const rect=canvas.getBoundingClientRect(),sr=stage.getBoundingClientRect(),scaleX=rect.width/760,scaleY=rect.height/760,cx=380,cy=380,radius=380-105,n=categories.length,step=Math.PI*2/n;layer.innerHTML="";for(let i=0;i<n;i++){const a=i*step-Math.PI/2,rr=radius*.91,x=(rect.left-sr.left)+(cx+Math.cos(a)*rr)*scaleX,y=(rect.top-sr.top)+(cy+Math.sin(a)*rr)*scaleY;const l=document.createElement("a");l.className="wheel-detail-link";l.href=DETAIL_LINKS[i];l.title="Подробнее: "+categories[i];l.setAttribute("aria-label","Открыть подробное колесо: "+categories[i]);l.textContent="i";l.style.left=x+"px";l.style.top=y+"px";layer.appendChild(l)}}
+function drawWheel(canvas, vals, imps) {
+    const ctx = canvas.getContext("2d");
+    const size = 760;
+    canvas.width = size; canvas.height = size;
+    const cx = size/2, cy = size/2, radius = size/2 - 105;
+    const n = categories.length, angleStep = (Math.PI*2)/n;
+
+    ctx.clearRect(0, 0, size, size);
+    ctx.fillStyle = "#111a2e";
+    ctx.fillRect(0, 0, size, size);
+    for (let r = 1; r <= 10; r++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius*r/10, 0, Math.PI*2);
+        ctx.strokeStyle = r === 10 ? "rgba(255,255,255,0.24)" : "rgba(255,255,255,0.085)";
+        ctx.lineWidth = (r === 5 || r === 10) ? 2 : 1;
+        ctx.stroke();
+    }
+    ctx.font = "bold 11px Arial";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    for (let r = 1; r <= 10; r++) {
+        ctx.fillStyle = "rgba(190,205,225,0.60)";
+        ctx.fillText(String(r), cx + 16, cy - radius*r/10);
+    }
+    for (let i = 0; i < n; i++) {
+        const a = i * angleStep - Math.PI/2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a)*radius, cy + Math.sin(a)*radius);
+        ctx.strokeStyle = "rgba(255,255,255,0.13)";
+        ctx.lineWidth = 1; ctx.stroke();
+    }
+    const currentPoints = [];
+    for (let i = 0; i < n; i++) {
+        const a = i * angleStep - Math.PI/2;
+        currentPoints.push(getScorePoint(cx, cy, radius, a, vals[i]));
+    }
+    ctx.beginPath();
+    currentPoints.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+    ctx.closePath();
+    ctx.fillStyle = "rgba(110,168,254,0.27)";
+    ctx.fill();
+    ctx.strokeStyle = "#6ea8fe";
+    ctx.lineWidth = 5; ctx.lineJoin = "round";
+    ctx.stroke();
+
+    const improvementIdxs = Object.keys(imps).map(Number).filter(i => imps[i] && typeof imps[i].target === "number" && imps[i].target !== vals[i]);
+    const targetPoints = {};
+    if (improvementIdxs.length > 0) {
+        const allTarget = [];
+        for (let i = 0; i < n; i++) {
+            const a = i * angleStep - Math.PI/2;
+            const t = imps[i] && typeof imps[i].target === "number" ? imps[i].target : vals[i];
+            allTarget.push(getScorePoint(cx, cy, radius, a, t));
+            if (imps[i] && typeof imps[i].target === "number" && imps[i].target !== vals[i]) targetPoints[i] = allTarget[i];
+        }
+        ctx.beginPath();
+        allTarget.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(194,140,255,0.55)";
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([7, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (let i = 0; i < n; i++) {
+            if (!targetPoints[i]) continue;
+            const fromP = currentPoints[i];
+            const toP = allTarget[i];
+            ctx.beginPath();
+            ctx.moveTo(fromP.x, fromP.y);
+            ctx.lineTo(toP.x, toP.y);
+            ctx.strokeStyle = "rgba(194,140,255,0.85)";
+            ctx.lineWidth = 3;
+            ctx.setLineDash([6, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.arc(toP.x, toP.y, 15, 0, Math.PI*2);
+            ctx.fillStyle = "rgba(194,140,255,0.30)";
+            ctx.fill();
+            ctx.strokeStyle = "#c28cff";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+    }
+    vertexHits = [];
+    for (let i = 0; i < n; i++) {
+        const a = i * angleStep - Math.PI/2;
+        const p = currentPoints[i];
+        ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, Math.PI*2);
+        ctx.fillStyle = "#6ea8fe"; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
+        ctx.fillStyle = "#ffffff"; ctx.fill();
+        const vt = String(vals[i]);
+        const lx = p.x + Math.cos(a)*30, ly = p.y + Math.sin(a)*30;
+        ctx.font = "bold 16px Arial";
+        const tw = ctx.measureText(vt).width;
+        const bw = tw + 14, bh = 25;
+        ctx.fillStyle = "rgba(11,17,32,0.94)";
+        drawRoundRect(ctx, lx - bw/2, ly - bh/2, bw, bh, 7);
+        ctx.fill();
+        const hasImprove = targetPoints[i];
+        ctx.strokeStyle = hasImprove ? "#c28cff" : "#6ea8fe";
+        ctx.lineWidth = hasImprove ? 2 : 1.5;
+        ctx.stroke();
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(vt, lx, ly);
+        vertexHits.push({ idx: i, type: 'current', x: p.x, y: p.y, r: 55 });
+    }
+    for (let i = 0; i < n; i++) {
+        if (!targetPoints[i]) continue;
+        const a = i * angleStep - Math.PI/2;
+        const tp = targetPoints[i];
+        const tt = String(imps[i].target);
+        ctx.font = "bold 13px Arial";
+        const tw = ctx.measureText(tt).width;
+        const bw = tw + 12, bh = 22;
+        const offx = Math.cos(a)*32, offy = Math.sin(a)*32;
+        const lx = tp.x + offx, ly = tp.y + offy;
+        ctx.fillStyle = "rgba(26,12,42,0.96)";
+        drawRoundRect(ctx, lx - bw/2, ly - bh/2, bw, bh, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#c28cff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#e4ccff";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(tt, lx, ly);
+        vertexHits.push({ idx: i, type: 'target', x: tp.x, y: tp.y, r: 55 });
+        vertexHits.push({ idx: i, type: 'target', x: lx, y: ly, r: 30 });
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, 27, 0, Math.PI*2);
+    ctx.fillStyle = "#0b1120"; ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.font = "bold 12px Arial"; ctx.fillStyle = "#9da9bb";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("0", cx, cy);
+    ctx.font = "bold 14px Arial"; ctx.fillStyle = "#ffffff";
+    for (let i = 0; i < n; i++) {
+        const a = i * angleStep - Math.PI/2 + angleStep/2;
+        const lr = radius + 45;
+        const x = cx + Math.cos(a)*lr, y = cy + Math.sin(a)*lr;
+        const words = categories[i].split(" ");
+        let lines;
+        if (words.length <= 2) lines = [categories[i]];
+        else {
+            const mid = Math.ceil(words.length/2);
+            lines = [words.slice(0,mid).join(" "), words.slice(mid).join(" ")];
+        }
+        lines.forEach((line, li) => {
+            ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
+        });
+    }
+}
+
+    updateDetailLinks();
+}
+
+function hasMeaningfulContent(imp, idx) {
+    if (!imp) return false;
+    const cur = values[idx];
+    if (typeof imp.target === "number" && imp.target !== cur) return true;
+    if (imp.date) return true;
+    if (imp.note && String(imp.note).trim()) return true;
+    if (imp.step && String(imp.step).trim()) return true;
+    if (imp.reward && String(imp.reward).trim()) return true;
+    if (imp.consequence && String(imp.consequence).trim()) return true;
+    return false;
+}
+
+/* RESULTS */
+function showResults() {
+    const avg = (values.reduce((a,b) => a+b, 0) / values.length).toFixed(1);
+    const max = Math.max(...values), min = Math.min(...values), gap = max - min;
+    $("average").textContent = avg;
+    $("maximum").textContent = max;
+    $("minimum").textContent = min;
+    $("gap").textContent = gap;
+    let interp = "";
+    if (avg >= 8) interp = "<p>Большинство сфер на достаточно высоком уровне. Отдельные различия всё равно могут быть полезны для размышления.</p>";
+    else if (avg >= 6) interp = "<p>Многие сферы воспринимаются устойчиво. Есть направления, которым вы можете уделить дополнительное внимание.</p>";
+    else if (avg >= 4) interp = "<p>Оценки распределены неравномерно. Возможно, есть несколько сфер, которые особенно привлекают внимание.</p>";
+    else interp = "<p>Многие сферы находятся в нижней части шкалы. Можно рассмотреть небольшие реалистичные изменения.</p>";
+    if (gap >= 5) interp += "<p>Между самой высокой и самой низкой оценкой есть заметный разрыв — <strong>" + gap + " баллов</strong>.</p>";
+    $("interpretation").innerHTML = interp;
+    drawWheel($("wheel"), values, improvements);
+    renderImprovements();
+    renderChart();
+    loadReflections();
+    loadJournal();
+    updateSpoilerCount();
+}
+function colorForValue(v) {
+    if (v <= 3) return 'linear-gradient(180deg, #ef4444, #b91c1c)';
+    if (v <= 5) return 'linear-gradient(180deg, #f59e0b, #b45309)';
+    if (v <= 7) return 'linear-gradient(180deg, #6ea8fe, #2563eb)';
+    return 'linear-gradient(180deg, #22c55e, #15803d)';
+}
+function renderChart() {
+    const c = $("resultsChart");
+    if (!c) return;
+    const maxVal = Math.max.apply(null, values);
+    const minVal = Math.min.apply(null, values);
+    let html = "";
+    categories.forEach((name, i) => {
+        const v = values[i];
+        const pct = Math.round((v / 10) * 100);
+        const heightPct = Math.max(6, (v / 10) * 100);
+        const bg = colorForValue(v);
+        const imp = improvements[i];
+        const hasGoal = imp && typeof imp.target === "number" && imp.target !== v;
+        const goalPct = hasGoal ? Math.min(100, Math.max(0, (imp.target / 10) * 100)) : 0;
+        let cls = "rc-bar";
+        if (v === maxVal && maxVal > 0) cls += " best";
+        if (v === minVal) cls += " worst";
+        html += '<div class="' + cls + '" data-idx="' + i + '">'
+            + '<div class="rc-value">' + v + '<span class="rc-pct">' + pct + '%</span></div>'
+            + '<div class="rc-track">'
+            +   '<div class="rc-fill" style="height:' + heightPct + '%; background:' + bg + ';"></div>'
+            +   (hasGoal ? '<div class="rc-goal-marker" style="bottom:' + goalPct + '%;"></div>' : '')
+            +   (hasGoal ? '<div class="rc-goal-label" style="bottom:' + goalPct + '%;">' + imp.target + '</div>' : '')
+            + '</div>'
+            + '<div class="rc-label">' + escapeHtml(SHORT_NAMES[i]) + '</div>'
+            + '</div>';
+    });
+    c.innerHTML = html;
+    c.querySelectorAll(".rc-bar").forEach(bar => {
+        bar.addEventListener("click", () => {
+            openInfoModal(Number(bar.dataset.idx));
+            haptic("selection");
+        });
+    });
+}
+function renderImprovements() {
+    const c = $("improvementsList");
+    const idxs = Object.keys(improvements)
+        .map(Number)
+        .filter(i => improvements[i] && hasMeaningfulContent(improvements[i], i))
+        .sort((a, b) => {
+            const da = improvements[a].date || "9999-99-99";
+            const db = improvements[b].date || "9999-99-99";
+            if (da !== db) return da < db ? -1 : 1;
+            return b - a;
+        });
+    updateSpoilerCount();
+    if (idxs.length === 0) {
+        c.innerHTML = '<div class="im-empty">Заметок пока нет.<br>Нажмите на любое число на колесе — или используйте кнопку «Добавить заметку».</div>';
+        return;
+    }
+    let html = '<div class="im-summary-bar">'
+        + '<div class="im-summary-count">' + idxs.length + '</div>'
+        + '<div class="im-summary-text">' + (idxs.length === 1 ? 'сфера' : (idxs.length < 5 ? 'сферы' : 'сфер')) + ' с заметками. Нажмите карточку для подробностей.</div>'
+        + '</div>';
+    idxs.forEach(i => {
+        const imp = improvements[i];
+        const cur = values[i];
+        const hasTarget = typeof imp.target === "number" && imp.target !== cur;
+        const diff = hasTarget ? imp.target - cur : 0;
+        const diffStr = diff > 0 ? "+" + diff : (diff < 0 ? String(diff) : "—");
+        html += '<div class="im-card" data-idx="' + i + '">'
+            + '<div class="im-head">'
+            + '<div class="im-name">' + escapeHtml(categories[i]) + '</div>'
+            + (hasTarget
+                ? '<div class="im-progress-badge">' + cur + ' → ' + imp.target + ' (' + diffStr + ')</div>'
+                : '<div class="im-progress-badge">' + cur + '/10 (заметка)</div>')
+            + '</div>';
+        if (imp.date) html += '<div class="im-block"><span class="im-block-label">📅 Желаемая дата</span><div class="im-block-value date-val">' + formatDateFull(imp.date) + '</div></div>';
+        if (imp.note) html += '<div class="im-block"><span class="im-block-label">📝 Что хочется улучшить</span><div class="im-block-value">' + escapeHtml(imp.note) + '</div></div>';
+        if (imp.step) html += '<div class="im-block"><span class="im-block-label">👣 Первый шаг</span><div class="im-block-value">' + escapeHtml(imp.step) + '</div></div>';
+        if (imp.reward) html += '<div class="im-block"><span class="im-block-label">🎁 Вознаграждение</span><div class="im-block-value reward-val">' + escapeHtml(imp.reward) + '</div></div>';
+        if (imp.consequence) html += '<div class="im-block"><span class="im-block-label">⚠️ Если не достичь цели</span><div class="im-block-value consequence-val">' + escapeHtml(imp.consequence) + '</div></div>';
+        html += '</div>';
+    });
+    c.innerHTML = html;
+    c.querySelectorAll(".im-card").forEach(card => {
+        card.addEventListener("click", () => {
+            openInfoModal(Number(card.dataset.idx));
+            haptic("selection");
+        });
+    });
+}
+
+/* INFO MODAL */
+function openInfoModal(idx) {
+    if (typeof idx !== "number" || idx < 0 || idx >= categories.length) return;
+    activeImIdx = idx;
+    const cur = values[idx];
+    const imp = improvements[idx] || {};
+    const hasContent = hasMeaningfulContent(imp, idx);
+    const hasTarget = typeof imp.target === "number" && imp.target !== cur;
+
+    $("infoSphereName").textContent = categories[idx];
+    $("infoFromNum").textContent = cur;
+
+    if (hasContent) {
+        if (hasTarget) {
+            $("infoToNum").textContent = imp.target;
+            $("infoArrow").classList.remove("hidden");
+            const diff = imp.target - cur;
+            const diffStr = diff > 0 ? "+" + diff + " к текущей оценке" : (diff < 0 ? String(diff) + " от текущей" : "на одном уровне");
+            $("infoDiffWrap").innerHTML = '<span class="info-hero-diff">' + diffStr + '</span>';
+        } else {
+            $("infoToNum").textContent = cur;
+            $("infoArrow").classList.add("hidden");
+            $("infoDiffWrap").innerHTML = '<span class="info-hero-diff">заметка к текущей оценке</span>';
+        }
+        $("infoWithPlan").classList.remove("hidden");
+        $("infoNoPlan").classList.add("hidden");
+        if (imp.date) { $("infoDate").textContent = formatDateFull(imp.date); $("infoDateBlock").classList.remove("hidden"); } else $("infoDateBlock").classList.add("hidden");
+        if (imp.note) { $("infoNote").textContent = imp.note; $("infoNoteBlock").classList.remove("hidden"); } else $("infoNoteBlock").classList.add("hidden");
+        if (imp.step) { $("infoStep").textContent = imp.step; $("infoStepBlock").classList.remove("hidden"); } else $("infoStepBlock").classList.add("hidden");
+        if (imp.reward) { $("infoReward").textContent = imp.reward; $("infoRewardBlock").classList.remove("hidden"); } else $("infoRewardBlock").classList.add("hidden");
+        if (imp.consequence) { $("infoConsequence").textContent = imp.consequence; $("infoConsequenceBlock").classList.remove("hidden"); } else $("infoConsequenceBlock").classList.add("hidden");
+        $("infoEdit").textContent = "✏ Редактировать";
+    } else {
+        $("infoToNum").textContent = "—";
+        $("infoArrow").classList.add("hidden");
+        $("infoDiffWrap").innerHTML = "";
+        $("infoWithPlan").classList.add("hidden");
+        $("infoNoPlan").classList.remove("hidden");
+        $("infoEdit").textContent = "✚ Добавить заметку";
+    }
+    $("infoModal").classList.add("active");
+}
+$("infoEdit").addEventListener("click", () => {
+    $("infoModal").classList.remove("active");
+    openImproveModal(activeImIdx);
+});
+$("infoClose").addEventListener("click", () => $("infoModal").classList.remove("active"));
+$("infoModal").addEventListener("click", e => {
+    if (e.target === $("infoModal")) $("infoModal").classList.remove("active");
+});
+
+/* IMPROVE */
+function createImproveMarks() {
+    const c = $("imTargetMarks");
+    c.innerHTML = "";
+    for (let i = 0; i <= 10; i++) {
+        const s = document.createElement("span");
+        s.textContent = i;
+        s.dataset.v = i;
+        s.addEventListener("click", () => {
+            $("imTargetSlider").value = i;
+            updateImTargetDisplay();
+            haptic("selection");
+        });
+        c.appendChild(s);
+    }
+    const tc = $("imSphereTicks");
+    tc.innerHTML = "";
+    for (let i = 0; i < categories.length; i++) {
+        const s = document.createElement("span");
+        s.className = "im-sphere-tick";
+        s.textContent = (i + 1);
+        s.dataset.v = i;
+        s.title = categories[i];
+        s.addEventListener("click", () => {
+            $("imSphereSlider").value = i;
+            setActiveImSphere(i);
+            haptic("selection");
+        });
+        tc.appendChild(s);
+    }
+}
+function setActiveImSphere(idx) {
+    activeImIdx = idx;
+    document.querySelectorAll("#imSphereTicks .im-sphere-tick").forEach(t => {
+        t.classList.toggle("active", Number(t.dataset.v) === idx);
+    });
+    $("imSphereName").textContent = categories[idx];
+    $("imSphereScore").innerHTML = 'Текущая оценка: <b>' + values[idx] + '</b>/10';
+    const hasPlan = hasMeaningfulContent(improvements[idx], idx);
+    $("imSphereHasPlan").innerHTML = hasPlan
+        ? '<span class="im-sphere-hasplan">Заметка уже есть</span>'
+        : '';
+    $("imDelete").style.display = hasPlan ? "" : "none";
+    const imp = improvements[idx] || {};
+    let initialTarget = typeof imp.target === "number" ? imp.target : Math.min(10, values[idx] + 3);
+    if (initialTarget < 0) initialTarget = 0;
+    if (initialTarget > 10) initialTarget = 10;
+    $("imTargetSlider").value = initialTarget;
+    setDateValue("imDate", imp.date || "");
+    $("imNote").value = imp.note || "";
+    $("imStep").value = imp.step || "";
+    $("imReward").value = imp.reward || "";
+    $("imConsequence").value = imp.consequence || "";
+    updateImTargetDisplay();
+}
+function updateImTargetDisplay() {
+    const v = Number($("imTargetSlider").value);
+    const cur = values[activeImIdx] || 0;
+    const diff = v - cur;
+    $("imTargetDisplay").textContent = v;
+    $("imTargetDiffLabel").textContent =
+        diff > 0 ? ("+" + diff + " к текущей оценке")
+        : diff < 0 ? ("−" + Math.abs(diff) + " от текущей оценки")
+        : "совпадает с текущей оценкой";
+    document.querySelectorAll("#imTargetMarks span").forEach(s => {
+        s.classList.toggle("active", Number(s.dataset.v) === v);
+    });
+    const warn = $("imTargetWarning");
+    if (diff < 0) warn.textContent = "Цель ниже текущей оценки. Это допустимо, но необычно.";
+    else if (diff >= 7) warn.textContent = "Очень амбициозная цель. Возможно, стоит разбить её на несколько шагов.";
+    else warn.textContent = "";
+}
+function openImproveModal(idx) {
+    if (typeof idx !== "number" || idx < 0 || idx >= categories.length) idx = 0;
+    $("imSphereSlider").value = idx;
+    setActiveImSphere(idx);
+    $("improveModal").classList.add("active");
+    haptic("selection");
+}
+$("imSphereSlider").addEventListener("input", function() {
+    setActiveImSphere(Number(this.value));
+    haptic("selection");
+});
+$("imTargetSlider").addEventListener("input", updateImTargetDisplay);
+$("imDateField").addEventListener("click", () => openCalendar("imDate"));
+$("shareDeadlineField").addEventListener("click", () => openCalendar("shareDeadline"));
+
+$("imSave").addEventListener("click", function() {
+    if (activeImIdx < 0) return;
+    const target = Number($("imTargetSlider").value);
+    const date = $("imDate").value;
+    const note = $("imNote").value.trim();
+    const step = $("imStep").value.trim();
+    const reward = $("imReward").value.trim();
+    const consequence = $("imConsequence").value.trim();
+    if (target === values[activeImIdx] && !date && !note && !step && !reward && !consequence) {
+        showToast("Заполните хотя бы одно поле или измените цель");
+        return;
+    }
+    improvements[activeImIdx] = {
+        target: target,
+        date: date,
+        note: note,
+        step: step,
+        reward: reward,
+        consequence: consequence,
+        createdAt: (improvements[activeImIdx] && improvements[activeImIdx].createdAt) || new Date().toISOString()
+    };
+    saveImprovements();
+    drawWheel($("wheel"), values, improvements);
+    renderImprovements();
+    renderChart();
+    updateSpoilerCount();
+    $("improveModal").classList.remove("active");
+    haptic("success");
+    showToast("Заметка сохранена: " + categories[activeImIdx]);
+});
+$("imDelete").addEventListener("click", function() {
+    if (activeImIdx < 0) return;
+    if (!improvements[activeImIdx]) { $("improveModal").classList.remove("active"); return; }
+    delete improvements[activeImIdx];
+    saveImprovements();
+    drawWheel($("wheel"), values, improvements);
+    renderImprovements();
+    renderChart();
+    updateSpoilerCount();
+    $("improveModal").classList.remove("active");
+    haptic("selection");
+    showToast("Заметка удалена: " + categories[activeImIdx]);
+});
+$("imClose").addEventListener("click", () => $("improveModal").classList.remove("active"));
+$("improveModal").addEventListener("click", e => {
+    if (e.target === $("improveModal")) $("improveModal").classList.remove("active");
+});
+
+/* WHEEL CLICK */
+(function bindWheelClick() {
+    const canvas = $("wheel");
+    if (!canvas) return;
+    let touchMoved = false, touchStartX = 0, touchStartY = 0;
+    function handlePointer(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
+        let best = null, bestDist = Infinity;
+        for (const hit of vertexHits) {
+            const dx = x - hit.x, dy = y - hit.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d <= hit.r && d < bestDist) { bestDist = d; best = hit; }
+        }
+        if (best) openInfoModal(best.idx);
+    }
+    canvas.addEventListener("click", e => { e.preventDefault(); handlePointer(e.clientX, e.clientY); });
+    canvas.addEventListener("touchstart", e => {
+        if (e.touches.length === 1) { touchMoved = false; touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }
+    }, { passive: true });
+    canvas.addEventListener("touchmove", e => {
+        if (e.touches.length === 1) {
+            const dx = e.touches[0].clientX - touchStartX, dy = e.touches[0].clientY - touchStartY;
+            if (Math.sqrt(dx*dx + dy*dy) > 10) touchMoved = true;
+        }
+    }, { passive: true });
+    canvas.addEventListener("touchend", e => {
+        if (touchMoved) return;
+        if (!e.changedTouches || !e.changedTouches.length) return;
+        e.preventDefault();
+        handlePointer(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    }, { passive: false });
+})();
+
+/* ADD PLAN */
+$("addPlanBtn").addEventListener("click", function() {
+    const idxs = categories.map((_, i) => i);
+    const withoutPlan = idxs.filter(i => !hasMeaningfulContent(improvements[i], i));
+    const pool = withoutPlan.length ? withoutPlan : idxs;
+    pool.sort((a, b) => values[a] - values[b]);
+    openImproveModal(pool[0]);
+});
+
+/* SAVE / RESET */
+$("saveBtn").addEventListener("click", () => {
+    const entry = {
+        date: new Date().toISOString(),
+        values: [...values],
+        improvements: JSON.parse(JSON.stringify(improvements))
+    };
+    let j = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []);
+    j.unshift(entry);
+    if (j.length > JOURNAL_LIMIT) j = j.slice(0, JOURNAL_LIMIT);
+    try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(j)); } catch(e){}
+    loadJournal();
+    haptic("success");
+    showToast("Результат сохранён в историю");
+});
+$("restartBtn").addEventListener("click", () => {
+    currentQuestion = 0;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    haptic("selection");
+});
+$("resetBtn").addEventListener("click", () => {
+    if (!confirm('Очистить все данные? Оценки, заметки, рефлексия и история будут удалены. Это нельзя отменить.')) return;
+    values = Array(categories.length).fill(5);
+    improvements = {};
+    reflections = { inspiration: '', recipe: '' };
+    saveValues(); saveImprovements();
+    try {
+        localStorage.removeItem(JOURNAL_KEY);
+        localStorage.removeItem(REFLECT_KEY);
+        localStorage.removeItem(SPOILER_KEY);
+    } catch(e){}
+    $("refInspiration").value = '';
+    $("refRecipe").value = '';
+    currentQuestion = 0;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    haptic("selection");
+    showToast("Все данные очищены");
+});
+
+/* PNG */
+$("pngBtn").addEventListener("click", () => {
+    try {
+        $("pngPreview").src = $("wheel").toDataURL("image/png");
+        $("modal").classList.add("active");
+    } catch (e) {
+        showToast("Не удалось сохранить изображение");
+    }
+});
+$("closeModal").addEventListener("click", () => $("modal").classList.remove("active"));
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) $("modal").classList.remove("active"); });
+
+/* JSON */
+$("exportJsonBtn").addEventListener("click", () => {
+    try {
+        const data = {
+            app: "wheel-nested",
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            values: values.slice(),
+            improvements: JSON.parse(JSON.stringify(improvements)),
+            reflections: Object.assign({}, reflections),
+            journal: safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", [])
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "wheel-work-" + localDateISO() + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        haptic("success");
+        showToast("Данные экспортированы");
+    } catch(e) {
+        showToast("Не удалось экспортировать");
+    }
+});
+$("importJsonBtn").addEventListener("click", () => $("importFileInput").click());
+$("importFileInput").addEventListener("change", function() {
+    const file = this.files && this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (!data || typeof data !== "object") throw new Error("bad format");
+            if (!Array.isArray(data.values) || data.values.length !== categories.length) {
+                showToast("Неверный формат файла");
+                $("importFileInput").value = "";
+                return;
+            }
+            values = data.values.map(v => Math.max(0, Math.min(10, Number(v) || 0)));
+            saveValues();
+            if (data.improvements && typeof data.improvements === "object" && !Array.isArray(data.improvements)) {
+                improvements = data.improvements;
+                saveImprovements();
+            }
+            if (data.reflections && typeof data.reflections === "object") {
+                reflections.inspiration = data.reflections.inspiration || '';
+                reflections.recipe = data.reflections.recipe || '';
+                $("refInspiration").value = reflections.inspiration;
+                $("refRecipe").value = reflections.recipe;
+                try { localStorage.setItem(REFLECT_KEY, JSON.stringify(reflections)); } catch(e){}
+            }
+            if (Array.isArray(data.journal)) {
+                let j = data.journal.slice(0, JOURNAL_LIMIT);
+                try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(j)); } catch(e){}
+            }
+            $("testSection").classList.add("hidden");
+            $("resultSection").classList.remove("hidden");
+            showResults();
+            haptic("success");
+            showToast("Данные загружены");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch(e) {
+            showToast("Не удалось прочитать файл");
+        }
+        $("importFileInput").value = "";
+    };
+    reader.readAsText(file);
+});
+
+/* JOURNAL */
+function loadJournal() {
+    const j = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []);
+    const c = $("journal");
+    if (j.length === 0) { c.innerHTML = '<div class="empty">История пуста</div>'; return; }
+    c.innerHTML = j.map((e, i) => {
+        const d = e.date ? new Date(e.date).toLocaleDateString("ru-RU") : "—";
+        const ev = Array.isArray(e.values) ? e.values : Array(categories.length).fill(0);
+        const avg = (ev.reduce((a,b) => a + Number(b||0), 0) / ev.length).toFixed(1);
+        const sc = categories.map((n, k) => escapeHtml(n) + ": " + escapeHtml(String(ev[k] ?? 0))).join(" · ");
+        const impsCount = e.improvements ? Object.keys(e.improvements).filter(k => hasMeaningfulContent(e.improvements[k], Number(k))).length : 0;
+        const impsLine = impsCount > 0 ? '<div class="journal-date" style="margin-top:6px;">🌱 Заметок: ' + impsCount + '</div>' : '';
+        return '<div class="journal-entry"><div class="journal-date">' + escapeHtml(d) + ' · Среднее: ' + escapeHtml(avg) + '</div>'
+            + '<div class="journal-score">' + sc + '</div>'
+            + impsLine
+            + '<div class="journal-buttons"><button onclick="loadJournalEntry(' + i + ')">Загрузить</button>'
+            + '<button class="delete" onclick="deleteJournalEntry(' + i + ')">Удалить</button></div></div>';
+    }).join("");
+}
+window.loadJournalEntry = function(i) {
+    const j = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []);
+    const e = j[i]; if (!e) return;
+    if (Array.isArray(e.values)) values = e.values.map(v => Math.max(0, Math.min(10, Number(v)||0)));
+    if (e.improvements && typeof e.improvements === "object") improvements = JSON.parse(JSON.stringify(e.improvements));
+    else improvements = {};
+    saveValues(); saveImprovements();
+    $("testSection").classList.add("hidden");
+    $("resultSection").classList.remove("hidden");
+    showResults();
+    haptic("selection");
+    showToast("Запись загружена");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+};
+window.deleteJournalEntry = function(i) {
+    const j = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []);
+    j.splice(i, 1);
+    try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(j)); } catch(e){}
+    loadJournal();
+    haptic("selection");
+    showToast("Запись удалена");
+};
+
+/* SHARE */
+function getAverage() {
+    return (values.reduce((a,b) => a + Number(b), 0) / values.length).toFixed(1);
+}
+function buildShareMessage() {
+    const friend = $("friendName").value.trim();
+    const deadline = $("shareDeadline").value;
+    const comment = $("friendComment").value.trim();
+    const appUrl = "https://yugatn.github.io/psy-tools/work/";
+    let msg = "🌀 Колесо: Рабочее время< 0) startWeekday = 6;
+
+    let html = "";
+    for (let i = 0; i < startWeekday; i++) html += '<div class="calendar-day empty"></div>';
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(y, m, d);
+        const dateISO = localDateISO(date);
+        const isPast = startOfDay(date) < today;
+        const isToday = startOfDay(date).getTime() === today.getTime();
+        const isSelected = calSelectedISO === dateISO;
+        let cls = "calendar-day";
+        if (isPast) cls += " disabled";
+        if (isToday) cls += " today";
+        if (isSelected) cls += " selected";
+        html += '<div class="' + cls + '" data-date="' + dateISO + '">' + d + '</div>';
+    }
+    $("calDays").innerHTML = html;
+
+    const curMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const prevMonthStart = new Date(y, m - 1, 1);
+    $("calPrev").disabled = (prevMonthStart < curMonthStart);
+
+    $("calDays").querySelectorAll(".calendar-day:not(.empty):not(.disabled)").forEach(el => {
+        el.addEventListener("click", () => {
+            calSelectedISO = el.dataset.date;
+            renderCalendar();
+            updateCalPreview();
+            haptic("selection");
+        });
+    });
+}
+$("calPrev").addEventListener("click", () => {
+    if (!calMonthCursor) calMonthCursor = new Date();
+    calMonthCursor.setMonth(calMonthCursor.getMonth() - 1);
+    renderCalendar();
+    haptic("selection");
+});
+$("calNext").addEventListener("click", () => {
+    if (!calMonthCursor) calMonthCursor = new Date();
+    calMonthCursor.setMonth(calMonthCursor.getMonth() + 1);
+    renderCalendar();
+    haptic("selection");
+});
+$("calToday").addEventListener("click", () => {
+    calSelectedISO = localDateISO(new Date());
+    calMonthCursor = new Date();
+    calMonthCursor.setDate(1);
+    renderCalendar();
+    updateCalPreview();
+    haptic("selection");
+});
+$("calClear").addEventListener("click", () => {
+    calSelectedISO = null;
+    renderCalendar();
+    updateCalPreview();
+    haptic("selection");
+});
+$("calDone").addEventListener("click", () => {
+    if (calTargetId) setDateValue(calTargetId, calSelectedISO || "");
+    $("calendarModal").classList.remove("active");
+    haptic("success");
+});
+$("calendarModal").addEventListener("click", e => {
+    if (e.target === $("calendarModal")) $("calendarModal").classList.remove("active");
+});
+function setDateValue(inputId, iso) {
+    const input = $(inputId);
+    if (!input) return;
+    input.value = iso || "";
+    const display = $(inputId + "Display");
+    const field = $(inputId + "Field");
+    if (display) {
+        if (iso) {
+            display.textContent = formatDateFull(iso);
+            display.classList.remove("empty");
+        } else {
+            display.textContent = (inputId === "shareDeadline") ? "Выберите дату" : "Выберите дату в календаре";
+            display.classList.add("empty");
+        }
+    }
+    if (field) field.classList.toggle("has-value", !!iso);
+}
+
+/* Escape закрывает модалки */
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        document.querySelectorAll(".modal.active").forEach(m => m.classList.remove("active"));
+    }
+});
+
+/* Рефлексия — автосохранение */
+$("refInspiration").addEventListener("input", saveReflections);
+$("refRecipe").addEventListener("input", saveReflections);
+
+/* INIT */
+function showResultsIfCompleted() {
+    const hasJournal = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []).length > 0;
+    const hasAnyNonDefault = values.some(v => v !== 5);
+    if (hasJournal || hasAnyNonDefault) {
+        $("testSection").classList.add("hidden");
+        $("resultSection").classList.remove("hidden");
+        showResults();
+    } else {
+        $("testSection").classList.remove("hidden");
+        $("resultSection").classList.add("hidden");
+        updateQuestionUI(false);
+    }
+}
+(function init() {
+    try {
+        loadValues();
+        loadImprovements();
+        loadReflections();
+        createSliderMarks();
+        createImproveMarks();
+        initSpoiler();
+
+        /* Календарь показывает текущий месяц сразу */
+        const now = new Date();
+        const titleEl = $("calTitle");
+        if (titleEl) titleEl.textContent = MONTHS_RU_NOM[now.getMonth()] + " " + now.getFullYear();
+
+        showResultsIfCompleted();
+    } catch (e) {
+        showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
+    }
+})();
+window.addEventListener("resize", updateBubblePosition);
+</script>
+<div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a href="../" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← К сфере «Рабочее время»</a></div></body>
+</html>
