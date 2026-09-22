@@ -191,7 +191,7 @@ class _WheelPainter extends CustomPainter {
     final path = Path();
     for (var i = 0; i < n; i++) {
       final angle = -3.1415926535 / 2 + 2 * 3.1415926535 * i / n;
-      final end = center + Offset(r * math.cos(angle), r * math.sin(angle));
+      final end = center + Offset(radius * math.cos(angle), radius * math.sin(angle));
       canvas.drawLine(center, end, paint);
       final score = (scores[wheel.rays[i].id] ?? 0).clamp(0, 10) / 10;
       final point = center + Offset(radius * score * math.cos(angle), radius * score * math.sin(angle));
