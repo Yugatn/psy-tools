@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../data/app_store.dart';
 import '../../domain/models.dart';
@@ -142,10 +143,10 @@ class _WheelPainter extends CustomPainter {
     final path = Path();
     for (var i = 0; i < n; i++) {
       final angle = -3.1415926535 / 2 + 2 * 3.1415926535 * i / n;
-      final end = center + Offset(r * _cos(angle), r * _sin(angle));
+      final end = center + Offset(r * math.cos(angle), r * math.sin(angle));
       canvas.drawLine(center, end, paint);
       final score = (scores[wheel.rays[i].id] ?? 0).clamp(0, 10) / 10;
-      final point = center + Offset(radius * score * _cos(angle), radius * score * _sin(angle));
+      final point = center + Offset(radius * score * math.cos(angle), radius * score * math.sin(angle));
       if (i == 0) {
         path.moveTo(point.dx, point.dy);
       } else {
@@ -162,7 +163,7 @@ class _WheelPainter extends CustomPainter {
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     for (var i = 0; i < n; i++) {
       final angle = -3.1415926535 / 2 + 2 * 3.1415926535 * i / n;
-      final labelCenter = center + Offset((radius + 20) * _cos(angle), (radius + 20) * _sin(angle));
+      final labelCenter = center + Offset((radius + 20) * math.cos(angle), (radius + 20) * math.sin(angle));
       textPainter.text = TextSpan(
         text: wheel.rays[i].title,
         style: const TextStyle(fontSize: 10, color: Colors.white),
@@ -172,25 +173,8 @@ class _WheelPainter extends CustomPainter {
     }
   }
 
-  double _cos(double value) => value == value ? _Cos.sin(value + 3.1415926535 / 2) : 0;
-  double _sin(double value) => _Cos.sin(value);
   @override
   bool shouldRepaint(covariant _WheelPainter oldDelegate) =>
       oldDelegate.wheel != wheel || oldDelegate.scores != scores;
 }
 
-class _Cos {
-  static double sin(double value) {
-    // Small local approximation keeps this painter dependency-free.
-    var x = value;
-    while (x > 3.1415926535) x -= 2 * 3.1415926535;
-    while (x < -3.1415926535) x += 2 * 3.1415926535;
-    var term = x;
-    var sum = x;
-    for (var n = 1; n <= 7; n++) {
-      term *= -x * x / ((2 * n) * (2 * n + 1));
-      sum += term;
-    }
-    return sum;
-  }
-}
