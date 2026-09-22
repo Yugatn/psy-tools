@@ -1,0 +1,3 @@
+import '../domain/models.dart';
+class WheelGraphService { bool hasCycle(String rootId, Map<String,Wheel> wheels){final visiting=<String>{};bool dfs(String id){if(visiting.contains(id))return true;final w=wheels[id];if(w==null)return false;visiting.add(id);for(final r in w.rays){if(r.childWheelId!=null&&dfs(r.childWheelId!))return true;}visiting.remove(id);return false;}return dfs(rootId);}
+List<String> ancestors(String wheelId, Map<String,Wheel> wheels){final out=<String>[];var current=wheels[wheelId];while(current?.parentId!=null){out.add(current!.parentId!);current=wheels[current.parentId];}return out;}}
