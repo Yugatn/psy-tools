@@ -859,7 +859,7 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
-const DETAIL_LINKS = categories.map((_, i) => "../detail/?parent="relationships"&ray=" + i);
+const DETAIL_LINKS = categories.map((_, i) => "../detail/?parent=relationships&ray=" + i);
 function updateDetailLinks() {
     const stage = $("wheelStage"), layer = $("detailLinks");
     if (!stage || !layer) return;
