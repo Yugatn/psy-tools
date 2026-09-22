@@ -1,5 +1,5 @@
 class Schema {
-  static const current = 4;
+  static const current = 5;
 
   static Map<String,dynamic> migrate(Map<String,dynamic> input) {
     final data = Map<String,dynamic>.from(input);
@@ -29,6 +29,7 @@ class Schema {
       }).toList();
       data['schemaVersion'] = 4;
     }
+    if (version < 5) { data['mood'] ??= <dynamic>[]; data['schemaVersion'] = 5; }
     return data;
   }
 
@@ -36,7 +37,7 @@ class Schema {
     if (data['schemaVersion'] is! int) {
       throw const FormatException('schemaVersion is required');
     }
-    for (final key in ['wheels', 'scores', 'journal', 'calendar']) {
+    for (final key in ['wheels', 'scores', 'journal', 'calendar', 'mood']) {
       if (data[key] is! List) {
         throw FormatException('Missing $key');
       }
