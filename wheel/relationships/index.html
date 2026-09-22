@@ -275,11 +275,21 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
 
 .wheel-wrapper{position:relative;}
 .wheel-detail-links{position:absolute;inset:0;pointer-events:none;}
-.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:0 0 0 4px rgba(85,230,176,0.10),0 3px 12px rgba(0,0,0,0.35);pointer-events:auto;transition:transform .15s ease,background .15s ease;z-index:3;}
+.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:0 0 0 4px rgba(85,230,176,0.10),0 3px 12px rgba(0,0,0,0.35);pointer-events:auto;transition:transform .15s ease,background .15s ease;z-index:3;}
 .wheel-detail-link:hover,.wheel-detail-link:focus{transform:translate(-50%,-50%) scale(1.08);background:#16483f;outline:none;}
 .wheel-detail-link:active{transform:translate(-50%,-50%) scale(.96);}
-.wheel-detail-label{position:absolute;transform:translate(-50%,0);margin-top:20px;white-space:nowrap;font-size:10px;font-weight:700;color:#8ff5cf;background:rgba(16,44,42,.92);padding:3px 6px;border-radius:6px;pointer-events:none;}
-@media(max-width:520px){.wheel-detail-link{width:30px;height:30px;font-size:13px}.wheel-detail-label{font-size:9px;margin-top:17px}}
+@media(max-width:520px){.wheel-detail-link{width:30px;height:30px;font-size:13px}}
+
+.wheel-index{margin:8px 0 14px;padding:0 14px 14px;background:#111a2e;border:1px solid #26324a;border-radius:16px;color:#c7d3e6;}
+.wheel-index summary{cursor:pointer;padding:14px 2px;font-weight:800;color:#fff;list-style:none;}
+.wheel-index summary::-webkit-details-marker{display:none;}
+.wheel-index summary::after{content:"+";float:right;color:#8ff5cf;font-size:18px;line-height:1;}
+.wheel-index[open] summary::after{content:"−";}
+.wheel-index p{margin:0 0 10px;color:#8fa0b8;font-size:12.5px;line-height:1.45;}
+.wheel-index-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;}
+.wheel-index-list a,.wheel-index-main{display:block;padding:10px 9px;border-radius:11px;background:#18233a;border:1px solid #2a3a5a;color:#dbe5f3;text-decoration:none;font-size:12.5px;font-weight:700;text-align:center;line-height:1.25;}
+.wheel-index-list a[aria-current="page"]{border-color:#55e6b0;background:#102c2a;color:#8ff5cf;}
+.wheel-index-main{margin-top:8px;background:#24314b;}
 </style>
 </head>
 <body>
@@ -321,7 +331,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
             <h2>🌀 Колесо: Отношения и семья</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация: Отношения и семья"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
-            <div class="wheel-hint">Нажмите на <strong>зелёный маркер «i»</strong> на луче — подробное колесо этой сферы. Синие числа показывают текущие оценки, фиолетовые маркеры — цели улучшения.</div>
+            <div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
@@ -876,18 +886,12 @@ function updateDetailLinks() {
         const link = document.createElement("a");
         link.className = "wheel-detail-link";
         link.href = DETAIL_LINKS[i];
-        link.title = "Подробнее: " + categories[i];
+        link.title = "Подробнее: " + categories[i] + ". Открыть подробное колесо";
         link.setAttribute("aria-label", "Открыть подробное колесо: " + categories[i]);
         link.textContent = "i";
-        const label = document.createElement("span");
-        label.className = "wheel-detail-label";
-        label.textContent = "деталь";
         link.style.left = x + "px";
         link.style.top = y + "px";
         layer.appendChild(link);
-        label.style.left = x + "px";
-        label.style.top = y + "px";
-        layer.appendChild(label);
     }
 }
 function drawWheel(canvas, vals, imps) {
@@ -1857,5 +1861,5 @@ function showResultsIfCompleted() {
 window.addEventListener("resize", () => { updateDetailLinks(); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
-<div class="card" style="margin-top:8px"><h3>Детализация: Отношения и семья</h3><p class="subtitle" style="margin:0 0 12px">Каждый луч основного колеса можно открыть как отдельное подробное колесо.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><a href="./health/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Здоровье</a><a href="./work/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Работа и карьера</a><a href="./finance/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Финансы</a><a href="./relationships/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отношения и семья</a><a href="./social/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Друзья и общение</a><a href="./development/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Личное развитие</a><a href="./rest/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Отдых и восстановление</a><a href="./creativity/" style="padding:12px 8px;border-radius:12px;background:#24314b;color:#fff;text-decoration:none;text-align:center;font-weight:700;font-size:13px">Творчество и самореализация</a></div></div></body>
+<details class="wheel-index"><summary>Другие колёса баланса</summary><p>Вы можете перейти к любой сфере и продолжить детализацию её лучей.</p><div class="wheel-index-list"><a href="../health/">Здоровье</a><a href="../work/">Работа и карьера</a><a href="../finance/">Финансы</a><a href="../relationships/" aria-current="page">Отношения и семья · текущий</a><a href="../social/">Друзья и общение</a><a href="../development/">Личное развитие</a><a href="../rest/">Отдых и восстановление</a><a href="../creativity/">Творчество и самореализация</a></div><a class="wheel-index-main" href="../">Главное колесо баланса</a></details></div>
 </html>
