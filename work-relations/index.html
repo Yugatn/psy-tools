@@ -272,7 +272,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
   .spoiler-toggle{font-size:11.5px;padding:5px 10px 5px 12px;}
   .spoiler.expanded .spoiler-toggle{padding:4px 9px 4px 11px;}
 }
-</style>
+.wheel-wrapper{position:relative}.wheel-detail-links{position:absolute;inset:0;pointer-events:none}.wheel-detail-link{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;border:2px solid #55e6b0;background:#102c2a;color:#8ff5cf;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;pointer-events:auto;z-index:3}.wheel-detail-label{position:absolute;transform:translate(-50%,0);margin-top:18px;white-space:nowrap;font-size:9px;color:#8ff5cf;background:rgba(16,44,42,.92);padding:3px 5px;border-radius:5px;pointer-events:none}</style>
 </head>
 <body>
 
@@ -311,7 +311,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
     <section id="resultSection" class="hidden">
         <div class="card">
             <h2>🌀 Ваше колесо баланса</h2>
-            <div class="wheel-wrapper"><canvas id="wheel"></canvas></div>
+            <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
             <div class="wheel-hint">Нажмите на <strong>синее число</strong> — текущая оценка. На <strong>фиолетовый маркер</strong> — детали заметки.</div>
             <div class="wheel-legend">
@@ -591,6 +591,7 @@ const spheres = [
 ];
 const categories = spheres.map(s => s.name);
 const SHORT_NAMES = ['Коллеги', 'Руководство', 'Зарплата', 'Время', 'Нагрузка', 'Задачи', 'Карьера', 'Развитие', 'Стабильность', 'Баланс', 'Признание', 'Автономия'];
+const DETAIL_LINKS=["https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=0","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=1","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=2","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=3","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=4","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=5","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=6","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=7","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=8","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=9","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=10","https://yugatn.github.io/psy-tools/wheel/detail/?parent=work-relations&ray=11"];
 const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const WEEKDAYS_ACC = ['в воскресенье','в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу'];
@@ -855,7 +856,7 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
-function drawWheel(canvas, vals, imps) {
+function updateDetailLinks(){const stage=$("wheelStage"),layer=$("detailLinks"),canvas=$("wheel");if(!stage||!layer||!canvas)return;const rect=canvas.getBoundingClientRect(),sr=stage.getBoundingClientRect(),sx=rect.width/760,sy=rect.height/760,cx=380,cy=380,r=275,n=categories.length;layer.innerHTML="";for(let i=0;i<n;i++){const a=i*2*Math.PI/n-Math.PI/2,x=(rect.left-sr.left)+(cx+Math.cos(a)*r)*sx,y=(rect.top-sr.top)+(cy+Math.sin(a)*r)*sy,link=document.createElement("a");link.className="wheel-detail-link";link.href=DETAIL_LINKS[i];link.title="Подробнее: "+categories[i];link.textContent="i";link.style.left=x+"px";link.style.top=y+"px";layer.appendChild(link);const lab=document.createElement("span");lab.className="wheel-detail-label";lab.textContent="деталь";lab.style.left=x+"px";lab.style.top=y+"px";layer.appendChild(lab)}}window.addEventListener("resize",updateDetailLinks);function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
     canvas.width = size; canvas.height = size;
@@ -1008,6 +1009,7 @@ function drawWheel(canvas, vals, imps) {
             ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
         });
     }
+ updateDetailLinks();
 }
 
 function hasMeaningfulContent(imp, idx) {
