@@ -1000,7 +1000,6 @@ function drawWheel(canvas, vals, imps) {
     }
 }
 
-    updateDetailLinks();
 }
 
 function hasMeaningfulContent(imp, idx) {
@@ -1811,7 +1810,8 @@ function showResultsIfCompleted() {
         showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
     }
 })();
-window.addEventListener("resize", updateBubblePosition);
+window.addEventListener("resize", () => { updateBubblePosition(); updateDetailLinks(); });
+setTimeout(updateDetailLinks, 0);
 </script>
 <div class="card" style="margin:14px auto;max-width:900px;text-align:center"><a id="upLink" href="../health/" style="display:inline-block;padding:11px 16px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700">← Назад к сфере</a><div id="detailTitle" style="color:#8fa0b8;font-size:12px;margin-top:8px"></div></div><script>document.getElementById("upLink").href="../"+parent+"/";document.getElementById("detailTitle").textContent="Подробное колесо: "+selected;</script></body>
 </html>
