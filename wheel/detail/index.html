@@ -1,1 +1,88 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Детальное колесо</title><style>:root{font-family:Arial,sans-serif;background:#0b1120;color:#fff}body{margin:0;background:#0b1120;color:#fff}.wrap{max-width:900px;margin:auto;padding:18px}.card{background:#111a2e;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px;margin:12px 0}.top{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700}.muted{color:#9da9bb;font-size:13px}.wheel{display:flex;justify-content:center}.wheel canvas{width:min(92vw,680px);height:min(92vw,680px);max-width:100%}.row{display:grid;grid-template-columns:1fr 55px;gap:10px;align-items:center;margin:12px 0}.row label{font-weight:700}.row input{grid-column:1/3;width:100%}.value{text-align:center;font-weight:800;color:#8ff5cf}.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.detail a{padding:10px;border:1px solid #55e6b0;border-radius:11px;color:#8ff5cf;text-decoration:none;text-align:center;background:#102c2a;font-size:12px;font-weight:700}</style></head><body><main class="wrap"><div class="card"><div class="top"><a id="back" class="btn">← Назад</a><a href="../" class="btn">↑ Уровень выше</a></div><h1 id="title">Детальное колесо</h1><p class="muted">Каждый луч этого колеса также можно детализировать.</p></div><div class="card"><div class="wheel"><canvas id="wheel" width="760" height="760"></canvas></div></div><div class="card"><h2>Оценки</h2><div id="sliders"></div></div><div class="card"><h2>Детализация лучей</h2><div id="links" class="detail"></div></div></main><script>const MAP={"health":["Питание","Сон","Физическая активность","Самочувствие","Профилактика","Лечение и медицинская помощь","Энергия","Телесный комфорт"],"work":["Содержание работы","Заработок","Руководство","Коллеги","Рабочее время","Нагрузка","Карьерный рост","Профессиональное развитие"],"finance":["Доход","Расходы","Финансовая устойчивость","Накопления","Долги и обязательства","Жильё и бытовые расходы","Финансовое планирование","Свобода выбора"],"relationships":["Близость","Доверие","Общение","Поддержка","Совместное время","Конфликты и их разрешение","Границы","Общие планы"],"social":["Близкие друзья","Качество общения","Поддержка","Новые знакомства","Социальная активность","Принадлежность","Личные границы","Баланс общения и уединения"],"development":["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"],"rest":["Сон","Паузы","Свободное время","Расслабление","Природа и прогулки","Развлечения","Уединение","Восстановление энергии"],"creativity":["Идеи","Творческая практика","Самовыражение","Вдохновение","Свобода эксперимента","Признание результата","Реализация проектов","Смысл"]},NAMES={"health":"Здоровье","work":"Работа и карьера","finance":"Финансы","relationships":"Отношения и семья","social":"Друзья и общение","development":"Личное развитие","rest":"Отдых и восстановление","creativity":"Творчество и самореализация"},q=new URLSearchParams(location.search),parent=q.get("parent")||"health",ray=Math.max(0,Math.min(7,Number(q.get("ray"))||0)),label=q.get("label"),selected=label||((MAP[parent]||MAP.health)[ray]||"Сфера"),dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"],key="detailWheel:"+parent+":"+ray+":"+selected;let values=JSON.parse(localStorage.getItem(key)||"null");if(!Array.isArray(values)||values.length!==dims.length)values=dims.map(()=>5);document.getElementById("title").textContent="Детальное колесо: "+selected;document.getElementById("back").href="../"+parent+"/";const sliders=document.getElementById("sliders"),links=document.getElementById("links");dims.forEach((name,i)=>{const row=document.createElement("div");row.className="row";row.innerHTML='<label>'+name+'</label><div class="value" id="v'+i+'">'+values[i]+'</div><input min="0" max="10" step="1" type="range" value="'+values[i]+'">';row.querySelector("input").oninput=e=>{values[i]=Number(e.target.value);document.getElementById("v"+i).textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()};sliders.appendChild(row);const a=document.createElement("a");a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected);a.textContent="i · "+name;links.appendChild(a)});function draw(){const c=document.getElementById("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=dims.length,step=Math.PI*2/n;x.clearRect(0,0,S,S);x.fillStyle="#111a2e";x.fillRect(0,0,S,S);for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.28)":"rgba(255,255,255,.08)";x.stroke()}const pts=[];for(let i=0;i<n;i++){const a=i*step-Math.PI/2;pts.push({x:cx+Math.cos(a)*r*values[i]/10,y:cy+Math.sin(a)*r*values[i]/10})}x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke();for(let i=0;i<n;i++){const a=i*step-Math.PI/2,lx=cx+Math.cos(a)*(r+42),ly=cy+Math.sin(a)*(r+42);x.fillStyle="#fff";x.font="bold 14px Arial";x.textAlign="center";x.textBaseline="middle";x.fillText(dims[i],lx,ly);const px=cx+Math.cos(a)*r*.92,py=cy+Math.sin(a)*r*.92;x.beginPath();x.arc(px,py,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.fillText("i",px,py)}}draw();</script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Детальное колесо</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#0b1120;color:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0b1120;color:#fff}
+.wrap{max-width:900px;margin:auto;padding:14px}
+.card{background:#111a2e;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px;margin:12px 0}
+.top{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700}
+.muted{color:#9da9bb;font-size:13px;line-height:1.5}
+.wheel{display:flex;justify-content:center;overflow:hidden}.wheel canvas{width:min(92vw,680px);height:min(92vw,680px);max-width:100%;touch-action:none}
+.row{display:grid;grid-template-columns:1fr 55px;gap:10px;align-items:center;margin:13px 0}.row label{font-weight:700;font-size:14px}.row input{grid-column:1/3;width:100%;height:28px}
+.value{text-align:center;font-weight:800;color:#8ff5cf}
+.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
+.detail a{padding:10px;border:1px solid #55e6b0;border-radius:11px;color:#8ff5cf;text-decoration:none;text-align:center;background:#102c2a;font-size:12px;font-weight:700;line-height:1.3}
+.wheel-index{margin-top:14px}.wheel-index summary{cursor:pointer;font-weight:800;color:#fff;padding:3px 0;list-style:none}.wheel-index summary::-webkit-details-marker{display:none}.wheel-index summary::after{content:"+";float:right;color:#8ff5cf;font-size:18px}.wheel-index[open] summary::after{content:"−"}
+.wheel-index p{color:#8fa0b8;font-size:12.5px;line-height:1.45}.wheel-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px}.wheel-list a{display:block;padding:10px 8px;border-radius:10px;background:#18233a;border:1px solid #2a3a5a;color:#dbe5f3;text-decoration:none;text-align:center;font-size:12.5px;font-weight:700}.wheel-list a.current{border-color:#55e6b0;background:#102c2a;color:#8ff5cf}
+@media(max-width:520px){.wrap{padding:10px}.card{padding:13px}.btn{padding:9px 11px;font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="card">
+    <div class="top"><a id="back" class="btn">Назад</a><a href="../" class="btn">Главное колесо</a></div>
+    <h1 id="title">Детальное колесо</h1>
+    <p class="muted">Каждый луч этого колеса также можно детализировать. Нажмите на зелёный маркер «i» или выберите показатель ниже.</p>
+  </div>
+  <div class="card"><div class="wheel"><canvas id="wheel" width="760" height="760" aria-label="Детальное колесо"></canvas></div></div>
+  <div class="card"><h2>Оценки</h2><div id="sliders"></div></div>
+  <details class="card wheel-index"><summary>Детализация лучей</summary><p>Каждый показатель можно открыть как следующее подробное колесо. Так можно постепенно переходить от общей сферы к её составляющим.</p><div id="links" class="detail"></div></details>
+  <details class="card wheel-index"><summary>Другие колёса баланса</summary><p>Можно перейти в любую основную сферу и продолжить работу с ней.</p><div id="wheelList" class="wheel-list"></div></details>
+</main>
+<script>
+const MAP={
+ health:["Питание","Сон","Физическая активность","Самочувствие","Профилактика","Лечение и медицинская помощь","Энергия","Телесный комфорт"],
+ work:["Содержание работы","Заработок","Руководство","Коллеги","Рабочее время","Нагрузка","Карьерный рост","Профессиональное развитие"],
+ finance:["Доход","Расходы","Финансовая устойчивость","Накопления","Долги и обязательства","Жильё и бытовые расходы","Финансовое планирование","Свобода выбора"],
+ relationships:["Близость","Доверие","Общение","Поддержка","Совместное время","Конфликты и их разрешение","Границы","Общие планы"],
+ social:["Близкие друзья","Качество общения","Поддержка","Новые знакомства","Социальная активность","Принадлежность","Личные границы","Баланс общения и уединения"],
+ development:["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"],
+ rest:["Сон","Паузы","Свободное время","Расслабление","Природа и прогулки","Развлечения","Уединение","Восстановление энергии"],
+ creativity:["Идеи","Творческая практика","Самовыражение","Вдохновение","Свобода эксперимента","Признание результата","Реализация проектов","Смысл"]
+};
+const NAMES={health:"Здоровье",work:"Работа и карьера",finance:"Финансы",relationships:"Отношения и семья",social:"Друзья и общение",development:"Личное развитие",rest:"Отдых и восстановление",creativity:"Творчество и самореализация"};
+const q=new URLSearchParams(location.search);
+const parentCandidate=q.get("parent")||"health";
+const parent=Object.prototype.hasOwnProperty.call(MAP,parentCandidate)?parentCandidate:"health";
+const rawRay=Number(q.get("ray"));
+const ray=Number.isInteger(rawRay)?Math.max(0,Math.min(7,rawRay)):0;
+const baseLabel=(MAP[parent]||MAP.health)[ray]||"Сфера";
+const label=(q.get("label")||"").trim().slice(0,180);
+const selected=label||baseLabel;
+const dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"];
+const key="detailWheel:"+parent+":"+ray+":"+selected;
+let values=[];
+try{values=JSON.parse(localStorage.getItem(key)||"null")}catch(e){values=null}
+if(!Array.isArray(values)||values.length!==dims.length)values=dims.map(()=>5);
+const title=document.getElementById("title"); title.textContent="Детальное колесо: "+selected;
+document.getElementById("back").href="../"+parent+"/";
+const sliders=document.getElementById("sliders"),links=document.getElementById("links"),wheelList=document.getElementById("wheelList");
+dims.forEach((name,i)=>{
+  const row=document.createElement("div"); row.className="row";
+  const labelEl=document.createElement("label"); labelEl.textContent=name;
+  const valueEl=document.createElement("div"); valueEl.className="value"; valueEl.id="v"+i; valueEl.textContent=values[i];
+  const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]; input.setAttribute("aria-label",name);
+  input.addEventListener("input",e=>{values[i]=Number(e.target.value);valueEl.textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()});
+  row.append(labelEl,valueEl,input); sliders.appendChild(row);
+  const a=document.createElement("a"); a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected); a.textContent="i · "+name; links.appendChild(a);
+});
+Object.entries(NAMES).forEach(([slug,name])=>{
+  const a=document.createElement("a"); a.href="../"+slug+"/"; a.textContent=name; if(slug===parent)a.className="current"; wheelList.appendChild(a);
+});
+function draw(){
+  const c=document.getElementById("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=dims.length,step=Math.PI*2/n;
+  x.clearRect(0,0,S,S); x.fillStyle="#111a2e"; x.fillRect(0,0,S,S);
+  for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.28)":"rgba(255,255,255,.08)";x.lineWidth=k===5||k===10?2:1;x.stroke()}
+  const pts=[]; for(let i=0;i<n;i++){const a=i*step-Math.PI/2;pts.push({x:cx+Math.cos(a)*r*values[i]/10,y:cy+Math.sin(a)*r*values[i]/10})}
+  x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke();
+  for(let i=0;i<n;i++){const a=i*step-Math.PI/2,lx=cx+Math.cos(a)*(r+48),ly=cy+Math.sin(a)*(r+48);x.fillStyle="#fff";x.font="bold 14px Arial";x.textAlign="center";x.textBaseline="middle";x.fillText(dims[i],lx,ly);const px=cx+Math.cos(a)*r*.92,py=cy+Math.sin(a)*r*.92;x.beginPath();x.arc(px,py,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.fillText("i",px,py)}
+}
+draw();
+</script>
+</body>
+</html>
