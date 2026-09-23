@@ -51,9 +51,9 @@ class AppStore {
     };
     final created=<String,String>{}; var wheelIndex=0;
     for(final entry in templates.entries){
-      final wheelId='wheel_default_${{wheelIndex++}'; created[entry.key]=wheelId;
+      final wheelId='wheel_default_${wheelIndex++}'; created[entry.key]=wheelId;
       wheels.add({'id':wheelId,'title':entry.key,'parentId':null,'rays':[
-        for(var i=0;i<entry.value.length;i++){'id':'${{wheelId}_ray_${i','title':entry.value[i],'childWheelId':null}
+        for(var i=0;i<entry.value.length;i++){'id':'${wheelId}_ray_${i','title':entry.value[i],'childWheelId':null}
       ]});
     }
     final life=wheels.firstWhere((w)=>w['id']==created['Жизнь']) as Map<String,dynamic>;
@@ -67,7 +67,7 @@ class AppStore {
     final notes=data['wheelNotes'] as List; final now=DateTime.now();
     final existingIndex=notes.indexWhere((raw){final item=Map<String,dynamic>.from(raw as Map);return item['wheelId']==wheelId&&item['rayId']==rayId;});
     final oldId=existingIndex>=0?Map<String,dynamic>.from(notes[existingIndex] as Map)['id'] as String:null;
-    final entry=WheelNote(id:oldId??'note_${{now.microsecondsSinceEpoch}',wheelId:wheelId,rayId:rayId,text:text.trim(),at:now).toJson();
+    final entry=WheelNote(id:oldId??'note_${now.microsecondsSinceEpoch}',wheelId:wheelId,rayId:rayId,text:text.trim(),at:now).toJson();
     if(existingIndex>=0)notes[existingIndex]=entry;else notes.add(entry);
     await save();
   }
