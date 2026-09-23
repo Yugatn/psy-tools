@@ -874,10 +874,15 @@ function getScorePoint(cx, cy, radius, angle, value) {
     const r = radius * (value / 10);
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
-const DETAIL_LINKS = [
-    "./health/", "./work/", "./finance/", "./relationships/",
-    "./social/", "./development/", "./rest/", "./creativity/", "./self_awareness/"
-];
+const ROOT_DETAIL_PARENTS = ["health","work","finance","relationships","social","development","rest","creativity","self_awareness"];
+const DETAIL_LINKS = categories.map((category, i) => {
+    const url = new URL("./detail/", location.href);
+    url.searchParams.set("parent", ROOT_DETAIL_PARENTS[i] || "health");
+    url.searchParams.set("ray", String(i));
+    url.searchParams.set("label", category);
+    url.searchParams.set("back", location.href);
+    return url.toString();
+});
 function updateDetailLinks() {
     const stage = $("wheelStage"), layer = $("detailLinks");
     if (!stage || !layer) return;
