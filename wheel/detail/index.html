@@ -53,18 +53,43 @@ const parent=Object.prototype.hasOwnProperty.call(MAP,parentCandidate)?parentCan
 const rawRay=Number(q.get("ray"));
 const ray=Number.isInteger(rawRay)?Math.max(0,Math.min(7,rawRay)):0;
 const baseLabel=(MAP[parent]||MAP.health)[ray]||"Сфера";
-const label=(q.get("label")||"").trim().slice(0,180);
-const selected=label||baseLabel;
+
+function readTrail(){
+  const raw=q.get("trail");
+  if(!raw)return [];
+  try{
+    const parsed=JSON.parse(raw);
+    return Array.isArray(parsed)?parsed.filter(v=>typeof v==="string").map(v=>v.trim().slice(0,180)).filter(Boolean).slice(0,20):[];
+  }catch(e){return []}
+}
+let trail=readTrail();
+const legacyLabel=(q.get("label")||"").trim().slice(0,180);
+if(!trail.length)trail=[legacyLabel||baseLabel];
+const selected=trail[trail.length-1]||baseLabel;
 const returnUrl=q.get("back");
 const dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"];
-const key="detailWheel:"+parent+":"+ray+":"+selected;
+const trailKey=trail.join(" / ");
+const key="detailWheel:v2:"+parent+":"+trailKey;
 let values=[];
 try{values=JSON.parse(localStorage.getItem(key)||"null")}catch(e){values=null}
 if(!Array.isArray(values)||values.length!==dims.length)values=dims.map(()=>5);
-const title=document.getElementById("title"); title.textContent="Детальное колесо: "+selected;
-document.getElementById("back").href=returnUrl ? decodeURIComponent(returnUrl) : "../"+parent+"/";
-document.getElementById("back").textContent=returnUrl ? "← Предыдущее колесо" : "← Назад";
-const sliders=document.getElementById("sliders"),links=document.getElementById("links"),wheelList=document.getElementById("wheelList");
+
+const title=document.getElementById("title");
+title.textContent="Детальное колесо: "+selected;
+const back=document.getElementById("back");
+back.href=returnUrl?decodeURIComponent(returnUrl):"../"+parent+"/";
+back.textContent=returnUrl?"← Предыдущее колесо":"← Назад";
+
+const sliders=document.getElementById("sliders");
+const links=document.getElementById("links");
+const wheelList=document.getElementById("wheelList");
+
+const breadcrumb=document.createElement("div");
+breadcrumb.className="muted";
+breadcrumb.style.marginTop="8px";
+breadcrumb.textContent="Путь: "+([NAMES[parent],...trail].join(" / "));
+title.insertAdjacentElement("afterend",breadcrumb);
+
 dims.forEach((name,i)=>{
   const row=document.createElement("div"); row.className="row";
   const labelEl=document.createElement("label"); labelEl.textContent=name;
@@ -72,16 +97,26 @@ dims.forEach((name,i)=>{
   const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]; input.setAttribute("aria-label",name);
   input.addEventListener("input",e=>{values[i]=Number(e.target.value);valueEl.textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()});
   row.append(labelEl,valueEl,input); sliders.appendChild(row);
-  const a=document.createElement("a"); a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected)+"&back="+encodeURIComponent(location.href); a.textContent="i · "+name; links.appendChild(a);
+
+  const nextTrail=[...trail,name];
+  const a=document.createElement("a");
+  a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&trail="+encodeURIComponent(JSON.stringify(nextTrail))+"&back="+encodeURIComponent(location.href);
+  a.textContent="i · "+name;
+  a.title="Открыть следующий уровень детализации";
+  links.appendChild(a);
 });
-// После открытия детального колеса браузер должен показывать его начало,
-// а не восстанавливать прежнюю позицию прокрутки страницы.
-if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-requestAnimationFrame(() => window.scrollTo({top: 0, left: 0, behavior: "instant"}));
+
+// После открытия любого уровня детального колеса показываем его начало,
+// а не позицию, которую браузер восстановил с предыдущей страницы.
+if("scrollRestoration" in history)history.scrollRestoration="manual";
+requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:"instant"}));
 
 Object.entries(NAMES).forEach(([slug,name])=>{
-  const a=document.createElement("a"); a.href="../"+slug+"/"; a.textContent=name; if(slug===parent)a.className="current"; wheelList.appendChild(a);
+  const a=document.createElement("a"); a.href="../"+slug+"/"; a.textContent=name;
+  if(slug===parent)a.className="current";
+  wheelList.appendChild(a);
 });
+
 function draw(){
   const c=document.getElementById("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=dims.length,step=Math.PI*2/n;
   x.clearRect(0,0,S,S); x.fillStyle="#111a2e"; x.fillRect(0,0,S,S);
