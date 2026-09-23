@@ -1,8 +1,12 @@
 class Wheel {
-  final String id,title; final String? parentId; final List<WheelRay> rays;
-  const Wheel({required this.id,required this.title,this.parentId,required this.rays});
+  final String id, title;
+  final String? parentId;
+  final List<WheelRay> rays;
+  const Wheel({required this.id, required this.title, this.parentId, required this.rays});
   Map<String,dynamic> toJson()=>{'id':id,'title':title,'parentId':parentId,'rays':rays.map((e)=>e.toJson()).toList()};
-  factory Wheel.fromJson(Map<String,dynamic> j)=>Wheel(id:j['id'] as String,title:j['title'] as String,parentId:j['parentId'] as String?,rays:(j['rays'] as List).map((e)=>WheelRay.fromJson(Map<String,dynamic>.from(e as Map))).toList());
+  factory Wheel.fromJson(Map<String,dynamic> j)=>Wheel(
+    id:j['id'] as String,title:j['title'] as String,parentId:j['parentId'] as String?,
+    rays:(j['rays'] as List).map((e)=>WheelRay.fromJson(Map<String,dynamic>.from(e as Map))).toList());
 }
 class WheelRay {
   final String id,title; final String? childWheelId;
@@ -14,12 +18,13 @@ class WheelScore {
   final String wheelId,rayId; final double value; final DateTime at;
   const WheelScore({required this.wheelId,required this.rayId,required this.value,required this.at});
   Map<String,dynamic> toJson()=>{'wheelId':wheelId,'rayId':rayId,'value':value,'at':at.toIso8601String()};
-  factory WheelScore.fromJson(Map<String,dynamic> j)=>WheelScore(
-    wheelId:j['wheelId'] as String,
-    rayId:j['rayId'] as String,
-    value:(j['value'] as num).toDouble(),
-    at:DateTime.parse(j['at'] as String),
-  );
+  factory WheelScore.fromJson(Map<String,dynamic> j)=>WheelScore(wheelId:j['wheelId'] as String,rayId:j['rayId'] as String,value:(j['value'] as num).toDouble(),at:DateTime.parse(j['at'] as String));
+}
+class WheelNote {
+  final String id,wheelId,rayId,text; final DateTime at;
+  const WheelNote({required this.id,required this.wheelId,required this.rayId,required this.text,required this.at});
+  Map<String,dynamic> toJson()=>{'id':id,'wheelId':wheelId,'rayId':rayId,'text':text,'at':at.toIso8601String()};
+  factory WheelNote.fromJson(Map<String,dynamic> j)=>WheelNote(id:j['id'] as String,wheelId:j['wheelId'] as String,rayId:j['rayId'] as String,text:j['text'] as String,at:DateTime.parse(j['at'] as String));
 }
 class MoodEntry {
   final int value; final DateTime at; final String? note;
