@@ -54,13 +54,15 @@ const ray=Number.isInteger(rawRay)?Math.max(0,Math.min(7,rawRay)):0;
 const baseLabel=(MAP[parent]||MAP.health)[ray]||"Сфера";
 const label=(q.get("label")||"").trim().slice(0,180);
 const selected=label||baseLabel;
+const returnUrl=q.get("back");
 const dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"];
 const key="detailWheel:"+parent+":"+ray+":"+selected;
 let values=[];
 try{values=JSON.parse(localStorage.getItem(key)||"null")}catch(e){values=null}
 if(!Array.isArray(values)||values.length!==dims.length)values=dims.map(()=>5);
 const title=document.getElementById("title"); title.textContent="Детальное колесо: "+selected;
-document.getElementById("back").href="../"+parent+"/";
+document.getElementById("back").href=returnUrl ? decodeURIComponent(returnUrl) : "../"+parent+"/";
+document.getElementById("back").textContent=returnUrl ? "← Предыдущее колесо" : "← Назад";
 const sliders=document.getElementById("sliders"),links=document.getElementById("links"),wheelList=document.getElementById("wheelList");
 dims.forEach((name,i)=>{
   const row=document.createElement("div"); row.className="row";
@@ -69,7 +71,7 @@ dims.forEach((name,i)=>{
   const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]; input.setAttribute("aria-label",name);
   input.addEventListener("input",e=>{values[i]=Number(e.target.value);valueEl.textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()});
   row.append(labelEl,valueEl,input); sliders.appendChild(row);
-  const a=document.createElement("a"); a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected); a.textContent="i · "+name; links.appendChild(a);
+  const a=document.createElement("a"); a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&label="+encodeURIComponent(name+" в сфере "+selected)+"&back="+encodeURIComponent(location.href); a.textContent="i · "+name; links.appendChild(a);
 });
 // После открытия детального колеса браузер должен показывать его начало,
 // а не восстанавливать прежнюю позицию прокрутки страницы.
