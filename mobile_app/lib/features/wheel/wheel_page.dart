@@ -43,7 +43,7 @@ class _WheelPageState extends State<WheelPage>{
       actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('Отмена')),
         FilledButton(onPressed:()=>Navigator.pop(context,controller.text),child:const Text('Сохранить'))],
     ));
-    controller.dispose(); if(text==null)return;
+    controller.dispose(); if(text==null){return;}
     await widget.store.saveWheelNote(wheelId:wheel.id,rayId:ray.id,text:text);
     if(mounted)setState((){});
   }
@@ -67,10 +67,10 @@ class _WheelPageState extends State<WheelPage>{
       actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('Отмена')),
         FilledButton(onPressed:()=>Navigator.pop(context,controller.text.trim()),child:const Text('Создать'))],
     ));
-    controller.dispose(); if(title==null||title.isEmpty)return;
+    controller.dispose(); if(title==null||title.isEmpty){return;}
     final childId='wheel_${DateTime.now().microsecondsSinceEpoch}';
     final child=<String,dynamic>{'id':childId,'title':title,'parentId':parent.id,'rays':[
-      for(var i=0;i<8;i++){'id':'${childId}_ray_${i','title':'Новый аспект ${i+1}','childWheelId':null}
+      for(var i=0;i<8;i++){'id':'${childId}_ray_$i','title':'Новый аспект ${i + 1}','childWheelId':null}
     ]};
     (widget.store.data['wheels'] as List).add(child);
     final parentRaw=(widget.store.data['wheels'] as List).firstWhere((w)=>w['id']==parent.id);
