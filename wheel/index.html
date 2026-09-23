@@ -601,10 +601,11 @@ const spheres = [
     { name: "Друзья и общение", question: "Насколько вы удовлетворены общением с друзьями, знакомыми и социальным окружением?" },
     { name: "Личное развитие", question: "Насколько вы удовлетворены обучением, развитием навыков и личностным ростом?" },
     { name: "Отдых и восстановление", question: "Насколько вам хватает отдыха, восстановления и времени для себя?" },
-    { name: "Творчество и самореализация", question: "Насколько вы чувствуете возможность заниматься творчеством и реализовывать идеи?" }
+    { name: "Творчество и самореализация", question: "Насколько вы чувствуете возможность заниматься творчеством и реализовывать идеи?" },
+    { name: "Самоощущение и саморефлексия", question: "Насколько вам комфортно ощущать своё тело, себя, свои мысли, память, реакции и внутреннее состояние?" }
 ];
 const categories = spheres.map(s => s.name);
-const SHORT_NAMES = ['Здор.', 'Карьера', 'Финан.', 'Семья', 'Друзья', 'Развит.', 'Отдых', 'Творч.'];
+const SHORT_NAMES = ['Здор.', 'Карьера', 'Финан.', 'Семья', 'Друзья', 'Развит.', 'Отдых', 'Творч.', 'Самоощущ.'];
 const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const WEEKDAYS_ACC = ['в воскресенье','в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу'];
@@ -632,8 +633,12 @@ function loadValues() {
     const s = localStorage.getItem(VALUES_KEY);
     if (!s) return;
     const p = safeParse(s, null);
-    if (Array.isArray(p) && p.length === categories.length)
-        values = p.map(v => Math.max(0, Math.min(10, Number(v) || 0)));
+    if (Array.isArray(p)) {
+        values = Array(categories.length).fill(5);
+        p.slice(0, categories.length).forEach((v, i) => {
+            values[i] = Math.max(0, Math.min(10, Number(v) || 0));
+        });
+    }
 }
 function saveImprovements() { try { localStorage.setItem(IMPROVE_KEY, JSON.stringify(improvements)); } catch(e){} }
 function loadImprovements() {
@@ -871,7 +876,7 @@ function getScorePoint(cx, cy, radius, angle, value) {
 }
 const DETAIL_LINKS = [
     "./health/", "./work/", "./finance/", "./relationships/",
-    "./social/", "./development/", "./rest/", "./creativity/"
+    "./social/", "./development/", "./rest/", "./creativity/", "./self_awareness/"
 ];
 function updateDetailLinks() {
     const stage = $("wheelStage"), layer = $("detailLinks");
