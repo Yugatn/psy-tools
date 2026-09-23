@@ -37,7 +37,7 @@ class _WheelPageState extends State<WheelPage>{
   Future<void> _editNote(Wheel wheel,WheelRay ray) async {
     final existing=_noteFor(wheel,ray); final controller=TextEditingController(text:existing?.text??'');
     final text=await showDialog<String>(context:context,builder:(context)=>AlertDialog(
-      title:Text('Рефлексия: @@{ray.title}'),
+      title:Text('Рефлексия: ${{ray.title}'),
       content:TextField(controller:controller,autofocus:true,minLines:4,maxLines:8,textCapitalization:TextCapitalization.sentences,
         decoration:const InputDecoration(hintText:'Что сейчас происходит в этой сфере?',border:OutlineInputBorder())),
       actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('Отмена')),
@@ -61,16 +61,16 @@ class _WheelPageState extends State<WheelPage>{
   }
 
   Future<void> _createChildWheel(Wheel parent,WheelRay ray) async {
-    final controller=TextEditingController(text:'@@{ray.title}: подробное колесо');
+    final controller=TextEditingController(text:'${{ray.title}: подробное колесо');
     final title=await showDialog<String>(context:context,builder:(context)=>AlertDialog(
       title:const Text('Дочернее колесо'),content:TextField(controller:controller,autofocus:true,decoration:const InputDecoration(labelText:'Название')),
       actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('Отмена')),
         FilledButton(onPressed:()=>Navigator.pop(context,controller.text.trim()),child:const Text('Создать'))],
     ));
     controller.dispose(); if(title==null||title.isEmpty)return;
-    final childId='wheel_@@{DateTime.now().microsecondsSinceEpoch}';
+    final childId='wheel_${{DateTime.now().microsecondsSinceEpoch}';
     final child=<String,dynamic>{'id':childId,'title':title,'parentId':parent.id,'rays':[
-      for(var i=0;i<8;i++){'id':'@@{childId}_ray_@@i','title':'Новый аспект @@{i+1}','childWheelId':null}
+      for(var i=0;i<8;i++){'id':'${{childId}_ray_${i','title':'Новый аспект ${{i+1}','childWheelId':null}
     ]};
     (widget.store.data['wheels'] as List).add(child);
     final parentRaw=(widget.store.data['wheels'] as List).firstWhere((w)=>w['id']==parent.id);
@@ -89,7 +89,7 @@ class _WheelPageState extends State<WheelPage>{
         Container(padding:const EdgeInsets.all(8),child:AspectRatio(aspectRatio:1,child:CustomPaint(
           painter:_WheelPainter(wheel:wheel,scores:scores,textColor:Theme.of(context).colorScheme.onSurface,accentColor:Theme.of(context).colorScheme.primary)))),
         Card(child:Padding(padding:const EdgeInsets.all(16),child:Row(children:[
-          const Icon(Icons.insights),const SizedBox(width:12),Expanded(child:Text('Средняя оценка: @@{average.toStringAsFixed(1)} из 10',style:Theme.of(context).textTheme.titleMedium))
+          const Icon(Icons.insights),const SizedBox(width:12),Expanded(child:Text('Средняя оценка: ${{average.toStringAsFixed(1)} из 10',style:Theme.of(context).textTheme.titleMedium))
         ]))),
         const SizedBox(height:8),
         Text('Оцените каждую сферу от 0 до 10',style:Theme.of(context).textTheme.titleMedium),
