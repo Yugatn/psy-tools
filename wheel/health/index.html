@@ -928,30 +928,6 @@ function resetWheelScores(){
     updateQuestionUI(false);
     window.scrollTo({top:0,behavior:"smooth"});
 }
-function focusLowestRay(){
-    const min=Math.min(...values);
-    const idx=values.indexOf(min);
-    currentQuestion=idx;
-    $("testSection").classList.remove("hidden");
-    $("resultSection").classList.add("hidden");
-    updateQuestionUI(false);
-    const target=document.querySelectorAll(".wheel-detail-link")[idx];
-    if(target){target.classList.add("active");setTimeout(()=>target.classList.remove("active"),1400);}
-    window.scrollTo({top:0,behavior:"smooth"});
-}
-function resetWheelScores(){
-    if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
-    values=Array(categories.length).fill(5);
-    improvements={};
-    saveValues();
-    saveImprovements();
-    buildProgressSnapshot();
-    currentQuestion=0;
-    $("testSection").classList.remove("hidden");
-    $("resultSection").classList.add("hidden");
-    updateQuestionUI(false);
-    window.scrollTo({top:0,behavior:"smooth"});
-}
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
@@ -1147,32 +1123,6 @@ function colorForValue(v) {
     if (v <= 5) return 'linear-gradient(180deg, #f59e0b, #b45309)';
     if (v <= 7) return 'linear-gradient(180deg, #6ea8fe, #2563eb)';
     return 'linear-gradient(180deg, #22c55e, #15803d)';
-}
-function buildProgressSnapshot(){
-    const date=localDateISO(new Date());
-    const snapshot={date,values:values.slice(0,categories.length),improvements:JSON.parse(JSON.stringify(improvements||{}))};
-    const key=HISTORY_KEY||"wheelBalanceHistory";
-    let history=[];
-    try{history=safeParse(localStorage.getItem(key)||"[]",[])}catch(e){history=[]}
-    if(!Array.isArray(history))history=[];
-    const last=history[history.length-1];
-    if(!last||last.date!==date){
-        history.push(snapshot);
-        if(history.length>30)history=history.slice(-30);
-        try{localStorage.setItem(key,JSON.stringify(history))}catch(e){}
-    }
-}
-function getHistory(){
-    try{const h=safeParse(localStorage.getItem(HISTORY_KEY||"wheelBalanceHistory")||"[]",[]);return Array.isArray(h)?h:[]}catch(e){return []}
-}
-function showChangeSummary(){
-    const h=getHistory();
-    if(h.length<2){showToast("История начнёт сравнивать изменения после следующего заполнения.");return}
-    const prev=h[h.length-2].values||[];
-    const changes=values.map((v,i)=>({i,delta:Number((v-(prev[i]??v)).toFixed(1))})).filter(x=>x.delta!==0).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
-    if(!changes.length){showToast("По сравнению с предыдущей записью изменений нет.");return}
-    const text=changes.slice(0,3).map(x=>categories[x.i]+": "+(x.delta>0?"+":"")+x.delta).join(" · ");
-    showToast("Изменения: "+text);
 }
 function buildProgressSnapshot(){
     const date=localDateISO(new Date());
