@@ -330,7 +330,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
         <div class="card">
             <h2>🌀 Колесо: Работа и карьера</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация: Работа и карьера"></div></div>
-            <div class="scale-info">Центр = 0 · внешний круг = 10</div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div>
+            <div class="scale-info">Центр = 0 · внешний круг = 10</div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div>
             <div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
@@ -625,7 +625,7 @@ const REFLECT_KEY = "wheelNestedV2_work_Reflections";
 const SHARE_KEY = "wheelNestedV2_work_Share";
 const SPOILER_KEY = "wheelNestedV2_work_SpoilerPlan";
 const HISTORY_KEY = "wheelBalanceHistory";
-const HISTORY_KEY = "wheelBalanceHistory";
+
 const JOURNAL_LIMIT = 50;
 
 function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
@@ -1570,9 +1570,7 @@ $("resetWheelBtn").addEventListener("click", () => { resetWheelScores(); });
 
 
 /* WHEEL TOOLS */
-$("focusLowestBtn").addEventListener("click", () => { focusLowestRay(); haptic("selection"); });
-$("historyBtn").addEventListener("click", () => { showChangeSummary(); haptic("selection"); });
-$("resetWheelBtn").addEventListener("click", () => { resetWheelScores(); });
+
 
 /* PNG */
 $("pngBtn").addEventListener("click", () => {
