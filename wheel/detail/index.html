@@ -1527,6 +1527,12 @@ $("resetBtn").addEventListener("click", () => {
     showToast("Все данные очищены");
 });
 
+
+/* WHEEL TOOLS */
+$("focusLowestBtn").addEventListener("click", () => { focusLowestRay(); haptic("selection"); });
+$("historyBtn").addEventListener("click", () => { showChangeSummary(); haptic("selection"); });
+$("resetWheelBtn").addEventListener("click", () => { resetWheelScores(); });
+
 /* PNG */
 $("pngBtn").addEventListener("click", () => {
     try {
