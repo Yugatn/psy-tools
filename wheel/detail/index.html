@@ -618,6 +618,7 @@ try { const parsed = JSON.parse(DETAIL_QUERY.get("trail") || "[]"); if (Array.is
 if (!DETAIL_TRAIL.length) DETAIL_TRAIL = [DETAIL_LABEL];
 const DETAIL_STORAGE_ID = encodeURIComponent(DETAIL_PARENT + ":" + DETAIL_TRAIL.join(" / "));
 const STORAGE_PREFIX = "wheelBalanceDetail:" + DETAIL_STORAGE_ID;
+spheres.forEach(s => { s.question = s.question.replaceAll("__SELECTED__", DETAIL_LABEL); });
 
 let values = Array(categories.length).fill(5);
 let currentQuestion = 0;
