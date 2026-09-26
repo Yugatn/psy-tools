@@ -330,7 +330,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
         <div class="card">
             <h2>🌀 Колесо: Творчество и самореализация</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация: Творчество и самореализация"></div></div>
-            <div class="scale-info">Центр = 0 · внешний круг = 10</div>
+            <div class="scale-info">Центр = 0 · внешний круг = 10</div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div>
             <div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
@@ -624,6 +624,7 @@ const IMPROVE_KEY = "wheelNestedV2_creativity_Improvements";
 const REFLECT_KEY = "wheelNestedV2_creativity_Reflections";
 const SHARE_KEY = "wheelNestedV2_creativity_Share";
 const SPOILER_KEY = "wheelNestedV2_creativity_SpoilerPlan";
+const HISTORY_KEY = "wheelBalanceHistory";
 const JOURNAL_LIMIT = 50;
 
 function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
@@ -822,6 +823,7 @@ $("scoreSlider").addEventListener("input", function() {
     $("sliderBubble").textContent = v;
     values[currentQuestion] = v;
     saveValues();
+    buildProgressSnapshot();
     updateBubblePosition();
     updateSliderMarkActive();
     $("sliderBubble").classList.add("show");
@@ -900,6 +902,30 @@ function updateDetailLinks() {
         link.style.top = y + "px";
         layer.appendChild(link);
     }
+}
+function focusLowestRay(){
+    const min=Math.min(...values);
+    const idx=values.indexOf(min);
+    currentQuestion=idx;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(false);
+    const target=document.querySelectorAll(".wheel-detail-link")[idx];
+    if(target){target.classList.add("active");setTimeout(()=>target.classList.remove("active"),1400);}
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+function resetWheelScores(){
+    if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
+    values=Array(categories.length).fill(5);
+    improvements={};
+    saveValues();
+    saveImprovements();
+    buildProgressSnapshot();
+    currentQuestion=0;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(false);
+    window.scrollTo({top:0,behavior:"smooth"});
 }
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
@@ -1096,6 +1122,32 @@ function colorForValue(v) {
     if (v <= 5) return 'linear-gradient(180deg, #f59e0b, #b45309)';
     if (v <= 7) return 'linear-gradient(180deg, #6ea8fe, #2563eb)';
     return 'linear-gradient(180deg, #22c55e, #15803d)';
+}
+function buildProgressSnapshot(){
+    const date=localDateISO(new Date());
+    const snapshot={date,values:values.slice(0,categories.length),improvements:JSON.parse(JSON.stringify(improvements||{}))};
+    const key=HISTORY_KEY||"wheelBalanceHistory";
+    let history=[];
+    try{history=safeParse(localStorage.getItem(key)||"[]",[])}catch(e){history=[]}
+    if(!Array.isArray(history))history=[];
+    const last=history[history.length-1];
+    if(!last||last.date!==date){
+        history.push(snapshot);
+        if(history.length>30)history=history.slice(-30);
+        try{localStorage.setItem(key,JSON.stringify(history))}catch(e){}
+    }
+}
+function getHistory(){
+    try{const h=safeParse(localStorage.getItem(HISTORY_KEY||"wheelBalanceHistory")||"[]",[]);return Array.isArray(h)?h:[]}catch(e){return []}
+}
+function showChangeSummary(){
+    const h=getHistory();
+    if(h.length<2){showToast("История начнёт сравнивать изменения после следующего заполнения.");return}
+    const prev=h[h.length-2].values||[];
+    const changes=values.map((v,i)=>({i,delta:Number((v-(prev[i]??v)).toFixed(1))})).filter(x=>x.delta!==0).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+    if(!changes.length){showToast("По сравнению с предыдущей записью изменений нет.");return}
+    const text=changes.slice(0,3).map(x=>categories[x.i]+": "+(x.delta>0?"+":"")+x.delta).join(" · ");
+    showToast("Изменения: "+text);
 }
 function renderChart() {
     const c = $("resultsChart");
@@ -1458,6 +1510,12 @@ $("resetBtn").addEventListener("click", () => {
     haptic("selection");
     showToast("Все данные очищены");
 });
+
+
+/* WHEEL TOOLS */
+$("focusLowestBtn").addEventListener("click", () => { focusLowestRay(); haptic("selection"); });
+$("historyBtn").addEventListener("click", () => { showChangeSummary(); haptic("selection"); });
+$("resetWheelBtn").addEventListener("click", () => { resetWheelScores(); });
 
 /* PNG */
 $("pngBtn").addEventListener("click", () => {
