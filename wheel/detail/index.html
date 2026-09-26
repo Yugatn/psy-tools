@@ -1,159 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>Детальное колесо</title>
 <style>
-:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#0b1120;color:#fff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:#0b1120;color:#fff}
-.wrap{max-width:900px;margin:auto;padding:14px}
-.card{background:#111a2e;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px;margin:12px 0}
-.top{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:11px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700}
-.muted{color:#9da9bb;font-size:13px;line-height:1.5}
-.wheel{display:flex;justify-content:center;overflow:hidden}.wheel canvas{width:min(92vw,680px);height:min(92vw,680px);max-width:100%;touch-action:none}
-.row{display:grid;grid-template-columns:1fr 55px;gap:10px;align-items:center;margin:13px 0}.row label{font-weight:700;font-size:14px}.row input{grid-column:1/3;width:100%;height:28px}
-.value{text-align:center;font-weight:800;color:#8ff5cf}
-.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
-.detail a{padding:10px;border:1px solid #55e6b0;border-radius:11px;color:#8ff5cf;text-decoration:none;text-align:center;background:#102c2a;font-size:12px;font-weight:700;line-height:1.3}
-.wheel-index{margin-top:14px}.wheel-index summary{cursor:pointer;font-weight:800;color:#fff;padding:3px 0;list-style:none}.wheel-index summary::-webkit-details-marker{display:none}.wheel-index summary::after{content:"+";float:right;color:#8ff5cf;font-size:18px}.wheel-index[open] summary::after{content:"−"}
-.wheel-index p{color:#8fa0b8;font-size:12.5px;line-height:1.45}.wheel-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px}.wheel-list a{display:block;padding:10px 8px;border-radius:10px;background:#18233a;border:1px solid #2a3a5a;color:#dbe5f3;text-decoration:none;text-align:center;font-size:12.5px;font-weight:700}.wheel-list a.current{border-color:#55e6b0;background:#102c2a;color:#8ff5cf}
-@media(max-width:520px){.wrap{padding:10px}.card{padding:13px}.btn{padding:9px 11px;font-size:13px}}
+html,body{margin:0;padding:0;min-height:100%;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+body{min-height:100vh;padding:10px}button,input{font-family:inherit}button{border:0;cursor:pointer;color:#fff}
+.container{width:100%;max-width:900px;margin:0 auto}h1{text-align:center;font-size:27px;margin:8px 0 5px}.subtitle{text-align:center;color:#aab4c3;font-size:14px;line-height:1.45;margin-bottom:15px}
+h2{font-size:20px;margin:0 0 15px}.card{background:#111a2e;border:1px solid #26324a;border-radius:20px;padding:16px;margin-bottom:14px}.hidden{display:none!important}
+.progress-wrapper{margin-bottom:14px}.progress-top{display:flex;justify-content:space-between;color:#9da9bb;font-size:13px;margin-bottom:7px}.progress-track{width:100%;height:9px;background:#24314b;border-radius:20px;overflow:hidden}.progress-bar{height:100%;background:#6ea8fe;border-radius:20px;transition:width .25s}
+.sphere-number{color:#7faeff;font-size:13px;font-weight:700;margin-bottom:5px}.sphere-title{font-size:25px;font-weight:700;margin-bottom:12px}.question{color:#c1cada;font-size:16px;line-height:1.55;margin-bottom:20px}.scale-label{text-align:center;color:#9da9bb;font-size:13px;margin-bottom:9px}.score-display{text-align:center;font-size:56px;line-height:1;font-weight:800;margin:12px 0 18px}
+.slider-wrapper{position:relative;margin-top:12px;padding-top:34px}.score-slider{appearance:none;width:100%;height:8px;background:#24314b;border-radius:20px;outline:0;cursor:pointer}.score-slider::-webkit-slider-thumb{appearance:none;width:28px;height:28px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer}.score-slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#6ea8fe;border:3px solid #fff;cursor:pointer}
+.slider-current-value{position:absolute;top:0;background:#315fa8;color:#fff;padding:5px 11px;border-radius:9px;font-size:14px;font-weight:700;opacity:0;pointer-events:none}.slider-current-value.show{opacity:1}.slider-marks{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;margin-top:10px}.slider-mark{color:#9da9bb;font-size:12px;font-weight:600;text-align:center;padding:5px 0;cursor:pointer}.slider-mark.active{color:#fff;background:#315fa8;border-radius:7px}.scale-ends{display:flex;justify-content:space-between;color:#718099;font-size:11px;margin-top:6px}.navigation{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.nav-button{padding:14px 10px;border-radius:14px;background:#24314b;font-size:15px;font-weight:700}.nav-button.primary{background:#315fa8}
+.wheel-wrapper{width:100%;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:4px 0}.wheel-wrapper canvas{display:block;width:min(96vw,720px);height:min(96vw,720px);max-width:100%;touch-action:none}.scale-info{text-align:center;color:#9da9bb;font-size:13px;margin-top:3px}.wheel-hint{margin-top:12px;padding:11px 13px;background:rgba(110,168,254,.10);border:1px solid rgba(110,168,254,.35);border-radius:12px;color:#b8cce8;font-size:13px;line-height:1.45;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}.stat{background:#18233a;border-radius:13px;padding:10px 4px;text-align:center}.stat-value{font-size:20px;font-weight:800}.stat-label{color:#9da9bb;font-size:11px;margin-top:3px}
+.interpretation{color:#c2ccda;font-size:15px;line-height:1.6}.range-list{display:grid;gap:8px;margin-top:12px}.range-item{background:#18233a;border-radius:12px;padding:10px 12px;color:#b9c4d5;font-size:13px;line-height:1.45}.range-item strong{color:#fff}
+.detail-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-top:13px}.detail-links a{padding:10px;border:1px solid #55e6b0;border-radius:11px;color:#8ff5cf;text-decoration:none;text-align:center;background:#102c2a;font-size:12px;font-weight:700;line-height:1.3}
+.wheel-index{margin-top:14px}.wheel-index summary{cursor:pointer;font-weight:800;color:#fff;padding:3px 0;list-style:none}.wheel-index summary::-webkit-details-marker{display:none}.wheel-index summary:after{content:"+";float:right;color:#8ff5cf;font-size:18px}.wheel-index[open] summary:after{content:"−"}.wheel-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin-top:10px}.wheel-list a{display:block;padding:10px 8px;border-radius:10px;background:#18233a;border:1px solid #2a3a5a;color:#dbe5f3;text-decoration:none;text-align:center;font-size:12.5px;font-weight:700}.wheel-list a.current{border-color:#55e6b0;background:#102c2a;color:#8ff5cf}
+@media(max-width:520px){body{padding:8px}.card{padding:13px}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<main class="wrap">
-  <div class="card">
-    <div class="top"><a id="back" class="btn">Назад</a><a href="../" class="btn">Главное колесо</a></div>
-    <h1 id="title">Детальное колесо</h1>
-    <p class="muted">Каждый луч этого колеса также можно детализировать. Нажмите на зелёный маркер «i» или выберите показатель ниже.</p>
-  </div>
-  <div class="card"><div class="wheel"><canvas id="wheel" width="760" height="760" aria-label="Детальное колесо"></canvas></div></div>
-  <div class="card"><h2>Оценки</h2><div id="sliders"></div></div>
-  <details class="card wheel-index"><summary>Детализация лучей</summary><p>Каждый показатель можно открыть как следующее подробное колесо. Так можно постепенно переходить от общей сферы к её составляющим.</p><div id="links" class="detail"></div></details>
-  <details class="card wheel-index"><summary>Другие колёса баланса</summary><p>Можно перейти в любую основную сферу и продолжить работу с ней.</p><div id="wheelList" class="wheel-list"></div></details>
-</main>
+<div class="container">
+<h1>🌀 Детальное колесо</h1>
+<div class="subtitle" id="subtitle"></div>
+<div class="card" id="testSection">
+<div class="progress-wrapper"><div class="progress-top"><span id="progressText"></span><span id="progressPercent"></span></div><div class="progress-track"><div class="progress-bar" id="progressBar"></div></div></div>
+<div class="sphere-number" id="sphereNumber"></div><div class="sphere-title" id="sphereTitle"></div><div class="question" id="question"></div>
+<div class="scale-label">Насколько вы удовлетворены этим показателем сейчас?</div><div class="score-display" id="scoreDisplay">—</div>
+<div class="slider-wrapper"><div class="slider-current-value" id="sliderBubble">0</div><input type="range" class="score-slider" id="scoreSlider" min="0" max="10" step="1" value="5"><div class="slider-marks" id="sliderMarks"></div></div>
+<div class="scale-ends"><span>0 — совсем не устраивает</span><span>10 — полностью устраивает</span></div>
+<div class="navigation"><button class="nav-button" id="backBtn">← Назад</button><button class="nav-button primary" id="nextBtn">Далее →</button></div>
+</div>
+
+<section id="resultSection" class="hidden">
+<div class="card">
+<h2 id="wheelTitle">🌀 Детальное колесо</h2>
+<div class="wheel-wrapper"><canvas id="wheel" width="760" height="760"></canvas></div>
+<div class="scale-info">Центр = 0 · внешний круг = 10</div>
+<div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на зелёный маркер «i», чтобы перейти к следующему уровню детализации.</div>
+<div class="stats"><div class="stat"><div class="stat-value" id="average">5.0</div><div class="stat-label">Среднее</div></div><div class="stat"><div class="stat-value" id="maximum">5</div><div class="stat-label">Максимум</div></div><div class="stat"><div class="stat-value" id="minimum">5</div><div class="stat-label">Минимум</div></div><div class="stat"><div class="stat-value" id="gap">0</div><div class="stat-label">Разрыв</div></div></div>
+</div>
+<div class="card"><h2>📊 Что показывает результат</h2><div class="interpretation" id="interpretation"></div><div class="range-list"><div class="range-item"><strong>8–10</strong> — относительно сильная сфера.</div><div class="range-item"><strong>6–7</strong> — относительно стабильная сфера.</div><div class="range-item"><strong>4–5</strong> — сфере может быть полезно уделить внимание.</div><div class="range-item"><strong>0–3</strong> — выраженный текущий приоритет.</div></div></div>
+<div class="card"><h2>🔎 Детализация лучей</h2><div class="detail-links" id="detailLinks"></div></div>
+<div class="card"><a id="back" class="nav-button" style="display:block;text-align:center;text-decoration:none">← Предыдущее колесо</a></div>
+<details class="card wheel-index"><summary>Другие колёса баланса</summary><div class="wheel-list" id="wheelList"></div></details>
+</section>
+</div>
+
 <script>
-const MAP={
- health:["Питание","Сон","Физическая активность","Самочувствие","Профилактика","Лечение и медицинская помощь","Энергия","Телесный комфорт"],
- work:["Содержание работы","Заработок","Руководство","Коллеги","Рабочее время","Нагрузка","Карьерный рост","Профессиональное развитие"],
- finance:["Доход","Расходы","Финансовая устойчивость","Накопления","Долги и обязательства","Жильё и бытовые расходы","Финансовое планирование","Свобода выбора"],
- relationships:["Близость","Доверие","Общение","Поддержка","Совместное время","Конфликты и их разрешение","Границы","Общие планы"],
- social:["Близкие друзья","Качество общения","Поддержка","Новые знакомства","Социальная активность","Принадлежность","Личные границы","Баланс общения и уединения"],
- development:["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"],
- rest:["Сон","Паузы","Свободное время","Расслабление","Природа и прогулки","Развлечения","Уединение","Восстановление энергии"],
- creativity:["Идеи","Творческая практика","Самовыражение","Вдохновение","Свобода эксперимента","Признание результата","Реализация проектов","Смысл"],
- self_awareness:["Комфорт тела","Принятие себя","Позитивное мышление","Память","Эмоциональные реакции","Внимание и осознанность","Внутреннее спокойствие","Контакт с потребностями"]
-};
+const MAP={health:["Питание","Сон","Физическая активность","Самочувствие","Профилактика","Лечение и медицинская помощь","Энергия","Телесный комфорт"],work:["Содержание работы","Заработок","Руководство","Коллеги","Рабочее время","Нагрузка","Карьерный рост","Профессиональное развитие"],finance:["Доход","Расходы","Финансовая устойчивость","Накопления","Долги и обязательства","Жильё и бытовые расходы","Финансовое планирование","Свобода выбора"],relationships:["Близость","Доверие","Общение","Поддержка","Совместное время","Конфликты и их разрешение","Границы","Общие планы"],social:["Близкие друзья","Качество общения","Поддержка","Новые знакомства","Социальная активность","Принадлежность","Личные границы","Баланс общения и уединения"],development:["Обучение","Навыки","Интеллектуальное развитие","Самодисциплина","Цели","Практика","Любознательность","Результаты"],rest:["Сон","Паузы","Свободное время","Расслабление","Природа и прогулки","Развлечения","Уединение","Восстановление энергии"],creativity:["Идеи","Творческая практика","Самовыражение","Вдохновение","Свобода эксперимента","Признание результата","Реализация проектов","Смысл"],self_awareness:["Комфорт тела","Принятие себя","Позитивное мышление","Память","Эмоциональные реакции","Внимание и осознанность","Внутреннее спокойствие","Контакт с потребностями"]};
 const NAMES={health:"Здоровье",work:"Работа и карьера",finance:"Финансы",relationships:"Отношения и семья",social:"Друзья и общение",development:"Личное развитие",rest:"Отдых и восстановление",creativity:"Творчество и самореализация",self_awareness:"Самоощущение и саморефлексия"};
-const q=new URLSearchParams(location.search);
-const parentCandidate=q.get("parent")||"health";
-const parent=Object.prototype.hasOwnProperty.call(MAP,parentCandidate)?parentCandidate:"health";
-const rawRay=Number(q.get("ray"));
-const ray=Number.isInteger(rawRay)?Math.max(0,Math.min(7,rawRay)):0;
-const baseLabel=(MAP[parent]||MAP.health)[ray]||"Сфера";
-
-function readTrail(){
-  const raw=q.get("trail");
-  if(!raw)return [];
-  try{
-    const parsed=JSON.parse(raw);
-    return Array.isArray(parsed)?parsed.filter(v=>typeof v==="string").map(v=>v.trim().slice(0,180)).filter(Boolean).slice(0,20):[];
-  }catch(e){return []}
-}
-let trail=readTrail();
-const legacyLabel=(q.get("label")||"").trim().slice(0,180);
-if(!trail.length)trail=[legacyLabel||baseLabel];
-const selected=trail[trail.length-1]||baseLabel;
+const q=new URLSearchParams(location.search), candidate=q.get("parent")||"health", parent=Object.hasOwn(MAP,candidate)?candidate:"health";
+const ray=Math.max(0,Math.min(7,Number.isInteger(Number(q.get("ray")))?Number(q.get("ray")):0));
+function trailRead(){try{const x=JSON.parse(q.get("trail")||"[]");return Array.isArray(x)?x.filter(v=>typeof v==="string").map(v=>v.trim().slice(0,180)).filter(Boolean).slice(0,20):[]}catch(e){return[]}}
+let trail=trailRead();const legacy=(q.get("label")||"").trim().slice(0,180);if(!trail.length)trail=[legacy||MAP[parent][ray]];
+const selected=trail[trail.length-1], dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"];
+const key="detailWheel:v3:"+parent+":"+trail.join(" / ");
+let values=[];try{const p=JSON.parse(localStorage.getItem(key)||"null");if(Array.isArray(p)&&p.length===8)values=p.map(v=>v===null?null:Math.max(0,Math.min(10,Number(v)||0)))}catch(e){}
+if(values.length!==8)values=Array(8).fill(null);
 const returnUrl=q.get("back");
-const dims=["Удовлетворённость","Качество","Регулярность","Ресурс","Свобода выбора","Возможность улучшения","Поддержка","Перспектива"];
-const trailKey=trail.join(" / ");
-const key="detailWheel:v2:"+parent+":"+trailKey;
-let values=[];
-try{values=JSON.parse(localStorage.getItem(key)||"null")}catch(e){values=null}
-const hasSavedValues=Array.isArray(values)&&values.length===dims.length;
-if(!hasSavedValues)values=dims.map(()=>null);
-else values=values.map(v=>Number.isFinite(Number(v))?Math.max(0,Math.min(10,Number(v))):null);
-
-const title=document.getElementById("title");
-title.textContent="Детальное колесо: "+selected;
-const back=document.getElementById("back");
-back.href=returnUrl||"../"+parent+"/";
-back.textContent=returnUrl?"← Предыдущее колесо":"← Назад";
-
-const sliders=document.getElementById("sliders");
-const links=document.getElementById("links");
-const wheelList=document.getElementById("wheelList");
-
-const breadcrumb=document.createElement("div");
-breadcrumb.className="muted";
-breadcrumb.style.marginTop="8px";
-breadcrumb.textContent="Путь: "+([NAMES[parent],...trail].join(" / "));
-title.insertAdjacentElement("afterend",breadcrumb);
-
-dims.forEach((name,i)=>{
-  const row=document.createElement("div"); row.className="row";
-  const labelEl=document.createElement("label"); labelEl.textContent=name;
-  const valueEl=document.createElement("div"); valueEl.className="value"; valueEl.id="v"+i; valueEl.textContent=values[i]===null?"—":values[i];
-  const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]===null?0:values[i]; input.setAttribute("aria-label",name);
-  input.addEventListener("input",e=>{values[i]=Number(e.target.value);valueEl.textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()});
-  row.append(labelEl,valueEl,input); sliders.appendChild(row);
-
-  const nextTrail=[...trail,name];
-  const a=document.createElement("a");
-  a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&trail="+encodeURIComponent(JSON.stringify(nextTrail))+"&back="+encodeURIComponent(location.href);
-  a.textContent="i · "+name;
-  a.title="Открыть следующий уровень детализации";
-  links.appendChild(a);
-});
-
-// После открытия любого уровня детального колеса показываем его начало,
-// а не позицию, которую браузер восстановил с предыдущей страницы.
-if("scrollRestoration" in history)history.scrollRestoration="manual";
-function resetDetailScroll(){
-  window.scrollTo(0,0);
-  document.documentElement.scrollTop=0;
-  document.body.scrollTop=0;
-}
-resetDetailScroll();
-window.addEventListener("pageshow",resetDetailScroll);
-requestAnimationFrame(resetDetailScroll);
-setTimeout(resetDetailScroll,0);
-
-Object.entries(NAMES).forEach(([slug,name])=>{
-  const a=document.createElement("a"); a.href="../"+slug+"/"; a.textContent=name;
-  if(slug===parent)a.className="current";
-  wheelList.appendChild(a);
-});
-
-function draw(){
-  const c=document.getElementById("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=dims.length,step=Math.PI*2/n;
-  x.clearRect(0,0,S,S); x.fillStyle="#111a2e"; x.fillRect(0,0,S,S);
-  x.font="bold 12px Arial";x.textAlign="center";x.textBaseline="middle";
-  for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.28)":"rgba(255,255,255,.08)";x.lineWidth=k===5||k===10?2:1;x.stroke();}
-  for(let i=0;i<n;i++){
-    const a=i*step-Math.PI/2;
-    x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);x.strokeStyle="rgba(255,255,255,.16)";x.lineWidth=1.5;x.stroke();
-    const lx=cx+Math.cos(a)*(r+58),ly=cy+Math.sin(a)*(r+58);
-    const words=dims[i].split(" ");const lines=words.length<=2?[dims[i]]:[words.slice(0,Math.ceil(words.length/2)).join(" "),words.slice(Math.ceil(words.length/2)).join(" ")];
-    x.fillStyle="#fff";x.font="bold 14px Arial";lines.forEach((line,j)=>x.fillText(line,lx,ly+(j-(lines.length-1)/2)*17));
-  }
-  const pts=[];let assessed=0;
-  for(let i=0;i<n;i++){if(values[i]===null)continue;assessed++;const a=i*step-Math.PI/2;pts.push({i,x:cx+Math.cos(a)*r*values[i]/10,y:cy+Math.sin(a)*r*values[i]/10});}
-  if(assessed===n){
-    x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke();
-  } else if(assessed>1){
-    x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.strokeStyle="#6ea8fe";x.lineWidth=4;x.stroke();
-  }
-  for(let i=0;i<n;i++){
-    const a=i*step-Math.PI/2, px=cx+Math.cos(a)*r*.92,py=cy+Math.sin(a)*r*.92;
-    x.beginPath();x.arc(px,py,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.fillText("i",px,py);
-    if(values[i]!==null){const vx=cx+Math.cos(a)*r*values[i]/10,vy=cy+Math.sin(a)*r*values[i]/10;x.beginPath();x.arc(vx,vy,8,0,Math.PI*2);x.fillStyle="#6ea8fe";x.fill();x.strokeStyle="#fff";x.lineWidth=2;x.stroke();}
-  }
-  x.beginPath();x.arc(cx,cy,24,0,Math.PI*2);x.fillStyle="#0b1120";x.fill();x.strokeStyle="rgba(255,255,255,.25)";x.lineWidth=2;x.stroke();x.fillStyle="#9da9bb";x.font="bold 12px Arial";x.fillText("0",cx,cy);
-}
-draw();
+document.getElementById("subtitle").textContent=NAMES[parent]+" / "+trail.join(" / ");
+document.getElementById("wheelTitle").textContent="🌀 Детальное колесо: "+selected;
+document.getElementById("back").href=returnUrl||"../"+parent+"/";
+const save=()=>{try{localStorage.setItem(key,JSON.stringify(values))}catch(e){}};
+const $=id=>document.getElementById(id);
+let currentQuestion=0;
+function createMarks(){const c=$("sliderMarks");for(let i=0;i<=10;i++){const s=document.createElement("span");s.className="slider-mark";s.textContent=i;s.onclick=()=>setValue(i);c.appendChild(s)}}
+function setValue(v){values[currentQuestion]=v;$("scoreSlider").value=v;$("scoreDisplay").textContent=v;$("sliderBubble").textContent=v;updateMarks();positionBubble();save()}
+function updateMarks(){const v=Number($("scoreSlider").value);document.querySelectorAll(".slider-mark").forEach(x=>x.classList.toggle("active",Number(x.textContent)===v))}
+function positionBubble(){const s=$("scoreSlider"),b=$("sliderBubble"),p=Number(s.value)/10;b.style.left=(p*(s.offsetWidth-(b.offsetWidth||30))+(b.offsetWidth||30)/2)+"px";b.style.transform="translateX(-50%)"}
+function updateQuestion(){const i=currentQuestion;$("sphereNumber").textContent="ЛУЧ "+(i+1);$("sphereTitle").textContent=dims[i];$("question").textContent="Насколько вы удовлетворены показателем «"+dims[i].toLowerCase()+"» в сфере «"+selected+"» сейчас?";const v=values[i];$("scoreSlider").value=v===null?5:v;$("scoreDisplay").textContent=v===null?"—":v;$("sliderBubble").textContent=v===null?5:v;updateMarks();positionBubble();const p=Math.round((i+1)/8*100);$("progressText").textContent="Луч "+(i+1)+" из 8";$("progressPercent").textContent=p+"%";$("progressBar").style.width=p+"%";$("backBtn").style.visibility=i===0?"hidden":"visible";$("nextBtn").textContent=i===7?"Готово ✓":"Далее →"}
+$("scoreSlider").oninput=function(){setValue(Number(this.value));$("sliderBubble").classList.add("show")};
+$("scoreSlider").onmousedown=()=>{$("sliderBubble").classList.add("show")};
+$("scoreSlider").ontouchstart=()=>{$("sliderBubble").classList.add("show")};
+$("scoreSlider").onmouseup=()=>setTimeout(()=>$("sliderBubble").classList.remove("show"),1000);
+$("backBtn").onclick=()=>{if(currentQuestion>0){currentQuestion--;updateQuestion()}};
+$("nextBtn").onclick=()=>{if(values[currentQuestion]===null)setValue(Number($("scoreSlider").value));if(currentQuestion<7){currentQuestion++;updateQuestion()}else{save();showResults();window.scrollTo({top:0,behavior:"smooth"})}};
+function draw(){const c=$("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=8,step=Math.PI*2/n;x.clearRect(0,0,S,S);x.fillStyle="#111a2e";x.fillRect(0,0,S,S);
+for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.24)":"rgba(255,255,255,.085)";x.lineWidth=k===5||k===10?2:1;x.stroke()}
+for(let i=0;i<n;i++){const a=i*step-Math.PI/2;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);x.strokeStyle="rgba(255,255,255,.13)";x.lineWidth=1;x.stroke()}
+const pts=[];for(let i=0;i<n;i++){const v=values[i];const a=i*step-Math.PI/2;pts.push({x:cx+Math.cos(a)*r*(v===null?0:v/10),y:cy+Math.sin(a)*r*(v===null?0:v/10)})}
+if(values.every(v=>v!==null)){x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke()}
+for(let i=0;i<n;i++){const a=i*step-Math.PI/2,lx=cx+Math.cos(a)*(r+48),ly=cy+Math.sin(a)*(r+48),words=dims[i].split(" "),lines=words.length<=2?[dims[i]]:[words.slice(0,Math.ceil(words.length/2)).join(" "),words.slice(Math.ceil(words.length/2)).join(" ")];x.fillStyle="#fff";x.font="bold 14px Arial";lines.forEach((line,j)=>x.fillText(line,lx,ly+(j-(lines.length-1)/2)*17));const ix=cx+Math.cos(a)*r*.91,iy=cy+Math.sin(a)*r*.91;x.beginPath();x.arc(ix,iy,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.textAlign="center";x.textBaseline="middle";x.fillText("i",ix,iy);if(values[i]!==null){const px=cx+Math.cos(a)*r*values[i]/10,py=cy+Math.sin(a)*r*values[i]/10;x.beginPath();x.arc(px,py,9,0,Math.PI*2);x.fillStyle="#6ea8fe";x.fill();x.strokeStyle="#fff";x.lineWidth=2;x.stroke()}}
+x.beginPath();x.arc(cx,cy,27,0,Math.PI*2);x.fillStyle="#0b1120";x.fill();x.strokeStyle="rgba(255,255,255,.25)";x.lineWidth=2;x.stroke();x.fillStyle="#9da9bb";x.font="bold 12px Arial";x.fillText("0",cx,cy)}
+function buildLinks(){const c=$("detailLinks");c.innerHTML="";dims.forEach((name,i)=>{const a=document.createElement("a"),next=[...trail,name];a.href="?parent="+encodeURIComponent(parent)+"&ray="+ray+"&trail="+encodeURIComponent(JSON.stringify(next))+"&back="+encodeURIComponent(location.href);a.textContent="i · "+name;c.appendChild(a)})}
+function showResults(){ $("testSection").classList.add("hidden");$("resultSection").classList.remove("hidden");const assessed=values.filter(v=>v!==null);const avg=assessed.length?assessed.reduce((a,b)=>a+b,0)/assessed.length:0;$("average").textContent=avg.toFixed(1);$("maximum").textContent=assessed.length?Math.max(...assessed):0;$("minimum").textContent=assessed.length?Math.min(...assessed):0;$("gap").textContent=assessed.length?Math.max(...assessed)-Math.min(...assessed):0;let t=avg>=8?"Большинство показателей находятся на высоком уровне.":avg>=6?"Показатели в целом воспринимаются устойчиво.":avg>=4?"Оценки распределены неравномерно, и отдельным показателям может быть полезно уделить внимание.":"Многие показатели находятся в нижней части шкалы; можно рассмотреть небольшие реалистичные изменения.";$("interpretation").innerHTML="<p>"+t+"</p>";draw();buildLinks()}
+Object.entries(NAMES).forEach(([slug,name])=>{const a=document.createElement("a");a.href="../"+slug+"/";a.textContent=name;if(slug===parent)a.className="current";$("wheelList").appendChild(a)});
+createMarks();updateQuestion();draw();
+if(values.every(v=>v!==null))showResults();
+if("scrollRestoration"in history)history.scrollRestoration="manual";window.scrollTo(0,0);window.addEventListener("pageshow",()=>window.scrollTo(0,0));window.addEventListener("resize",positionBubble);
 </script>
 </body>
 </html>
