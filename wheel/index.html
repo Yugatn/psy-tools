@@ -331,7 +331,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
             <h2>🌀 Ваше колесо баланса</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация сфер"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
-            <div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div><div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
+            <div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div><div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
@@ -629,6 +629,7 @@ const JOURNAL_LIMIT = 50;
 
 function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
 function saveValues() { try { localStorage.setItem(VALUES_KEY, JSON.stringify(values)); } catch(e){} }
+const HISTORY_KEY = (typeof STORAGE_PREFIX !== 'undefined' ? STORAGE_PREFIX : 'wheelBalance') + '_history';
 function loadValues() {
     const s = localStorage.getItem(VALUES_KEY);
     if (!s) return;
@@ -827,6 +828,7 @@ $("scoreSlider").addEventListener("input", function() {
     $("sliderBubble").textContent = v;
     values[currentQuestion] = v;
     saveValues();
+    buildProgressSnapshot();
     updateBubblePosition();
     updateSliderMarkActive();
     $("sliderBubble").classList.add("show");
@@ -924,6 +926,7 @@ function resetWheelScores(){
     improvements={};
     saveValues();
     saveImprovements();
+    buildProgressSnapshot();
     currentQuestion=0;
     $("testSection").classList.remove("hidden");
     $("resultSection").classList.add("hidden");
@@ -1125,6 +1128,32 @@ function colorForValue(v) {
     if (v <= 5) return 'linear-gradient(180deg, #f59e0b, #b45309)';
     if (v <= 7) return 'linear-gradient(180deg, #6ea8fe, #2563eb)';
     return 'linear-gradient(180deg, #22c55e, #15803d)';
+}
+function buildProgressSnapshot(){
+    const date=localDateISO(new Date());
+    const snapshot={date,values:values.slice(0,categories.length),improvements:JSON.parse(JSON.stringify(improvements||{}))};
+    const key=HISTORY_KEY||"wheelBalanceHistory";
+    let history=[];
+    try{history=safeParse(localStorage.getItem(key)||"[]",[])}catch(e){history=[]}
+    if(!Array.isArray(history))history=[];
+    const last=history[history.length-1];
+    if(!last||last.date!==date){
+        history.push(snapshot);
+        if(history.length>30)history=history.slice(-30);
+        try{localStorage.setItem(key,JSON.stringify(history))}catch(e){}
+    }
+}
+function getHistory(){
+    try{const h=safeParse(localStorage.getItem(HISTORY_KEY||"wheelBalanceHistory")||"[]",[]);return Array.isArray(h)?h:[]}catch(e){return []}
+}
+function showChangeSummary(){
+    const h=getHistory();
+    if(h.length<2){showToast("История начнёт сравнивать изменения после следующего заполнения.");return}
+    const prev=h[h.length-2].values||[];
+    const changes=values.map((v,i)=>({i,delta:Number((v-(prev[i]??v)).toFixed(1))})).filter(x=>x.delta!==0).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+    if(!changes.length){showToast("По сравнению с предыдущей записью изменений нет.");return}
+    const text=changes.slice(0,3).map(x=>categories[x.i]+": "+(x.delta>0?"+":"")+x.delta).join(" · ");
+    showToast("Изменения: "+text);
 }
 function renderChart() {
     const c = $("resultsChart");
