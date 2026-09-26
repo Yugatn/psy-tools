@@ -840,6 +840,7 @@ $("backBtn").addEventListener("click", () => {
 $("nextBtn").addEventListener("click", () => {
     values[currentQuestion] = Number($("scoreSlider").value);
     saveValues();
+    buildProgressSnapshot();
     if (currentQuestion < spheres.length - 1) {
         currentQuestion++;
         updateQuestionUI(true);
