@@ -629,7 +629,7 @@ const JOURNAL_LIMIT = 50;
 
 function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
 function saveValues() { try { localStorage.setItem(VALUES_KEY, JSON.stringify(values)); } catch(e){} }
-const HISTORY_KEY = (typeof STORAGE_PREFIX !== 'undefined' ? STORAGE_PREFIX : 'wheelBalance') + '_history';
+const HISTORY_KEY = VALUES_KEY + ":history";
 function loadValues() {
     const s = localStorage.getItem(VALUES_KEY);
     if (!s) return;
@@ -845,6 +845,7 @@ $("backBtn").addEventListener("click", () => {
 $("nextBtn").addEventListener("click", () => {
     values[currentQuestion] = Number($("scoreSlider").value);
     saveValues();
+    buildProgressSnapshot();
     if (currentQuestion < spheres.length - 1) {
         currentQuestion++;
         updateQuestionUI(true);
