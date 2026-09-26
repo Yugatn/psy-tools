@@ -72,7 +72,9 @@ const trailKey=trail.join(" / ");
 const key="detailWheel:v2:"+parent+":"+trailKey;
 let values=[];
 try{values=JSON.parse(localStorage.getItem(key)||"null")}catch(e){values=null}
-if(!Array.isArray(values)||values.length!==dims.length)values=dims.map(()=>5);
+const hasSavedValues=Array.isArray(values)&&values.length===dims.length;
+if(!hasSavedValues)values=dims.map(()=>null);
+else values=values.map(v=>Number.isFinite(Number(v))?Math.max(0,Math.min(10,Number(v))):null);
 
 const title=document.getElementById("title");
 title.textContent="Детальное колесо: "+selected;
@@ -93,8 +95,8 @@ title.insertAdjacentElement("afterend",breadcrumb);
 dims.forEach((name,i)=>{
   const row=document.createElement("div"); row.className="row";
   const labelEl=document.createElement("label"); labelEl.textContent=name;
-  const valueEl=document.createElement("div"); valueEl.className="value"; valueEl.id="v"+i; valueEl.textContent=values[i];
-  const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]; input.setAttribute("aria-label",name);
+  const valueEl=document.createElement("div"); valueEl.className="value"; valueEl.id="v"+i; valueEl.textContent=values[i]===null?"—":values[i];
+  const input=document.createElement("input"); input.type="range"; input.min="0"; input.max="10"; input.step="1"; input.value=values[i]===null?0:values[i]; input.setAttribute("aria-label",name);
   input.addEventListener("input",e=>{values[i]=Number(e.target.value);valueEl.textContent=values[i];localStorage.setItem(key,JSON.stringify(values));draw()});
   row.append(labelEl,valueEl,input); sliders.appendChild(row);
 
@@ -128,10 +130,28 @@ Object.entries(NAMES).forEach(([slug,name])=>{
 function draw(){
   const c=document.getElementById("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=275,n=dims.length,step=Math.PI*2/n;
   x.clearRect(0,0,S,S); x.fillStyle="#111a2e"; x.fillRect(0,0,S,S);
-  for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.28)":"rgba(255,255,255,.08)";x.lineWidth=k===5||k===10?2:1;x.stroke()}
-  const pts=[]; for(let i=0;i<n;i++){const a=i*step-Math.PI/2;pts.push({x:cx+Math.cos(a)*r*values[i]/10,y:cy+Math.sin(a)*r*values[i]/10})}
-  x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke();
-  for(let i=0;i<n;i++){const a=i*step-Math.PI/2,lx=cx+Math.cos(a)*(r+48),ly=cy+Math.sin(a)*(r+48);x.fillStyle="#fff";x.font="bold 14px Arial";x.textAlign="center";x.textBaseline="middle";x.fillText(dims[i],lx,ly);const px=cx+Math.cos(a)*r*.92,py=cy+Math.sin(a)*r*.92;x.beginPath();x.arc(px,py,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.fillText("i",px,py)}
+  x.font="bold 12px Arial";x.textAlign="center";x.textBaseline="middle";
+  for(let k=1;k<=10;k++){x.beginPath();x.arc(cx,cy,r*k/10,0,Math.PI*2);x.strokeStyle=k===10?"rgba(255,255,255,.28)":"rgba(255,255,255,.08)";x.lineWidth=k===5||k===10?2:1;x.stroke();}
+  for(let i=0;i<n;i++){
+    const a=i*step-Math.PI/2;
+    x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);x.strokeStyle="rgba(255,255,255,.16)";x.lineWidth=1.5;x.stroke();
+    const lx=cx+Math.cos(a)*(r+58),ly=cy+Math.sin(a)*(r+58);
+    const words=dims[i].split(" ");const lines=words.length<=2?[dims[i]]:[words.slice(0,Math.ceil(words.length/2)).join(" "),words.slice(Math.ceil(words.length/2)).join(" ")];
+    x.fillStyle="#fff";x.font="bold 14px Arial";lines.forEach((line,j)=>x.fillText(line,lx,ly+(j-(lines.length-1)/2)*17));
+  }
+  const pts=[];let assessed=0;
+  for(let i=0;i<n;i++){if(values[i]===null)continue;assessed++;const a=i*step-Math.PI/2;pts.push({i,x:cx+Math.cos(a)*r*values[i]/10,y:cy+Math.sin(a)*r*values[i]/10});}
+  if(assessed===n){
+    x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fillStyle="rgba(110,168,254,.27)";x.fill();x.strokeStyle="#6ea8fe";x.lineWidth=5;x.stroke();
+  } else if(assessed>1){
+    x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.strokeStyle="#6ea8fe";x.lineWidth=4;x.stroke();
+  }
+  for(let i=0;i<n;i++){
+    const a=i*step-Math.PI/2, px=cx+Math.cos(a)*r*.92,py=cy+Math.sin(a)*r*.92;
+    x.beginPath();x.arc(px,py,14,0,Math.PI*2);x.fillStyle="#102c2a";x.fill();x.strokeStyle="#55e6b0";x.lineWidth=2;x.stroke();x.fillStyle="#8ff5cf";x.font="bold 12px Arial";x.fillText("i",px,py);
+    if(values[i]!==null){const vx=cx+Math.cos(a)*r*values[i]/10,vy=cy+Math.sin(a)*r*values[i]/10;x.beginPath();x.arc(vx,vy,8,0,Math.PI*2);x.fillStyle="#6ea8fe";x.fill();x.strokeStyle="#fff";x.lineWidth=2;x.stroke();}
+  }
+  x.beginPath();x.arc(cx,cy,24,0,Math.PI*2);x.fillStyle="#0b1120";x.fill();x.strokeStyle="rgba(255,255,255,.25)";x.lineWidth=2;x.stroke();x.fillStyle="#9da9bb";x.font="bold 12px Arial";x.fillText("0",cx,cy);
 }
 draw();
 </script>
