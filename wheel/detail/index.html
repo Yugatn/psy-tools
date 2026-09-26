@@ -611,7 +611,7 @@ const WEEKDAYS_ACC = ['в воскресенье','в понедельник','�
 
 const DETAIL_QUERY = new URLSearchParams(location.search);
 const DETAIL_PARENT = DETAIL_QUERY.get("parent") || "health";
-const DETAIL_RAY = Math.max(0, Math.min(8, Number(DETAIL_QUERY.get("ray")) || 0));
+const DETAIL_RAY = Math.max(0, Math.min(7, Number(DETAIL_QUERY.get("ray")) || 0));
 const DETAIL_LABEL = (DETAIL_QUERY.get("label") || "Детальное колесо").trim().slice(0,180);
 let DETAIL_TRAIL = [];
 try { const parsed = JSON.parse(DETAIL_QUERY.get("trail") || "[]"); if (Array.isArray(parsed)) DETAIL_TRAIL = parsed.filter(v => typeof v === "string").map(v => v.trim().slice(0,180)).filter(Boolean).slice(0,20); } catch(e) {}
@@ -1942,11 +1942,15 @@ function showResultsIfCompleted() {
 
         configureDetailPage();
         showResultsIfCompleted();
+        requestAnimationFrame(() => {
+            updateDetailLinks();
+            updateBubblePosition();
+        });
     } catch (e) {
         showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
     }
 })();
-window.addEventListener("resize", () => { updateDetailLinks(); });
+window.addEventListener("resize", () => { requestAnimationFrame(updateDetailLinks); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
 <details class="wheel-index"><summary>Другие колёса баланса</summary><p>Вы можете перейти к любой сфере и продолжить детализацию её лучей.</p><div class="wheel-index-list"><a href="./health/">Здоровье</a><a href="./work/">Работа и карьера</a><a href="./finance/">Финансы</a><a href="./relationships/">Отношения и семья</a><a href="./social/">Друзья и общение</a><a href="./development/">Личное развитие</a><a href="./rest/">Отдых и восстановление</a><a href="./creativity/">Творчество и самореализация</a><a href="./self_awareness/">Самоощущение и саморефлексия</a></div><a class="wheel-index-main" href="./">Главное колесо баланса</a></details></div>
