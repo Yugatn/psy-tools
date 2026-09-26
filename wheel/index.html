@@ -290,7 +290,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
 .wheel-index-list a,.wheel-index-main{display:block;padding:10px 9px;border-radius:11px;background:#18233a;border:1px solid #2a3a5a;color:#dbe5f3;text-decoration:none;font-size:12.5px;font-weight:700;text-align:center;line-height:1.25;}
 .wheel-index-list a[aria-current="page"]{border-color:#55e6b0;background:#102c2a;color:#8ff5cf;}
 .wheel-index-main{margin-top:8px;background:#24314b;}
-</style>
+.wheel-tools{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.tool-button{padding:10px 12px;border-radius:11px;background:#18233a;border:1px solid #2a3a5a;color:#cbd7e8;font-size:13px;font-weight:700}.tool-button.active{background:#315fa8;border-color:#6ea8fe;color:#fff}@media(max-width:520px){.wheel-tools{grid-template-columns:1fr}}</style>
 </head>
 <body>
 
@@ -331,7 +331,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
             <h2>🌀 Ваше колесо баланса</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация сфер"></div></div>
             <div class="scale-info">Центр = 0 · внешний круг = 10</div>
-            <div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
+            <div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div><div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(194,140,255,0.35);border:2px solid #c28cff;box-sizing:border-box;"></span>Цель улучшения</span>
@@ -906,6 +906,29 @@ function updateDetailLinks() {
         link.style.top = y + "px";
         layer.appendChild(link);
     }
+}
+function focusLowestRay(){
+    const min=Math.min(...values);
+    const idx=values.indexOf(min);
+    currentQuestion=idx;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(false);
+    const target=document.querySelectorAll(".wheel-detail-link")[idx];
+    if(target){target.classList.add("active");setTimeout(()=>target.classList.remove("active"),1400);}
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+function resetWheelScores(){
+    if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
+    values=Array(categories.length).fill(5);
+    improvements={};
+    saveValues();
+    saveImprovements();
+    currentQuestion=0;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(false);
+    window.scrollTo({top:0,behavior:"smooth"});
 }
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
