@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Колесо: Работа и карьера</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -629,7 +629,7 @@ const HISTORY_KEY = VALUES_KEY + ":history";
 
 const JOURNAL_LIMIT = 50;
 
-function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
+function safeParse(v, fb) { return window.WheelEngine ? WheelEngine.parseJSON(v, fb) : (function(){ try { return JSON.parse(v); } catch(e) { return fb; } })(); }
 function saveValues() { try { localStorage.setItem(VALUES_KEY, JSON.stringify(values)); } catch(e){} }
 function loadValues() {
     const s = localStorage.getItem(VALUES_KEY);
@@ -1100,7 +1100,7 @@ function hasMeaningfulContent(imp, idx) {
 
 /* RESULTS */
 function showResults() {
-    const avg = (values.reduce((a,b) => a+b, 0) / values.length).toFixed(1);
+    const avg = WheelEngine.average(values).toFixed(1);
     const max = Math.max(...values), min = Math.min(...values), gap = max - min;
     $("average").textContent = avg;
     $("maximum").textContent = max;
@@ -1542,6 +1542,10 @@ $("exportJsonBtn").addEventListener("click", () => {
         const data = {
             app: "wheel-balance",
             version: 3,
+            method_id: "wheel_of_balance",
+            method_version: "3.0",
+            research_status: "self_reflection",
+            limitations: ["Самонаблюдение; результат не является медицинской, психологической или иной диагностикой.", "Оценки отражают субъективное восприятие пользователя в момент заполнения."],
             exportedAt: new Date().toISOString(),
             values: values.slice(),
             improvements: JSON.parse(JSON.stringify(improvements)),
