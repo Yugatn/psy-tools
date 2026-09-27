@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Колесо баланса</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -628,7 +628,7 @@ const SHARE_KEY = "wheelBalanceV3Share";
 const SPOILER_KEY = "wheelBalanceV3SpoilerPlan";
 const JOURNAL_LIMIT = 50;
 
-function safeParse(v, fb) { try { return JSON.parse(v); } catch(e) { return fb; } }
+function safeParse(v, fb) { return window.WheelEngine ? WheelEngine.parseJSON(v, fb) : (function(){ try { return JSON.parse(v); } catch(e) { return fb; } })(); }
 function saveValues() { try { localStorage.setItem(VALUES_KEY, JSON.stringify(values)); } catch(e){} }
 const HISTORY_KEY = VALUES_KEY + ":history";
 function loadValues() {
@@ -638,7 +638,7 @@ function loadValues() {
     if (Array.isArray(p)) {
         values = Array(categories.length).fill(5);
         p.slice(0, categories.length).forEach((v, i) => {
-            values[i] = Math.max(0, Math.min(10, Number(v) || 0));
+            values[i] = WheelEngine.clamp(Number(v) || 0, 0, 10);
         });
     }
 }
@@ -1105,7 +1105,7 @@ function hasMeaningfulContent(imp, idx) {
 
 /* RESULTS */
 function showResults() {
-    const avg = (values.reduce((a,b) => a+b, 0) / values.length).toFixed(1);
+    const avg = WheelEngine.average(values).toFixed(1);
     const max = Math.max(...values), min = Math.min(...values), gap = max - min;
     $("average").textContent = avg;
     $("maximum").textContent = max;
@@ -1543,6 +1543,10 @@ $("exportJsonBtn").addEventListener("click", () => {
         const data = {
             app: "wheel-balance",
             version: 3,
+            method_id: "wheel_of_balance",
+            method_version: "3.0",
+            research_status: "self_reflection",
+            limitations: ["Самонаблюдение; результат не является медицинской, психологической или иной диагностикой.", "Оценки отражают субъективное восприятие пользователя в момент заполнения."],
             exportedAt: new Date().toISOString(),
             values: values.slice(),
             improvements: JSON.parse(JSON.stringify(improvements)),
@@ -1935,4 +1939,5 @@ window.addEventListener("resize", () => { updateDetailLinks(); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
 <details class="wheel-index"><summary>Другие колёса баланса</summary><p>Вы можете перейти к любой сфере и продолжить детализацию её лучей.</p><div class="wheel-index-list"><a href="./health/">Здоровье</a><a href="./work/">Работа и карьера</a><a href="./finance/">Финансы</a><a href="./relationships/">Отношения и семья</a><a href="./social/">Друзья и общение</a><a href="./development/">Личное развитие</a><a href="./rest/">Отдых и восстановление</a><a href="./creativity/">Творчество и самореализация</a><a href="./self_awareness/">Самоощущение и саморефлексия</a></div><a class="wheel-index-main" href="./">Главное колесо баланса</a></details></div>
+</body>
 </html>
