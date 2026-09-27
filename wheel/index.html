@@ -879,14 +879,20 @@ function getScorePoint(cx, cy, radius, angle, value) {
     return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
 }
 const ROOT_DETAIL_PARENTS = ["health","work","finance","relationships","social","development","rest","creativity","self_awareness"];
+const ROOT_WHEEL_COUNT = categories.length;
 const DETAIL_LINKS = categories.map((category, i) => {
     const url = new URL("./detail/", location.href);
     url.searchParams.set("parent", ROOT_DETAIL_PARENTS[i] || "health");
     url.searchParams.set("ray", String(i));
+    url.searchParams.set("parentCount", String(categories.length));
     url.searchParams.set("label", category);
     url.searchParams.set("back", location.href);
     return url.toString();
 });
+function scheduleDrawWheel() {
+    if (wheelFrame) return;
+    wheelFrame = requestAnimationFrame(() => { wheelFrame = 0; drawWheel($("wheel"), values, improvements); updateDetailLinks(); });
+}
 function updateDetailLinks() {
     const stage = $("wheelStage"), layer = $("detailLinks");
     if (!stage || !layer) return;
@@ -935,16 +941,44 @@ function resetWheelScores(){
     updateQuestionUI(false);
     window.scrollTo({top:0,behavior:"smooth"});
 }
+let wheelFrame = 0;
+let wheelGridCache = null;
+let wheelGridKey = "";
 function drawWheel(canvas, vals, imps) {
     const ctx = canvas.getContext("2d");
     const size = 760;
-    canvas.width = size; canvas.height = size;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const targetWidth = Math.max(1, Math.round(size * dpr));
+    if (canvas.width !== targetWidth || canvas.height !== targetWidth) {
+        canvas.width = targetWidth; canvas.height = targetWidth;
+        wheelGridCache = null;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const cx = size/2, cy = size/2, radius = size/2 - 105;
     const n = categories.length, angleStep = (Math.PI*2)/n;
 
+    const gridKey = size + ":" + n + ":" + radius;
+    if (!wheelGridCache || wheelGridKey !== gridKey) {
+        wheelGridCache = document.createElement("canvas");
+        wheelGridCache.width = size * dpr; wheelGridCache.height = size * dpr;
+        const g = wheelGridCache.getContext("2d");
+        g.setTransform(dpr, 0, 0, dpr, 0, 0);
+        g.fillStyle = "#111a2e"; g.fillRect(0, 0, size, size);
+        for (let r = 1; r <= 10; r++) {
+            g.beginPath(); g.arc(cx, cy, radius*r/10, 0, Math.PI*2);
+            g.strokeStyle = r === 10 ? "rgba(255,255,255,0.24)" : "rgba(255,255,255,0.085)";
+            g.lineWidth = (r === 5 || r === 10) ? 2 : 1; g.stroke();
+        }
+        g.font = "bold 11px Arial"; g.textAlign = "center"; g.textBaseline = "middle";
+        for (let r = 1; r <= 10; r++) { g.fillStyle = "rgba(190,205,225,0.60)"; g.fillText(String(r), cx + 16, cy - radius*r/10); }
+        for (let i = 0; i < n; i++) { const a=i*angleStep-Math.PI/2; g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+Math.cos(a)*radius,cy+Math.sin(a)*radius); g.strokeStyle="rgba(255,255,255,0.13)"; g.lineWidth=1; g.stroke(); }
+        wheelGridKey = gridKey;
+    }
     ctx.clearRect(0, 0, size, size);
-    ctx.fillStyle = "#111a2e";
-    ctx.fillRect(0, 0, size, size);
+    ctx.drawImage(wheelGridCache, 0, 0, size*dpr, size*dpr, 0, 0, size, size);
+    /* dynamic score polygon is drawn below */
+    /* static grid replaced by cached layer */
+    if (false) {
     for (let r = 1; r <= 10; r++) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius*r/10, 0, Math.PI*2);
@@ -965,6 +999,7 @@ function drawWheel(canvas, vals, imps) {
         ctx.lineTo(cx + Math.cos(a)*radius, cy + Math.sin(a)*radius);
         ctx.strokeStyle = "rgba(255,255,255,0.13)";
         ctx.lineWidth = 1; ctx.stroke();
+    }
     }
     const currentPoints = [];
     for (let i = 0; i < n; i++) {
@@ -1935,9 +1970,9 @@ function showResultsIfCompleted() {
         showToast("Ошибка инициализации: " + (e && e.message ? e.message : e));
     }
 })();
-window.addEventListener("resize", () => { updateDetailLinks(); });
+window.addEventListener("resize", () => { wheelGridCache = null; updateDetailLinks(); scheduleDrawWheel(); });
 window.addEventListener("resize", updateBubblePosition);
 </script>
-<details class="wheel-index"><summary>Другие колёса баланса</summary><p>Вы можете перейти к любой сфере и продолжить детализацию её лучей.</p><div class="wheel-index-list"><a href="./health/">Здоровье</a><a href="./work/">Работа и карьера</a><a href="./finance/">Финансы</a><a href="./relationships/">Отношения и семья</a><a href="./social/">Друзья и общение</a><a href="./development/">Личное развитие</a><a href="./rest/">Отдых и восстановление</a><a href="./creativity/">Творчество и самореализация</a><a href="./self_awareness/">Самоощущение и саморефлексия</a></div><a class="wheel-index-main" href="./">Главное колесо баланса</a></details></div>
+<details class="wheel-index" id="wheelIndex"><summary>Другие колёса баланса</summary><p>Вы можете перейти к любой сфере и продолжить детализацию её лучей.</p><div class="wheel-index-list"><a href="./health/">Здоровье</a><a href="./work/">Работа и карьера</a><a href="./finance/">Финансы</a><a href="./relationships/">Отношения и семья</a><a href="./social/">Друзья и общение</a><a href="./development/">Личное развитие</a><a href="./rest/">Отдых и восстановление</a><a href="./creativity/">Творчество и самореализация</a><a href="./self_awareness/">Самоощущение и саморефлексия</a></div><a class="wheel-index-main" href="./">Главное колесо баланса</a></details></div>
 </body>
 </html>
