@@ -930,10 +930,14 @@ function resetWheelScores(){
     window.scrollTo({top:0,behavior:"smooth"});
 }
 function drawWheel(canvas, vals, imps) {
-    const ctx = canvas.getContext("2d");
-    const size = 760;
-    canvas.width = size; canvas.height = size;
-    const cx = size/2, cy = size/2, radius = size/2 - 105;
+    const stage = $("wheelStage");
+    const size = Math.max(1, Math.min(760, Math.floor(stage ? stage.clientWidth : 760)));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const bw = Math.round(size * dpr);
+    if (canvas.width !== bw || canvas.height !== bw || canvas.style.width !== size + "px") { canvas.width = bw; canvas.height = bw; canvas.style.width = size + "px"; canvas.style.height = size + "px"; }
+    const ctx = canvas.getContext("2d", { alpha: false });
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cx = size/2, cy = size/2, radius = size/2 - Math.min(105, size * 0.138);
     const n = categories.length, angleStep = (Math.PI*2)/n;
 
     ctx.clearRect(0, 0, size, size);
