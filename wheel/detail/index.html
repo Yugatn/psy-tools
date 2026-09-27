@@ -615,7 +615,7 @@ const DETAIL_PARENT = DETAIL_QUERY.get("parent") || "health";
 const DETAIL_PARENT_COUNT = (() => {
     const back = DETAIL_QUERY.get("back") || "";
     try {
-        const path = new URL(back, location.href).pathname.replace(/\\/+$/, "");
+        const path = new URL(back, location.href).pathname.replace(/\/+$/, "");
         return /\/wheel$|\/wheel\/index\.html$/.test(path) ? 9 : 8;
     } catch(e) {
         return 8;
