@@ -612,15 +612,7 @@ const WEEKDAYS_ACC = ['в воскресенье','в понедельник','�
 
 const DETAIL_QUERY = new URLSearchParams(location.search);
 const DETAIL_PARENT = DETAIL_QUERY.get("parent") || "health";
-const DETAIL_PARENT_COUNT = (() => {
-    const back = DETAIL_QUERY.get("back") || "";
-    try {
-        const path = new URL(back, location.href).pathname.replace(/\/+$/, "");
-        return /\/wheel$|\/wheel\/index\.html$/.test(path) ? 9 : 8;
-    } catch(e) {
-        return 8;
-    }
-})();
+const DETAIL_PARENT_COUNT = Math.max(1, Number(DETAIL_QUERY.get("parentCount")) || 8);
 const DETAIL_RAY = WheelEngine.detail.clampRay(DETAIL_QUERY.get("ray"), DETAIL_PARENT_COUNT);
 const DETAIL_LABEL = (DETAIL_QUERY.get("label") || "Детальное колесо").trim().slice(0,180);
 let DETAIL_TRAIL = [];
