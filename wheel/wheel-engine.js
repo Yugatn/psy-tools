@@ -15,6 +15,9 @@
     if (!Array.isArray(values) || !values.length) return 0;
     return values.reduce((sum, value) => sum + Number(value || 0), 0) / values.length;
   };
+  root.parseJSON = function (value, fallback) {
+    try { return JSON.parse(value); } catch (_) { return fallback; }
+  };
   root.normalizeValues = function (values, length, fallback) {
     const source = Array.isArray(values) ? values : [];
     const base = Number.isFinite(Number(fallback)) ? Number(fallback) : 5;
@@ -37,6 +40,10 @@
     }
   };
   root.detail = {
+    clampRay(ray, count) {
+      const max = Math.max(0, Number(count) - 1);
+      return root.clamp(Number(ray) || 0, 0, max);
+    },
     buildUrl(base, parent, ray, label, back) {
       const url = new URL(base, location.href);
       url.searchParams.set("parent", parent);
