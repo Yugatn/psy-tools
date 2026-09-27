@@ -612,7 +612,8 @@ const WEEKDAYS_ACC = ['в воскресенье','в понедельник','�
 
 const DETAIL_QUERY = new URLSearchParams(location.search);
 const DETAIL_PARENT = DETAIL_QUERY.get("parent") || "health";
-const DETAIL_RAY = Math.max(0, Math.min(7, Number(DETAIL_QUERY.get("ray")) || 0));
+const DETAIL_PARENT_COUNT = DETAIL_PARENT === "main" ? 9 : 8;
+const DETAIL_RAY = WheelEngine.detail.clampRay(DETAIL_QUERY.get("ray"), DETAIL_PARENT_COUNT);
 const DETAIL_LABEL = (DETAIL_QUERY.get("label") || "Детальное колесо").trim().slice(0,180);
 let DETAIL_TRAIL = [];
 try { const parsed = JSON.parse(DETAIL_QUERY.get("trail") || "[]"); if (Array.isArray(parsed)) DETAIL_TRAIL = parsed.filter(v => typeof v === "string").map(v => v.trim().slice(0,180)).filter(Boolean).slice(0,20); } catch(e) {}
