@@ -1,1 +1,71 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Колесо баланса страхов</title><style>body{font-family:system-ui;background:#0b1120;color:#fff;margin:0;padding:16px}main{max-width:800px;margin:auto}.card{background:#111a2e;border:1px solid #26324a;border-radius:16px;padding:16px;margin:12px 0}input{width:100%}textarea{width:100%;min-height:80px;background:#0e1729;color:#fff;border:1px solid #33425f;border-radius:10px;padding:10px;box-sizing:border-box}h1{text-align:center}.hint{color:#aab4c3;font-size:14px;line-height:1.5}.score{font-size:36px;text-align:center;font-weight:800}</style></head><body><main><h1>Колесо баланса страхов</h1><p class="hint">Оценивайте не объективную опасность, а то, насколько страх влияет на ваши решения и действия. Цель — постепенное снижение ограничивающего влияния страха.</p><div id="app"></div></main><script>const rays=["Страх смерти","Страх неудачи","Страх успеха","Страх богатства","Страх бедности","Страх независимости","Страх свободы","Страх перемен","Страх осуждения","Страх одиночества","Страх ответственности","Страх неизвестности"];const app=document.querySelector("#app");app.innerHTML=rays.map((r,i)=>'<section class="card"><h2>'+(i+1)+". "+r+'</h2><p class="hint">Насколько этот страх влияет на ваши решения и действия сейчас?</p><div class="score" id="s'+i+'">5</div><input type="range" min="0" max="10" value="5" oninput="document.getElementById(\'s'+i+'\').textContent=this.value"><p><b>Что будет, если случится самый худший сценарий? Что будет дальше?</b></p><p class="hint">Опишите последствия, а затем следующие шаги после них.</p><textarea placeholder="Самый худший сценарий → что дальше → мои следующие действия"></textarea><p><b>Что я делаю, несмотря на этот страх?</b></p><textarea placeholder="Конкретное действие"></textarea></section>').join("")</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Колесо баланса страхов</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:10px;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}main{max-width:900px;margin:auto}.card{background:#111a2e;border:1px solid #26324a;border-radius:20px;padding:16px;margin:14px 0}h1{text-align:center;font-size:27px;margin:8px 0}.subtitle,.hint{color:#aab4c3;line-height:1.5;font-size:14px}.score{text-align:center;font-size:52px;font-weight:800;margin:10px}.slider{width:100%;accent-color:#b96b6b}.nav,.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}button{border:0;border-radius:12px;padding:13px;background:#24314b;color:#fff;font-weight:700}button.primary{background:#713f43}textarea{width:100%;min-height:90px;background:#0e1729;color:#fff;border:1px solid #33425f;border-radius:10px;padding:10px;font:inherit}.wheel{display:flex;justify-content:center;overflow:hidden}.wheel canvas{width:min(94vw,680px);height:min(94vw,680px)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.stat{text-align:center;background:#18233a;padding:10px;border-radius:12px}.stat b{display:block;font-size:20px}.bar{height:8px;background:#24314b;border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:#b96b6b}.history{display:grid;gap:7px}.history-row{background:#18233a;border-radius:10px;padding:9px;font-size:13px}.hidden{display:none!important}table{width:100%;border-collapse:collapse}td{padding:6px;border-bottom:1px solid #26324a;font-size:13px}
+</style>
+</head>
+<body><main>
+<h1>Колесо баланса страхов</h1>
+<p class="subtitle">Самонаблюдение за тем, насколько страх влияет на решения и действия. Цель — постепенно уменьшать ограничивающее влияние страха, не отказываясь от разумной осторожности и самосохранения.</p>
+
+<section class="card" id="test">
+<div id="progress"></div><h2 id="title"></h2><p class="hint" id="question"></p>
+<div class="score" id="score">5</div><input class="slider" id="slider" type="range" min="0" max="10" value="5">
+<p class="hint">0 — страх почти не влияет · 10 — страх сильно влияет</p>
+<p><b>Что будет, если случится самый худший сценарий? Что будет дальше?</b></p>
+<p class="hint">Разберите сценарий по шагам: что произойдёт, что будет после этого и какие действия останутся возможными.</p>
+<textarea id="worst" placeholder="Сценарий → последствия → что будет дальше → мои действия"></textarea>
+<p><b>Что я делаю, несмотря на этот страх?</b></p>
+<textarea id="action" placeholder="Конкретное действие или следующий шаг"></textarea>
+<div class="nav"><button id="prev">Назад</button><button class="primary" id="next">Далее</button></div>
+</section>
+
+<section class="card"><h2>Колесо</h2><div class="wheel"><canvas id="canvas" width="680" height="680"></canvas></div>
+<p class="hint">Чем меньше площадь фигуры, тем меньше субъективное влияние страхов. Сравнивайте прежде всего собственную динамику.</p></section>
+
+<section class="card"><div class="stats"><div class="stat"><b id="avg">5.0</b>средний уровень</div><div class="stat"><b id="min">0</b>минимум</div><div class="stat"><b id="max">10</b>максимум</div></div></section>
+
+<section class="card"><h2>Динамика</h2><div id="history" class="history"></div></section>
+<section class="card"><h2>Все страхи</h2><div id="list"></div></section>
+
+<section class="card"><h2>Сохранить результат</h2><p class="hint">Снимок сохраняется в историю при завершении опроса.</p><div class="actions"><button id="save">Сохранить сейчас</button><button id="export">Экспорт JSON</button></div></section>
+<a href="../" style="display:block;text-align:center;color:#aebbd0;padding:12px">← Вернуться к Колесу баланса</a>
+</main>
+
+<script>
+const RAYS=[
+["Страх смерти","Влияние мыслей о смерти и конечности жизни на решения и действия."],
+["Страх неудачи","Влияние опасения ошибиться, потерпеть неудачу или не достичь результата."],
+["Страх успеха","Влияние тревоги перед ростом, признанием, новыми возможностями и последствиями успеха."],
+["Страх богатства","Влияние напряжения вокруг больших доходов, достатка и финансовой ответственности."],
+["Страх бедности","Влияние опасения потерять деньги, жильё, стабильность или привычный уровень жизни."],
+["Страх независимости","Влияние тревоги перед самостоятельными решениями и личной ответственностью."],
+["Страх свободы","Влияние тревоги перед отсутствием внешних правил, контроля или готового сценария."],
+["Страх перемен","Влияние неизвестности и необходимости менять привычное состояние."],
+["Страх осуждения","Влияние опасения критики, отказа, насмешки или негативной оценки."],
+["Страх одиночества","Влияние опасения остаться без близких отношений или социальной поддержки."],
+["Страх ответственности","Влияние тревоги из-за последствий собственных решений и необходимости отвечать за результат."],
+["Страх неизвестности","Влияние невозможности заранее знать результат или полностью контролировать ситуацию."]
+];
+const KEY="wheelFearV2", HKEY="wheelFearHistoryV1";
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{values:Array(12).fill(5),notes:Array.from({length:12},()=>({worst:"",action:""}))};
+let history=JSON.parse(localStorage.getItem(HKEY)||"[]");let current=0;
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function draw(){const c=$("canvas"),ctx=c.getContext("2d"),d=Math.min(devicePixelRatio||1,2),s=680;if(c.width!==s*d){c.width=s*d;c.height=s*d}ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,s,s);const cx=s/2,cy=s/2,r=235,n=RAYS.length;ctx.strokeStyle="rgba(255,255,255,.12)";for(let k=1;k<=10;k++){ctx.beginPath();for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n,x=cx+Math.cos(a)*r*k/10,y=cy+Math.sin(a)*r*k/10;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.stroke()}for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke()}ctx.beginPath();state.values.forEach((v,i)=>{const a=-Math.PI/2+i*2*Math.PI/n,rr=r*v/10,x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();ctx.fillStyle="rgba(185,107,107,.28)";ctx.fill();ctx.strokeStyle="#e29a9a";ctx.lineWidth=2;ctx.stroke();state.values.forEach((v,i)=>{const a=-Math.PI/2+i*2*Math.PI/n,rr=r*v/10;ctx.beginPath();ctx.arc(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,5,0,7);ctx.fillStyle="#fff";ctx.fill()})}
+function render(){const r=RAYS[current];$("progress").textContent=(current+1)+" из "+RAYS.length;$("title").textContent=r[0];$("question").textContent=r[1]+" Насколько этот страх влияет на вас сейчас?";$("score").textContent=state.values[current];$("slider").value=state.values[current];$("worst").value=state.notes[current].worst;$("action").value=state.notes[current].action;$("list").innerHTML=RAYS.map((x,i)=>"<div><b>"+(i+1)+". "+x[0]+"</b><div class='bar'><i style='width:"+state.values[i]*10+"%'></i></div><p class='hint'>"+x[1]+" · "+state.values[i]+"/10</p></div>").join("");const a=state.values.reduce((x,y)=>x+y,0)/12;$("avg").textContent=a.toFixed(1);$("min").textContent=Math.min(...state.values);$("max").textContent=Math.max(...state.values);renderHistory();draw()}
+function renderHistory(){$("history").innerHTML=history.length?history.slice().reverse().map((h,i)=>"<div class='history-row'><b>"+new Date(h.date).toLocaleString("ru-RU")+"</b> · среднее "+h.average.toFixed(1)+"/10</div>").join(""):"<div class='hint'>История пока пуста.</div>"}
+function snapshot(){const average=state.values.reduce((a,b)=>a+b,0)/state.values.length;history.push({date:new Date().toISOString(),average,values:[...state.values]});history=history.slice(-30);localStorage.setItem(HKEY,JSON.stringify(history));renderHistory()}
+$("slider").oninput=e=>{state.values[current]=+e.target.value;$("score").textContent=e.target.value;save();draw();render()};
+$("worst").oninput=()=>{state.notes[current].worst=$("worst").value;save()};
+$("action").oninput=()=>{state.notes[current].action=$("action").value;save()};
+$("prev").onclick=()=>{if(current){current--;render()}};
+$("next").onclick=()=>{if(current<RAYS.length-1){current++;render()}else snapshot()};
+$("save").onclick=snapshot;
+$("export").onclick=()=>{const data={app:"psy-tools",method_id:"wheel_of_fears",method_version:"2.0",research_status:"self_reflection",limitations:["Субъективная самооценка; не является диагностикой.","Высокий показатель отражает влияние страха, а не объективную опасность.","Снижение показателя не означает отказ от разумного самосохранения."],values:state.values,notes:state.notes,history};const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download="wheel-fears.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+render();
+</script></body></html>
