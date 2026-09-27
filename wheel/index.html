@@ -832,6 +832,7 @@ $("scoreSlider").addEventListener("input", function() {
     buildProgressSnapshot();
     updateBubblePosition();
     updateSliderMarkActive();
+    scheduleDrawWheel();
     $("sliderBubble").classList.add("show");
     haptic("selection");
 });
@@ -1973,6 +1974,7 @@ function showResultsIfCompleted() {
     }
 })();
 window.addEventListener("resize", () => { wheelGridCache = null; updateDetailLinks(); scheduleDrawWheel(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden && wheelFrame) { cancelAnimationFrame(wheelFrame); wheelFrame = 0; } });
 document.addEventListener("visibilitychange", () => { if (document.hidden && wheelFrame) { cancelAnimationFrame(wheelFrame); wheelFrame = 0; } });
 window.addEventListener("resize", updateBubblePosition);
 </script>
