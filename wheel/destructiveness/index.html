@@ -937,7 +937,27 @@ let wheelFrame = 0;
 let wheelGridCache = null;
 let wheelGridKey = "";
 function drawWheel(canvas, vals, imps) {
-    vertexHits = WheelCanvas.draw(canvas, vals, imps, categories);
+    if (!canvas || !window.WheelCanvas || typeof WheelCanvas.draw !== "function") {
+        return [];
+    }
+    try {
+        const stage = $("wheelStage");
+        if (stage && stage.clientWidth === 0) return [];
+        vertexHits = WheelCanvas.draw(canvas, vals, imps, categories) || [];
+        return vertexHits;
+    } catch (e) {
+        console.error("Destructiveness wheel render error:", e);
+        return [];
+    }
+}
+function redrawVisibleWheel() {
+    const result = $("resultSection");
+    const canvas = $("wheel");
+    if (!result || !canvas || result.classList.contains("hidden")) return;
+    requestAnimationFrame(() => {
+        drawWheel(canvas, values, improvements);
+        updateDetailLinks();
+    });
 }
 
 function hasMeaningfulContent(imp, idx) {
@@ -967,7 +987,7 @@ function showResults() {
     else interp = "<p>Многие сферы находятся в нижней части шкалы. Можно рассмотреть небольшие реалистичные изменения.</p>";
     if (gap >= 5) interp += "<p>Между самой высокой и самой низкой оценкой есть заметный разрыв — <strong>" + gap + " баллов</strong>.</p>";
     $("interpretation").innerHTML = interp;
-    drawWheel($("wheel"), values, improvements);
+    redrawVisibleWheel();
     renderImprovements();
     renderChart();
     loadReflections();
@@ -1785,6 +1805,13 @@ function showResultsIfCompleted() {
     }
 })();
 window.addEventListener("resize", () => { wheelGridCache = null; updateDetailLinks(); scheduleDrawWheel(); });
+window.addEventListener("load", () => {
+    setTimeout(() => redrawVisibleWheel(), 50);
+});
+if (window.ResizeObserver) {
+    const wheelStage = $("wheelStage");
+    if (wheelStage) new ResizeObserver(() => redrawVisibleWheel()).observe(wheelStage);
+}
 document.addEventListener("visibilitychange", () => { if (document.hidden && wheelFrame) { cancelAnimationFrame(wheelFrame); wheelFrame = 0; } });
 window.addEventListener("resize", updateBubblePosition);
 </script>
