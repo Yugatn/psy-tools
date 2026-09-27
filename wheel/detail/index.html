@@ -616,7 +616,7 @@ const DETAIL_PARENT_COUNT = (() => {
     const back = DETAIL_QUERY.get("back") || "";
     try {
         const path = new URL(back, location.href).pathname.replace(/\\/+$/, "");
-        return /\\/wheel$|\\/wheel\\/index\\.html$/.test(path) ? 9 : 8;
+        return /\/wheel$|\/wheel\/index\.html$/.test(path) ? 9 : 8;
     } catch(e) {
         return 8;
     }
