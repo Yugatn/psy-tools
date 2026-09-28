@@ -828,10 +828,10 @@ function setCurrentScore(rawValue, options = {}) {
     $("sliderBubble").textContent = String(v);
     updateSliderMarkActive();
     updateBubblePosition();
-    saveValues();
-    buildProgressSnapshot();
-    scheduleDrawWheel();
     if (options.showBubble) $("sliderBubble").classList.add("show");
+    try { saveValues(); } catch(e) {}
+    try { buildProgressSnapshot(); } catch(e) {}
+    try { scheduleDrawWheel(); } catch(e) {}
 }
 $("scoreSlider").addEventListener("input", function() {
     setCurrentScore(this.value, {showBubble:true});
