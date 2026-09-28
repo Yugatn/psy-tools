@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wheel QA</title>
+<style>
+body{margin:0;background:#0b1120;color:#fff;font:15px system-ui;padding:20px}
+main{max-width:900px;margin:auto}.ok{color:#55e6b0}.bad{color:#ff7b7b}
+.card{padding:14px;margin:10px 0;background:#111a2e;border:1px solid #26324a;border-radius:12px}
+small{color:#9da9bb}.run{padding:10px 14px;border:0;border-radius:9px;cursor:pointer}
+</style>
+</head>
+<body><main>
+<h1>Проверка «Колёс баланса»</h1>
+<p><small>Автоматическая статическая проверка страниц из текущего GitHub Pages-раздела.</small></p>
+<button class="run" id="run">Запустить проверку</button>
+<div id="out"></div>
+<script>
+const PAGES=["index.html","health/","work/","finance/","relationships/","social/","development/","rest/","creativity/","self_awareness/","sexuality/","fear/","destructiveness/","detail/"];
+const requiredIds=["wheel","resultSection","resultsChart","pngBtn","exportJsonBtn","importJsonBtn","journal","addPlanBtn","improvementsList"];
+async function checkPage(path){
+ const res=await fetch(path,{cache:"no-store"}); if(!res.ok) throw new Error("HTTP "+res.status);
+ const html=await res.text(); const doc=new DOMParser().parseFromString(html,"text/html");
+ const scripts=[...doc.querySelectorAll("script[src]")].map(s=>s.getAttribute("src"));
+ const duplicates=scripts.filter((s,i,a)=>a.indexOf(s)!==i);
+ const ids=requiredIds.filter(id=>!doc.getElementById(id));
+ const inline=[...doc.querySelectorAll("script:not([src])")].map(s=>s.textContent).filter(Boolean);
+ const syntax=[]; inline.forEach((code,i)=>{try{new Function(code);syntax.push("ok")}catch(e){syntax.push("ERROR: "+e.message)}});
+ const shared=path==="index.html"?["./wheel-engine.js","./wheel-draw.js"]:path==="detail/"?["../wheel-engine.js"]:["../wheel-engine.js","../wheel-draw.js"];
+ const missingScripts=shared.filter(s=>!scripts.includes(s));
+ return {path,http:res.status,duplicates,missingIds:ids,missingScripts,syntax};
+}
+async function run(){
+ const out=document.getElementById("out"); out.innerHTML="<div class=card>Проверка…</div>";
+ const results=[]; for(const p of PAGES){try{results.push(await checkPage(p))}catch(e){results.push({path:p,error:e.message})}}
+ const bad=results.filter(r=>r.error||r.duplicates?.length||r.missingIds?.length||r.missingScripts?.length||r.syntax?.some(x=>x!=="ok"));
+ out.innerHTML='<div class="card '+(bad.length?"bad":"ok")+'"><strong>'+ (bad.length?"Найдены проблемы: "+bad.length:"Ошибок не найдено")+'</strong></div>'+
+ results.map(r=>'<div class="card"><strong class="'+(r.error||r.duplicates?.length||r.missingIds?.length||r.missingScripts?.length||r.syntax?.some(x=>x!=="ok")?"bad":"ok")+'">'+r.path+'</strong>'+
+ (r.error?"<div class=bad>"+r.error+"</div>":"<small>HTTP "+r.http+" · duplicate scripts: "+(r.duplicates?.length||0)+" · missing IDs: "+(r.missingIds?.length||0)+" · missing scripts: "+(r.missingScripts?.length||0)+" · syntax errors: "+(r.syntax?.filter(x=>x!=="ok").length||0)+"</small>")+'</div>').join("");
+}
+document.getElementById("run").addEventListener("click",run); run();
+</script>
+</main></body></html>
