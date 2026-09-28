@@ -768,13 +768,7 @@ function createSliderMarks() {
         m.textContent = i;
         m.dataset.value = i;
         m.addEventListener("click", () => {
-            $("scoreSlider").value = i;
-            values[currentQuestion] = i;
-            $("scoreDisplay").textContent = i;
-            $("sliderBubble").textContent = i;
-            updateSliderMarkActive();
-            updateBubblePosition();
-            saveValues();
+            setCurrentScore(i, {showBubble:true});
             haptic("selection");
         });
         c.appendChild(m);
@@ -807,9 +801,10 @@ function updateQuestionUI(animate) {
     $("sphereNumber").textContent = "СФЕРА " + (idx + 1);
     $("sphereTitle").textContent = sp.name;
     $("question").textContent = sp.question;
-    $("scoreSlider").value = values[idx];
-    $("scoreDisplay").textContent = values[idx];
-    $("sliderBubble").textContent = values[idx];
+    const restoredScore = Math.max(0, Math.min(10, Math.round(Number(values[idx]) || 0)));
+    $("scoreSlider").value = String(restoredScore);
+    $("scoreDisplay").textContent = String(restoredScore);
+    $("sliderBubble").textContent = String(restoredScore);
     updateBubblePosition();
     updateSliderMarkActive();
     const pr = Math.round(((idx+1)/spheres.length)*100);
@@ -820,16 +815,22 @@ function updateQuestionUI(animate) {
     $("nextBtn").textContent = idx === spheres.length - 1 ? "Готово ✓" : "Далее →";
     if (animate) triggerQuestionFade();
 }
-$("scoreSlider").addEventListener("input", function() {
-    const v = Number(this.value);
-    $("scoreDisplay").textContent = v;
-    $("sliderBubble").textContent = v;
+function setCurrentScore(rawValue, options = {}) {
+    const v = Math.max(0, Math.min(10, Math.round(Number(rawValue) || 0)));
     values[currentQuestion] = v;
-    saveValues();
-    buildProgressSnapshot();
-    updateBubblePosition();
+    const slider = $("scoreSlider");
+    slider.value = String(v);
+    $("scoreDisplay").textContent = String(v);
+    $("sliderBubble").textContent = String(v);
     updateSliderMarkActive();
-    $("sliderBubble").classList.add("show");
+    updateBubblePosition();
+    if (options.showBubble) $("sliderBubble").classList.add("show");
+    try { saveValues(); } catch(e) {}
+    try { buildProgressSnapshot(); } catch(e) {}
+    try { scheduleDrawWheel(); } catch(e) {}
+}
+$("scoreSlider").addEventListener("input", function() {
+    setCurrentScore(this.value, {showBubble:true});
     haptic("selection");
 });
 $("scoreSlider").addEventListener("mousedown", () => $("sliderBubble").classList.add("show"));
