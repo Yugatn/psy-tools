@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Колесо оценки кандидата · PSY-TOOLS</title>
+<style>
+:root{--bg:#02050a;--card:#091219;--line:#29404b;--text:#eef7f5;--muted:#91a7a7;--accent:#45f0c3;--blue:#6ea8fe}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,Arial,sans-serif}body{min-height:100vh}
+main{width:min(1080px,100%);margin:auto;padding:28px 16px 70px}.back{color:var(--muted);text-decoration:none;font-size:13px}.head{text-align:center;margin:28px 0}.head h1{font-size:clamp(23px,4vw,38px);margin:0 0 10px}.head p{color:var(--muted);max-width:720px;margin:auto;line-height:1.55}
+.card{background:linear-gradient(145deg,#0a171d,#050b10);border:1px solid #19313a;border-radius:18px;padding:18px;margin-top:16px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field textarea{width:100%;background:#061016;border:1px solid #203842;border-radius:10px;color:var(--text);padding:11px;font:inherit}.field textarea{min-height:92px;resize:vertical}.full{grid-column:1/-1}
+.criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.criterion{padding:13px;border:1px solid #1c333c;border-radius:12px;background:#071117}.criterion-top{display:flex;justify-content:space-between;gap:10px}.criterion strong{font-size:14px}.criterion small{color:var(--muted);line-height:1.35;display:block;margin-top:4px}.score{font-weight:800;color:var(--accent);min-width:25px;text-align:right}.criterion input{width:100%;margin-top:10px;accent-color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.btn{border:0;border-radius:10px;padding:11px 15px;background:#1b3340;color:#fff;font-weight:700;cursor:pointer}.primary{background:#176a59}.danger{background:#54252a}.summary{display:grid;grid-template-columns:minmax(260px,1fr) minmax(220px,1fr);gap:20px;align-items:center}.wheelbox{display:flex;justify-content:center}.wheelbox canvas{width:min(100%,520px);height:auto;display:block}.overall{text-align:center}.overall .number{font-size:54px;font-weight:800;color:var(--accent)}.overall p{color:var(--muted);line-height:1.5}.saved{display:grid;gap:8px}.saved-item{border:1px solid #1c333c;border-radius:10px;padding:11px;display:flex;justify-content:space-between;gap:10px}.saved-item span{color:var(--muted);font-size:12px}
+.note{font-size:12px;color:#91a7a7;line-height:1.55}.warning{padding:11px 13px;border-left:3px solid #d7a74d;background:#17130b;color:#cfc3a7;border-radius:8px;font-size:12px;line-height:1.5}
+@media(max-width:700px){.meta,.criteria,.summary{grid-template-columns:1fr}.full{grid-column:auto}.criterion strong{font-size:13px}}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../">← PSY-TOOLS</a>
+<header class="head"><h1>Колесо оценки кандидата</h1><p>Быстрая фиксация впечатления сразу после телефонного интервью или собеседования. Это рабочая заметка рекрутера, а не автоматическое решение о найме.</p></header>
+<section class="card">
+<div class="meta">
+<div class="field"><label>Кандидат</label><input id="candidate" placeholder="Имя или внутренний ID"></div>
+<div class="field"><label>Вакансия / роль</label><input id="role" placeholder="Например: Python-разработчик"></div>
+<div class="field"><label>Этап</label><input id="stage" placeholder="Телефонное интервью / собеседование"></div>
+<div class="field"><label>Дата</label><input id="date" type="date"></div>
+<div class="field full"><label>Краткое впечатление</label><textarea id="note" placeholder="Что важно запомнить после разговора: факты, примеры, наблюдения, вопросы для следующего этапа"></textarea></div>
+</div>
+</section>
+<section class="card"><h2>Оценка по критериям</h2><p class="note">0 — критерий практически не проявился в интервью · 10 — проявился очень убедительно. Оценивайте только то, что связано с ролью и подтверждено разговором или материалами кандидата.</p><div class="criteria" id="criteria"></div></section>
+<section class="card summary"><div class="wheelbox"><canvas id="wheel" width="760" height="760"></canvas></div><div class="overall"><div>Средняя оценка</div><div class="number" id="overall">5.0</div><p id="summary">Заполните критерии, чтобы получить визуальный профиль кандидата.</p><div class="actions"><button class="btn primary" id="save">Сохранить оценку</button><button class="btn" id="export">Экспорт JSON</button><button class="btn" id="print">Печать / PDF</button><button class="btn danger" id="clear">Очистить форму</button></div></div></section>
+<section class="card"><h2>Сохранённые оценки</h2><div class="saved" id="saved"></div></section>
+<section class="card warning"><strong>Правило использования:</strong> колесо фиксирует впечатление после интервью и помогает не полагаться только на память. Оно не должно использоваться для оценки возраста, пола, расы, национальности, религии, здоровья, семейного положения или других личных характеристик. Для кадрового решения сопоставляйте оценку с требованиями роли, доказательствами из интервью и другими этапами отбора.</section>
+</main>
+<script>
+const criteria=[
+["Профессиональная компетентность","Знания и навыки, необходимые для роли"],
+["Релевантный опыт","Опыт, связанный с задачами вакансии"],
+["Мотивация","Понимание роли и причины интереса к ней"],
+["Коммуникация","Ясность, точность и содержательность ответов"],
+["Структурность мышления","Умение выделять главное и последовательно рассуждать"],
+["Решение задач","Подход к практическим и ситуационным вопросам"],
+["Обучаемость и адаптивность","Работа с новым, обратной связью и изменениями"],
+["Соответствие роли","Насколько профиль соответствует заявленным задачам и условиям"]
+];
+const scores=Array(criteria.length).fill(5), KEY="candidate_wheel_records_v1";
+const $=id=>document.getElementById(id);
+$("date").value=new Date().toISOString().slice(0,10);
+function build(){ $("criteria").innerHTML=""; criteria.forEach((c,i)=>{const d=document.createElement("div");d.className="criterion";d.innerHTML='<div class="criterion-top"><div><strong>'+c[0]+'</strong><small>'+c[1]+'</small></div><div class="score" id="s'+i+'">5</div></div><input type="range" min="0" max="10" step="1" value="5" data-i="'+i+'">';d.querySelector("input").oninput=e=>{scores[i]=+e.target.value;$("s"+i).textContent=scores[i];draw();};$("criteria").appendChild(d);});draw();}
+function draw(){const c=$("wheel"),x=c.getContext("2d"),S=760,cx=380,cy=380,r=260,n=criteria.length;x.clearRect(0,0,S,S);x.strokeStyle="#29404b";x.lineWidth=1;for(let k=1;k<=10;k++){x.beginPath();for(let i=0;i<n;i++){const a=i*2*Math.PI/n-Math.PI/2,rr=r*k/10,px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr;i?x.lineTo(px,py):x.moveTo(px,py)}x.closePath();x.stroke()}for(let i=0;i<n;i++){const a=i*2*Math.PI/n-Math.PI/2,px=cx+Math.cos(a)*r,py=cy+Math.sin(a)*r;x.beginPath();x.moveTo(cx,cy);x.lineTo(px,py);x.strokeStyle="#203842";x.stroke();x.fillStyle="#dce8e6";x.font="600 14px Arial";x.textAlign=Math.cos(a)>0.2?"left":Math.cos(a)<-0.2?"right":"center";x.textBaseline=Math.sin(a)>0.2?"top":Math.sin(a)<-0.2?"bottom":"middle";x.fillText(criteria[i][0],cx+Math.cos(a)*(r+18),cy+Math.sin(a)*(r+18));}
+x.beginPath();scores.forEach((v,i)=>{const a=i*2*Math.PI/n-Math.PI/2,rr=r*v/10,px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr;i?x.lineTo(px,py):x.moveTo(px,py)});x.closePath();x.fillStyle="rgba(69,240,195,.16)";x.fill();x.strokeStyle="#45f0c3";x.lineWidth=3;x.stroke();scores.forEach((v,i)=>{const a=i*2*Math.PI/n-Math.PI/2,rr=r*v/10;x.beginPath();x.arc(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,6,0,Math.PI*2);x.fillStyle="#45f0c3";x.fill()});$("overall").textContent=(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);$("summary").textContent="Профиль отражает ваши текущие наблюдения по выбранным критериям. Сохраните его сразу после интервью, пока контекст разговора свежий."; }
+function getRecords(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}}
+function save(){const rec={id:Date.now(),candidate:$("candidate").value.trim()||"Без имени",role:$("role").value.trim(),stage:$("stage").value.trim(),date:$("date").value,note:$("note").value,scores:[...scores],criteria:criteria.map(x=>x[0])};const all=getRecords();all.unshift(rec);localStorage.setItem(KEY,JSON.stringify(all.slice(0,100)));renderSaved();alert("Оценка кандидата сохранена.");}
+function renderSaved(){const all=getRecords();$("saved").innerHTML=all.length?all.map(r=>'<div class="saved-item"><div><strong>'+esc(r.candidate)+'</strong><br><span>'+esc(r.role||"Роль не указана")+' · '+esc(r.date||"")+'</span></div><button class="btn" onclick="loadRecord('+r.id+')">Открыть</button></div>').join(""):'<div class="note">Пока нет сохранённых оценок.</div>';}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+window.loadRecord=id=>{const r=getRecords().find(x=>x.id===id);if(!r)return;$("candidate").value=r.candidate;$("role").value=r.role;$("stage").value=r.stage;$("date").value=r.date;$("note").value=r.note;(r.scores||[]).forEach((v,i)=>{scores[i]=Math.max(0,Math.min(10,+v||0));});document.querySelectorAll(".criterion input").forEach((el,i)=>{el.value=scores[i];$("s"+i).textContent=scores[i]});draw();window.scrollTo({top:0,behavior:"smooth"})};
+$("save").onclick=save;$("print").onclick=()=>window.print();$("export").onclick=()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),records:getRecords()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="candidate-wheel.json";a.click();URL.revokeObjectURL(a.href)};$("clear").onclick=()=>{if(confirm("Очистить текущую форму?")){scores.fill(5);$("candidate").value="";$("role").value="";$("stage").value="";$("note").value="";$("date").value=new Date().toISOString().slice(0,10);build();}};
+build();renderSaved();
+</script>
+</body>
+</html>

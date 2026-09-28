@@ -330,7 +330,7 @@ textarea:focus,input:focus{border-color:#6ea8fe;}
         <div class="card">
             <h2>🌀 Колесо: Финансы</h2>
             <div class="wheel-wrapper" id="wheelStage"><canvas id="wheel"></canvas><div id="detailLinks" class="wheel-detail-links" aria-label="Детализация: Финансы"></div></div>
-            <div class="scale-info">Центр = 0 · внешний круг = 10</div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div><div id="focusResult" class="focus-result hidden" aria-live="polite"></div>
+            <div class="scale-info">Центр = 0 · внешний круг = 10</div><div id="wheelTools" class="wheel-tools"><button type="button" id="focusLowestBtn" class="tool-button">Зона внимания</button><button type="button" id="historyBtn" class="tool-button">Изменения</button><button type="button" id="resetWheelBtn" class="tool-button">Сбросить оценки</button></div>
             <div class="wheel-hint">Каждый луч можно рассмотреть подробнее. Нажмите на <strong>зелёный маркер «i»</strong> рядом с лучом, чтобы открыть следующее колесо.</div>
             <div class="wheel-legend"><span class="legend-item"><span class="legend-swatch-fill" style="background:#102c2a;border:2px solid #55e6b0;box-sizing:border-box;"></span>Детализация</span>
                 <span class="legend-item"><span class="legend-swatch-fill" style="background:rgba(110,168,254,0.7);"></span>Текущее</span>
@@ -908,16 +908,15 @@ function updateDetailLinks() {
     }
 }
 function focusLowestRay(){
-    const isRiskWheel=/\/wheel\/(fear|destructiveness)\//.test(window.location.pathname);
-    const score=isRiskWheel?Math.max(...values):Math.min(...values),idx=values.indexOf(score),name=categories[idx]||"Не определено",result=$("focusResult");
-    if(!result)return;
-    const mode=isRiskWheel?"наибольшая выраженность":"наименьшая оценка";
-    const text=isRiskWheel?"Высокая оценка здесь означает большую выраженность рассматриваемого страха или деструктивного импульса. Поэтому внимание направляется на наиболее выраженную сферу.":"Низкая оценка означает, что эта сфера сейчас находится ниже остальных по вашей собственной шкале. Это не диагноз и не готовый вывод о проблеме.";
-    const action=improvements[idx]&&(improvements[idx].step||improvements[idx].note)?"Для этой сферы уже есть запись в плане улучшения.":"Откройте луч «i» для детализации и, при необходимости, сформулируйте небольшой следующий шаг.";
-    result.innerHTML='<div class="focus-result-title">Зона внимания: '+name+'</div><div class="focus-result-score">Оценка: <strong>'+score+'/10</strong> · критерий: '+mode+'</div><div class="focus-result-text">'+text+'</div><div class="focus-result-action">'+action+'</div><button type="button" class="focus-result-button" id="focusOpenRay">Открыть эту сферу</button>';
-    result.classList.remove("hidden");document.querySelectorAll(".wheel-detail-link.active").forEach(el=>el.classList.remove("active"));
-    const target=document.querySelectorAll(".wheel-detail-link")[idx];if(target)target.classList.add("active");
-    const open=$("focusOpenRay");if(open)open.onclick=()=>{if(target)target.click()};result.scrollIntoView({behavior:"smooth",block:"center"});
+    const min=Math.min(...values);
+    const idx=values.indexOf(min);
+    currentQuestion=idx;
+    $("testSection").classList.remove("hidden");
+    $("resultSection").classList.add("hidden");
+    updateQuestionUI(false);
+    const target=document.querySelectorAll(".wheel-detail-link")[idx];
+    if(target){target.classList.add("active");setTimeout(()=>target.classList.remove("active"),1400);}
+    window.scrollTo({top:0,behavior:"smooth"});
 }
 function resetWheelScores(){
     if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
@@ -1365,7 +1364,6 @@ $("resetBtn").addEventListener("click", () => {
 });
 
 
-.focus-result{margin-top:12px;padding:14px 16px;background:#111f32;border:1px solid #31506f;border-radius:14px;color:#dce8f7;line-height:1.5}.focus-result.hidden{display:none}.focus-result-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:5px}.focus-result-score{font-size:13px;color:#9fc5ee}.focus-result-text{margin-top:7px;font-size:13.5px;color:#c1cede}.focus-result-action{margin-top:9px;font-size:13px;color:#e4ccff}.focus-result-button{margin-top:11px;padding:9px 12px;border:0;border-radius:10px;background:#315fa8;color:#fff;font-weight:700;cursor:pointer}
 /* WHEEL TOOLS */
 $("focusLowestBtn").addEventListener("click", () => { focusLowestRay(); haptic("selection"); });
 $("historyBtn").addEventListener("click", () => { showChangeSummary(); haptic("selection"); });

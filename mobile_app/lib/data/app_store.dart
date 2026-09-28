@@ -53,7 +53,7 @@ class AppStore {
     for(final entry in templates.entries){
       final wheelId='wheel_default_${wheelIndex++}'; created[entry.key]=wheelId;
       wheels.add({'id':wheelId,'title':entry.key,'parentId':null,'rays':[
-        for(var i=0;i<entry.value.length;i++){'id':'${wheelId}_ray_${i}','title':entry.value[i],'childWheelId':null}
+        for(var i=0;i<entry.value.length;i++){'id':'${wheelId}_ray_${i','title':entry.value[i],'childWheelId':null}
       ]});
     }
     final life=wheels.firstWhere((w)=>w['id']==created['Жизнь']) as Map<String,dynamic>;
