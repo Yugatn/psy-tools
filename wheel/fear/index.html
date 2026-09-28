@@ -762,13 +762,7 @@ function createSliderMarks() {
         m.textContent = i;
         m.dataset.value = i;
         m.addEventListener("click", () => {
-            $("scoreSlider").value = i;
-            values[currentQuestion] = i;
-            $("scoreDisplay").textContent = i;
-            $("sliderBubble").textContent = i;
-            updateSliderMarkActive();
-            updateBubblePosition();
-            saveValues();
+            setCurrentScore(i, {showBubble:true});
             haptic("selection");
         });
         c.appendChild(m);
@@ -801,9 +795,10 @@ function updateQuestionUI(animate) {
     $("sphereNumber").textContent = "СФЕРА " + (idx + 1);
     $("sphereTitle").textContent = sp.name;
     $("question").textContent = sp.question;
-    $("scoreSlider").value = values[idx];
-    $("scoreDisplay").textContent = values[idx];
-    $("sliderBubble").textContent = values[idx];
+    const restoredScore = Math.max(0, Math.min(10, Math.round(Number(values[idx]) || 0)));
+    $("scoreSlider").value = String(restoredScore);
+    $("scoreDisplay").textContent = String(restoredScore);
+    $("sliderBubble").textContent = String(restoredScore);
     updateBubblePosition();
     updateSliderMarkActive();
     const pr = Math.round(((idx+1)/spheres.length)*100);
