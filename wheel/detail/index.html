@@ -1913,6 +1913,26 @@ document.addEventListener("keydown", e => {
 $("refInspiration").addEventListener("input", saveReflections);
 $("refRecipe").addEventListener("input", saveReflections);
 
+
+function setCurrentScore(rawValue, options = {}) {
+    const v = Math.max(0, Math.min(10, Math.round(Number(rawValue) || 0)));
+    values[currentQuestion] = v;
+    const slider = $("scoreSlider");
+    slider.value = String(v);
+    $("scoreDisplay").textContent = String(v);
+    $("sliderBubble").textContent = String(v);
+    updateSliderMarkActive();
+    updateBubblePosition();
+    if (options.showBubble) $("sliderBubble").classList.add("show");
+    try { saveValues(); } catch(e) {}
+    try { buildProgressSnapshot(); } catch(e) {}
+    try { scheduleDrawWheel(); } catch(e) {}
+}
+function scheduleDrawWheel() {
+    if (typeof wheelFrame !== "undefined" && wheelFrame) return;
+    wheelFrame = requestAnimationFrame(() => { wheelFrame = 0; drawWheel($("wheel"), values, improvements); updateDetailLinks(); });
+}
+
 /* INIT */
 function configureDetailPage() {
     const selected = DETAIL_TRAIL[DETAIL_TRAIL.length - 1] || DETAIL_LABEL;
