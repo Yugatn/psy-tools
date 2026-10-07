@@ -1,11 +1,11 @@
 /* Wheel Engine — shared compatibility layer
  * Pages remain self-contained. This module stabilises APIs used by main, sphere and detail wheels.
- * v1.1.0 — null/unrated model, safer average, detail URLs with parentCount/trail.
+ * v1.1.1 — null/unrated model, safer average, detail URLs with parentCount/trail, fixed escapeHtml.
  */
 (function () {
   "use strict";
   const root = window.WheelEngine = window.WheelEngine || {};
-  root.version = "1.1.0";
+  root.version = "1.1.1";
 
   root.clamp = function (value, min, max) {
     const n = Number(value);
@@ -13,7 +13,6 @@
     return Math.min(max, Math.max(min, n));
   };
 
-  /** True when the user has explicitly set a 0–10 score (not empty/unrated). */
   root.isRated = function (value) {
     if (value === null || value === undefined || value === "") return false;
     return Number.isFinite(Number(value));
@@ -34,11 +33,6 @@
     try { return JSON.parse(value); } catch (_) { return fallback; }
   };
 
-  /**
-   * Normalize a values array to fixed length.
-   * Pass fallback=null for the unrated model (first open / missing slots).
-   * Pass a number (legacy) to fill missing slots with that score.
-   */
   root.normalizeValues = function (values, length, fallback) {
     const source = Array.isArray(values) ? values : [];
     const useNull = fallback === null || fallback === undefined;
@@ -74,7 +68,6 @@
       const max = Math.max(0, Number(count) - 1);
       return root.clamp(Number(ray) || 0, 0, max);
     },
-    /** parentCount defaults to 9 (main wheel ray count). trail optional array of labels. */
     buildUrl: function (base, parent, ray, label, back, parentCount, trail) {
       const url = new URL(base, location.href);
       url.searchParams.set("parent", parent);
