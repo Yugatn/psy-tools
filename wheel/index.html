@@ -4,55 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Колесо баланса</title>
-<link rel="canonical" href="https://yugatn.github.io/psy-tools/wheel/">
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;min-height:100%;background:#0b1120;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-body{min-height:100vh;min-height:100dvh;padding:16px}
-.wrap{max-width:720px;margin:0 auto}
-h1{font-size:28px;margin:8px 0 8px;text-align:center}
-.lead{color:#aab4c3;text-align:center;line-height:1.5;margin:0 0 20px;font-size:14px}
-.card{background:#111a2e;border:1px solid #26324a;border-radius:18px;padding:16px;margin-bottom:12px}
-.card h2{font-size:16px;margin:0 0 10px}
-a.btn{display:block;text-align:center;padding:14px;border-radius:14px;background:#315fa8;color:#fff;text-decoration:none;font-weight:700;margin-bottom:8px}
-a.btn.secondary{background:#24314b}
-a.btn:active{transform:scale(.98)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
-.grid a{display:block;padding:12px;background:#18233a;border:1px solid #2a3a5a;border-radius:12px;color:#cfe1ff;text-decoration:none;font-size:13px;font-weight:600;text-align:center}
-.muted{color:#8fa0b8;font-size:12px;line-height:1.45;margin-top:10px}
-nav{font-size:13px;color:#7f8da3;margin-bottom:12px}
-nav a{color:#9db8df;text-decoration:none}
+html,body{margin:0;min-height:100%;background:#0b1120;color:#aab4c3;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.boot{max-width:420px;margin:20vh auto;text-align:center;padding:20px}
+.boot a{color:#9db8df}
 </style>
 </head>
 <body>
-<div class="wrap">
-<nav><a href="/psy-tools/">psy-tools</a> / Колесо баланса</nav>
-<h1>Колесо баланса</h1>
-<p class="lead">Оцените сферы жизни, сохраните результаты и смотрите динамику в личном кабинете на этом устройстве.</p>
-
-<div class="card">
-  <h2>Личный кабинет</h2>
-  <a class="btn" href="./cabinet.html">Мои результаты</a>
-  <p class="muted">Сводка по всем колёсам, история, дневник, экспорт и импорт. Данные только в localStorage браузера.</p>
-</div>
-
-<div class="card">
-  <h2>Начать оценку</h2>
-  <a class="btn secondary" href="./hub.html">Все колёса · хаб</a>
-  <a class="btn secondary" href="./health/">Здоровье</a>
-  <div class="grid" style="margin-top:10px">
-    <a href="./work/">Работа</a>
-    <a href="./finance/">Финансы</a>
-    <a href="./relationships/">Отношения</a>
-    <a href="./social/">Общение</a>
-    <a href="./development/">Развитие</a>
-    <a href="./rest/">Отдых</a>
-    <a href="./creativity/">Творчество</a>
-    <a href="./self_awareness/">Самоосознание</a>
-  </div>
-  <p class="muted">Полное главное колесо (9 сфер на одной странице) восстанавливается отдельно из резервной копии репозитория. Сферы и кабинет работают сейчас.</p>
-</div>
-</div>
-<script src="./wheel-engine.js"></script>
+<div class="boot" id="boot">Загрузка колеса баланса…</div>
+<script>
+(async function () {
+  var boot = document.getElementById("boot");
+  try {
+    var urls = ["./index-part-0.txt", "./index-part-1.txt", "./index-part-2.txt"];
+    var chunks = await Promise.all(urls.map(function (u) {
+      return fetch(u, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error(u + " " + r.status);
+        return r.text();
+      });
+    }));
+    var html = chunks.join("");
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (e) {
+    boot.innerHTML = "Не удалось загрузить колесо.<br><a href=\"./hub.html\">Хаб</a> · <a href=\"./cabinet.html\">Кабинет</a><br><small>" + String(e) + "</small>";
+  }
+})();
+</script>
 </body>
 </html>
