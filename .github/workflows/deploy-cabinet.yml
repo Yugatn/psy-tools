@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/deploy-cabinet.yml'
+      - 'payloads/cabinet.html.gz.b64'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -10,11 +11,21 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Write cabinet.html from embedded payload
+      - name: Decode and write cabinet.html
         run: |
-          python3 <<'PY'
+          set -euo pipefail
+          python3 - <<'PY'
           import base64, gzip
           from pathlib import Path
-          b64 = open('.github/workflows/deploy-cabinet.yml').read()
-          # payload is in sibling file written next
+          b64 = Path('payloads/cabinet.html.gz.b64').read_text().strip()
+          data = gzip.decompress(base64.b64decode(b64))
+          Path('wheel/cabinet.html').write_bytes(data)
+          text = data.decode('utf-8')
+          print('wrote', len(data), 'wheelNested', 'wheelNested' in text)
+          assert 'wheelNested' in text
           PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wheel/cabinet.html
+          git commit -m "fix(wheel): cabinet discovers wheelNested sphere results"
+          git push
