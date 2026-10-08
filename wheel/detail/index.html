@@ -612,7 +612,7 @@ const WEEKDAYS_ACC = ['в воскресенье','в понедельник','�
 
 const DETAIL_QUERY = new URLSearchParams(location.search);
 const DETAIL_PARENT = DETAIL_QUERY.get("parent") || "health";
-const DETAIL_PARENT_COUNT = Math.max(1, Number(DETAIL_QUERY.get("parentCount")) || 8);
+const DETAIL_PARENT_COUNT = Math.max(1, Number(DETAIL_QUERY.get("parentCount")) || 9);
 const DETAIL_RAY = WheelEngine.detail.clampRay(DETAIL_QUERY.get("ray"), DETAIL_PARENT_COUNT);
 const DETAIL_LABEL = (DETAIL_QUERY.get("label") || "Детальное колесо").trim().slice(0,180);
 let DETAIL_TRAIL = [];
@@ -622,7 +622,7 @@ const DETAIL_STORAGE_ID = encodeURIComponent(DETAIL_PARENT + ":" + DETAIL_TRAIL.
 const STORAGE_PREFIX = "wheelBalanceDetail:" + DETAIL_STORAGE_ID;
 spheres.forEach(s => { s.question = s.question.replaceAll("__SELECTED__", DETAIL_LABEL); });
 
-let values = Array(categories.length).fill(5);
+let values = Array(categories.length).fill(null);
 let currentQuestion = 0;
 let improvements = {};
 let reflections = { inspiration: '', recipe: '' };
@@ -647,7 +647,7 @@ function loadValues() {
     if (!s) return;
     const p = safeParse(s, null);
     if (Array.isArray(p)) {
-        values = Array(categories.length).fill(5);
+        values = Array(categories.length).fill(null);
         p.slice(0, categories.length).forEach((v, i) => {
             values[i] = Math.max(0, Math.min(10, Number(v) || 0));
         });
@@ -935,7 +935,7 @@ function focusLowestRay(){
 }
 function resetWheelScores(){
     if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
-    values=Array(categories.length).fill(5);
+    values=Array(categories.length).fill(null);
     improvements={};
     saveValues();
     saveImprovements();
@@ -1510,7 +1510,7 @@ $("restartBtn").addEventListener("click", () => {
 });
 $("resetBtn").addEventListener("click", () => {
     if (!confirm('Очистить все данные? Оценки, заметки, рефлексия и история будут удалены. Это нельзя отменить.')) return;
-    values = Array(categories.length).fill(5);
+    values = Array(categories.length).fill(null);
     improvements = {};
     reflections = { inspiration: '', recipe: '' };
     saveValues(); saveImprovements();
@@ -1955,8 +1955,9 @@ function configureDetailPage() {
 
 function showResultsIfCompleted() {
     const hasJournal = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []).length > 0;
-    const hasAnyNonDefault = values.some(v => v !== 5);
-    if (hasJournal || hasAnyNonDefault) {
+    const isRated = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));
+    const allRated = values.length > 0 && values.every(isRated);
+    if (hasJournal || allRated) {
         $("testSection").classList.add("hidden");
         $("resultSection").classList.remove("hidden");
         showResults();

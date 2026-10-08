@@ -609,7 +609,7 @@ const MONTHS_RU_NOM = ['Январь','Февраль','Март','Апрель'
 const MONTHS_GENITIVE = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const WEEKDAYS_ACC = ['в воскресенье','в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу'];
 
-let values = Array(categories.length).fill(5);
+let values = Array(categories.length).fill(null);
 let currentQuestion = 0;
 let improvements = {};
 let reflections = { inspiration: '', recipe: '' };
@@ -1435,7 +1435,7 @@ $("restartBtn").addEventListener("click", () => {
 });
 $("resetBtn").addEventListener("click", () => {
     if (!confirm('Очистить все данные? Оценки, заметки, рефлексия и история будут удалены. Это нельзя отменить.')) return;
-    values = Array(categories.length).fill(5);
+    values = Array(categories.length).fill(null);
     improvements = {};
     reflections = { inspiration: '', recipe: '' };
     saveValues(); saveImprovements();
@@ -1831,8 +1831,9 @@ $("refRecipe").addEventListener("input", saveReflections);
 /* INIT */
 function showResultsIfCompleted() {
     const hasJournal = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []).length > 0;
-    const hasAnyNonDefault = values.some(v => v !== 5);
-    if (hasJournal || hasAnyNonDefault) {
+    const isRated = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));
+    const allRated = values.length > 0 && values.every(isRated);
+    if (hasJournal || allRated) {
         $("testSection").classList.add("hidden");
         $("resultSection").classList.remove("hidden");
         showResults();
