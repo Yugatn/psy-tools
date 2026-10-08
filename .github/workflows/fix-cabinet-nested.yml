@@ -1,6 +1,5 @@
 name: Fix cabinet nested keys
 on:
-  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/fix-cabinet-nested.yml'
@@ -11,69 +10,65 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Patch cabinet discovery
+      - name: Patch cabinet
         run: |
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          cab = Path('wheel/cabinet.html').read_text(encoding='utf-8')
-          cab = cab.replace(
-              'if (k && k.indexOf("wheelBalance") === 0) keys.push(k);',
-              'if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);'
-          )
-          cab = cab.replace(
-              'if (k.indexOf("wheelBalance") !== 0) continue;',
-              'if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;'
-          )
-          cab = cab.replace(
-              'Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?',
-              'Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?'
-          )
-          cab = cab.replace(
-              'начинающиеся с <code>wheelBalance</code>',
-              'начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>'
-          )
-          old = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
-        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
-        title = "Детально · " + id.replace(/:/g, " · ");
-        href = "./detail/";
-      }
-      add(title, href, k, vals);'''
-          new = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
+          p = Path('wheel/cabinet.html')
+          cab = p.read_text(encoding='utf-8')
+          n = 0
+          reps = [
+            ('if (k && k.indexOf("wheelBalance") === 0) keys.push(k);',
+             'if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);'),
+            ('if (k.indexOf("wheelBalance") !== 0) continue;',
+             'if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;'),
+            ('Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?',
+             'Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?'),
+            ('начинающиеся с <code>wheelBalance</code>',
+             'начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>'),
+          ]
+          for a,b in reps:
+              if a in cab:
+                  cab = cab.replace(a,b); n += 1
+                  print('replaced', a[:40])
+              else:
+                  print('SKIP', a[:50])
+          needle = 'if (k.indexOf("wheelBalanceDetail:") === 0)'
+          if needle in cab and 'wheelNestedV2_' not in cab:
+              insert = '''if (k.indexOf("wheelBalanceDetail:") === 0) {
         const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
         title = "Детально · " + id.replace(/:/g, " · ");
         href = "./detail/";
       } else if (k.indexOf("wheelNestedV2_") === 0) {
         const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
-        const map = {
-          health: ["Здоровье", "./health/"],
-          work: ["Работа", "./work/"],
-          finance: ["Финансы", "./finance/"],
-          relationships: ["Отношения", "./relationships/"],
-          social: ["Социальная жизнь", "./social/"],
-          development: ["Развитие", "./development/"],
-          rest: ["Отдых", "./rest/"],
-          creativity: ["Творчество", "./creativity/"],
-          self_awareness: ["Самоосознание", "./self_awareness/"],
-          fear: ["Страхи", "./fear/"],
-          sexuality: ["Сексуальность", "./sexuality/"],
-          destructiveness: ["Деструктивность", "./destructiveness/"]
-        };
+        const map = { health:["./health/","Здоровье"], work:["./work/","Работа"], finance:["./finance/","Финансы"], relationships:["./relationships/","Отношения"], social:["./social/","Социальная жизнь"], development:["./development/","Развитие"], rest:["./rest/","Отдых"], creativity:["./creativity/","Творчество"], self_awareness:["./self_awareness/","Самоосознание"], fear:["./fear/","Страхи"], sexuality:["./sexuality/","Сексуальность"], destructiveness:["./destructiveness/","Деструктивность"] };
         const m = map[rest];
-        if (m) { title = m[0]; href = m[1]; }
-        else { title = rest; href = "./hub.html"; }
-      }
-      add(title, href, k, vals);'''
-          if old not in cab:
-              raise SystemExit('pattern missing')
-          cab = cab.replace(old, new)
-          Path('wheel/cabinet.html').write_text(cab, encoding='utf-8')
-          print('cabinet patched', 'wheelNested' in cab)
+        if (m) { href = m[0]; title = m[1]; } else { title = rest; href = "./hub.html"; }
+      }'''
+              # replace only the opening if-block for detail - find and expand
+              import re
+              cab2, c = re.subn(
+                  r'if \(k\.indexOf\("wheelBalanceDetail:"\) === 0\) \{\s*'
+                  r'const id = decodeURIComponent\(k\.replace\(/\^wheelBalanceDetail:/, ""\)\.replace\(/:values\$/, ""\)\);\s*'
+                  r'title = "Детально · " \+ id\.replace\(/:/g, " · "\);\s*'
+                  r'href = "\./detail/";\s*'
+                  r'\}',
+                  insert,
+                  cab,
+                  count=1,
+              )
+              if c:
+                  cab = cab2; n += 1; print('detail/nested block expanded')
+              else:
+                  print('detail block regex miss')
+          p.write_text(cab, encoding='utf-8')
+          print('done replacements', n, 'hasNested', 'wheelNested' in cab)
+          if n == 0:
+              raise SystemExit('no replacements')
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add wheel/cabinet.html
-          if git diff --cached --quiet; then echo no changes; else
-            git commit -m "fix(wheel): cabinet shows wheelNested sphere results"
-            git push
-          fi
+          git commit -m "fix(wheel): cabinet discovers wheelNested sphere keys"
+          git push
