@@ -1,0 +1,77 @@
+name: Fix wheel loadValues null
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-loadvalues-null.yml'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix loadValues null handling
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          def fix_load(text):
+              text = re.sub(
+                  r'p\.slice\(0, categories\.length\)\.forEach\(\(v, i\) => \{\s*'
+                  r'values\[i\] = WheelEngine\.clamp\(Number\(v\) \|\| 0, 0, 10\);\s*'
+                  r'\}\);',
+                  '''p.slice(0, categories.length).forEach((v, i) => {
+              if (v === null || v === undefined || v === "") { values[i] = null; return; }
+              const n = Number(v);
+              values[i] = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+          });''',
+                  text,
+              )
+              text = re.sub(
+                  r'p\.slice\(0, categories\.length\)\.forEach\(\(v, i\) => \{\s*'
+                  r'values\[i\] = Math\.max\(0, Math\.min\(10, Number\(v\) \|\| 0\)\);\s*'
+                  r'\}\);',
+                  '''p.slice(0, categories.length).forEach((v, i) => {
+              if (v === null || v === undefined || v === "") { values[i] = null; return; }
+              const n = Number(v);
+              values[i] = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+          });''',
+                  text,
+              )
+              text = text.replace(
+                  'values = data.values.map(v => Math.max(0, Math.min(10, Number(v) || 0)));',
+                  '''values = data.values.map(v => {
+              if (v === null || v === undefined || v === "") return null;
+              const n = Number(v);
+              return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+          });''',
+              )
+              text = text.replace(
+                  'if (Array.isArray(e.values)) values = e.values.map(v => Math.max(0, Math.min(10, Number(v)||0)));',
+                  '''if (Array.isArray(e.values)) values = e.values.map(v => {
+              if (v === null || v === undefined || v === "") return null;
+              const n = Number(v);
+              return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+          });''',
+              )
+              return text
+
+          n = 0
+          for f in Path('wheel').rglob('index.html'):
+              t = f.read_text(encoding='utf-8')
+              nt = fix_load(t)
+              if nt != t:
+                  f.write_text(nt, encoding='utf-8')
+                  n += 1
+          print('html fixed', n)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wheel/
+          if git diff --cached --quiet; then echo no changes; else
+            git commit -m "fix(wheel): loadValues preserves null (do not coerce null to 0)"
+            git push
+          fi
