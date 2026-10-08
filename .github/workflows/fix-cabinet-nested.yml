@@ -1,0 +1,79 @@
+name: Fix cabinet nested keys
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-cabinet-nested.yml'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch cabinet discovery
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          cab = Path('wheel/cabinet.html').read_text(encoding='utf-8')
+          cab = cab.replace(
+              'if (k && k.indexOf("wheelBalance") === 0) keys.push(k);',
+              'if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);'
+          )
+          cab = cab.replace(
+              'if (k.indexOf("wheelBalance") !== 0) continue;',
+              'if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;'
+          )
+          cab = cab.replace(
+              'Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?',
+              'Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?'
+          )
+          cab = cab.replace(
+              'начинающиеся с <code>wheelBalance</code>',
+              'начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>'
+          )
+          old = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
+        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
+        title = "Детально · " + id.replace(/:/g, " · ");
+        href = "./detail/";
+      }
+      add(title, href, k, vals);'''
+          new = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
+        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
+        title = "Детально · " + id.replace(/:/g, " · ");
+        href = "./detail/";
+      } else if (k.indexOf("wheelNestedV2_") === 0) {
+        const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
+        const map = {
+          health: ["Здоровье", "./health/"],
+          work: ["Работа", "./work/"],
+          finance: ["Финансы", "./finance/"],
+          relationships: ["Отношения", "./relationships/"],
+          social: ["Социальная жизнь", "./social/"],
+          development: ["Развитие", "./development/"],
+          rest: ["Отдых", "./rest/"],
+          creativity: ["Творчество", "./creativity/"],
+          self_awareness: ["Самоосознание", "./self_awareness/"],
+          fear: ["Страхи", "./fear/"],
+          sexuality: ["Сексуальность", "./sexuality/"],
+          destructiveness: ["Деструктивность", "./destructiveness/"]
+        };
+        const m = map[rest];
+        if (m) { title = m[0]; href = m[1]; }
+        else { title = rest; href = "./hub.html"; }
+      }
+      add(title, href, k, vals);'''
+          if old not in cab:
+              raise SystemExit('pattern missing')
+          cab = cab.replace(old, new)
+          Path('wheel/cabinet.html').write_text(cab, encoding='utf-8')
+          print('cabinet patched', 'wheelNested' in cab)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wheel/cabinet.html
+          if git diff --cached --quiet; then echo no changes; else
+            git commit -m "fix(wheel): cabinet shows wheelNested sphere results"
+            git push
+          fi
