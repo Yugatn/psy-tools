@@ -639,8 +639,10 @@ function loadValues() {
     if (Array.isArray(p)) {
         values = Array(categories.length).fill(null);
         p.slice(0, categories.length).forEach((v, i) => {
-            values[i] = WheelEngine.clamp(Number(v) || 0, 0, 10);
-        });
+    if (v === null || v === undefined || v === "") { values[i] = null; return; }
+    const n = Number(v);
+    values[i] = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+});
     }
 }
 function saveImprovements() { try { localStorage.setItem(IMPROVE_KEY, JSON.stringify(improvements)); } catch(e){} }
@@ -1442,7 +1444,11 @@ $("importFileInput").addEventListener("change", function() {
                 $("importFileInput").value = "";
                 return;
             }
-            values = data.values.map(v => Math.max(0, Math.min(10, Number(v) || 0)));
+            values = data.values.map(v => {
+    if (v === null || v === undefined || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+});
             saveValues();
             if (data.improvements && typeof data.improvements === "object" && !Array.isArray(data.improvements)) {
                 improvements = data.improvements;
@@ -1495,7 +1501,11 @@ function loadJournal() {
 window.loadJournalEntry = function(i) {
     const j = safeParse(localStorage.getItem(JOURNAL_KEY) || "[]", []);
     const e = j[i]; if (!e) return;
-    if (Array.isArray(e.values)) values = e.values.map(v => Math.max(0, Math.min(10, Number(v)||0)));
+    if (Array.isArray(e.values)) values = e.values.map(v => {
+    if (v === null || v === undefined || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+});
     if (e.improvements && typeof e.improvements === "object") improvements = JSON.parse(JSON.stringify(e.improvements));
     else improvements = {};
     saveValues(); saveImprovements();
