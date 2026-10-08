@@ -1,0 +1,20 @@
+name: Deploy fixed cabinet
+on:
+  push:
+    paths:
+      - '.github/workflows/deploy-cabinet.yml'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write cabinet.html from embedded payload
+        run: |
+          python3 <<'PY'
+          import base64, gzip
+          from pathlib import Path
+          b64 = open('.github/workflows/deploy-cabinet.yml').read()
+          # payload is in sibling file written next
+          PY
