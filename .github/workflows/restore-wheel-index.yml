@@ -1,0 +1,117 @@
+name: Restore wheel index
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/restore-wheel-index.yml'
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore full index from known-good commit and apply null/unrated fixes
+        run: |
+          set -euo pipefail
+          git checkout 960ab08 -- wheel/index.html
+          python3 <<'PY'
+          from pathlib import Path
+          text = Path('wheel/index.html').read_text(encoding='utf-8')
+          text = text.replace('let values = Array(categories.length).fill(5);', 'let values = Array(categories.length).fill(null);')
+          text = text.replace('values=Array(categories.length).fill(5);', 'values=Array(categories.length).fill(null);')
+          text = text.replace('values = Array(categories.length).fill(5);', 'values = Array(categories.length).fill(null);')
+          old = 'values = Array(categories.length).fill(5);\n        p.slice(0, categories.length).forEach((v, i) => {\n            values[i] = Math.max(0, Math.min(10, Number(v) || 0));'
+          new = 'values = Array(categories.length).fill(null);\n        p.slice(0, categories.length).forEach((v, i) => {\n            if (v === null || v === undefined || v === "") { values[i] = null; return; }\n            const n = Number(v);\n            values[i] = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;'
+          text = text.replace(old, new)
+          text = text.replace(
+              'const hasAnyNonDefault = values.some(v => v !== 5);\n    if (hasJournal || hasAnyNonDefault) {',
+              'const isRated = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));\n    const allRated = values.length > 0 && values.every(isRated);\n    if (hasJournal || allRated) {'
+          )
+          old_gsp = '''function getScorePoint(cx, cy, radius, angle, value) {
+              const r = radius * (value / 10);
+              return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+          }'''
+          new_gsp = '''function getScorePoint(cx, cy, radius, angle, value) {
+              const score = (value === null || value === undefined || value === "") ? 0 : Number(value);
+              const r = radius * ((Number.isFinite(score) ? score : 0) / 10);
+              return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+          }'''
+          text = text.replace(old_gsp, new_gsp)
+          old_ui = '''    $("scoreSlider").value = values[idx];
+              $("scoreDisplay").textContent = values[idx];
+              $("sliderBubble").textContent = values[idx];'''
+          new_ui = '''    const displayScore = (values[idx] === null || values[idx] === undefined) ? 5 : values[idx];
+              $("scoreSlider").value = displayScore;
+              $("scoreDisplay").textContent = (values[idx] === null || values[idx] === undefined) ? "—" : values[idx];
+              $("sliderBubble").textContent = (values[idx] === null || values[idx] === undefined) ? "—" : values[idx];'''
+          text = text.replace(old_ui, new_ui)
+          if 'cabinet.html' not in text and 'wheel-index-main' in text:
+              text = text.replace(
+                  '<a class="wheel-index-main" href="./">Главное колесо баланса</a>',
+                  '<a class="wheel-index-main" href="./cabinet.html">Личный кабинет · результаты</a><a class="wheel-index-main" href="./">Главное колесо баланса</a>'
+              )
+          Path('wheel/index.html').write_text(text, encoding='utf-8')
+          print('fill5', text.count('fill(5)'), 'allRated', 'allRated' in text)
+          PY
+          # Also patch sphere/detail HTML for null/unrated
+          python3 <<'PY'
+          from pathlib import Path
+          def patch(text):
+              text = text.replace('Number(DETAIL_QUERY.get("parentCount")) || 8', 'Number(DETAIL_QUERY.get("parentCount")) || 9')
+              text = text.replace('let values = Array(categories.length).fill(5);', 'let values = Array(categories.length).fill(null);')
+              text = text.replace('values=Array(categories.length).fill(5);', 'values=Array(categories.length).fill(null);')
+              text = text.replace('values = Array(categories.length).fill(5);', 'values = Array(categories.length).fill(null);')
+              old = 'values = Array(categories.length).fill(5);\n        p.slice(0, categories.length).forEach((v, i) => {\n            values[i] = Math.max(0, Math.min(10, Number(v) || 0));'
+              new = 'values = Array(categories.length).fill(null);\n        p.slice(0, categories.length).forEach((v, i) => {\n            if (v === null || v === undefined || v === "") { values[i] = null; return; }\n            const n = Number(v);\n            values[i] = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;'
+              text = text.replace(old, new)
+              text = text.replace(
+                  'const hasAnyNonDefault = values.some(v => v !== 5);\n    if (hasJournal || hasAnyNonDefault) {',
+                  'const isRated = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));\n    const allRated = values.length > 0 && values.every(isRated);\n    if (hasJournal || allRated) {'
+              )
+              old_gsp = '''function getScorePoint(cx, cy, radius, angle, value) {
+                  const r = radius * (value / 10);
+                  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+              }'''
+              new_gsp = '''function getScorePoint(cx, cy, radius, angle, value) {
+                  const score = (value === null || value === undefined || value === "") ? 0 : Number(value);
+                  const r = radius * ((Number.isFinite(score) ? score : 0) / 10);
+                  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+              }'''
+              text = text.replace(old_gsp, new_gsp)
+              old_ui = '''    $("scoreSlider").value = values[idx];
+                  $("scoreDisplay").textContent = values[idx];
+                  $("sliderBubble").textContent = values[idx];'''
+              new_ui = '''    const displayScore = (values[idx] === null || values[idx] === undefined) ? 5 : values[idx];
+                  $("scoreSlider").value = displayScore;
+                  $("scoreDisplay").textContent = (values[idx] === null || values[idx] === undefined) ? "—" : values[idx];
+                  $("sliderBubble").textContent = (values[idx] === null || values[idx] === undefined) ? "—" : values[idx];'''
+              text = text.replace(old_ui, new_ui)
+              return text
+          root = Path('wheel')
+          n = 0
+          for f in root.rglob('index.html'):
+              if f.name != 'index.html':
+                  continue
+              if f == root / 'index.html':
+                  continue  # already patched
+              t = f.read_text(encoding='utf-8')
+              nt = patch(t)
+              if nt != t:
+                  f.write_text(nt, encoding='utf-8')
+                  n += 1
+          print('sphere/detail patched', n)
+          PY
+          # Remove broken chunk loader artifacts if present
+          rm -f wheel/index-part-*.gz.b64 wheel/index-part-*.txt || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wheel/
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "fix(wheel): restore full main index + null/unrated across wheels"
+            git push
+          fi
