@@ -15,17 +15,26 @@ html,body{margin:0;min-height:100%;background:#0b1120;color:#aab4c3;font-family:
 <script>
 (async function () {
   var boot = document.getElementById("boot");
+  async function loadPart(url) {
+    var r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(url + " " + r.status);
+    var b64 = (await r.text()).trim();
+    var bin = Uint8Array.from(atob(b64), function (c) { return c.charCodeAt(0); });
+    if (typeof DecompressionStream === "undefined") {
+      throw new Error("Нужен современный браузер (gzip)");
+    }
+    var ds = new DecompressionStream("gzip");
+    var stream = new Response(bin).body.pipeThrough(ds);
+    return await new Response(stream).text();
+  }
   try {
-    var urls = ["./index-part-0.txt", "./index-part-1.txt", "./index-part-2.txt"];
-    var chunks = await Promise.all(urls.map(function (u) {
-      return fetch(u, { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error(u + " " + r.status);
-        return r.text();
-      });
-    }));
-    var html = chunks.join("");
+    var chunks = await Promise.all([
+      loadPart("./index-part-0.gz.b64"),
+      loadPart("./index-part-1.gz.b64"),
+      loadPart("./index-part-2.gz.b64")
+    ]);
     document.open();
-    document.write(html);
+    document.write(chunks.join(""));
     document.close();
   } catch (e) {
     boot.innerHTML = "Не удалось загрузить колесо.<br><a href=\"./hub.html\">Хаб</a> · <a href=\"./cabinet.html\">Кабинет</a><br><small>" + String(e) + "</small>";
