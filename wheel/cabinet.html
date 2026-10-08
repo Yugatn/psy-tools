@@ -104,7 +104,12 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   "use strict";
   const E = window.WheelEngine || {};
   const escapeHtml = E.escapeHtml || function (s) {
-    return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">").replace(/"/g,""");
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   };
   const parseJSON = E.parseJSON || function (v, fb) {
     try { return JSON.parse(v); } catch (_) { return fb; }
