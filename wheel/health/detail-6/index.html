@@ -1012,8 +1012,6 @@ function drawWheel(canvas, vals, imps) {
             ctx.fillText(line, x, y + (li - (lines.length-1)/2) * 17);
         });
     }
-}
-
     updateDetailLinks();
 }
 
@@ -1561,8 +1559,151 @@ function buildShareMessage() {
     const friend = $("friendName").value.trim();
     const deadline = $("shareDeadline").value;
     const comment = $("friendComment").value.trim();
-    const appUrl = "https://yugatn.github.io/psy-tools/health/";
-    let msg = "🌀 Колесо: Энергия< 0) startWeekday = 6;
+    const appUrl = "https://yugatn.github.io/wheel-balance/";
+    let msg = "🌀 Колесо баланса\n\n";
+    msg += friend ? ("Привет, " + friend + "!\n\n") : "Привет!\n\n";
+    msg += "Я заполнил(а) «Колесо баланса» " + formatDateShort(localDateISO()) + ".\n\n";
+    msg += "Моё среднее значение: " + getAverage() + "/10.\n\n";
+    msg += "Мои оценки:\n";
+    categories.forEach((n, i) => { msg += "• " + n + " — " + values[i] + "/10\n"; });
+    const imps = Object.keys(improvements).map(Number).filter(i => hasMeaningfulContent(improvements[i], i));
+    if (imps.length) {
+        msg += "\n🌱 Мои заметки:\n";
+        imps.forEach(i => {
+            const imp = improvements[i];
+            msg += "• " + categories[i];
+            if (typeof imp.target === "number" && imp.target !== values[i]) msg += " (" + values[i] + " → " + imp.target + ")";
+            if (imp.date) msg += ", до " + formatDateShort(imp.date);
+            msg += "\n";
+            if (imp.note) msg += "   Что: " + imp.note + "\n";
+            if (imp.step) msg += "   Шаг: " + imp.step + "\n";
+        });
+    }
+    if (deadline) msg += "\n📅 Предлагаю вернуться к этому результату до " + formatDateShort(deadline) + ".";
+    if (comment) msg += "\n\n💬 Договорённость:\n" + comment;
+    msg += "\n\n🔗 Открыть «Колесо баланса»:\n" + appUrl;
+    return msg;
+}
+function updateSharePreview() { $("sharePreview").textContent = buildShareMessage(); }
+function saveShareSettings() {
+    try {
+        localStorage.setItem(SHARE_KEY, JSON.stringify({
+            friendName: $("friendName").value,
+            deadline: $("shareDeadline").value,
+            email: $("friendEmail").value,
+            comment: $("friendComment").value
+        }));
+    } catch(e){}
+}
+function loadShareSettings() {
+    const s = safeParse(localStorage.getItem(SHARE_KEY), null);
+    const dd = addDays(new Date(), 14);
+    if (s) {
+        $("friendName").value = s.friendName || "";
+        setDateValue("shareDeadline", s.deadline || localDateISO(dd));
+        $("friendEmail").value = s.email || "";
+        $("friendComment").value = s.comment || "";
+    } else {
+        setDateValue("shareDeadline", localDateISO(dd));
+    }
+    updateSharePreview();
+}
+$("shareFriendBtn").addEventListener("click", () => {
+    loadShareSettings();
+    $("shareModal").classList.add("active");
+    haptic("selection");
+});
+["friendName", "friendEmail", "friendComment"].forEach(id => {
+    $(id).addEventListener("input", () => { updateSharePreview(); saveShareSettings(); });
+});
+$("telegramShareBtn").addEventListener("click", () => {
+    const text = buildShareMessage();
+    const url = "https://t.me/share/url?url=" + encodeURIComponent("https://yugatn.github.io/wheel-balance/") + "&text=" + encodeURIComponent(text);
+    if (tg && typeof tg.openTelegramLink === "function") { try { tg.openTelegramLink(url); } catch(e) { window.open(url, "_blank"); } }
+    else window.open(url, "_blank");
+    haptic("success");
+});
+$("emailShareBtn").addEventListener("click", () => {
+    const email = $("friendEmail").value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("Проверьте email адрес"); return; }
+    const mailto = "mailto:" + encodeURIComponent(email) + "?subject=" + encodeURIComponent("Мой результат — Колесо баланса") + "&body=" + encodeURIComponent(buildShareMessage());
+    window.location.href = mailto;
+    haptic("success");
+});
+$("whatsappShareBtn").addEventListener("click", () => {
+    const text = buildShareMessage();
+    if (text.length > 3500) {
+        showToast("Сообщение слишком длинное для WhatsApp. Скопируйте его вручную.");
+        return;
+    }
+    const url = "https://wa.me/?text=" + encodeURIComponent(text);
+    window.open(url, "_blank");
+    haptic("success");
+});
+$("copyShareBtn").addEventListener("click", async () => {
+    const text = buildShareMessage();
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast("Текст скопирован");
+    } catch(e) {
+        const ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); showToast("Текст скопирован"); }
+        catch(err) { showToast("Не удалось скопировать текст"); }
+        ta.remove();
+    }
+    haptic("selection");
+});
+$("closeShareModal").addEventListener("click", () => { saveShareSettings(); $("shareModal").classList.remove("active"); });
+$("shareModal").addEventListener("click", e => {
+    if (e.target === $("shareModal")) { saveShareSettings(); $("shareModal").classList.remove("active"); }
+});
+
+/* =========================================================
+   КАЛЕНДАРЬ — модальный (как было в файлах 6-12)
+========================================================= */
+let calTargetId = null;
+let calMonthCursor = null;
+let calSelectedISO = null;
+
+function openCalendar(targetInputId) {
+    calTargetId = targetInputId;
+    const currentVal = $(targetInputId).value;
+    calSelectedISO = currentVal || null;
+    if (currentVal) calMonthCursor = new Date(currentVal + "T00:00:00");
+    else calMonthCursor = new Date();
+    calMonthCursor.setDate(1);
+    renderCalendar();
+    updateCalPreview();
+    $("calendarModal").classList.add("active");
+    haptic("selection");
+}
+function updateCalPreview() {
+    const el = $("calPreviewText");
+    if (calSelectedISO) {
+        el.textContent = formatDateFull(calSelectedISO);
+        el.classList.remove("empty");
+        el.classList.add("has-value");
+    } else {
+        el.textContent = "Дата не выбрана";
+        el.classList.add("empty");
+        el.classList.remove("has-value");
+    }
+}
+function renderCalendar() {
+    if (!calMonthCursor) calMonthCursor = new Date();
+    const y = calMonthCursor.getFullYear();
+    const m = calMonthCursor.getMonth();
+
+    const titleEl = $("calTitle");
+    if (titleEl) titleEl.textContent = MONTHS_RU_NOM[m] + " " + y;
+
+    const today = startOfDay(new Date());
+    const firstDay = new Date(y, m, 1);
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    let startWeekday = firstDay.getDay() - 1;
+    if (startWeekday < 0) startWeekday = 6;
 
     let html = "";
     for (let i = 0; i < startWeekday; i++) html += '<div class="calendar-day empty"></div>';
