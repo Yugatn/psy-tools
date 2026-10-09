@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Repair detail-* syntax: orphan drawWheel brace + corrupted share/calendar block."""
-import base64, gzip, re
+import base64, gzip
 from pathlib import Path
 
 ORPHAN_OLD = """}
@@ -28,7 +28,8 @@ def main() -> None:
             text = text.replace(ORPHAN_OLD, ORPHAN_NEW)
             n_brace += 1
             changed = True
-        if re.search(r'let msg = "🌀[^"]*< 0\\)', text):
+        # Corrupted share message merges into calendar mid-function
+        if "function buildShareMessage()" in text and "< 0) startWeekday" in text:
             s = text.find("function buildShareMessage()")
             e = text.find('$("calPrev").addEventListener', s)
             if s >= 0 and e >= 0:
