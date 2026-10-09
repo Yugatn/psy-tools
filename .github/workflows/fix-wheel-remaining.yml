@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/fix-wheel-remaining.yml'
+      - 'scripts/fix-wheel-null.py'
 jobs:
   fix:
     runs-on: ubuntu-latest
@@ -10,124 +11,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Patch loadValues map path and cabinet
+      - name: Apply null-safe patches
+        run: python3 scripts/fix-wheel-null.py
+      - name: Commit and push
         run: |
-          set -euo pipefail
-          python3 <<'PY'
-          from pathlib import Path
-          import re
-
-          SAFE_MAP = '''(v => {
-              if (v === null || v === undefined || v === "") return null;
-              const n = Number(v);
-              return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
-          })'''
-
-          def fix_html(text):
-              # p.map(v => Math.max(0, Math.min(10, Number(v) || 0)))
-              text = text.replace(
-                  'values = p.map(v => Math.max(0, Math.min(10, Number(v) || 0)));',
-                  'values = p.map' + SAFE_MAP + ';'
-              )
-              text = text.replace(
-                  'values = p.map(v => Math.max(0, Math.min(10, Number(v)||0)));',
-                  'values = p.map' + SAFE_MAP + ';'
-              )
-              text = text.replace(
-                  'values = data.values.map(v => Math.max(0, Math.min(10, Number(v) || 0)));',
-                  'values = data.values.map' + SAFE_MAP + ';'
-              )
-              text = text.replace(
-                  'if (Array.isArray(e.values)) values = e.values.map(v => Math.max(0, Math.min(10, Number(v)||0)));',
-                  'if (Array.isArray(e.values)) values = e.values.map' + SAFE_MAP + ';'
-              )
-              # forEach still using Number(v)||0
-              text = re.sub(
-                  r'values\[i\] = (?:WheelEngine\.clamp\()?Math\.max\(0, Math\.min\(10, Number\(v\) \|\| 0\)\)?;?',
-                  'if (v === null || v === undefined || v === "") { values[i] = null; } else { const __n = Number(v); values[i] = Number.isFinite(__n) ? Math.max(0, Math.min(10, __n)) : null; }',
-                  text,
-              )
-              text = re.sub(
-                  r'values\[i\] = WheelEngine\.clamp\(Number\(v\) \|\| 0, 0, 10\);',
-                  'if (v === null || v === undefined || v === "") { values[i] = null; } else { const __n = Number(v); values[i] = Number.isFinite(__n) ? Math.max(0, Math.min(10, __n)) : null; }',
-                  text,
-              )
-              return text
-
-          n = 0
-          for f in Path('wheel').rglob('index.html'):
-              t = f.read_text(encoding='utf-8')
-              nt = fix_html(t)
-              if nt != t:
-                  f.write_text(nt, encoding='utf-8')
-                  n += 1
-          print('html files patched', n)
-
-          # Cabinet nested discovery
-          cab_path = Path('wheel/cabinet.html')
-          cab = cab_path.read_text(encoding='utf-8')
-          cab = cab.replace(
-              'if (k && k.indexOf("wheelBalance") === 0) keys.push(k);',
-              'if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);'
-          )
-          cab = cab.replace(
-              'if (k.indexOf("wheelBalance") !== 0) continue;',
-              'if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;'
-          )
-          cab = cab.replace(
-              'Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?',
-              'Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?'
-          )
-          cab = cab.replace(
-              'начинающиеся с <code>wheelBalance</code>',
-              'начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>'
-          )
-          # Expand detail title block with nested map
-          old = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
-        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
-        title = "Детально · " + id.replace(/:/g, " · ");
-        href = "./detail/";
-      }
-      add(title, href, k, vals);'''
-          new = '''      if (k.indexOf("wheelBalanceDetail:") === 0) {
-        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
-        title = "Детально · " + id.replace(/:/g, " · ");
-        href = "./detail/";
-      } else if (k.indexOf("wheelNestedV2_") === 0) {
-        const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
-        const map = {
-          health: ["Здоровье", "./health/"], work: ["Работа", "./work/"], finance: ["Финансы", "./finance/"],
-          relationships: ["Отношения", "./relationships/"], social: ["Социальная жизнь", "./social/"],
-          development: ["Развитие", "./development/"], rest: ["Отдых", "./rest/"],
-          creativity: ["Творчество", "./creativity/"], self_awareness: ["Самоосознание", "./self_awareness/"],
-          fear: ["Страхи", "./fear/"], sexuality: ["Сексуальность", "./sexuality/"],
-          destructiveness: ["Деструктивность", "./destructiveness/"]
-        };
-        const m = map[rest];
-        if (m) { title = m[0]; href = m[1]; } else { title = rest; href = "./hub.html"; }
-      }
-      add(title, href, k, vals);'''
-          if old in cab:
-              cab = cab.replace(old, new)
-              print('cabinet nested block expanded')
-          else:
-              print('cabinet detail block pattern miss — key filter still applied')
-          cab_path.write_text(cab, encoding='utf-8')
-          print('cabinet wheelNested', 'wheelNested' in cab)
-
-          # Count remaining bad patterns
-          bad = 0
-          for f in Path('wheel').rglob('index.html'):
-              t = f.read_text(encoding='utf-8')
-              bad += t.count('Number(v) || 0') + t.count('Number(v)||0')
-          print('remaining Number(v)||0', bad)
-          PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add wheel/
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "fix(wheel): remaining null-safe loadValues + cabinet wheelNested discovery"
+            git commit -m "fix(wheel): null-safe p.map loadValues + cabinet wheelNested"
             git push
           fi
