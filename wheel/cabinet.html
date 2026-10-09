@@ -89,7 +89,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
 
 <div class="card">
   <h2>Данные и приватность</h2>
-  <p class="muted">Личный кабинет читает только ключи localStorage, начинающиеся с <code>wheelBalance</code>. Серверной авторизации нет — это «кабинет на устройстве».</p>
+  <p class="muted">Личный кабинет читает только ключи localStorage, начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>. Серверной авторизации нет — это «кабинет на устройстве».</p>
   <div class="actions">
     <button type="button" id="importBtn">Импорт JSON</button>
     <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -148,7 +148,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && k.indexOf("wheelBalance") === 0) keys.push(k);
+        if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);
       }
     } catch (_) {}
     return keys.sort();
@@ -214,6 +214,11 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
         title = "Детально · " + id.replace(/:/g, " · ");
         href = "./detail/";
+      } else if (k.indexOf("wheelNestedV2_") === 0) {
+        const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
+        const map = {health:["./health/","Здоровье"],work:["./work/","Работа"],finance:["./finance/","Финансы"],relationships:["./relationships/","Отношения"],social:["./social/","Социальная жизнь"],development:["./development/","Развитие"],rest:["./rest/","Отдых"],creativity:["./creativity/","Творчество"],self_awareness:["./self_awareness/","Самоосознание"],fear:["./fear/","Страхи"],sexuality:["./sexuality/","Сексуальность"],destructiveness:["./destructiveness/","Деструктивность"]};
+        const m = map[rest];
+        if (m) { href = m[0]; title = m[1]; } else { title = rest; href = "./hub.html"; }
       }
       add(title, href, k, vals);
     }
@@ -357,7 +362,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         const keys = Object.keys(map);
         for (let i = 0; i < keys.length; i++) {
           const k = keys[i];
-          if (k.indexOf("wheelBalance") !== 0) continue;
+          if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;
           const v = map[k];
           localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
           n++;
@@ -382,7 +387,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     e.target.value = "";
   });
   document.getElementById("clearBtn").addEventListener("click", function () {
-    if (!confirm("Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?")) return;
+    if (!confirm("Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?")) return;
     const keys = allWheelKeys();
     for (let i = 0; i < keys.length; i++) localStorage.removeItem(keys[i]);
     render();

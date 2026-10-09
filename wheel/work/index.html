@@ -638,7 +638,11 @@ function loadValues() {
     if (!s) return;
     const p = safeParse(s, null);
     if (Array.isArray(p) && p.length === categories.length)
-        values = p.map(v => Math.max(0, Math.min(10, Number(v) || 0)));
+        values = p.map(v => {
+              if (v === null || v === undefined || v === "") return null;
+              const n = Number(v);
+              return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+          });
 }
 function saveImprovements() { try { localStorage.setItem(IMPROVE_KEY, JSON.stringify(improvements)); } catch(e){} }
 function loadImprovements() {
