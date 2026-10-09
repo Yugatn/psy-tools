@@ -1,0 +1,26 @@
+name: Apply cabinet fix
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-cabinet-fix.yml'
+      - 'scripts/apply-cabinet-fix.py'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply cabinet patches
+        run: python3 scripts/apply-cabinet-fix.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wheel/cabinet.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "fix(wheel): cabinet journal candidates + null-safe history/journal render"
+            git push
+          fi
