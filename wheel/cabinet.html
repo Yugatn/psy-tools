@@ -173,15 +173,20 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       const status = !rated.length ? "empty" : rated.length < values.length ? "partial" : "ok";
       const historyKey = valuesKey + ":history";
       let journal = [];
-      const jCandidates = [
-        valuesKey.replace(/Values$/, "Journal"),
-        valuesKey + ":journal",
-        valuesKey.replace(/:values$/, ":journal")
-      ];
+      const jCandidates = [];
+      const jFromValues = valuesKey.replace(/Values$/, "Journal");
+      if (jFromValues !== valuesKey) jCandidates.push(jFromValues);
+      const jFromUnderscore = valuesKey.replace(/_Values$/, "_Journal");
+      if (jFromUnderscore !== valuesKey && jCandidates.indexOf(jFromUnderscore) < 0) jCandidates.push(jFromUnderscore);
+      if (/:values$/i.test(valuesKey)) jCandidates.push(valuesKey.replace(/:values$/i, ":journal"));
+      jCandidates.push(valuesKey + ":journal");
       if (valuesKey === "wheelBalanceV3Values") jCandidates.unshift("wheelBalanceV3Journal");
       for (let i = 0; i < jCandidates.length; i++) {
         const j = parseJSON(localStorage.getItem(jCandidates[i]) || "[]", []);
-        if (Array.isArray(j) && j.length) { journal = j; break; }
+        if (Array.isArray(j) && j.some(function (x) { return x && typeof x === "object" && !Array.isArray(x); })) {
+          journal = j.filter(function (x) { return x && typeof x === "object" && !Array.isArray(x); });
+          break;
+        }
       }
       const history = parseJSON(localStorage.getItem(historyKey) || "[]", []);
       entries.push({
@@ -205,6 +210,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       const k = keys[i];
       if (k.indexOf(":history") >= 0 || k.indexOf(":journal") >= 0 || k.indexOf(":improvements") >= 0 ||
           k.indexOf(":reflections") >= 0 || k.indexOf(":share") >= 0 || k.indexOf(":spoiler") >= 0) continue;
+      if (/Journal$|Improvements$|Reflections$|Share$|SpoilerPlan$/i.test(k)) continue;
       if (k === "wheelBalanceV3Values") continue;
       const vals = readValues(k);
       if (!vals || !vals.length) continue;
@@ -289,13 +295,14 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     }
 
     const histEl = document.getElementById("historyList");
-    const histItems = [];
+    let histItems = [];
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
       for (let j = 0; j < e.history.length; j++) {
         histItems.push({ title: e.title, href: e.href, snap: e.history[j] });
       }
     }
+    histItems = histItems.filter(function (item) { return item.snap && typeof item.snap === "object"; });
     histItems.sort(function (a, b) {
       return String(b.snap.date || "").localeCompare(String(a.snap.date || ""));
     });
@@ -303,6 +310,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       histEl.innerHTML = '<div class="empty">История появится после повторных прохождений колеса.</div>';
     } else {
       histEl.innerHTML = histItems.slice(0, 40).map(function (item) {
+        if (!item.snap) return "";
         const vals = item.snap.values || item.snap.scores || [];
         const a = Array.isArray(vals) && vals.length ? avg(vals).toFixed(1) : "—";
         return '<div class="history-item"><div class="date">' + escapeHtml(String(item.snap.date || "без даты")) +
@@ -316,13 +324,16 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
       for (let j = 0; j < e.journal.length; j++) {
-        journals.push({ title: e.title, entry: e.journal[j] });
+        if (e.journal[j] && typeof e.journal[j] === "object") {
+          journals.push({ title: e.title, entry: e.journal[j] });
+        }
       }
     }
     if (!journals.length) {
       journalEl.innerHTML = '<div class="empty">Записей дневника нет.</div>';
     } else {
       journalEl.innerHTML = journals.slice(0, 30).map(function (j) {
+        if (!j.entry || typeof j.entry !== "object") return "";
         const d = j.entry.date || j.entry.created || "";
         const text = j.entry.text || j.entry.note || JSON.stringify(j.entry);
         return '<div class="history-item"><div class="date">' + escapeHtml(String(d)) + ' · ' +
