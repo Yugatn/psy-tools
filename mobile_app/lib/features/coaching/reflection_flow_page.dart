@@ -139,7 +139,7 @@ class _ReflectionFlowPageState extends State<ReflectionFlowPage> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: LinearProgressIndicator(
-                      value: progress.clamp(0.0, 1.0),
+                      value: progress.clamp(0.0, 1.0).toDouble(),
                       minHeight: 7,
                     ),
                   ),
@@ -190,17 +190,18 @@ class _ReflectionFlowPageState extends State<ReflectionFlowPage> {
                   if (node.skippable)
                     TextButton(
                       onPressed: () {
-                        if (node.options.isEmpty) {
-                          _saveReflection();
-                          return;
+                        String? nextId = node.defaultNextNodeId;
+                        if (node.answerType == ReflectionAnswerType.freeText &&
+                            node.options.isNotEmpty) {
+                          nextId = node.options.first.nextNodeId ??
+                              node.defaultNextNodeId;
                         }
-                        final nextId = node.defaultNextNodeId;
                         if (nextId == null) {
                           _saveReflection();
                           return;
                         }
                         setState(() {
-                          _route.add(nextId);
+                          _route.add(nextId!);
                           _selectedOptionId = null;
                           _textController.clear();
                         });
