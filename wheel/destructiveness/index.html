@@ -778,8 +778,9 @@ function createSliderMarks() {
 }
 function updateSliderMarkActive() {
     const cur = Number($("scoreSlider").value);
+    const rated = WheelEngine.isRated(values[currentQuestion]);
     document.querySelectorAll(".slider-mark").forEach(m => {
-        m.classList.toggle("active", Number(m.dataset.value) === cur);
+        m.classList.toggle("active", rated && Number(m.dataset.value) === cur);
     });
 }
 function updateBubblePosition() {
@@ -789,7 +790,7 @@ function updateBubblePosition() {
     const off = pct * (sw - bw);
     bu.style.left = (off + bw/2) + "px";
     bu.style.transform = "translateX(-50%)";
-    bu.textContent = sl.value;
+    bu.textContent = WheelEngine.isRated(values[currentQuestion]) ? sl.value : "—";
 }
 function triggerQuestionFade() {
     const card = document.querySelector("#testSection .card");
@@ -803,14 +804,16 @@ function updateQuestionUI(animate) {
     $("sphereNumber").textContent = "СФЕРА " + (idx + 1);
     $("sphereTitle").textContent = sp.name;
     $("question").textContent = sp.question;
-    const restoredScore = Math.max(0, Math.min(10, Math.round(Number(values[idx]) || 0)));
+    const restoredScore = WheelEngine.isRated(values[idx]) ? Number(values[idx]) : 0;
     $("scoreSlider").value = String(restoredScore);
-    $("scoreDisplay").textContent = String(restoredScore);
-    $("sliderBubble").textContent = String(restoredScore);
+    $("scoreDisplay").textContent = WheelEngine.isRated(values[idx]) ? String(restoredScore) : "Не оценено";
+    $("sliderBubble").textContent = WheelEngine.isRated(values[idx]) ? String(restoredScore) : "—";
+    $("scoreSlider").setAttribute("aria-valuetext", WheelEngine.isRated(values[idx]) ? String(restoredScore) : "Не оценено");
     updateBubblePosition();
     updateSliderMarkActive();
-    const pr = Math.round(((idx+1)/spheres.length)*100);
-    $("progressText").textContent = "Сфера " + (idx+1) + " из " + spheres.length;
+    const ratedCount = WheelEngine.statistics(values).count;
+    const pr = Math.round(ratedCount / spheres.length * 100);
+    $("progressText").textContent = "Сфера " + (idx+1) + " из " + spheres.length + " · оценено " + ratedCount;
     $("progressPercent").textContent = pr + "%";
     $("progressBar").style.width = pr + "%";
     $("backBtn").style.visibility = idx === 0 ? "hidden" : "visible";
@@ -844,9 +847,9 @@ $("backBtn").addEventListener("click", () => {
     if (currentQuestion > 0) { currentQuestion--; updateQuestionUI(true); haptic("selection"); }
 });
 $("nextBtn").addEventListener("click", () => {
-    values[currentQuestion] = Number($("scoreSlider").value);
+    // Navigation must never silently turn the default slider position into a score.
     saveValues();
-    buildProgressSnapshot();
+    if (WheelEngine.isRated(values[currentQuestion])) buildProgressSnapshot();
     if (currentQuestion < spheres.length - 1) {
         currentQuestion++;
         updateQuestionUI(true);
@@ -918,24 +921,23 @@ function updateDetailLinks() {
     }
 }
 function focusLowestRay(){
-    const min=Math.min(...values);
-    const idx=values.indexOf(min);
-    currentQuestion=idx;
+    const idx = WheelEngine.statistics(values).lowestIndices[0];
+    if (idx === undefined) { showToast("Сначала оцените хотя бы одну сферу."); return; }
+    currentQuestion = idx;
     $("testSection").classList.remove("hidden");
     $("resultSection").classList.add("hidden");
     updateQuestionUI(false);
-    const target=document.querySelectorAll(".wheel-detail-link")[idx];
-    if(target){target.classList.add("active");setTimeout(()=>target.classList.remove("active"),1400);}
+    const target = document.querySelectorAll(".wheel-detail-link")[idx];
+    if (target) { target.classList.add("active"); setTimeout(()=>target.classList.remove("active"),1400); }
     window.scrollTo({top:0,behavior:"smooth"});
 }
 function resetWheelScores(){
-    if(!confirm("Сбросить все оценки этого колеса к 5?")) return;
-    values=Array(categories.length).fill(null);
-    improvements={};
+    if(!confirm("Очистить оценки и цели этого колеса? История, журнал и рефлексия сохранятся.")) return;
+    values = Array(categories.length).fill(null);
+    improvements = {};
     saveValues();
     saveImprovements();
-    buildProgressSnapshot();
-    currentQuestion=0;
+    currentQuestion = 0;
     $("testSection").classList.remove("hidden");
     $("resultSection").classList.add("hidden");
     updateQuestionUI(false);
@@ -982,20 +984,23 @@ function hasMeaningfulContent(imp, idx) {
 
 /* RESULTS */
 function showResults() {
-    const avg = WheelEngine.average(values).toFixed(1);
-    const max = Math.max(...values), min = Math.min(...values), gap = max - min;
-    $("average").textContent = avg;
-    $("maximum").textContent = max;
-    $("minimum").textContent = min;
-    $("gap").textContent = gap;
+    const stats = WheelEngine.statistics(values), avg = stats.mean;
+    $("average").textContent = avg === null ? "—" : avg.toFixed(1);
+    $("maximum").textContent = stats.max === null ? "—" : stats.max;
+    $("minimum").textContent = stats.min === null ? "—" : stats.min;
+    $("gap").textContent = stats.gap === null ? "—" : stats.gap;
     let interp = "";
-    if (avg >= 8) interp = "<p>Большинство сфер на достаточно высоком уровне. Отдельные различия всё равно могут быть полезны для размышления.</p>";
-    else if (avg >= 6) interp = "<p>Многие сферы воспринимаются устойчиво. Есть направления, которым вы можете уделить дополнительное внимание.</p>";
-    else if (avg >= 4) interp = "<p>Оценки распределены неравномерно. Возможно, есть несколько сфер, которые особенно привлекают внимание.</p>";
-    else interp = "<p>Многие сферы находятся в нижней части шкалы. Можно рассмотреть небольшие реалистичные изменения.</p>";
-    if (gap >= 5) interp += "<p>Между самой высокой и самой низкой оценкой есть заметный разрыв — <strong>" + gap + " баллов</strong>.</p>";
+    if (avg === null) interp = "<p>Пока нет оценённых сфер. Отметьте интересующие вас показатели, чтобы увидеть профиль.</p>";
+    else if (avg >= 8) interp = "<p>Оценённые сферы в среднем находятся на достаточно высоком уровне. Отдельные различия могут быть полезны для размышления.</p>";
+    else if (avg >= 6) interp = "<p>Многие из оценённых сфер воспринимаются устойчиво. Есть направления, которым можно уделить внимание.</p>";
+    else if (avg >= 4) interp = "<p>Оценки распределены неравномерно. Возможно, несколько сфер привлекают внимание.</p>";
+    else interp = "<p>Оценённые сферы находятся в нижней части шкалы. Можно рассмотреть небольшие реалистичные изменения.</p>";
+    if (stats.count > 0 && stats.count < categories.length) {
+        interp += "<p>Промежуточный результат: оценено " + stats.count + " из " + categories.length + " сфер. Остальные не участвуют в статистике.</p>";
+    }
+    if (stats.gap !== null && stats.gap >= 5) interp += "<p>Разрыв между максимальной и минимальной оценками — <strong>" + stats.gap + " баллов</strong>.</p>";
     $("interpretation").innerHTML = interp;
-    redrawVisibleWheel();
+    drawWheel($("wheel"), values, improvements);
     renderImprovements();
     renderChart();
     loadReflections();
@@ -1009,50 +1014,53 @@ function colorForValue(v) {
     return 'linear-gradient(180deg, #22c55e, #15803d)';
 }
 function buildProgressSnapshot(){
-    const date=localDateISO(new Date());
-    const snapshot={date,values:values.slice(0,categories.length),improvements:JSON.parse(JSON.stringify(improvements||{}))};
-    const key=HISTORY_KEY||"wheelBalanceHistory";
-    let history=[];
-    try{history=safeParse(localStorage.getItem(key)||"[]",[])}catch(e){history=[]}
-    if(!Array.isArray(history))history=[];
-    const last=history[history.length-1];
-    if(!last||last.date!==date){
-        history.push(snapshot);
-        if(history.length>30)history=history.slice(-30);
-        try{localStorage.setItem(key,JSON.stringify(history))}catch(e){}
-    }
+    // A day snapshot is meaningful only when at least one score is real.
+    if (!WheelEngine.statistics(values).count) return;
+    const date = localDateISO(new Date());
+    const snapshot = {date,values:values.slice(0,categories.length),
+        improvements:JSON.parse(JSON.stringify(improvements||{}))};
+    let history = safeParse(localStorage.getItem(HISTORY_KEY)||"[]",[]);
+    if(!Array.isArray(history)) history=[];
+    const last = history[history.length-1];
+    if(last && last.date === date) history[history.length-1] = snapshot;
+    else history.push(snapshot);
+    if(history.length > 30) history=history.slice(-30);
+    try { localStorage.setItem(HISTORY_KEY,JSON.stringify(history)); } catch(e){}
 }
 function getHistory(){
     try{const h=safeParse(localStorage.getItem(HISTORY_KEY||"wheelBalanceHistory")||"[]",[]);return Array.isArray(h)?h:[]}catch(e){return []}
 }
 function showChangeSummary(){
-    const h=getHistory();
-    if(h.length<2){showToast("История начнёт сравнивать изменения после следующего заполнения.");return}
-    const prev=h[h.length-2].values||[];
-    const changes=values.map((v,i)=>({i,delta:Number((v-(prev[i]??v)).toFixed(1))})).filter(x=>x.delta!==0).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
-    if(!changes.length){showToast("По сравнению с предыдущей записью изменений нет.");return}
-    const text=changes.slice(0,3).map(x=>categories[x.i]+": "+(x.delta>0?"+":"")+x.delta).join(" · ");
+    const history = getHistory();
+    if (history.length < 2) { showToast("Динамика появится после оценки в другой день."); return; }
+    const prev = history[history.length-2].values || [];
+    const changes = values.map((value,i)=>{
+        if (!WheelEngine.isRated(value) || !WheelEngine.isRated(prev[i])) return null;
+        return {i,delta:Number((Number(value)-Number(prev[i])).toFixed(1))};
+    }).filter(x=>x && x.delta!==0).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+    if (!changes.length) { showToast("Нет изменений по сопоставимым оценкам."); return; }
+    const text = changes.slice(0,3).map(x=>categories[x.i]+": "+(x.delta>0?"+":"")+x.delta).join(" · ");
     showToast("Изменения: "+text);
 }
 function renderChart() {
     const c = $("resultsChart");
     if (!c) return;
-    const maxVal = Math.max.apply(null, values);
-    const minVal = Math.min.apply(null, values);
+    const stats = WheelEngine.statistics(values);
     let html = "";
     categories.forEach((name, i) => {
-        const v = values[i];
-        const pct = Math.round((v / 10) * 100);
-        const heightPct = Math.max(6, (v / 10) * 100);
-        const bg = colorForValue(v);
+        const v = values[i], rated = WheelEngine.isRated(v);
+        const pct = rated ? Math.round((Number(v) / 10) * 100) : 0;
+        const heightPct = rated ? Math.max(6, pct) : 0;
+        const bg = rated ? colorForValue(Number(v)) : "transparent";
         const imp = improvements[i];
-        const hasGoal = imp && typeof imp.target === "number" && imp.target !== v;
-        const goalPct = hasGoal ? Math.min(100, Math.max(0, (imp.target / 10) * 100)) : 0;
+        const hasGoal = imp && WheelEngine.isRated(imp.target) && (!rated || imp.target !== v);
+        const goalPct = hasGoal ? (imp.target / 10) * 100 : 0;
         let cls = "rc-bar";
-        if (v === maxVal && maxVal > 0) cls += " best";
-        if (v === minVal) cls += " worst";
-        html += '<div class="' + cls + '" data-idx="' + i + '">'
-            + '<div class="rc-value">' + v + '<span class="rc-pct">' + pct + '%</span></div>'
+        if (!rated) cls += " unrated";
+        if (rated && Number(v) === stats.max && stats.max > 0) cls += " best";
+        if (rated && Number(v) === stats.min) cls += " worst";
+        html += '<div class="' + cls + '" data-idx="' + i + '" role="button" tabindex="0" aria-label="' + escapeHtml(name) + ': ' + (rated ? v + ' из 10' : 'не оценено') + '">'
+            + '<div class="rc-value">' + (rated ? v + '<span class="rc-pct">' + pct + '%</span>' : '—') + '</div>'
             + '<div class="rc-track">'
             +   '<div class="rc-fill" style="height:' + heightPct + '%; background:' + bg + ';"></div>'
             +   (hasGoal ? '<div class="rc-goal-marker" style="bottom:' + goalPct + '%;"></div>' : '')
@@ -1063,9 +1071,10 @@ function renderChart() {
     });
     c.innerHTML = html;
     c.querySelectorAll(".rc-bar").forEach(bar => {
-        bar.addEventListener("click", () => {
-            openInfoModal(Number(bar.dataset.idx));
-            haptic("selection");
+        const open = () => { openInfoModal(Number(bar.dataset.idx)); haptic("selection"); };
+        bar.addEventListener("click", open);
+        bar.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); }
         });
     });
 }
@@ -1312,10 +1321,9 @@ $("improveModal").addEventListener("click", e => {
     function handlePointer(clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = (clientX - rect.left) * scaleX;
-        const y = (clientY - rect.top) * scaleY;
+        // WheelCanvas hit targets use CSS pixels, not Retina backing-store pixels.
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
         let best = null, bestDist = Infinity;
         for (const hit of vertexHits) {
             const dx = x - hit.x, dy = y - hit.y;
@@ -1419,6 +1427,7 @@ $("exportJsonBtn").addEventListener("click", () => {
     try {
         const data = {
             app: "wheel-balance",
+            wheelId: VALUES_KEY,
             version: 3,
             method_id: "wheel_of_destructiveness",
             method_version: "3.0",
@@ -1454,6 +1463,19 @@ $("importFileInput").addEventListener("change", function() {
         try {
             const data = JSON.parse(ev.target.result);
             if (!data || typeof data !== "object") throw new Error("bad format");
+            if (data.wheelId && data.wheelId !== VALUES_KEY) {
+                showToast("Файл предназначен для другого колеса.");
+                $("importFileInput").value = "";
+                return;
+            }
+            if (!data.wheelId && !confirm("Файл старого формата не содержит идентификатора колеса. Импортировать его в это колесо?")) {
+                $("importFileInput").value = "";
+                return;
+            }
+            if (!confirm("Импорт заменит текущие оценки и содержащиеся в файле заметки этого колеса. Продолжить?")) {
+                $("importFileInput").value = "";
+                return;
+            }
             if (!Array.isArray(data.values) || data.values.length !== categories.length) {
                 showToast("Неверный формат файла");
                 $("importFileInput").value = "";
@@ -1542,7 +1564,8 @@ window.deleteJournalEntry = function(i) {
 
 /* SHARE */
 function getAverage() {
-    return (values.reduce((a,b) => a + Number(b), 0) / values.length).toFixed(1);
+    const avg = WheelEngine.statistics(values).mean;
+    return avg === null ? "—" : avg.toFixed(1);
 }
 function buildShareMessage() {
     const friend = $("friendName").value.trim();
@@ -1552,9 +1575,9 @@ function buildShareMessage() {
     let msg = "🌀 Колесо баланса\n\n";
     msg += friend ? ("Привет, " + friend + "!\n\n") : "Привет!\n\n";
     msg += "Я заполнил(а) «Колесо баланса» " + formatDateShort(localDateISO()) + ".\n\n";
-    msg += "Моё среднее значение: " + getAverage() + "/10.\n\n";
+    msg += "Моё среднее значение: " + (WheelEngine.statistics(values).count ? getAverage()+"/10" : "не оценено") + ".\n\n";
     msg += "Мои оценки:\n";
-    categories.forEach((n, i) => { msg += "• " + n + " — " + values[i] + "/10\n"; });
+    categories.forEach((n, i) => { msg += "• " + n + " — " + (WheelEngine.isRated(values[i]) ? values[i] + "/10" : "не оценено") + "\n"; });
     const imps = Object.keys(improvements).map(Number).filter(i => hasMeaningfulContent(improvements[i], i));
     if (imps.length) {
         msg += "\n🌱 Мои заметки:\n";
