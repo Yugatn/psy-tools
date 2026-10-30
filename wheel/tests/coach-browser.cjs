@@ -67,7 +67,7 @@ async function main(){
     pa.once("dialog",d=>d.accept());
     await pa.locator("#saveBtn").click();
     const result=await pa.evaluate(()=>JSON.parse(localStorage.getItem("wheelBalanceV3Improvements")));
-    assert.match(result[0].note,/<img src=x onerror=alert\\(1\\)>/); // user text is preserved as text
+    assert.ok(result[0].note.includes("<img src=x onerror=alert(1)>"),"saved note includes exact user text");
     assert.equal(result[0].target,undefined,"should not invent goals");
     const secondA=await a.newPage();
     await secondA.goto(base+"coach.html",{waitUntil:"load"});
