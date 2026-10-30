@@ -446,6 +446,10 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         }
       }
     }
+    journals.sort(function (a,b) {
+      const ad = a.entry.date || a.entry.created || "", bd = b.entry.date || b.entry.created || "";
+      return String(bd).localeCompare(String(ad));
+    });
     if (!journals.length) {
       journalEl.innerHTML = '<div class="empty">Записей дневника нет.</div>';
     } else {
@@ -480,27 +484,60 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   }
 
   function importAll(file) {
+    if (!file || file.size > 4 * 1024 * 1024) {
+      feedback("Файл слишком большой. Максимум 4 МБ.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = function () {
       try {
-        const data = JSON.parse(String(reader.result));
-        const map = data.data || data;
-        if (!map || typeof map !== "object") throw new Error("Неверный формат");
-        let n = 0;
-        const keys = Object.keys(map);
-        for (let i = 0; i < keys.length; i++) {
-          const k = keys[i];
-          if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;
-          const v = map[k];
-          localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
-          n++;
+        const doc = JSON.parse(String(reader.result));
+        const map = doc && doc.source === "wheel-cabinet" && doc.version === 1 ? doc.data : doc;
+        if (!map || typeof map !== "object" || Array.isArray(map)) throw new Error("Неверная структура");
+        const staged = [];
+        for (const key of Object.keys(map)) {
+          if (!safeDataKey(key)) throw new Error("Неподдерживаемый ключ: " + String(key).slice(0,80));
+          const value = map[key], raw = typeof value === "string" ? value : JSON.stringify(value);
+          if (typeof raw !== "string" || raw.length > 250000) throw new Error("Слишком большой блок: " + key);
+          const parsed = parseJSON(raw, null);
+          if (/(:values|_Values|Values)$/.test(key)) {
+            if (!Array.isArray(parsed) || parsed.length > 60 || !parsed.every(function (v) {
+              return v === null || (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 10) ||
+                (typeof v === "string" && v.trim() && E.isRated && E.isRated(v));
+            })) throw new Error("Недопустимые значения оценок: " + key);
+          } else if (/(:history)$/.test(key) || /(:journal|_Journal|Journal)$/.test(key)) {
+            if (!Array.isArray(parsed) || parsed.length > 1000) throw new Error("Некорректная история/журнал: " + key);
+          } else if (/(:improvements|_Improvements|Improvements|:reflections|_Reflections|Reflections|:share|Share)$/.test(key)) {
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Некорректные заметки: " + key);
+          } else if (!/(:spoiler|SpoilerPlan)$/.test(key)) {
+            throw new Error("Неизвестный тип ключа: " + key);
+          }
+          staged.push([key, raw]);
         }
-        alert("Импортировано ключей: " + n);
+        if (!staged.length) throw new Error("Нет данных колёс для импорта");
+        if (!confirm("Заменить " + staged.length + " ключей этого устройства данными файла? Сначала рекомендуется экспортировать текущие результаты.")) {
+          feedback("Импорт отменён. Данные не изменены.");
+          return;
+        }
+        const previous = staged.map(function (item) { return [item[0], localStorage.getItem(item[0])]; });
+        try {
+          for (const item of staged) localStorage.setItem(item[0], item[1]);
+        } catch (writeError) {
+          for (const item of previous) {
+            try {
+              if (item[1] === null) localStorage.removeItem(item[0]);
+              else localStorage.setItem(item[0], item[1]);
+            } catch (_) {}
+          }
+          throw new Error("Недостаточно места для импорта; выполнена попытка восстановления прежних данных.");
+        }
+        feedback("Импортировано ключей: " + staged.length + ". Проверьте результаты.");
         render();
       } catch (e) {
-        alert("Ошибка импорта: " + (e && e.message ? e.message : e));
+        feedback("Ошибка импорта: " + (e && e.message ? e.message : e));
       }
     };
+    reader.onerror = function () { feedback("Не удалось прочитать выбранный файл."); };
     reader.readAsText(file);
   }
 
