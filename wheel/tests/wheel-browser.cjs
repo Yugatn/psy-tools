@@ -124,8 +124,16 @@ async function main(){
       assert.match(await secondTabA.locator(".privacy-warning").innerText(),/профиля браузера/);
       await pageA.goto(base+"cabinet.html",{waitUntil:"load"});
       assert.match(await pageA.locator(".privacy-notice").innerText(),/Следующий человек/);
+      await pageA.evaluate(()=>{
+        localStorage.setItem("unrelatedAppSetting","keep");
+        localStorage.setItem("wheelBalanceLegacy:особый ключ","remove");
+      });
       pageA.once("dialog",dialog=>dialog.accept());
       await pageA.locator("#clearBtn").click();
+      assert.equal(await pageA.evaluate(()=>localStorage.getItem("unrelatedAppSetting")),"keep",
+        "clear must not touch unrelated app data");
+      assert.equal(await pageA.evaluate(()=>localStorage.getItem("wheelBalanceLegacy:особый ключ")),null,
+        "legacy wheel data with Unicode key is also removed");
       assert.equal(await pageA.evaluate(()=>localStorage.getItem("wheelBalanceV3Values")),null,
         "clear removes stored result from shared profile");
       await secondTabA.reload({waitUntil:"load"});
