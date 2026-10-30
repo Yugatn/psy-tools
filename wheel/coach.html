@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Офлайн-коуч · Колесо баланса</title>
-<meta name="description" content="Добровольная рефлексия и коучинговые вопросы по результатам Колеса баланса. Работает без сети и внешней ИИ-модели.">
+<meta name="description" content="Добровольная рефлексия и коучинговые вопросы по результатам Колеса баланса. Задаёт вопросы без вызова внешней ИИ-модели.">
 <style>
 *{box-sizing:border-box}
 html{color-scheme:dark}
@@ -55,7 +55,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <h1>Диалог по колесу баланса</h1>
 <p class="lead">Саморефлексия, рефрейминг и коучинг на основе ваших собственных наблюдений. Это <strong>структурированный офлайн-помощник</strong> — он задаёт заранее подготовленные вопросы, не использует языковую модель и не является психотерапией.</p>
 </header>
-<div class="notice" role="note"><strong>О конфиденциальности:</strong> оценки читаются с этого устройства только после вашего нажатия. Вопросы и ответы остаются в оперативной памяти вкладки и исчезают при перезагрузке. В одном браузерном профиле сохранённые оценки доступны и другим пользователям этого профиля. Никакие данные не отправляются в ИИ или на сервер этим помощником.</div>
+<div class="notice" role="note"><strong>О конфиденциальности:</strong> оценки читаются с этого устройства только после вашего нажатия. Вопросы и ответы этой сессии остаются в памяти вкладки и не сохраняются без вашего решения. Для первого открытия страницы из GitHub Pages может потребоваться интернет. В одном браузерном профиле сохранённые оценки доступны и другим пользователям этого профиля. Никакие данные не отправляются в ИИ или на сервер этим помощником.</div>
 <p id="status" role="status" aria-live="polite"></p>
 <div class="actions">
 <button id="loadBtn" type="button" class="primary">Показать мои локальные оценки</button>
