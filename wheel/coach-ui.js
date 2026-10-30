@@ -41,9 +41,17 @@
     wheels.forEach((w,i)=>{
       wheelSelect.appendChild(makeOption(i,w.title+" · "+w.rays.filter(r=>r.score!==null).length+" оценок"));
     });
-    let wanted="";
-    try { wanted=decodeURIComponent(location.hash.replace(/^#/,"")); } catch (_) {} 
-    const match=wheels.findIndex(w=>w.id===wanted || (wanted==="detail"&&w.id.startsWith("wheelBalanceDetail:")));
+    let wanted="",launchKey=null;
+    try { wanted=decodeURIComponent(location.hash.replace(/^#/,"")); } catch (_) {}
+    // Detail pages hand off their exact local wheel key only on a deliberate link click.
+    // The context identifier is consumed after the user explicitly loads local results.
+    try {
+      launchKey=sessionStorage.getItem("wheelCoachLaunchV1");
+      sessionStorage.removeItem("wheelCoachLaunchV1");
+    } catch (_) {}
+    let match=launchKey?wheels.findIndex(w=>w.key===launchKey):-1;
+    if(match<0)match=wheels.findIndex(w=>w.id===wanted ||
+      (wanted==="detail"&&w.id.startsWith("wheelBalanceDetail:")));
     if(match>=0)wheelSelect.value=String(match);
     updateRays();
     setStatus(wheels.length
