@@ -64,8 +64,7 @@
   function showPrompt() {
     const next=engine.prompt(session);
     if(!next){finish();return;}
-    $("stepInfo").textContent="Вопрос "+(session.stage+1)+" из "+(session.stage+1+
-      (session.mode==="coaching"?5:4)-session.stage);
+    $("stepInfo").textContent="Вопрос "+(session.stage+1)+" из "+(session.mode==="coaching"?6:5);
     addMessage("coach",next);
     $("answer").value="";
     $("answer").focus();
@@ -153,7 +152,7 @@
   $("answer").addEventListener("keydown",event=>{
     if(event.key==="Enter"&&(event.ctrlKey||event.metaKey)){event.preventDefault();reply(false);}
   });
-  window.addEventListener("pagehide",()=>{session=null;talk.replaceChildren();});
+  window.addEventListener("pagehide",()=>{session=null;talk.replaceChildren();$("answer").value="";$("summary").value="";toggle("dialogue",false);toggle("completePanel",false);});
   toggle("choosePanel",true);
   toggle("dialogue",false);toggle("completePanel",false);toggle("helpPanel",false);
   toggle("noData",false);
