@@ -67,3 +67,48 @@ Legend: ? = not inspected or not verified; NOT an assertion that the feature is 
 6. Update this matrix with evidence, exact commits, and remaining failures.
 
 No existing wheel is to be deleted or renamed. No new wheel is authorized by this audit. This document is an initial evidence-limited audit, not a claim of completed functional parity.
+
+---
+
+## Implementation update — 2026-10-31 (candidate PR, not deployed)
+
+**Reconstruction source:** `5ed063478d8b926b448586250f1d3016b9f40d76` on main.
+**Concept integrity:** RECONSTRUCTION_PASSED_WITH_UNKNOWN; same 10 invariants in bootstrap remain applicable. No philosophical/diagnostic claims changed.
+**Scope:** 14 existing `wheel/**/index.html` routes, shared `wheel-engine.js`, shared `wheel-draw.js`, QA page, standalone tests and CI workflow.
+
+### Confirmed by code inspection and isolated execution
+
+- Shared scoring now validates values 0–10 and distinguishes `null` from actual `0`.
+- `WheelEngine.statistics` returns `null` for mean/min/max when no real score exists. Displayed statistics, attention zone, bar chart and share text use the rated-only model.
+- Unrated questions show an explicit empty state; Next/Done does not silently convert the slider's initial 0 into a score.
+- Progress indicator reflects count of scored questions rather than position in questionnaire.
+- Shared Canvas keeps visible rays for unscored categories without drawing a fictitious profile polygon; detail uses shared Canvas, not its separate legacy renderer.
+- Canvas hit-testing now uses CSS pixels so DPR/Retina canvas backing-store scaling does not distort the click coordinates.
+- A daily history snapshot is skipped for an entirely empty wheel, and updated after further scoring on the same day; comparison excludes unrated pairs.
+- Exported JSON now carries stable `wheelId` equal to the existing storage key. A mismatched wheel identity is rejected; legacy files without an identity require explicit confirmation, and overwrite requires another confirmation.
+- Reset wording describes actual behavior; reset clears scores and improvements on the current wheel but preserves journal, reflections and history.
+- Existing `localStorage` score keys were **not** renamed; no destructive migration was run.
+- Syntax of the inline script in all 14 existing wheel pages and the shared engine/draw scripts was successfully parsed with a JavaScript function parser.
+- Isolated tests of the engine and the renderer completed without errors using a mocked browser/Canvas environment (17 checks in this session); Node-based regression test and a PR workflow were added, but workflow outcomes are not asserted here.
+
+### Incomplete or unverified
+
+| Verification item | Status | Notes |
+|---|---|---|
+| Source review of all 14 pages | CODE_INSPECTED | Script parse passed; no user-facing real browser execution |
+| Engine and renderer isolated test | STATIC_TESTED | Mocked DOM/Canvas, not an end-to-end test |
+| Node regression workflow | CI_PASSED | GitHub Actions Wheel regression checks successful on PR #4, head c67d6f4 |
+| Live GitHub Pages | NOT_TESTED | Branch must be reviewed and integrated |
+| Desktop browser and keyboard navigation | NOT_TESTED | Require browser testing |
+| iOS Safari / Android Chrome | NOT_TESTED | Require real or automated device browser |
+| Telegram WebApp | NOT_TESTED | Requires Telegram environment |
+| Import/export round-trip with real legacy files | NOT_TESTED | Synthetic/structural checks only |
+| Cabinet import/export + nested interactions | NOT_TESTED | Candidate for separate follow-up hardening |
+| Clinical/psychometric validation | NOT_TESTED | This tool remains self-reflection, not diagnosis |
+
+**Remaining risk:** although existing storage keys are retained, imported legacy files lacking `wheelId` cannot be automatically tied to a wheel; the user must verify the provenance before accepting import. Canvas visual fidelity and pointer behavior still need browser-level confirmation. No new wheel categories or questionnaire content were introduced.
+
+### CI update (2026-10-31)
+- Wheel regression checks: **SUCCESS** on PR #4 at commit `c67d6f4`.
+- Agent Integrity Check: **SUCCESS** at `c67d6f4` after excluding the reconstruction test specification containing expressly forbidden-example text from the assertion grep; requirements retained.
+- The independent push-triggered `fix-cabinet-nested.yml` workflow was unsuccessful; no successful verification can be inferred from it. Browser/device testing is still pending.

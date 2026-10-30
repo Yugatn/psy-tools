@@ -13,7 +13,7 @@ small{color:#9da9bb}.run{padding:10px 14px;border:0;border-radius:9px;cursor:poi
 </head>
 <body><main>
 <h1>Проверка «Колёс баланса»</h1>
-<p><small>Автоматическая статическая проверка страниц из текущего GitHub Pages-раздела.</small></p>
+<p><small>Структурная проверка страниц и синтаксиса inline JavaScript. Это не заменяет испытания в браузерах и на устройствах.</small></p>
 <button class="run" id="run">Запустить проверку</button>
 <div id="out"></div>
 <script>
@@ -27,7 +27,7 @@ async function checkPage(path){
  const ids=requiredIds.filter(id=>!doc.getElementById(id));
  const inline=[...doc.querySelectorAll("script:not([src])")].map(s=>s.textContent).filter(Boolean);
  const syntax=[]; inline.forEach((code,i)=>{try{new Function(code);syntax.push("ok")}catch(e){syntax.push("ERROR: "+e.message)}});
- const shared=path==="index.html"?["./wheel-engine.js","./wheel-draw.js"]:path==="detail/"?["../wheel-engine.js"]:["../wheel-engine.js","../wheel-draw.js"];
+ const shared=path==="index.html"?["./wheel-engine.js","./wheel-draw.js"]:path==="detail/"?["../wheel-engine.js","../wheel-draw.js"]:["../wheel-engine.js","../wheel-draw.js"];
  const missingScripts=shared.filter(s=>!scripts.includes(s));
  return {path,http:res.status,duplicates,missingIds:ids,missingScripts,syntax};
 }

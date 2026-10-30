@@ -41,6 +41,14 @@ button:active{transform:scale(.98)}
 .empty{color:#8fa0b8;text-align:center;padding:20px;font-size:14px;line-height:1.5}
 .history-item{background:#18233a;border-radius:12px;padding:12px;margin-top:8px;font-size:13px}
 .history-item .date{color:#8fa0b8;font-size:12px;margin-bottom:4px}
+.privacy-notice{padding:12px 14px;border:1px solid #38435a;border-radius:13px;background:#142033;color:#d3ddeb;font-size:13px;line-height:1.55;margin:0 0 16px}
+.privacy-notice a{color:#bbd7ff;text-decoration:underline}
+.goal-title{font-weight:650;margin-bottom:5px}
+.goal-detail{margin:4px 0;color:#c2ccda;line-height:1.45}
+.delta{font-weight:750;font-variant-numeric:tabular-nums}
+.delta.up{color:#86efac}.delta.down{color:#fda4af}.delta.flat{color:#aab4c3}
+.feedback{margin-top:8px;color:#bfdbfe;font-size:13px;line-height:1.45}
+.feedback[hidden]{display:none}
 .muted{color:#8fa0b8;font-size:12px;line-height:1.45}
 details{margin-top:8px}
 summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
@@ -53,7 +61,8 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
 <div class="container">
 <nav><a href="/psy-tools/">psy-tools</a> / <a href="./hub.html">Хаб</a> / Личный кабинет</nav>
 <h1>Личный кабинет</h1>
-<p class="subtitle">Все сохранённые результаты колёс баланса на этом устройстве. Данные хранятся только в браузере (localStorage) и не отправляются на сервер.</p>
+<p class="subtitle">Сохранённые результаты доступны на этом устройстве в текущем профиле браузера. Они не синхронизируются между устройствами через личный кабинет.</p>
+<p class="privacy-notice" role="note"><strong>Важно при использовании общего устройства:</strong> приложение не имеет входа в аккаунт. Следующий человек, открывший сайт в том же браузерном профиле, сможет увидеть ваши ответы, историю и дневник. Для личных данных используйте отдельный профиль браузера. После работы на общем устройстве <a href="#privacy">сохраните резервную копию и удалите локальные результаты</a>. Это предупреждение не является защитой паролем.</p>
 
 <div class="card">
   <h2>Сводка</h2>
@@ -78,6 +87,18 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
 </div>
 
 <div class="card">
+  <h2>Цели и следующие шаги</h2>
+  <p class="muted">Показываются только сохранённые вами цели. Изменять их можно в соответствующем колесе.</p>
+  <div id="goalsList"><div class="empty">Сохранённых целей пока нет.</div></div>
+</div>
+
+<div class="card">
+  <h2>Динамика оценок</h2>
+  <p class="muted">Сравнение доступно только для оценок одного колеса, полученных в разные даты.</p>
+  <div id="trendsList"><div class="empty">Недостаточно данных для сравнения.</div></div>
+</div>
+
+<div class="card">
   <h2>История изменений</h2>
   <div id="historyList"><div class="empty">Нет сохранённой истории.</div></div>
 </div>
@@ -87,12 +108,13 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   <div id="journalList"><div class="empty">Записей пока нет.</div></div>
 </div>
 
-<div class="card">
+<div class="card" id="privacy">
   <h2>Данные и приватность</h2>
-  <p class="muted">Личный кабинет читает только ключи localStorage, начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>. Серверной авторизации нет — это «кабинет на устройстве».</p>
+  <p class="muted">Нет регистрации и авторизации. Хранилище <code>localStorage</code> разделяется по домену сайта, а не по имени человека или каталогу. Страницы на том же домене могут технически получить доступ к этим значениям. Это не защищённая многопользовательская система. Перед использованием общего устройства экспортируйте свои данные в файл, затем удалите их. Экспортированный JSON также содержит личные данные без шифрования.</p>
   <div class="actions">
     <button type="button" id="importBtn">Импорт JSON</button>
     <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <div id="dataFeedback" class="feedback" role="status" aria-live="polite" hidden></div>
     <button type="button" id="clearBtn" class="danger">Очистить все данные колёс</button>
   </div>
 </div>
@@ -137,10 +159,66 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   }
 
   function avg(values) {
-    if (E.average) return E.average(values);
-    const r = (values || []).filter(isRated).map(Number);
-    if (!r.length) return 0;
+    const r = (Array.isArray(values) ? values : []).filter(isRated).map(Number);
+    if (!r.length) return null;
     return r.reduce(function (a, b) { return a + b; }, 0) / r.length;
+  }
+  function safeDataKey(key) {
+    return typeof key === "string" && key.length <= 300 &&
+      (/^wheelBalance[A-Za-z0-9:_%-]{0,290}$/.test(key) ||
+       /^wheelNested[A-Za-z0-9:_%-]{0,290}$/.test(key)) &&
+      !/__(?:proto)__|prototype|constructor/i.test(key);
+  }
+  function numericDelta(value) {
+    if (value === 0) return '<span class="delta flat">0.0</span>';
+    return '<span class="delta ' + (value > 0 ? 'up' : 'down') + '">' +
+      (value > 0 ? '+' : '') + value.toFixed(1) + '</span>';
+  }
+  function goalsKey(valuesKey) {
+    if (/:values$/i.test(valuesKey)) return valuesKey.replace(/:values$/i, ":improvements");
+    if (/_Values$/.test(valuesKey)) return valuesKey.replace(/_Values$/, "_Improvements");
+    if (/Values$/.test(valuesKey)) return valuesKey.replace(/Values$/, "Improvements");
+    return null;
+  }
+  function goalEntries(valuesKey, values) {
+    const key = goalsKey(valuesKey);
+    const raw = key ? parseJSON(localStorage.getItem(key), null) : null;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return [];
+    return Object.keys(raw).filter(function (id) { return /^(0|[1-9][0-9]*)$/.test(id); })
+      .map(function (id) {
+        const i = Number(id), g = raw[id];
+        if (i >= values.length || !g || typeof g !== "object" || Array.isArray(g)) return null;
+        const target = isRated(g.target) ? Number(g.target) : null;
+        const note = typeof g.note === "string" ? g.note : "";
+        const step = typeof g.step === "string" ? g.step : "";
+        const date = typeof g.date === "string" ? g.date : "";
+        if (target === null && !note.trim() && !step.trim() && !date) return null;
+        return { index:i, target:target, current:isRated(values[i]) ? Number(values[i]) : null,
+          note:note.slice(0,500), step:step.slice(0,500), date:date.slice(0,25) };
+      }).filter(Boolean);
+  }
+  function detailHref(id) {
+    let decoded;
+    try { decoded = decodeURIComponent(id); } catch (_) { return "./hub.html"; }
+    const colon = decoded.indexOf(":");
+    if (colon < 1) return "./hub.html";
+    const parent = decoded.slice(0,colon);
+    const allowed = WHEEL_CATALOG.some(function (wheel) { return wheel.id === parent; });
+    if (!allowed) return "./hub.html";
+    const trail = decoded.slice(colon+1).split(" / ").filter(Boolean);
+    if (!trail.length) return "./hub.html";
+    const params = new URLSearchParams({
+      parent:parent, label:trail[trail.length-1], trail:JSON.stringify(trail),
+      parentCount:String(trail.length > 1 ? 8 : 9)
+    });
+    const back = trail.length === 1 ? "./" + parent + "/" : "./hub.html";
+    params.set("back", new URL(back, location.href).href);
+    return "./detail/?" + params.toString();
+  }
+  function feedback(message) {
+    const el = document.getElementById("dataFeedback");
+    el.hidden = false;
+    el.textContent = message;
   }
 
   function allWheelKeys() {
@@ -148,7 +226,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);
+        if (k && (k.startsWith("wheelBalance") || k.startsWith("wheelNested"))) keys.push(k);
       }
     } catch (_) {}
     return keys.sort();
@@ -199,7 +277,8 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         ratedCount: rated.length,
         total: values.length,
         history: Array.isArray(history) ? history : [],
-        journal: Array.isArray(journal) ? journal : []
+        journal: Array.isArray(journal) ? journal : [],
+        goals: goalEntries(valuesKey, values)
       });
     }
 
@@ -217,9 +296,11 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       let title = k;
       let href = "./";
       if (k.indexOf("wheelBalanceDetail:") === 0) {
-        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
+        const rawId = k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, "");
+        let id;
+        try { id = decodeURIComponent(rawId); } catch (_) { continue; }
         title = "Детально · " + id.replace(/:/g, " · ");
-        href = "./detail/";
+        href = detailHref(rawId);
       } else if (k.indexOf("wheelNestedV2_") === 0) {
         const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
         const map = {health:["./health/","Здоровье"],work:["./work/","Работа"],finance:["./finance/","Финансы"],relationships:["./relationships/","Отношения"],social:["./social/","Социальная жизнь"],development:["./development/","Развитие"],rest:["./rest/","Отдых"],creativity:["./creativity/","Творчество"],self_awareness:["./self_awareness/","Самоосознание"],fear:["./fear/","Страхи"],sexuality:["./sexuality/","Сексуальность"],destructiveness:["./destructiveness/","Деструктивность"]};
@@ -294,6 +375,44 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       }).join("");
     }
 
+    const goalItems = entries.flatMap(function (entry) {
+      return entry.goals.map(function (goal) { return { title:entry.title, href:entry.href, goal:goal }; });
+    });
+    document.getElementById("goalsList").innerHTML = goalItems.length ? goalItems.map(function (item) {
+      const g = item.goal;
+      return '<div class="history-item"><div class="goal-title">' + escapeHtml(item.title) +
+        ' · луч ' + (g.index+1) + '</div>' +
+        '<div class="goal-detail">Сейчас: ' + (g.current===null ? 'не оценено' : g.current+'/10') +
+        ' · цель: ' + (g.target===null ? 'не задана' : g.target+'/10') +
+        (g.date ? ' · срок: ' + escapeHtml(g.date) : '') + '</div>' +
+        (g.step ? '<div class="goal-detail">Следующий шаг: ' + escapeHtml(g.step) + '</div>' : '') +
+        (g.note ? '<div class="goal-detail">Заметка: ' + escapeHtml(g.note) + '</div>' : '') +
+        '<a class="btn" href="' + escapeHtml(item.href) + '">Открыть колесо</a></div>';
+    }).join('') : '<div class="empty">Цели пока не сохранены. Их можно добавить внутри колеса.</div>';
+
+    const trends = entries.map(function (entry) {
+      const dated = entry.history.filter(function (snap) {
+        return snap && /^\d{4}-\d{2}-\d{2}$/.test(String(snap.date||'')) &&
+          Array.isArray(snap.values) && avg(snap.values)!==null;
+      }).sort(function (a,b) { return String(a.date).localeCompare(String(b.date)); });
+      if (dated.length < 2) return null;
+      const previous = dated[dated.length-2], current = dated[dated.length-1];
+      if (previous.date === current.date) return null;
+      const paired = current.values.map(function (v,i) {
+        return isRated(v) && isRated(previous.values[i]) ? Number(v)-Number(previous.values[i]) : null;
+      }).filter(function (value) { return value!==null; });
+      if (!paired.length) return null;
+      return { title:entry.title, href:entry.href, from:previous.date, to:current.date,
+        compared:paired.length, delta:paired.reduce(function(a,b){return a+b;},0)/paired.length };
+    }).filter(Boolean);
+    document.getElementById("trendsList").innerHTML = trends.length ? trends.map(function (trend) {
+      return '<div class="history-item"><div class="goal-title">' + escapeHtml(trend.title) +
+        ' · ' + numericDelta(trend.delta) + '</div><div class="goal-detail">' +
+        escapeHtml(trend.from) + ' → ' + escapeHtml(trend.to) +
+        ' · сопоставлено лучей: ' + trend.compared +
+        '</div><a href="' + escapeHtml(trend.href) + '">Открыть колесо</a></div>';
+    }).join('') : '<div class="empty">Для динамики нужны две оценки одного колеса в разные дни по общим лучам.</div>';
+
     const histEl = document.getElementById("historyList");
     let histItems = [];
     for (let i = 0; i < entries.length; i++) {
@@ -312,7 +431,8 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
       histEl.innerHTML = histItems.slice(0, 40).map(function (item) {
         if (!item.snap) return "";
         const vals = item.snap.values || item.snap.scores || [];
-        const a = Array.isArray(vals) && vals.length ? avg(vals).toFixed(1) : "—";
+        const score = avg(vals);
+        const a = score === null ? "—" : score.toFixed(1);
         return '<div class="history-item"><div class="date">' + escapeHtml(String(item.snap.date || "без даты")) +
           ' · ' + escapeHtml(item.title) + ' · среднее ' + a + '</div>' +
           (Array.isArray(vals) ? barsHtml(vals) : "") + "</div>";
@@ -329,6 +449,10 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         }
       }
     }
+    journals.sort(function (a,b) {
+      const ad = a.entry.date || a.entry.created || "", bd = b.entry.date || b.entry.created || "";
+      return String(bd).localeCompare(String(ad));
+    });
     if (!journals.length) {
       journalEl.innerHTML = '<div class="empty">Записей дневника нет.</div>';
     } else {
@@ -363,27 +487,60 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   }
 
   function importAll(file) {
+    if (!file || file.size > 4 * 1024 * 1024) {
+      feedback("Файл слишком большой. Максимум 4 МБ.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = function () {
       try {
-        const data = JSON.parse(String(reader.result));
-        const map = data.data || data;
-        if (!map || typeof map !== "object") throw new Error("Неверный формат");
-        let n = 0;
-        const keys = Object.keys(map);
-        for (let i = 0; i < keys.length; i++) {
-          const k = keys[i];
-          if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;
-          const v = map[k];
-          localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
-          n++;
+        const doc = JSON.parse(String(reader.result));
+        const map = doc && doc.source === "wheel-cabinet" && doc.version === 1 ? doc.data : doc;
+        if (!map || typeof map !== "object" || Array.isArray(map)) throw new Error("Неверная структура");
+        const staged = [];
+        for (const key of Object.keys(map)) {
+          if (!safeDataKey(key)) throw new Error("Неподдерживаемый ключ: " + String(key).slice(0,80));
+          const value = map[key], raw = typeof value === "string" ? value : JSON.stringify(value);
+          if (typeof raw !== "string" || raw.length > 250000) throw new Error("Слишком большой блок: " + key);
+          const parsed = parseJSON(raw, null);
+          if (/(:values|_Values|Values)$/.test(key)) {
+            if (!Array.isArray(parsed) || parsed.length > 60 || !parsed.every(function (v) {
+              return v === null || (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 10) ||
+                (typeof v === "string" && v.trim() && E.isRated && E.isRated(v));
+            })) throw new Error("Недопустимые значения оценок: " + key);
+          } else if (/(:history)$/.test(key) || /(:journal|_Journal|Journal)$/.test(key)) {
+            if (!Array.isArray(parsed) || parsed.length > 1000) throw new Error("Некорректная история/журнал: " + key);
+          } else if (/(:improvements|_Improvements|Improvements|:reflections|_Reflections|Reflections|:share|Share)$/.test(key)) {
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Некорректные заметки: " + key);
+          } else if (!/(:spoiler|SpoilerPlan)$/.test(key)) {
+            throw new Error("Неизвестный тип ключа: " + key);
+          }
+          staged.push([key, raw]);
         }
-        alert("Импортировано ключей: " + n);
+        if (!staged.length) throw new Error("Нет данных колёс для импорта");
+        if (!confirm("Заменить " + staged.length + " ключей этого устройства данными файла? Сначала рекомендуется экспортировать текущие результаты.")) {
+          feedback("Импорт отменён. Данные не изменены.");
+          return;
+        }
+        const previous = staged.map(function (item) { return [item[0], localStorage.getItem(item[0])]; });
+        try {
+          for (const item of staged) localStorage.setItem(item[0], item[1]);
+        } catch (writeError) {
+          for (const item of previous) {
+            try {
+              if (item[1] === null) localStorage.removeItem(item[0]);
+              else localStorage.setItem(item[0], item[1]);
+            } catch (_) {}
+          }
+          throw new Error("Недостаточно места для импорта; выполнена попытка восстановления прежних данных.");
+        }
+        feedback("Импортировано ключей: " + staged.length + ". Проверьте результаты.");
         render();
       } catch (e) {
-        alert("Ошибка импорта: " + (e && e.message ? e.message : e));
+        feedback("Ошибка импорта: " + (e && e.message ? e.message : e));
       }
     };
+    reader.onerror = function () { feedback("Не удалось прочитать выбранный файл."); };
     reader.readAsText(file);
   }
 
@@ -398,9 +555,10 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     e.target.value = "";
   });
   document.getElementById("clearBtn").addEventListener("click", function () {
-    if (!confirm("Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?")) return;
+    if (!confirm("Удалить ВСЕ локальные данные колёс из этого профиля браузера? История и дневник будут удалены без возможности восстановления, если нет экспортированной копии.")) return;
     const keys = allWheelKeys();
     for (let i = 0; i < keys.length; i++) localStorage.removeItem(keys[i]);
+    feedback("Удалено локальных ключей: " + keys.length + ". Другие профили браузера и устройства не изменены.");
     render();
   });
 

@@ -1,0 +1,28 @@
+name: Wheel regression checks
+
+on:
+  pull_request:
+    paths:
+      - 'wheel/**'
+      - '.github/workflows/wheel-regression.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wheel/**'
+      - '.github/workflows/wheel-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wheel-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run wheel unit and static regression tests
+        run: node --test wheel/tests/wheel-engine.test.js
