@@ -41,6 +41,8 @@ button:active{transform:scale(.98)}
 .empty{color:#8fa0b8;text-align:center;padding:20px;font-size:14px;line-height:1.5}
 .history-item{background:#18233a;border-radius:12px;padding:12px;margin-top:8px;font-size:13px}
 .history-item .date{color:#8fa0b8;font-size:12px;margin-bottom:4px}
+.privacy-notice{padding:12px 14px;border:1px solid #38435a;border-radius:13px;background:#142033;color:#d3ddeb;font-size:13px;line-height:1.55;margin:0 0 16px}
+.privacy-notice a{color:#bbd7ff;text-decoration:underline}
 .goal-title{font-weight:650;margin-bottom:5px}
 .goal-detail{margin:4px 0;color:#c2ccda;line-height:1.45}
 .delta{font-weight:750;font-variant-numeric:tabular-nums}
@@ -59,7 +61,8 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
 <div class="container">
 <nav><a href="/psy-tools/">psy-tools</a> / <a href="./hub.html">Хаб</a> / Личный кабинет</nav>
 <h1>Личный кабинет</h1>
-<p class="subtitle">Все сохранённые результаты колёс баланса на этом устройстве. Данные хранятся только в браузере (localStorage) и не отправляются на сервер.</p>
+<p class="subtitle">Сохранённые результаты доступны на этом устройстве в текущем профиле браузера. Они не синхронизируются между устройствами через личный кабинет.</p>
+<p class="privacy-notice" role="note"><strong>Важно при использовании общего устройства:</strong> приложение не имеет входа в аккаунт. Следующий человек, открывший сайт в том же браузерном профиле, сможет увидеть ваши ответы, историю и дневник. Для личных данных используйте отдельный профиль браузера. После работы на общем устройстве <a href="#privacy">сохраните резервную копию и удалите локальные результаты</a>. Это предупреждение не является защитой паролем.</p>
 
 <div class="card">
   <h2>Сводка</h2>
@@ -105,9 +108,9 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
   <div id="journalList"><div class="empty">Записей пока нет.</div></div>
 </div>
 
-<div class="card">
+<div class="card" id="privacy">
   <h2>Данные и приватность</h2>
-  <p class="muted">Личный кабинет читает только ключи localStorage, начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>. Серверной авторизации нет — это «кабинет на устройстве».</p>
+  <p class="muted">Нет регистрации и авторизации. Хранилище <code>localStorage</code> разделяется по домену сайта, а не по имени человека или каталогу. Страницы на том же домене могут технически получить доступ к этим значениям. Это не защищённая многопользовательская система. Перед использованием общего устройства экспортируйте свои данные в файл, затем удалите их. Экспортированный JSON также содержит личные данные без шифрования.</p>
   <div class="actions">
     <button type="button" id="importBtn">Импорт JSON</button>
     <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -552,9 +555,10 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     e.target.value = "";
   });
   document.getElementById("clearBtn").addEventListener("click", function () {
-    if (!confirm("Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?")) return;
+    if (!confirm("Удалить ВСЕ локальные данные колёс из этого профиля браузера? История и дневник будут удалены без возможности восстановления, если нет экспортированной копии.")) return;
     const keys = allWheelKeys();
     for (let i = 0; i < keys.length; i++) localStorage.removeItem(keys[i]);
+    feedback("Удалено локальных ключей: " + keys.length + ". Другие профили браузера и устройства не изменены.");
     render();
   });
 
