@@ -226,7 +226,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (safeDataKey(k)) keys.push(k);
+        if (k && (k.startsWith("wheelBalance") || k.startsWith("wheelNested"))) keys.push(k);
       }
     } catch (_) {}
     return keys.sort();
