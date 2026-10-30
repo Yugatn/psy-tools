@@ -41,7 +41,8 @@
     wheels.forEach((w,i)=>{
       wheelSelect.appendChild(makeOption(i,w.title+" · "+w.rays.filter(r=>r.score!==null).length+" оценок"));
     });
-    const wanted=decodeURIComponent(location.hash.replace(/^#/,""));
+    let wanted="";
+    try { wanted=decodeURIComponent(location.hash.replace(/^#/,"")); } catch (_) {} 
     const match=wheels.findIndex(w=>w.id===wanted || (wanted==="detail"&&w.id.startsWith("wheelBalanceDetail:")));
     if(match>=0)wheelSelect.value=String(match);
     updateRays();
