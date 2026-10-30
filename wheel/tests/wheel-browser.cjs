@@ -101,6 +101,41 @@ async function main(){
       });
     }
     console.log("PASS: Chromium responsive width checks (390, 768)");
+    // Separate browser contexts emulate independent browser profiles/users on one origin.
+    const profileA = await browser.newContext();
+    const profileB = await browser.newContext();
+    try {
+      const pageA = await profileA.newPage();
+      const pageB = await profileB.newPage();
+      await pageA.goto(base,{waitUntil:"load"});
+      const personal = [7, null, null, null, null, null, null, null, null];
+      await pageA.evaluate(scores=>localStorage.setItem("wheelBalanceV3Values",
+        JSON.stringify(scores)),personal);
+      const secondTabA = await profileA.newPage();
+      await secondTabA.goto(base,{waitUntil:"load"});
+      assert.equal((await secondTabA.locator("#scoreDisplay").innerText()).trim(),"7",
+        "SAME browser profile: next user can see previous scores; this is a documented privacy risk");
+      await pageB.goto(base,{waitUntil:"load"});
+      assert.equal((await pageB.locator("#scoreDisplay").innerText()).trim(),"Не оценено",
+        "independent browser profile has no profile A scores");
+      assert.equal(await pageB.evaluate(()=>localStorage.getItem("wheelBalanceV3Values")),null);
+      const warning=await pageA.locator(".privacy-warning").innerText();
+      assert.match(warning,/общем устройстве/);
+      assert.match(await secondTabA.locator(".privacy-warning").innerText(),/профиля браузера/);
+      await pageA.goto(base+"cabinet.html",{waitUntil:"load"});
+      assert.match(await pageA.locator(".privacy-notice").innerText(),/Следующий человек/);
+      pageA.once("dialog",dialog=>dialog.accept());
+      await pageA.locator("#clearBtn").click();
+      assert.equal(await pageA.evaluate(()=>localStorage.getItem("wheelBalanceV3Values")),null,
+        "clear removes stored result from shared profile");
+      await secondTabA.reload({waitUntil:"load"});
+      assert.equal((await secondTabA.locator("#scoreDisplay").innerText()).trim(),"Не оценено",
+        "later user no longer sees the score after explicit clear");
+    } finally {
+      await profileA.close();
+      await profileB.close();
+    }
+    console.log("PASS: profile A/B storage isolation, same-profile sharing confirmed as known privacy risk");
   }finally{if(browser)await browser.close();await close();}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});
