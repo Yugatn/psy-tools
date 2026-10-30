@@ -85,7 +85,20 @@ async function main(){
     await pa.reload({waitUntil:"load"});
     assert.equal(await pa.locator("#summary").inputValue(),"","unpersisted chat clears on navigation");
     assert.equal(await pa.locator("#conversation .message").count(),0);
-    console.log("PASS: user consent, no automatic transmission/storage, safe text, explicit save, independent browser contexts");
+    // Direct transition from a completed detail wheel must select its own saved context.
+    const detailKey="wheelBalanceDetail:"+encodeURIComponent("health:Сон")+":values";
+    await pa.evaluate(k=>localStorage.setItem(k,JSON.stringify(Array(8).fill(4))),detailKey);
+    const detailUrl=new URL(base+"detail/");
+    detailUrl.searchParams.set("parent","health");
+    detailUrl.searchParams.set("label","Сон");
+    detailUrl.searchParams.set("trail",JSON.stringify(["Сон"]));
+    await pa.goto(detailUrl.toString(),{waitUntil:"load"});
+    await pa.locator(".wheel-coach-entry a").click();
+    await pa.locator("#loadBtn").click();
+    assert.match(await pa.locator("#wheelSelect option:checked").innerText(),/Детальное колесо: Сон/,
+      "detail link preserves the selected local wheel without placing its key in URL");
+    assert.match(await pa.locator("#raySelect option").nth(1).innerText(),/Удовлетворённость — 4 из 10/);
+    console.log("PASS: user consent, no automatic transmission/storage, safe text, explicit save, independent browser contexts and detail handoff");
   }finally{await a.close();await b.close();}
   for(const file of ["wheel/index.html","wheel/health/index.html","wheel/work/index.html",
    "wheel/finance/index.html","wheel/relationships/index.html","wheel/social/index.html",
