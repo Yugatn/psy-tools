@@ -1,0 +1,31 @@
+name: Wheel offline coaching checks
+
+on:
+  pull_request:
+    paths:
+      - 'wheel/**'
+      - '.github/workflows/wheel-coach.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-coach:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run deterministic coaching tests
+        run: node --test wheel/tests/coach-engine.test.cjs
+      - name: Install Playwright
+        run: npm install --no-save playwright@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test browser consent, privacy, results and notes
+        run: node wheel/tests/coach-browser.cjs
