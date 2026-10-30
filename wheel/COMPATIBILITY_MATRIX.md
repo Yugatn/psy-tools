@@ -97,7 +97,7 @@ No existing wheel is to be deleted or renamed. No new wheel is authorized by thi
 |---|---|---|
 | Source review of all 14 pages | CODE_INSPECTED | Script parse passed; no user-facing real browser execution |
 | Engine and renderer isolated test | STATIC_TESTED | Mocked DOM/Canvas, not an end-to-end test |
-| Node regression workflow | NOT_TESTED | Pending actual GitHub Actions job |
+| Node regression workflow | CI_PASSED | GitHub Actions Wheel regression checks successful on PR #4, head c67d6f4 |
 | Live GitHub Pages | NOT_TESTED | Branch must be reviewed and integrated |
 | Desktop browser and keyboard navigation | NOT_TESTED | Require browser testing |
 | iOS Safari / Android Chrome | NOT_TESTED | Require real or automated device browser |
@@ -107,3 +107,8 @@ No existing wheel is to be deleted or renamed. No new wheel is authorized by thi
 | Clinical/psychometric validation | NOT_TESTED | This tool remains self-reflection, not diagnosis |
 
 **Remaining risk:** although existing storage keys are retained, imported legacy files lacking `wheelId` cannot be automatically tied to a wheel; the user must verify the provenance before accepting import. Canvas visual fidelity and pointer behavior still need browser-level confirmation. No new wheel categories or questionnaire content were introduced.
+
+### CI update (2026-10-31)
+- Wheel regression checks: **SUCCESS** on PR #4 at commit `c67d6f4`.
+- Agent Integrity Check: **SUCCESS** at `c67d6f4` after excluding the reconstruction test specification containing expressly forbidden-example text from the assertion grep; requirements retained.
+- The independent push-triggered `fix-cabinet-nested.yml` workflow was unsuccessful; no successful verification can be inferred from it. Browser/device testing is still pending.
