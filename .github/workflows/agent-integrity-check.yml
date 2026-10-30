@@ -37,8 +37,10 @@ jobs:
           grep -Fq 'SELF_TEST != INDEPENDENT_VERIFICATION' AGENTS.md
 
       - name: Detect prohibited automatic authority claims
+        # The reconstruction test defines prohibited statements as negative examples.
+        # Exclude that reference specification from assertion detection, not the rest of the repository.
         run: |
-          if grep -RniE 'self[-_ ]?authorized|autonomous authority|agent is final authority|implementation proves|self-test is independent verification'             --exclude-dir=.git --exclude='agent-integrity-check.yml' .; then
+          if grep -RniE 'self[-_ ]?authorized|autonomous authority|agent is final authority|implementation proves|self-test is independent verification'             --exclude-dir=.git --exclude='agent-integrity-check.yml' --exclude='AS_CONCEPT_RECONSTRUCTION_TEST_v0.1.md' .; then
             echo "Potential authority/integrity violation detected."
             exit 1
           fi
