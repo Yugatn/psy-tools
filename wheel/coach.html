@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Офлайн-коуч · Колесо баланса</title>
+<meta name="description" content="Добровольная рефлексия и коучинговые вопросы по результатам Колеса баланса. Работает без сети и внешней ИИ-модели.">
+<style>
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;min-height:100vh;background:#0b1120;color:#f0f5fc;padding:14px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.5}
+main{max-width:830px;margin:0 auto}
+a{color:#b6d4ff}
+nav{font-size:13px;color:#a6b5c9;margin:4px 0 16px}
+h1{font-size:clamp(25px,4vw,32px);line-height:1.2;margin:10px 0}
+h2{font-size:18px;margin:0 0 8px}
+p{margin:8px 0 12px}
+.lead{color:#b2c1d4;font-size:14px}
+.panel{background:#121d32;border:1px solid #304261;border-radius:18px;padding:18px;margin:14px 0}
+.notice{background:#17233a;border:1px solid #4b5c76;border-radius:13px;padding:12px 14px;color:#e1eaf5;font-size:13px}
+.warning{border-color:#835c65;background:#2c1d2a}
+.muted{color:#abbcd0;font-size:13px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-size:14px;font-weight:600}
+select,textarea{font:inherit;width:100%;background:#0b1527;color:#fff;border:1px solid #526481;border-radius:10px;padding:11px}
+select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid #87d8ff;outline-offset:3px}
+textarea{min-height:100px;resize:vertical;line-height:1.55}
+button{font:inherit;font-weight:650;color:#fff;border:1px solid #47638b;border-radius:11px;padding:10px 14px;cursor:pointer;background:#273957}
+button:hover{background:#375075}
+button.primary{background:#346bb5;border-color:#6093d8}
+button.important{background:#5b303d;border-color:#9f6271}
+button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
+.checkbox{display:flex;gap:10px;align-items:start;font-weight:400;color:#d7e1f0;margin-top:16px}
+.checkbox input{width:21px;height:21px;accent-color:#69a9f6;flex:none}
+.message{border-radius:14px;padding:12px 14px;margin:10px 0;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere}
+.message strong{display:block;margin-bottom:5px;font-size:12px}
+.message p{margin:0}
+.message.coach{background:#243751;border:1px solid #38577c}
+.message.user{background:#183a36;border:1px solid #366e62;margin-left:auto}
+#conversation{max-height:53vh;overflow-y:auto;padding:4px;scrollbar-color:#415778 transparent}
+#status{color:#bdd8ff;font-size:13px;min-height:22px;margin:10px 0}
+#summary{min-height:260px}
+[hidden]{display:none!important}
+@media(max-width:610px){body{padding:10px}.panel{padding:13px}.fields{grid-template-columns:1fr}.message{max-width:98%}}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="./hub.html">Все колёса</a> / <a href="./cabinet.html">Личный кабинет</a> / Офлайн-коуч</nav>
+<header>
+<h1>Диалог по колесу баланса</h1>
+<p class="lead">Саморефлексия, рефрейминг и коучинг на основе ваших собственных наблюдений. Это <strong>структурированный офлайн-помощник</strong> — он задаёт заранее подготовленные вопросы, не использует языковую модель и не является психотерапией.</p>
+</header>
+<div class="notice" role="note"><strong>О конфиденциальности:</strong> оценки читаются с этого устройства только после вашего нажатия. Вопросы и ответы остаются в оперативной памяти вкладки и исчезают при перезагрузке. В одном браузерном профиле сохранённые оценки доступны и другим пользователям этого профиля. Никакие данные не отправляются в ИИ или на сервер этим помощником.</div>
+<p id="status" role="status" aria-live="polite"></p>
+<div class="actions">
+<button id="loadBtn" type="button" class="primary">Показать мои локальные оценки</button>
+<button id="helpBtn" type="button" class="important">Мне нужна помощь сейчас</button>
+</div>
+
+<section class="panel" id="choosePanel" aria-labelledby="chooseTitle">
+<h2 id="chooseTitle">Выберите сферу для размышления</h2>
+<p class="muted">Не обязательно выбирать самый низкий балл. Для колёс страхов и деструктивных мыслей высокий балл может иметь другой смысл, поэтому мы не оцениваем результаты автоматически.</p>
+<div class="fields">
+<div class="field"><label for="wheelSelect">Колесо</label><select id="wheelSelect"><option value="">Сначала загрузите свои оценки</option></select></div>
+<div class="field"><label for="raySelect">Луч</label><select id="raySelect"><option value="">Выберите луч</option></select></div>
+<div class="field full"><label for="mode">Режим диалога</label>
+<select id="mode"><option value="reflection">Саморефлексия — исследовать ситуацию</option><option value="reframe">Рефрейминг — проверить интерпретации</option><option value="coaching">Коучинг — определить собственный шаг</option></select></div>
+</div>
+<div id="noData" class="notice" hidden>Сохранённых оценок здесь нет. <a href="./">Заполните главное колесо</a> или <a href="./hub.html">выберите тематическое</a>, а затем вернитесь.</div>
+<label class="checkbox" for="consent"><input id="consent" type="checkbox"><span>Я добровольно начинаю саморефлексию. Я понимаю, что это не диагностика, лечение или консультация психотерапевта, и могу пропустить вопрос или завершить сессию без сохранения.</span></label>
+<div class="actions"><button id="startBtn" type="button" class="primary" disabled>Начать беседу</button></div>
+</section>
+
+<section class="panel" id="dialogue" hidden aria-labelledby="dialogueTitle">
+<h2 id="dialogueTitle">Разговор</h2>
+<p id="contextInfo" class="muted"></p>
+<p class="muted" id="stepInfo"></p>
+<div id="conversation" aria-live="polite" aria-relevant="additions text"></div>
+<div class="field">
+<label for="answer">Ваш ответ</label>
+<textarea id="answer" maxlength="2000" placeholder="Можно ответить кратко; не указывайте сведения, которыми не хотите делиться." rows="4"></textarea>
+</div>
+<p class="muted">Отправить: Ctrl+Enter (или Cmd+Enter). Можно пропустить вопрос.</p>
+<div class="actions">
+<button class="primary" id="sendBtn" type="button">Ответить</button>
+<button id="skipBtn" type="button">Пропустить</button>
+<button class="important" id="cancelBtn" type="button">Завершить без сохранения</button>
+</div>
+</section>
+
+<section class="panel" id="completePanel" hidden aria-labelledby="completeTitle">
+<h2 id="completeTitle">Ваши ответы и выводы</h2>
+<p class="muted">Это ваши ответы без автоматической психологической интерпретации. При необходимости удалите личные сведения из текста перед копированием или сохранением. По умолчанию результат не записывается.</p>
+<label for="summary">Редактируемый итог</label>
+<textarea id="summary" maxlength="12000" rows="12"></textarea>
+<div class="actions">
+<button id="copyBtn" type="button">Скопировать текст</button>
+<button class="primary" id="saveBtn" type="button">Сохранить в заметке выбранного луча</button>
+<button class="important" id="doneBtn" type="button">Закрыть и очистить</button>
+</div>
+<p class="muted">Сохранение заметки выполняется только по нажатию и после дополнительного подтверждения. В общем браузерном профиле заметка будет видна другим людям этого профиля.</p>
+</section>
+
+<section class="panel" id="helpPanel" hidden aria-labelledby="helpTitle">
+<h2 id="helpTitle">Непосредственная помощь</h2>
+<p>Если существует непосредственная опасность для вашей жизни или здоровья либо для другого человека, обратитесь в местную экстренную службу или ближайшее отделение неотложной помощи. Постарайтесь связаться с человеком, которому доверяете, и не оставайтесь в опасной ситуации один на один.</p>
+<p>Этот офлайн-опросник не умеет оценивать срочность ситуации, диагностировать состояние или оказывать экстренную помощь.</p>
+<div class="actions"><button id="backFromHelp" type="button">Вернуться к выбору</button></div>
+</section>
+
+<p class="muted">Если вы хотите работать с квалифицированным психологом или психотерапевтом, используйте эту запись как материал для обсуждения с ним. Коучинговый сценарий не заменяет лечение.</p>
+</main>
+<script src="./coach-engine.js"></script>
+<script src="./coach-ui.js"></script>
+</body>
+</html>
