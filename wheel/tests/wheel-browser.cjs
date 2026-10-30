@@ -121,7 +121,7 @@ async function main(){
       assert.equal(await pageB.evaluate(()=>localStorage.getItem("wheelBalanceV3Values")),null);
       const warning=await pageA.locator(".privacy-warning").innerText();
       assert.match(warning,/общем устройстве/);
-      assert.match(await secondTabA.locator(".privacy-warning").innerText(),/профиля браузера/);
+      assert.match(await secondTabA.locator(".privacy-warning").innerText(),/браузерного профиля|профиль браузера/);
       await pageA.goto(base+"cabinet.html",{waitUntil:"load"});
       assert.match(await pageA.locator(".privacy-notice").innerText(),/Следующий человек/);
       await pageA.evaluate(()=>{
