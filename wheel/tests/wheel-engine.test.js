@@ -76,6 +76,7 @@ test("all 14 existing wheel pages parse and use scoped import/score logic", () =
     assert.ok(inline.length, relative + ": no inline script");
     for (const code of inline) new vm.Script(code, { filename: relative });
     assert.match(html, /wheel-engine\.js/, relative);
+    assert.match(html, /class="privacy-warning"/, relative + ": shared-device warning missing");
     assert.match(html, /wheel-draw\.js/, relative);
     assert.match(html, /wheelId: VALUES_KEY/, relative);
     assert.match(html, /WheelEngine\.statistics\(values\)/, relative);
