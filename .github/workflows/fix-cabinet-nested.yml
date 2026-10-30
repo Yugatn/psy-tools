@@ -1,74 +1,41 @@
-name: Fix cabinet nested keys
+name: Verify cabinet nested keys
+
 on:
-  push:
+  pull_request:
     paths:
+      - 'wheel/cabinet.html'
       - '.github/workflows/fix-cabinet-nested.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wheel/cabinet.html'
+      - '.github/workflows/fix-cabinet-nested.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
-  fix:
+  verify:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Patch cabinet
+      - name: Ensure cabinet discovers all wheel key families
         run: |
-          set -euo pipefail
-          python3 <<'PY'
-          from pathlib import Path
-          p = Path('wheel/cabinet.html')
-          cab = p.read_text(encoding='utf-8')
-          n = 0
-          reps = [
-            ('if (k && k.indexOf("wheelBalance") === 0) keys.push(k);',
-             'if (k && (k.indexOf("wheelBalance") === 0 || k.indexOf("wheelNested") === 0)) keys.push(k);'),
-            ('if (k.indexOf("wheelBalance") !== 0) continue;',
-             'if (k.indexOf("wheelBalance") !== 0 && k.indexOf("wheelNested") !== 0) continue;'),
-            ('Удалить ВСЕ данные колёс (wheelBalance*) на этом устройстве?',
-             'Удалить ВСЕ данные колёс (wheelBalance* / wheelNested*) на этом устройстве?'),
-            ('начинающиеся с <code>wheelBalance</code>',
-             'начинающиеся с <code>wheelBalance</code> или <code>wheelNested</code>'),
-          ]
-          for a,b in reps:
-              if a in cab:
-                  cab = cab.replace(a,b); n += 1
-                  print('replaced', a[:40])
-              else:
-                  print('SKIP', a[:50])
-          needle = 'if (k.indexOf("wheelBalanceDetail:") === 0)'
-          if needle in cab and 'wheelNestedV2_' not in cab:
-              insert = '''if (k.indexOf("wheelBalanceDetail:") === 0) {
-        const id = decodeURIComponent(k.replace(/^wheelBalanceDetail:/, "").replace(/:values$/, ""));
-        title = "Детально · " + id.replace(/:/g, " · ");
-        href = "./detail/";
-      } else if (k.indexOf("wheelNestedV2_") === 0) {
-        const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
-        const map = { health:["./health/","Здоровье"], work:["./work/","Работа"], finance:["./finance/","Финансы"], relationships:["./relationships/","Отношения"], social:["./social/","Социальная жизнь"], development:["./development/","Развитие"], rest:["./rest/","Отдых"], creativity:["./creativity/","Творчество"], self_awareness:["./self_awareness/","Самоосознание"], fear:["./fear/","Страхи"], sexuality:["./sexuality/","Сексуальность"], destructiveness:["./destructiveness/","Деструктивность"] };
-        const m = map[rest];
-        if (m) { href = m[0]; title = m[1]; } else { title = rest; href = "./hub.html"; }
-      }'''
-              # replace only the opening if-block for detail - find and expand
-              import re
-              cab2, c = re.subn(
-                  r'if \(k\.indexOf\("wheelBalanceDetail:"\) === 0\) \{\s*'
-                  r'const id = decodeURIComponent\(k\.replace\(/\^wheelBalanceDetail:/, ""\)\.replace\(/:values\$/, ""\)\);\s*'
-                  r'title = "Детально · " \+ id\.replace\(/:/g, " · "\);\s*'
-                  r'href = "\./detail/";\s*'
-                  r'\}',
-                  insert,
-                  cab,
-                  count=1,
-              )
-              if c:
-                  cab = cab2; n += 1; print('detail/nested block expanded')
-              else:
-                  print('detail block regex miss')
-          p.write_text(cab, encoding='utf-8')
-          print('done replacements', n, 'hasNested', 'wheelNested' in cab)
-          if n == 0:
-              raise SystemExit('no replacements')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wheel/cabinet.html
-          git commit -m "fix(wheel): cabinet discovers wheelNested sphere keys"
-          git push
+          grep -Fq 'wheelBalance' wheel/cabinet.html
+          grep -Fq 'wheelNested' wheel/cabinet.html
+          grep -Fq 'wheelBalanceDetail:' wheel/cabinet.html
+          grep -Fq 'function allWheelKeys()' wheel/cabinet.html
+          grep -Fq 'function discoverEntries()' wheel/cabinet.html
+      - name: Check cabinet inline JavaScript parses
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const vm=require('node:vm');
+          const html=fs.readFileSync('wheel/cabinet.html','utf8');
+          const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
+            .map(x=>x[1]).filter(Boolean);
+          if(!scripts.length)throw Error('missing inline JavaScript');
+          for(const script of scripts)new vm.Script(script);
+          console.log('Cabinet script syntax OK');
+          NODE
