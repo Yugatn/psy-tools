@@ -124,7 +124,7 @@ async function run(){
   assert.equal(apiCalls.length,3);
   assert.equal(apiCalls[2].method,"DELETE");
   assert.equal(await page.locator("#finishPanel").isVisible(),true);
-  assert.equal(await page.evaluate(()=>localStorage.getItem("wheelBalanceV3Values")).includes("7"),true);
+  assert.equal((await page.evaluate(()=>localStorage.getItem("wheelBalanceV3Values"))).includes("7"),true);
   await page.locator("#clearBtn").click();
   assert.equal(await page.locator("#dialog .msg").count(),0);
   assert.equal(await page.locator("#answer").inputValue(),"");
