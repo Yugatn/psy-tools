@@ -28,8 +28,10 @@
   }
   function selectedWheel(){return wheels.find(w=>w.id===$("wheel").value)||null;}
   function selectedRay(){
-    const wheel=selectedWheel(),i=Number($("ray").value);
-    return wheel && Number.isInteger(i) && i>=0?wheel.rays[i]||null:null;
+    const wheel=selectedWheel(),raw=$("ray").value;
+    if(!wheel||!/^\\d+$/.test(raw))return null;
+    const i=Number(raw);
+    return Number.isInteger(i)&&i>=0?wheel.rays[i]||null:null;
   }
   function preview(){
     const w=selectedWheel(),r=selectedRay(),raw=$("score").value;
@@ -53,7 +55,7 @@
   function setBusy(state){
     busy=state;
     for(const id of ["connectBtn","startBtn","readScoreBtn","sendBtn","skipBtn","deleteBtn"]){
-      $(id).disabled=state;
+      $(id).disabled=state || (id==="startBtn" && !!session);
     }
   }
   function showMessage(role,message){
