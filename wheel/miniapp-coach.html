@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://telegram.org; connect-src 'self' https:; style-src 'unsafe-inline'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Коучинг · Telegram Mini App · закрытый стенд</title>
+<meta name="description" content="Тестовый интерфейс добровольного коучинга Колеса баланса через проверенный Telegram Mini App">
+<style>
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;min-height:100vh;background:#0b1120;color:#f2f6fc;padding:14px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.55}
+main{max-width:790px;margin:0 auto}
+a{color:#b6d4ff}
+nav{font-size:13px;color:#a6b5c9;margin:5px 0 16px}
+h1{font-size:clamp(24px,4.5vw,31px);line-height:1.2;margin:12px 0}
+h2{font-size:18px;margin:0 0 9px}
+p{margin:8px 0 12px}
+.lead{color:#c1d0e2}
+.panel{background:#121d32;border:1px solid #304261;border-radius:17px;padding:17px;margin:14px 0}
+.warning{background:#2a1d2b;border-color:#765566}
+.note{background:#17253b;border:1px solid #465e80;border-radius:12px;padding:12px 14px}
+.muted{color:#b0bfd2;font-size:13px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+select,textarea{font:inherit;width:100%;color:#f2f6fc;background:#0a1426;border:1px solid #597092;border-radius:10px;padding:11px}
+textarea{resize:vertical;min-height:105px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid label{margin:5px 0 6px}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.4}
+.check input{width:20px;height:20px;flex:none;accent-color:#7daefa;margin-top:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:13px 0 2px}
+button{font:inherit;font-weight:650;border:1px solid #4e6790;background:#273e60;color:white;border-radius:11px;padding:10px 14px;cursor:pointer}
+button.primary{background:#316cae;border-color:#6ca0da}
+button.danger{background:#603442;border-color:#a86f7d}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #b0defa;outline-offset:3px}
+.msg{max-width:95%;padding:11px 13px;border-radius:13px;margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.coach{background:#243851;border:1px solid #3a587e}
+.msg.user{background:#193a35;border:1px solid #37685e;margin-left:auto}
+.msg strong{font-size:12px;display:block}
+.msg p{margin:4px 0 0}
+#dialog{max-height:55vh;overflow-y:auto;padding:3px}
+#status{color:#b6d5ff;font-size:14px;min-height:23px}
+[hidden]{display:none!important}
+@media(max-width:610px){body{padding:9px}.panel{padding:12px}.grid{grid-template-columns:1fr}.msg{max-width:100%}}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="./hub.html">Все колёса</a> / <a href="./coach.html">Офлайн-коуч</a> / Telegram Mini App — тестовый интерфейс</nav>
+<h1>Коучинговый диалог через Telegram</h1>
+<p class="lead">Закрытый технический стенд интеграции. После вашего выбора передаётся только номер колеса, номер луча и необязательная оценка. По одному ответу на ход. Это не психотерапия и не диагностическая процедура. Внешняя генеративная ИИ-модель не используется.</p>
+<section class="panel warning" aria-label="Ограничения и приватность">
+<strong>Не для публичного использования.</strong>
+<p>Серверный API выключен по умолчанию и в production заблокирован. Для проверки нужен отдельный HTTPS staging-сервер и запуск внутри Telegram Mini App. Без них используйте <a href="./coach.html">офлайн-коуча</a>.</p>
+<p>Подключение Telegram SDK после вашего нажатия загружает внешний скрипт. Как и другие скрипты этой страницы, он технически может читать данные того же браузерного профиля на том же домене. Для обработки чувствительных данных необходим отдельный изолированный домен и проверка поставщика SDK.</p>
+</section>
+<p id="status" role="status" aria-live="polite">Не подключено. Ни данные колеса, ни сообщения не переданы.</p>
+<section class="panel" aria-labelledby="telegramTitle">
+<h2 id="telegramTitle">1. Подключение Telegram</h2>
+<p class="muted">Мы используем только подписанные Telegram initData, проверяемые сервером. Данные аккаунта из JavaScript не считаются доказательством личности.</p>
+<div class="actions"><button id="connectBtn" type="button">Подключить Telegram SDK</button></div>
+<p id="connection" class="muted"></p>
+</section>
+<section class="panel" aria-labelledby="contextTitle">
+<h2 id="contextTitle">2. Выберите одну сферу</h2>
+<p class="muted">По умолчанию страница не читает результаты из localStorage. Вы вправе указать собственную оценку или не передавать балл вообще. Для удалённого пилота доступны только общие сферы; чувствительные тематические колёса не включены.</p>
+<div class="grid">
+<div><label for="wheel">Колесо</label><select id="wheel"></select></div>
+<div><label for="ray">Луч</label><select id="ray"></select></div>
+<div><label for="score">Оценка (необязательно)</label><select id="score"><option value="">Не передавать оценку</option></select></div>
+<div><label for="mode">Режим</label><select id="mode"><option value="reflection">Саморефлексия</option><option value="reframe">Рефрейминг</option><option value="coaching">Коучинг</option></select></div>
+</div>
+<div class="actions"><button id="readScoreBtn" type="button">Прочитать мою сохранённую оценку</button></div>
+<p id="contextPreview" class="note"></p>
+<label class="check"><input id="adult" type="checkbox"><span>Подтверждаю, что мне исполнилось 18 лет. Это самоутверждение, а не проверка возраста.</span></label>
+<label class="check"><input id="consent" type="checkbox"><span>Я добровольно согласен на передачу выбранного номера колеса, номера луча, оценки (если она указана) и каждого отправленного ответа на проверяемый сервер. Понимаю, что ответы не сохраняются в базе и не отправляются ИИ-модели, но сетевой и серверный транспорт требует отдельной защиты.</span></label>
+<div class="actions"><button id="startBtn" class="primary" type="button">Начать защищённую сессию</button></div>
+</section>
+<section class="panel" id="chatPanel" aria-labelledby="chatTitle" hidden>
+<h2 id="chatTitle">3. Разговор</h2>
+<p id="step" class="muted"></p>
+<div id="dialog" aria-live="polite" aria-relevant="additions"></div>
+<label for="answer">Ваш ответ (только текущий ход)</label>
+<textarea id="answer" maxlength="2000" rows="4" placeholder="Не вводите сведения, которыми не хотите делиться с сервером."></textarea>
+<p class="muted">Ctrl+Enter / Cmd+Enter — отправить. Отмена удаляет серверную сессию, если соединение доступно; при сбое она истечёт автоматически.</p>
+<div class="actions">
+<button id="sendBtn" class="primary" type="button">Отправить ответ</button>
+<button id="skipBtn" type="button">Пропустить</button>
+<button id="deleteBtn" class="danger" type="button">Удалить серверную сессию</button>
+</div>
+</section>
+<section class="panel" id="finishPanel" hidden>
+<h2>Завершение</h2>
+<p id="finishText"></p>
+<button id="clearBtn" type="button">Очистить сообщения с экрана</button>
+</section>
+<section class="panel">
+<h2>Нужна помощь сейчас?</h2>
+<p>Если вы или другой человек в непосредственной опасности, обратитесь к местной экстренной службе или к человеку, которому доверяете. Этот тестовый диалог не способен надёжно распознать кризис и не заменяет помощь специалиста.</p>
+</section>
+</main>
+<script src="./coach-engine.js"></script>
+<script src="./miniapp-coach-config.js"></script>
+<script src="./miniapp-coach.js"></script>
+</body>
+</html>
