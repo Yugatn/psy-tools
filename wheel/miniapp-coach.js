@@ -29,7 +29,7 @@
   function selectedWheel(){return wheels.find(w=>w.id===$("wheel").value)||null;}
   function selectedRay(){
     const wheel=selectedWheel(),raw=$("ray").value;
-    if(!wheel||!/^\\d+$/.test(raw))return null;
+    if(!wheel||!/^[0-9]+$/.test(raw))return null;
     const i=Number(raw);
     return Number.isInteger(i)&&i>=0&&typeof wheel.rays[i]==="string"?{name:wheel.rays[i],index:i}:null;
   }
