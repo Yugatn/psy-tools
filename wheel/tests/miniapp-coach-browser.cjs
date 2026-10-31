@@ -94,11 +94,13 @@ async function run(){
   assert.equal(apiCalls.length,0);
 
   await page.locator("#connectBtn").click();
+  await page.waitForFunction(()=>document.querySelector("#connection").textContent.includes("Telegram доступен"),null,{timeout:8000});
   assert.match(await page.locator("#connection").innerText(),/Telegram доступен/);
   assert.equal(apiCalls.length,0,"connect SDK alone must not send scoring data");
   assert.deepEqual(external.map(x=>x.url),["https://telegram.org/js/telegram-web-app.js"]);
 
   await page.locator("#startBtn").click();
+  await page.waitForFunction(()=>!document.querySelector("#chatPanel").hidden,null,{timeout:8000});
   assert.equal(apiCalls.length,1);
   assert.equal(apiCalls[0].method,"POST");
   assert.equal(apiCalls[0].headers.authorization,"tma synthetic-signed-init-data");
@@ -110,6 +112,7 @@ async function run(){
   assert.equal(await page.locator("#chatPanel").isVisible(),true);
   await page.locator("#answer").fill("<img src=x onerror=alert(1)>");
   await page.locator("#sendBtn").click();
+  await page.waitForFunction(()=>document.querySelector("#step").textContent.includes("2 из 5"),null,{timeout:8000});
   assert.equal(apiCalls.length,2);
   assert.equal(apiCalls[1].body.expected_step,0);
   assert.equal(apiCalls[1].body.text,"<img src=x onerror=alert(1)>");
@@ -117,6 +120,7 @@ async function run(){
   assert.match(await page.locator("#step").innerText(),/2 из 5/);
   page.once("dialog",d=>d.accept());
   await page.locator("#deleteBtn").click();
+  await page.waitForFunction(()=>!document.querySelector("#finishPanel").hidden,null,{timeout:8000});
   assert.equal(apiCalls.length,3);
   assert.equal(apiCalls[2].method,"DELETE");
   assert.equal(await page.locator("#finishPanel").isVisible(),true);
