@@ -31,7 +31,7 @@
     const wheel=selectedWheel(),raw=$("ray").value;
     if(!wheel||!/^\\d+$/.test(raw))return null;
     const i=Number(raw);
-    return Number.isInteger(i)&&i>=0?wheel.rays[i]||null:null;
+    return Number.isInteger(i)&&i>=0&&typeof wheel.rays[i]==="string"?{name:wheel.rays[i],index:i}:null;
   }
   function preview(){
     const w=selectedWheel(),r=selectedRay(),raw=$("score").value;
