@@ -29,3 +29,5 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test browser consent, privacy, results and notes
         run: node wheel/tests/coach-browser.cjs
+      - name: Test Mini App opt-in staging transport and privacy
+        run: node wheel/tests/miniapp-coach-browser.cjs
