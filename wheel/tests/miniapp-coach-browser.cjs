@@ -25,9 +25,25 @@ const server=http.createServer((req,res)=>{
 const listen=()=>new Promise(r=>server.listen(0,"127.0.0.1",()=>r(server.address().port)));
 const close=()=>new Promise(r=>server.close(r));
 const API="https://staging.example.test";
+const UI="https://staging-ui.example.test";
 const SID="a".repeat(32);
+async function serveStatic(route,allowApi=false){
+  let file;
+  const pathname=new URL(route.request().url()).pathname;
+  try{file=path.resolve(root,"."+decodeURIComponent(pathname));}
+  catch(_){await route.fulfill({status:400,body:"Bad URL"});return;}
+  if(!file.startsWith(root+path.sep)){await route.fulfill({status:403,body:"Forbidden"});return;}
+  try{
+    let body=fs.readFileSync(file,"utf8");
+    if(allowApi && pathname.endsWith("/miniapp-coach.html"))
+      body=body.replace("connect-src 'none';","connect-src "+API+";");
+    await route.fulfill({status:200,
+      contentType:path.extname(file)===".js"?"application/javascript":"text/html",
+      body});
+  }catch(_){await route.fulfill({status:404,body:"Not found"});}
+}
 async function run(){
- const port=await listen(),origin="http://127.0.0.1:"+port;
+ await listen();const origin=UI;
  const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
  try{
   const context=await browser.newContext({viewport:{width:390,height:820},deviceScaleFactor:2});
@@ -37,9 +53,11 @@ async function run(){
   page.on("request",request=>{
     if(!request.url().startsWith(origin+"/"))external.push({url:request.url(),method:request.method()});
   });
+  // A synthetic isolated HTTPS origin: no real Telegram or HTTP API is contacted.
+  await page.route(origin+"/wheel/**",route=>serveStatic(route,true));
   await page.route("**/miniapp-coach-config.js",route=>route.fulfill({
     status:200,contentType:"application/javascript",
-    body:'window.WheelMiniAppConfig=Object.freeze({apiOrigin:"'+API+'"});'
+    body:'window.WheelMiniAppConfig=Object.freeze({apiOrigin:"'+API+'",uiOrigin:"'+origin+'"});'
   }));
   await page.route("https://telegram.org/js/telegram-web-app.js",route=>route.fulfill({
     status:200,contentType:"application/javascript",
@@ -74,8 +92,17 @@ async function run(){
   await page.goto(origin+"/wheel/miniapp-coach.html",{waitUntil:"load"});
   assert.equal(apiCalls.length,0,"no backend call merely on visiting page");
   assert.equal(external.length,0,"no Telegram SDK loaded before explicit click");
-  await page.evaluate(()=>localStorage.setItem("wheelBalanceV3Values",
-    JSON.stringify([7,2,null,null,null,null,null,null,null])));
+  await page.evaluate(()=>{
+    localStorage.setItem("wheelBalanceV3Values",
+      JSON.stringify([7,2,null,null,null,null,null,null,null]));
+    localStorage.setItem("wheelNestedV2_finance_Values",JSON.stringify([1,1,1,1,1,1,1,1]));
+    window.__reads=[];
+    const original=Storage.prototype.getItem;
+    Storage.prototype.getItem=function(key){
+      window.__reads.push(key);
+      return original.call(this,key);
+    };
+  });
   assert.equal(await page.locator("#score").inputValue(),"","saved scores not automatically read");
   assert.equal(await page.locator("#ray").inputValue(),"","no implicit ray selection");
   await page.locator("#startBtn").click();
@@ -84,6 +111,8 @@ async function run(){
   await page.locator("#ray").selectOption("0");
   await page.locator("#readScoreBtn").click();
   assert.equal(await page.locator("#score").inputValue(),"7","only after explicit local read");
+  assert.deepEqual(await page.evaluate(()=>window.__reads),["wheelBalanceV3Values"],
+    "only selected wheel storage key is accessed, not all wheels");
   await page.locator("#startBtn").click();
   assert.match(await page.locator("#status").innerText(),/подтверждение совершеннолетия/i);
   assert.equal(apiCalls.length,0);
@@ -139,7 +168,10 @@ async function run(){
   await context.close();
 
   const off=await browser.newPage();
+  await off.route(origin+"/wheel/**",route=>serveStatic(route,false));
   await off.goto(origin+"/wheel/miniapp-coach.html",{waitUntil:"load"});
+  assert.equal(await off.locator("#connectBtn").isDisabled(),true,
+    "repository's empty config must disable third-party Telegram SDK");
   // The static repository config is empty: do not leak data to arbitrary network endpoints.
   // Our mocked config route was installed only on the first page, not on this page.
   await off.locator("#ray").selectOption("0");
@@ -149,7 +181,26 @@ async function run(){
   assert.match(await off.locator("#status").innerText(),/адрес не настроен|стенд/i);
   assert.equal(apiCalls.length,3);
   await off.close();
-  console.log("PASS: Mini App opt-in, no pre-consent traffic, minimal payload, safe DOM, deletion, disabled-by-default");
+
+  // Even if someone configures the API on the shared GitHub Pages origin,
+  // the third-party SDK must never be allowed to run there.
+  const shared=await browser.newPage();
+  let sharedSdkRequests=0;
+  shared.on("request",r=>{
+    if(r.url().startsWith("https://telegram.org/js/"))sharedSdkRequests++;
+  });
+  const sharedOrigin="https://yugatn.github.io";
+  await shared.route(sharedOrigin+"/wheel/**",route=>serveStatic(route,true));
+  await shared.route("**/miniapp-coach-config.js",route=>route.fulfill({
+    status:200,contentType:"application/javascript",
+    body:'window.WheelMiniAppConfig=Object.freeze({apiOrigin:"'+API+'",uiOrigin:"'+sharedOrigin+'"});'
+  }));
+  await shared.goto(sharedOrigin+"/wheel/miniapp-coach.html",{waitUntil:"load"});
+  assert.equal(await shared.locator("#connectBtn").isDisabled(),true);
+  assert.match(await shared.locator("#status").innerText(),/Telegram SDK запрещён/i);
+  assert.equal(sharedSdkRequests,0);
+  await shared.close();
+  console.log("PASS: Mini App opt-in, minimal selected-wheel read, isolated origin, safe DOM, deletion and default-deny");
  }finally{await browser.close();await close();}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
