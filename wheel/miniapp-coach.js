@@ -13,7 +13,23 @@
   const status=(text)=>{$("status").textContent=text;};
   let initData="", session=null, busy=false;
 
+  function eligibleUiOrigin() {
+    // A shared GitHub Pages origin may expose other projects' localStorage
+    // to loaded third-party scripts. Even a configured API is NOT sufficient.
+    if(typeof cfg.uiOrigin!=="string" || !cfg.uiOrigin.trim())return false;
+    try {
+      const raw=cfg.uiOrigin.trim(),url=new URL(raw);
+      if(url.protocol!=="https:" || url.origin!==raw || url.username ||
+         url.password || url.pathname!=="/" || url.search || url.hash)return false;
+      if(url.hostname==="github.io" || url.hostname.endsWith(".github.io") ||
+         url.hostname==="localhost" || url.hostname==="127.0.0.1")return false;
+      return location.protocol==="https:" && location.origin===raw;
+    }catch(_){return false;}
+  }
+  const isolated=eligibleUiOrigin();
+
   function allowedApi() {
+    if(!isolated)return null;
     if(typeof cfg.apiOrigin!=="string" || !cfg.apiOrigin.trim())return null;
     try{
       const raw=cfg.apiOrigin.trim(),url=new URL(raw);
@@ -55,7 +71,8 @@
   function setBusy(state){
     busy=state;
     for(const id of ["connectBtn","startBtn","readScoreBtn","sendBtn","skipBtn","deleteBtn"]){
-      $(id).disabled=state || (id==="startBtn" && !!session);
+      $(id).disabled=state || (id==="startBtn" && !!session) ||
+        (id==="connectBtn" && !isolated);
     }
   }
   function showMessage(role,message){
@@ -70,6 +87,10 @@
     return typeof data==="string"&&data.length>0&&data.length<=16384?data:"";
   }
   async function connectTelegram(){
+    if(!isolated){
+      status("Telegram SDK заблокирован: требуется отдельный разрешённый HTTPS-домен Mini App. GitHub Pages не подходит.");
+      return;
+    }
     if(busy)return;
     setBusy(true);
     try{
@@ -96,16 +117,25 @@
   function readLocalScore(){
     const w=selectedWheel(),r=selectedRay();
     if(!w||!r){status("Сначала выберите колесо и луч.");return;}
-    let saved;
-    try{saved=engine.readList(localStorage).find(x=>x.id===w.id);}catch(_){
-      status("Браузер запретил чтение локальных оценок.");return;
+    // Do not scan all stored wheels: read only the one explicitly selected.
+    let score=null;
+    try{
+      const raw=localStorage.getItem(w.key);
+      const values=raw?JSON.parse(raw):null;
+      if(Array.isArray(values) && values.length===w.rays.length){
+        const parsed=engine.score(values[r.index]);
+        if(Number.isInteger(parsed))score=parsed;
+      }
+    }catch(_){
+      status("Не удалось прочитать оценку выбранного колеса.");return;
     }
-    const candidate=saved && saved.rays[r.index];
-    $("score").value=candidate && candidate.score!==null?String(candidate.score):"";
+    $("score").value=score===null?"":String(score);
+    // Any newly disclosed context requires the subject to consent again.
+    $("consent").checked=false;
     preview();
-    status(candidate && candidate.score!==null
-      ?"Локальная оценка подставлена для этого луча. Она будет передана только после отдельного подтверждения."
-      :"Для этого луча нет сохранённой оценки. Можно выбрать балл вручную или ничего не передавать.");
+    status(score!==null
+      ?"Оценка выбранного колеса подставлена. Для передачи необходимо вновь подтвердить согласие."
+      :"Для этого луча нет подходящей сохранённой оценки. Можно выбрать балл вручную или ничего не передавать.");
   }
   async function request(method,route,body){
     if(!api || !initData)throw Error("Нет настроенного staging API или Telegram initData");
@@ -216,9 +246,10 @@
     $("startBtn").disabled=false;
     status("Локальные сообщения очищены. Оценки колёс не изменены.");
   }
-  $("wheel").addEventListener("change",setWheel);
-  $("ray").addEventListener("change",()=>{$("score").value="";preview();});
-  $("score").addEventListener("change",preview);
+  $("wheel").addEventListener("change",()=>{setWheel();$("consent").checked=false;});
+  $("ray").addEventListener("change",()=>{$("score").value="";$("consent").checked=false;preview();});
+  $("score").addEventListener("change",()=>{$("consent").checked=false;preview();});
+  $("mode").addEventListener("change",()=>{$("consent").checked=false;});
   $("connectBtn").addEventListener("click",connectTelegram);
   $("readScoreBtn").addEventListener("click",readLocalScore);
   $("startBtn").addEventListener("click",start);
@@ -232,5 +263,10 @@
   window.addEventListener("pagehide",()=>{
     initData="";session=null;$("dialog").replaceChildren();$("answer").value="";
   });
-  if(!api)status("Стенд отключён: HTTPS API не настроен. Никакие данные на сервер не передаются.");
+  if(!isolated){
+    $("connectBtn").disabled=true;
+    status("Стенд отключён: Telegram SDK запрещён на общем или ненастроенном домене. Используйте офлайн-коуча.");
+  }else if(!api){
+    status("Стенд отключён: HTTPS API не настроен. Никакие данные на сервер не передаются.");
+  }
 })();
