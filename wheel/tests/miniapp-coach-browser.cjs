@@ -49,6 +49,7 @@ async function run(){
   const context=await browser.newContext({viewport:{width:390,height:820},deviceScaleFactor:2});
   const page=await context.newPage();
   const external=[],apiCalls=[],pageErrors=[];
+  let failDeleteAllOnce=true;
   page.on("pageerror",e=>pageErrors.push(e.message));
   page.on("request",request=>{
     if(!request.url().startsWith(origin+"/"))external.push({url:request.url(),method:request.method()});
@@ -85,6 +86,10 @@ async function run(){
       })});return;
     }
     if(req.method()==="DELETE"){
+      if(url.pathname.endsWith("/sessions") && failDeleteAllOnce){
+        failDeleteAllOnce=false;
+        await route.fulfill({status:503,headers,body:"{}"});return;
+      }
       await route.fulfill({status:204,headers,body:""});return;
     }
     await route.fulfill({status:404,headers,body:"{}"});
@@ -118,6 +123,11 @@ async function run(){
   assert.equal(apiCalls.length,0);
   await page.locator("#adult").check();
   await page.locator("#consent").check();
+  await page.locator("#score").selectOption("6");
+  assert.equal(await page.locator("#consent").isChecked(),false,
+    "consent must reset after scoring context changes");
+  await page.locator("#score").selectOption("7");
+  await page.locator("#consent").check();
   await page.locator("#startBtn").click();
   assert.match(await page.locator("#status").innerText(),/подключите Telegram/i);
   assert.equal(apiCalls.length,0);
@@ -139,6 +149,8 @@ async function run(){
   });
   assert.equal(apiCalls[0].headers.cookie,undefined);
   assert.equal(await page.locator("#chatPanel").isVisible(),true);
+  assert.equal(await page.locator("#connectBtn").isDisabled(),true,
+    "Telegram account must not switch during a live session");
   await page.locator("#answer").fill("<img src=x onerror=alert(1)>");
   await page.locator("#sendBtn").click();
   await page.waitForFunction(()=>document.querySelector("#step").textContent.includes("2 из 5"),null,{timeout:8000});
@@ -158,8 +170,24 @@ async function run(){
   assert.equal(await page.locator("#dialog .msg").count(),0);
   assert.equal(await page.locator("#answer").inputValue(),"");
 
+  page.once("dialog",d=>d.accept());
+  await page.locator("#eraseAllBtn").click();
+  await page.waitForFunction(()=>document.querySelector("#status").textContent.includes("Удаление НЕ подтверждено"),null,{timeout:8000});
+  assert.equal(apiCalls.length,4,"failed delete-all must be visible, not silently acknowledged");
+  assert.equal(apiCalls[3].path,"/api/v1/miniapp/coaching/sessions");
+  assert.equal(await page.locator("#eraseAllBtn").isDisabled(),false);
+
+  page.once("dialog",d=>d.accept());
+  await page.locator("#eraseAllBtn").click();
+  await page.waitForFunction(()=>document.querySelector("#status").textContent.includes("удаление всех"),null,{timeout:8000});
+  assert.equal(apiCalls.length,5);
+  assert.equal(apiCalls[4].method,"DELETE");
+  assert.equal(await page.locator("#consent").isChecked(),false);
+  assert.equal((await page.evaluate(()=>localStorage.getItem("wheelBalanceV3Values"))).includes("7"),true,
+    "erase-all must not touch Wheel scores");
+
   await page.goto(origin+"/wheel/miniapp-coach.html",{waitUntil:"load"});
-  assert.equal(apiCalls.length,3);
+  assert.equal(apiCalls.length,5);
   await page.locator("#wheel").selectOption("work");
   await page.locator("#ray").selectOption("0");
   await page.locator("#readScoreBtn").click();
@@ -179,7 +207,7 @@ async function run(){
   await off.locator("#consent").check();
   await off.locator("#startBtn").click();
   assert.match(await off.locator("#status").innerText(),/адрес не настроен|стенд/i);
-  assert.equal(apiCalls.length,3);
+  assert.equal(apiCalls.length,5);
   await off.close();
 
   // Even if someone configures the API on the shared GitHub Pages origin,
@@ -200,7 +228,7 @@ async function run(){
   assert.match(await shared.locator("#status").innerText(),/Telegram SDK запрещён/i);
   assert.equal(sharedSdkRequests,0);
   await shared.close();
-  console.log("PASS: Mini App opt-in, minimal selected-wheel read, isolated origin, safe DOM, deletion and default-deny");
+  console.log("PASS: Mini App opt-in, minimal selected-wheel read, isolated origin, consent reset, delete and erase-all failure/success");
  }finally{await browser.close();await close();}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
