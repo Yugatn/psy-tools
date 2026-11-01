@@ -72,7 +72,7 @@
     busy=state;
     for(const id of ["connectBtn","eraseAllBtn","startBtn","readScoreBtn","sendBtn","skipBtn","deleteBtn"]){
       $(id).disabled=state || (id==="startBtn" && !!session) ||
-        (id==="connectBtn" && (!isolated || !!session)) ||
+        (id==="connectBtn" && (!isolated || !api || !!session)) ||
         (id==="eraseAllBtn" && (!isolated || !initData));
     }
   }
@@ -89,8 +89,8 @@
   }
   async function connectTelegram(){
     if(session){status("Сначала завершите или удалите текущую сессию.");return;}
-    if(!isolated){
-      status("Telegram SDK заблокирован: требуется отдельный разрешённый HTTPS-домен Mini App. GitHub Pages не подходит.");
+    if(!isolated || !api){
+      status("Telegram SDK заблокирован: требуется отдельный HTTPS-домен и настроенный staging API.");
       return;
     }
     if(busy)return;
@@ -289,6 +289,7 @@
     $("connectBtn").disabled=true;
     status("Стенд отключён: Telegram SDK запрещён на общем или ненастроенном домене. Используйте офлайн-коуча.");
   }else if(!api){
-    status("Стенд отключён: HTTPS API не настроен. Никакие данные на сервер не передаются.");
+    $("connectBtn").disabled=true;
+    status("Стенд отключён: HTTPS API не настроен; Telegram SDK не загружается.");
   }
 })();
