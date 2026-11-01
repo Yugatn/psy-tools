@@ -59,7 +59,7 @@ button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible
 <section class="panel" aria-labelledby="telegramTitle">
 <h2 id="telegramTitle">1. Подключение Telegram</h2>
 <p class="muted">Мы используем только подписанные Telegram initData, проверяемые сервером. Данные аккаунта из JavaScript не считаются доказательством личности.</p>
-<div class="actions"><button id="connectBtn" type="button">Подключить Telegram SDK</button></div>
+<div class="actions"><button id="connectBtn" type="button">Подключить Telegram SDK</button><button id="eraseAllBtn" class="danger" type="button" disabled>Удалить все мои серверные сессии</button></div>
 <p id="connection" class="muted"></p>
 </section>
 <section class="panel" aria-labelledby="contextTitle">
@@ -71,7 +71,8 @@ button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible
 <div><label for="score">Оценка (необязательно)</label><select id="score"><option value="">Не передавать оценку</option></select></div>
 <div><label for="mode">Режим</label><select id="mode"><option value="reflection">Саморефлексия</option><option value="reframe">Рефрейминг</option><option value="coaching">Коучинг</option></select></div>
 </div>
-<div class="actions"><button id="readScoreBtn" type="button">Прочитать мою сохранённую оценку</button></div>
+<div class="actions"><button id="readScoreBtn" type="button">Прочитать оценку с этого домена</button></div>
+<p class="muted">Данные с основного сайта GitHub Pages недоступны на отдельном домене Mini App. Если оценка сохранена в другом браузере или на другом сайте, укажите балл вручную либо оставьте поле пустым. Автоматического переноса нет.</p>
 <p id="contextPreview" class="note"></p>
 <label class="check"><input id="adult" type="checkbox"><span>Подтверждаю, что мне исполнилось 18 лет. Это самоутверждение, а не проверка возраста.</span></label>
 <label class="check"><input id="consent" type="checkbox"><span>Я добровольно согласен на передачу выбранного номера колеса, номера луча, оценки (если она указана) и каждого отправленного ответа на проверяемый сервер. Понимаю, что ответы не сохраняются в базе и не отправляются ИИ-модели, но сетевой и серверный транспорт требует отдельной защиты.</span></label>
