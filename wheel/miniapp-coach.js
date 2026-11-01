@@ -70,9 +70,10 @@
 
   function setBusy(state){
     busy=state;
-    for(const id of ["connectBtn","startBtn","readScoreBtn","sendBtn","skipBtn","deleteBtn"]){
+    for(const id of ["connectBtn","eraseAllBtn","startBtn","readScoreBtn","sendBtn","skipBtn","deleteBtn"]){
       $(id).disabled=state || (id==="startBtn" && !!session) ||
-        (id==="connectBtn" && !isolated);
+        (id==="connectBtn" && (!isolated || !!session)) ||
+        (id==="eraseAllBtn" && (!isolated || !initData));
     }
   }
   function showMessage(role,message){
@@ -87,6 +88,7 @@
     return typeof data==="string"&&data.length>0&&data.length<=16384?data:"";
   }
   async function connectTelegram(){
+    if(session){status("Сначала завершите или удалите текущую сессию.");return;}
     if(!isolated){
       status("Telegram SDK заблокирован: требуется отдельный разрешённый HTTPS-домен Mini App. GitHub Pages не подходит.");
       return;
@@ -240,6 +242,25 @@
     }catch(err){status("Удаление на сервере НЕ подтверждено: "+err.message+". Сессия истечёт не позднее 20 минут.");}
     finally{setBusy(false);}
   }
+  async function eraseAll(){
+    if(busy||!api||!initData){
+      status("Удаление недоступно без настроенного стенда и подтверждённого контекста Telegram.");
+      return;
+    }
+    if(!confirm("Удалить ВСЕ активные серверные сессии этого Telegram-аккаунта? Локальные оценки колёс не изменятся."))return;
+    setBusy(true);
+    try{
+      await request("DELETE","/sessions");
+      session=null;
+      $("dialog").replaceChildren();$("answer").value="";
+      $("chatPanel").hidden=true;$("finishPanel").hidden=false;
+      $("finishText").textContent="Сервер подтвердил удаление всех активных сессий этого Telegram-аккаунта. Локальные оценки не затронуты.";
+      $("consent").checked=false;
+      status("Удаление всех активных серверных сессий подтверждено.");
+    }catch(err){
+      status("Удаление НЕ подтверждено: "+err.message+". Повторите попытку после проверки подключения.");
+    }finally{setBusy(false);}
+  }
   function clearScreen(){
     $("dialog").replaceChildren();$("answer").value="";
     $("finishText").textContent="";$("finishPanel").hidden=true;
@@ -251,6 +272,7 @@
   $("score").addEventListener("change",()=>{$("consent").checked=false;preview();});
   $("mode").addEventListener("change",()=>{$("consent").checked=false;});
   $("connectBtn").addEventListener("click",connectTelegram);
+  $("eraseAllBtn").addEventListener("click",eraseAll);
   $("readScoreBtn").addEventListener("click",readLocalScore);
   $("startBtn").addEventListener("click",start);
   $("sendBtn").addEventListener("click",()=>turn("answer"));
