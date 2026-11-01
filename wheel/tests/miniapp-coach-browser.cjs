@@ -210,6 +210,22 @@ async function run(){
   assert.equal(apiCalls.length,5);
   await off.close();
 
+  // A recognized isolated UI origin is not enough: no SDK without an API.
+  const missingApi=await browser.newPage();
+  let missingSdkRequests=0;
+  missingApi.on("request",r=>{
+    if(r.url().startsWith("https://telegram.org/js/"))missingSdkRequests++;
+  });
+  await missingApi.route(origin+"/wheel/**",route=>serveStatic(route,false));
+  await missingApi.route("**/miniapp-coach-config.js",route=>route.fulfill({
+    status:200,contentType:"application/javascript",
+    body:'window.WheelMiniAppConfig=Object.freeze({apiOrigin:"",uiOrigin:"'+origin+'"});'
+  }));
+  await missingApi.goto(origin+"/wheel/miniapp-coach.html",{waitUntil:"load"});
+  assert.equal(await missingApi.locator("#connectBtn").isDisabled(),true);
+  assert.equal(missingSdkRequests,0);
+  await missingApi.close();
+
   // Even if someone configures the API on the shared GitHub Pages origin,
   // the third-party SDK must never be allowed to run there.
   const shared=await browser.newPage();
