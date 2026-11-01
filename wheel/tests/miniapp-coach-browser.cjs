@@ -179,7 +179,7 @@ async function run(){
 
   page.once("dialog",d=>d.accept());
   await page.locator("#eraseAllBtn").click();
-  await page.waitForFunction(()=>document.querySelector("#status").textContent.includes("удаление всех"),null,{timeout:8000});
+  await page.waitForFunction(()=>document.querySelector("#status").textContent.includes("Удаление всех"),null,{timeout:8000});
   assert.equal(apiCalls.length,5);
   assert.equal(apiCalls[4].method,"DELETE");
   assert.equal(await page.locator("#consent").isChecked(),false);
