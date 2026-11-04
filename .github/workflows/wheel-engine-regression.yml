@@ -1,0 +1,25 @@
+name: Wheel engine regression tests
+
+on:
+  push:
+    paths:
+      - "wheel/wheel-engine.js"
+      - "tests/wheel-engine.test.cjs"
+      - ".github/workflows/wheel-engine-regression.yml"
+  pull_request:
+    paths:
+      - "wheel/wheel-engine.js"
+      - "tests/wheel-engine.test.cjs"
+      - ".github/workflows/wheel-engine-regression.yml"
+
+jobs:
+  node-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node --test tests/wheel-engine.test.cjs
