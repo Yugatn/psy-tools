@@ -38,7 +38,11 @@ jobs:
 
       - name: Detect prohibited automatic authority claims
         run: |
-          if grep -RniE 'self[-_ ]?authorized|autonomous authority|agent is final authority|implementation proves|self-test is independent verification'             --exclude-dir=.git --exclude='agent-integrity-check.yml' .; then
+          # The reconstruction test explicitly quotes prohibited claims as negative examples.
+          # Exclude only that test fixture, while scanning the rest of the repository.
+          if grep -RniE 'self[-_ ]?authorized|autonomous authority|agent is final authority|implementation proves|self-test is independent verification' \
+             --exclude-dir=.git --exclude='agent-integrity-check.yml' \
+             --exclude='AS_CONCEPT_RECONSTRUCTION_TEST_v0.1.md' .; then
             echo "Potential authority/integrity violation detected."
             exit 1
           fi
