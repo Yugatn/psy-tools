@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Колесо девяти потоков восприятия Амбивалентного Солипсизма — добровольная самооценка условий и комфорта.">
+<title>Колесо девяти потоков восприятия — PSY-TOOLS</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1120;--panel:#121d31;--line:#293a55;--ink:#f2f6fc;--muted:#b6c3d4;--highlight:#8ed4ed}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+a{color:#a7d7ff}.wrap{max-width:1180px;margin:auto;padding:clamp(14px,3vw,26px)}
+nav{font-size:14px;color:var(--muted);margin-bottom:14px}h1{font-size:clamp(25px,4vw,36px);line-height:1.2;margin:8px 0 14px}
+h2{font-size:20px;margin:5px 0 13px}h3{font-size:16px;margin:0 0 5px}
+p{margin:8px 0 14px}.lead{color:var(--muted);max-width:850px}
+.layout{display:grid;grid-template-columns:minmax(330px,1.1fr) minmax(320px,1fr);gap:18px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(14px,2vw,22px)}
+.chart-panel{position:sticky;top:12px}
+svg{display:block;width:100%;max-width:620px;height:auto;margin:auto}
+.stats{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.stat{font-size:14px;color:var(--muted)}.stat strong{font-size:22px;color:var(--ink)}
+.rays{display:grid;gap:12px}
+.ray{border:1px solid var(--line);border-radius:14px;padding:13px;background:#0e1829}
+.ray-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ray .description{font-size:13px;color:var(--muted);margin:4px 0 11px}
+.ray label{display:block;font-size:13px;font-weight:650;margin:9px 0 5px}
+.ray .question{font-size:13px;color:#c0d2e7;margin:7px 0}
+select,textarea,button{font:inherit;color:var(--ink);border:1px solid #3c526c;border-radius:10px;background:#192741}
+select{width:100%;padding:8px 10px}
+textarea{display:block;min-height:66px;width:100%;padding:9px 10px;resize:vertical}
+button{padding:10px 13px;cursor:pointer}button:hover{border-color:#8ed4ed}button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #8ed4ed;outline-offset:3px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 12px}.primary{background:#234766;border-color:#5c9dc6;font-weight:700}
+.note{font-size:13px;color:var(--muted)}.notice{margin-top:10px;color:#c7dfec;min-height:24px}
+#history{margin:10px 0 4px;padding-left:23px;font-size:14px;color:var(--muted)}
+#history li{margin-bottom:7px}
+hr{height:1px;border:none;background:var(--line);margin:18px 0}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.chart-panel{position:static}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav><a href="../../">PSY-TOOLS</a> / <a href="../hub.html">Колёса</a> / Девять потоков</nav>
+<h1>Колесо девяти потоков восприятия</h1>
+<p class="lead">По концепции «Амбивалентного Солипсизма» Югатна. Оцените, насколько вас устраивают <strong>условия восприятия и взаимодействия</strong> в каждой области за последнюю неделю. Это инструмент рефлексии, а не тест остроты чувств, психотипа или состояния здоровья. Можно пропускать любой луч.</p>
+<div class="layout">
+<section class="panel chart-panel" aria-labelledby="chart-heading">
+<h2 id="chart-heading">Текущее колесо</h2>
+<div class="stats"><div class="stat">Оценено: <strong id="count">0/9</strong></div><div class="stat">Среднее по оценённым: <strong id="average">—</strong></div></div>
+<svg id="wheel" viewBox="0 0 640 640" role="img" aria-labelledby="chartTitle chartDesc">
+<title id="chartTitle">Колесо девяти потоков восприятия</title>
+<desc id="chartDesc">Все девять потоков пока не оценены. Отсутствующая оценка не равна нулю.</desc>
+</svg>
+<p class="note">Длина каждого заполненного сектора соответствует субъективной оценке 0–10. Незакрашенный сектор означает «Не оценено», а не 0. Среднее показано только для заполненных лучей и не является показателем качества личности.</p>
+<div class="actions">
+<button type="button" id="snapshot" class="primary">Сохранить результат</button>
+<button type="button" id="export">Экспорт JSON</button>
+<button type="button" id="reset">Сбросить текущие оценки</button>
+</div>
+<p class="notice" id="status" role="status" aria-live="polite"></p>
+<hr>
+<h2>История результатов</h2>
+<ol id="history"></ol>
+<p class="note">Оценки, заметки и история хранятся только в браузере этого устройства (localStorage). Отправки на сервер нет. Их можно экспортировать. Если очистить данные браузера, локальные записи могут исчезнуть.</p>
+<p class="note">Научный статус: авторская схема девяти потоков не является универсальной классификацией органов чувств. Девятый поток отражает переживание социальной связанности, но не объективное знание намерений других людей.</p>
+</section>
+<section class="panel" aria-labelledby="rays-heading">
+<h2 id="rays-heading">Девять лучей</h2>
+<p class="note">Шкала: 0 — условия меня сейчас совсем не устраивают; 10 — полностью устраивают. Можно выбрать «Не оценено», если вопрос не подходит или нет желания отвечать. Ограничение любой сенсорной модальности не уменьшает ценность человека.</p>
+<div class="rays" id="rays"></div>
+</section>
+</div>
+</main>
+<script>
+(function(){
+"use strict";
+const streams=[
+{name:"Зрение",short:"Зрение",question:"Насколько мне комфортны свет, визуальная информация и возможность видеть важное в моих условиях?",hint:"Освещение, контраст, расстояние, доступные средства поддержки."},
+{name:"Слух",short:"Слух",question:"Насколько меня устраивают окружающие звуки, доступ к нужной речи и возможность отдыха от шума?",hint:"Громкость, тишина, субтитры, доступность общения."},
+{name:"Обоняние",short:"Запах",question:"Насколько комфортны запахи вокруг меня и могу ли я регулировать их воздействие?",hint:"Неприятные запахи, доступ к свежему воздуху, личные предпочтения."},
+{name:"Вкус",short:"Вкус",question:"Насколько меня устраивает доступный мне вкусовой опыт с учётом собственных потребностей?",hint:"Удовольствие и разнообразие без навязывания пищевых правил."},
+{name:"Осязание",short:"Касание",question:"Насколько мне комфортны тактильные ощущения, одежда, предметы и границы прикосновений?",hint:"Текстуры, температура, возможность отказаться от контакта."},
+{name:"Проприоцепция",short:"Движение",question:"Насколько меня устраивает комфорт ощущения положения тела и движений в привычных занятиях?",hint:"Доступность удобных положений и способов движения, а не оценка спортивной формы."},
+{name:"Равновесие",short:"Баланс",question:"Насколько удобны и безопасны мои повседневные способы перемещения и изменения положения?",hint:"Устойчивость условий, опоры, удобство маршрутов; не медицинская проба."},
+{name:"Интероцепция",short:"Внутреннее",question:"Насколько мне комфортно замечать сигналы о потребностях тела и откликаться на них?",hint:"Голод, насыщение, усталость, дыхание, отдых; не диагностика органов."},
+{name:"Социальная сопричастность",short:"Сопричастность",question:"Насколько меня устраивает переживаемое чувство принятия, взаимности и связи с другими?",hint:"Чувство может быть ошибочным в оценке чужих намерений; полезно уточнять, а не угадывать."}
+];
+const VALUES_KEY="wheelNestedV2_nine_streams_Values";
+const HISTORY_KEY=VALUES_KEY+":history";
+const NOTES_KEY="wheelBalanceNineStreams:notes";
+const JOURNAL_KEY="wheelNestedV2_nine_streams_Journal";
+const svg=document.getElementById("wheel");
+const ns="http://www.w3.org/2000/svg";
+let values=Array(9).fill(null);
+let notes=Array(9).fill("");
+function parse(raw,fallback){try{return JSON.parse(raw);}catch(_){return fallback;}}
+function rated(v){return typeof v==="number" && Number.isInteger(v) && v>=0 && v<=10;}
+function read(key,fallback){try{const x=localStorage.getItem(key);return x===null?fallback:parse(x,fallback);}catch(_){return fallback;}}
+function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){document.getElementById("status").textContent="Хранилище браузера недоступно: результат существует только до закрытия страницы. Используйте экспорт.";return false;}}
+function cleanValues(x){return Array.isArray(x)&&x.length===9?x.map(v=>rated(v)?v:null):Array(9).fill(null);}
+function cleanNotes(x){return Array.isArray(x)&&x.length===9?x.map(v=>typeof v==="string"?v.slice(0,300):""):Array(9).fill("");}
+values=cleanValues(read(VALUES_KEY,[]));
+notes=cleanNotes(read(NOTES_KEY,[]));
+function svgElement(tag,attributes,content){
+  const element=document.createElementNS(ns,tag);
+  Object.keys(attributes||{}).forEach(key=>element.setAttribute(key,String(attributes[key])));
+  if(content!==undefined)element.textContent=content;
+  svg.appendChild(element);
+  return element;
+}
+function sectorPath(cx,cy,r,start,end){
+  const x1=cx+r*Math.cos(start),y1=cy+r*Math.sin(start);
+  const x2=cx+r*Math.cos(end),y2=cy+r*Math.sin(end);
+  return "M "+cx+" "+cy+" L "+x1.toFixed(2)+" "+y1.toFixed(2)+" A "+r.toFixed(2)+" "+r.toFixed(2)+" 0 0 1 "+x2.toFixed(2)+" "+y2.toFixed(2)+" Z";
+}
+function draw(){
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  svgElement("title",{id:"chartTitle"},"Колесо девяти потоков восприятия");
+  const count=values.filter(rated).length;
+  const sum=values.reduce((acc,v)=>acc+(rated(v)?v:0),0);
+  const average=count?sum/count:null;
+  svgElement("desc",{id:"chartDesc"},"Оценено "+count+" из 9 потоков. Отсутствующая оценка не равна нулю.");
+  const center=320, radius=194, step=2*Math.PI/9;
+  for(let stepNum=2;stepNum<=10;stepNum+=2){
+    svgElement("circle",{cx:center,cy:center,r:radius*stepNum/10,fill:"none",stroke:stepNum===10?"#576c89":"#31415a","stroke-width":stepNum===10?2:1});
+    svgElement("text",{x:center+7,y:center-radius*stepNum/10+13,fill:"#879cb5","font-size":12},String(stepNum));
+  }
+  for(let i=0;i<9;i++){
+    const a=-Math.PI/2+i*step;
+    svgElement("line",{x1:center,y1:center,x2:center+radius*Math.cos(a),y2:center+radius*Math.sin(a),stroke:"#52647d","stroke-width":1});
+  }
+  for(let i=0;i<9;i++){
+    const a=-Math.PI/2+i*step;
+    const v=values[i];
+    if(rated(v) && v>0)svgElement("path",{d:sectorPath(center,center,radius*v/10,a-step*.45,a+step*.45),fill:i===8?"#97c5ac":"#74a7d5","fill-opacity":".52",stroke:i===8?"#aadfbd":"#90c6f5","stroke-width":1.3});
+    if(rated(v))svgElement("circle",{cx:center+radius*v/10*Math.cos(a),cy:center+radius*v/10*Math.sin(a),r:4.5,fill:i===8?"#c2efd0":"#f5faff"});
+    const lx=center+249*Math.cos(a),ly=center+249*Math.sin(a);
+    svgElement("text",{x:lx,y:ly-5,fill:"#ecf4ff","font-size":13,"font-weight":650,"text-anchor":"middle"},streams[i].short);
+    svgElement("text",{x:lx,y:ly+13,fill:rated(v)?"#b8dcf7":"#879bb1","font-size":12,"text-anchor":"middle"},rated(v)?String(v)+"/10":"—");
+  }
+  svgElement("circle",{cx:center,cy:center,r:17,fill:"#14223a",stroke:"#62768d","stroke-width":1.5});
+  svgElement("text",{x:center,y:center+4,fill:"#dbe9fa","font-size":12,"text-anchor":"middle"},"АС");
+  document.getElementById("count").textContent=count+"/9";
+  document.getElementById("average").textContent=average===null?"—":average.toFixed(1)+"/10";
+}
+function makeControls(){
+  const root=document.getElementById("rays");
+  root.replaceChildren();
+  streams.forEach((s,i)=>{
+    const article=document.createElement("article");article.className="ray";
+    const h=document.createElement("h3");h.textContent="F"+(i+1)+" · "+s.name;article.appendChild(h);
+    const q=document.createElement("p");q.className="question";q.textContent=s.question;article.appendChild(q);
+    const hint=document.createElement("p");hint.className="description";hint.textContent=s.hint;article.appendChild(hint);
+    const label=document.createElement("label");label.htmlFor="score"+i;label.textContent="Моя оценка условий (0–10)";article.appendChild(label);
+    const select=document.createElement("select");select.id="score"+i;
+    const blank=document.createElement("option");blank.value="";blank.textContent="Не оценено";select.appendChild(blank);
+    for(let v=0;v<=10;v++){const option=document.createElement("option");option.value=String(v);option.textContent=String(v);select.appendChild(option);}
+    select.value=rated(values[i])?String(values[i]):"";
+    select.addEventListener("change",function(){values[i]=select.value===""?null:Number(select.value);write(VALUES_KEY,values);draw();});
+    article.appendChild(select);
+    const noteLabel=document.createElement("label");noteLabel.htmlFor="note"+i;noteLabel.textContent="Что помогает или мешает? (необязательно)";article.appendChild(noteLabel);
+    const textarea=document.createElement("textarea");textarea.id="note"+i;textarea.maxLength=300;textarea.value=notes[i];textarea.placeholder="Контекст, наблюдение, небольшой шаг…";
+    textarea.addEventListener("input",function(){notes[i]=textarea.value;write(NOTES_KEY,notes);});
+    article.appendChild(textarea);
+    root.appendChild(article);
+  });
+}
+function getHistory(){const x=read(HISTORY_KEY,[]);return Array.isArray(x)?x.slice(-40).filter(v=>v&&typeof v==="object"&&Array.isArray(v.values)):[];}
+function renderHistory(){
+  const root=document.getElementById("history");root.replaceChildren();
+  const history=getHistory().slice(-8).reverse();
+  if(!history.length){const li=document.createElement("li");li.textContent="Пока нет сохранённых снимков.";root.appendChild(li);return;}
+  history.forEach(s=>{
+    const ratedScores=cleanValues(s.values).filter(rated);
+    const avg=ratedScores.length?(ratedScores.reduce((a,b)=>a+b,0)/ratedScores.length).toFixed(1):"—";
+    const li=document.createElement("li");
+    const date=new Date(s.date);
+    li.textContent=(Number.isFinite(date.getTime())?date.toLocaleString("ru-RU"):String(s.date||"Без даты"))+" · "+ratedScores.length+"/9 · среднее "+avg;
+    root.appendChild(li);
+  });
+}
+document.getElementById("snapshot").addEventListener("click",function(){
+  const count=values.filter(rated).length;
+  if(count===0){document.getElementById("status").textContent="Сначала оцените хотя бы один поток; пустой результат не записывается.";return;}
+  const date=new Date().toISOString();
+  const snapshot={date:date,values:values.slice(),notes:notes.slice(),schemaVersion:1};
+  const history=getHistory();history.push(snapshot);
+  const success=write(HISTORY_KEY,history.slice(-40));
+  const text=notes.map((n,i)=>n.trim()?streams[i].name+": "+n.trim():"").filter(Boolean).join("\n");
+  if(text){const entries=read(JOURNAL_KEY,[]);const journal=Array.isArray(entries)?entries.slice(-39):[];journal.push({date:date,text:text});write(JOURNAL_KEY,journal);}
+  if(success)document.getElementById("status").textContent="Снимок сохранён на этом устройстве.";
+  renderHistory();
+});
+document.getElementById("export").addEventListener("click",function(){
+  const payload={source:"PSY-TOOLS/nine-streams",schemaVersion:1,exportedAt:new Date().toISOString(),scale:"subjective comfort with conditions, 0–10",streams:streams.map(s=>s.name),values:values.slice(),notes:notes.slice(),history:getHistory()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="nine-streams-wheel.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+  document.getElementById("status").textContent="Файл JSON подготовлен к сохранению.";
+});
+document.getElementById("reset").addEventListener("click",function(){
+  if(!window.confirm("Сбросить текущие оценки и заметки? Сохранённая история останется."))return;
+  values=Array(9).fill(null);notes=Array(9).fill("");
+  write(VALUES_KEY,values);write(NOTES_KEY,notes);
+  makeControls();draw();
+  document.getElementById("status").textContent="Текущая оценка очищена. История сохранена.";
+});
+makeControls();draw();renderHistory();
+})();
+</script>
+</body>
+</html>

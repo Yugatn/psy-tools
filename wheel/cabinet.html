@@ -128,7 +128,8 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
     { id: "self_awareness", title: "Самоосознание", href: "./self_awareness/" },
     { id: "fear", title: "Страхи", href: "./fear/" },
     { id: "sexuality", title: "Сексуальность", href: "./sexuality/" },
-    { id: "destructiveness", title: "Деструктивность", href: "./destructiveness/" }
+    { id: "destructiveness", title: "Деструктивность", href: "./destructiveness/" },
+    { id: "nine_streams", title: "Девять потоков восприятия", href: "./nine-streams/", valuesKey: "wheelNestedV2_nine_streams_Values" }
   ];
 
   function isRated(v) {
@@ -222,7 +223,7 @@ summary{cursor:pointer;color:#9db8df;font-size:13px;font-weight:600}
         href = "./detail/";
       } else if (k.indexOf("wheelNestedV2_") === 0) {
         const rest = k.replace(/^wheelNestedV2_/, "").replace(/_Values$/, "").replace(/Values$/, "");
-        const map = {health:["./health/","Здоровье"],work:["./work/","Работа"],finance:["./finance/","Финансы"],relationships:["./relationships/","Отношения"],social:["./social/","Социальная жизнь"],development:["./development/","Развитие"],rest:["./rest/","Отдых"],creativity:["./creativity/","Творчество"],self_awareness:["./self_awareness/","Самоосознание"],fear:["./fear/","Страхи"],sexuality:["./sexuality/","Сексуальность"],destructiveness:["./destructiveness/","Деструктивность"]};
+        const map = {health:["./health/","Здоровье"],work:["./work/","Работа"],finance:["./finance/","Финансы"],relationships:["./relationships/","Отношения"],social:["./social/","Социальная жизнь"],development:["./development/","Развитие"],rest:["./rest/","Отдых"],creativity:["./creativity/","Творчество"],self_awareness:["./self_awareness/","Самоосознание"],fear:["./fear/","Страхи"],sexuality:["./sexuality/","Сексуальность"],destructiveness:["./destructiveness/","Деструктивность"],nine_streams:["./nine-streams/","Девять потоков восприятия"]};
         const m = map[rest];
         if (m) { href = m[0]; title = m[1]; } else { title = rest; href = "./hub.html"; }
       }
