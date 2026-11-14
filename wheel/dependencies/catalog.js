@@ -61,6 +61,7 @@ Object.freeze({"value":"monthly","label":"Раз в месяц","hint":"Обыч
 Object.freeze({"value":"many_yearly","label":"Несколько раз в год","hint":"Обычно 2–11 раз в год","level":3}),
 Object.freeze({"value":"yearly","label":"Раз в год","hint":"Примерно один раз в год","level":2}),
 Object.freeze({"value":"every_few_years","label":"Раз в несколько лет","hint":"Нерегулярно, эпизодически; возможно несколько лет между случаями","level":1}),
+Object.freeze({"value":"inactive_under_year","label":"Не было последние месяцы","hint":"Опыт раньше был, но сейчас прекратил(а): перерыв менее года","level":0}),
 Object.freeze({"value":"inactive_1_3y","label":"Не было 1–3 года","hint":"Опыт раньше был, за последние 1–3 года не было","level":0}),
 Object.freeze({"value":"abstinent_3y","label":"Воздерживаюсь более трёх лет","hint":"Опыт был, осознанное воздержание длится больше 3 лет","level":0}),
 Object.freeze({"value":"never","label":"Не было такого опыта","hint":"Ни разу в жизни","level":0}),
