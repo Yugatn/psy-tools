@@ -33,7 +33,7 @@ header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-
 <button id="snapshot" class="primary">Сохранить снимок</button><button id="export">Экспорт JSON</button><button id="import">Импорт JSON</button><input type="file" id="importFile" accept=".json,application/json" hidden><button id="print">Печать</button></div><p class="status" id="status" role="status"></p>
 <p class="warn">Данные хранятся только в localStorage браузера. Другой человек в этом же профиле браузера может прочитать оценки и заметки. Не записывайте личные идентификаторы и чувствительные сведения. Файл JSON нужно хранить самостоятельно.</p></section>
 <section class="card"><h2>История наблюдений</h2><ul class="history" id="history"></ul><div class="toolbar" style="margin-top:11px"><button id="reset">Сбросить текущие оценки</button><button id="clearMode">Очистить эту модель</button><button id="clearAll" class="danger">Удалить все данные добродетелей</button></div></section></div>
-<div><section class="card"><h2>Качества выбранного набора</h2><div id="legend" class="concepts"></div><div class="focus" aria-live="polite"><h3 id="focusTitle">Выберите добродетель</h3><p id="focusDescription"></p><p id="focusExample"></p><p id="focusPractice"></p><p id="focusQuestion"></p></div></section>
+<div><section class="card"><h2>Качества выбранного набора</h2><div id="legend" class="concepts"></div><div class="focus" aria-live="polite"><h3 id="focusTitle">Выберите добродетель</h3><p id="focusDescription"></p><p id="focusExample"></p><p id="focusPractice"></p><p id="focusQuestion"></p><a id="focusDetail" class="detail-link" href="./">Открыть вложенное колесо →</a></div></section>
 <section class="card"><h2>Дополнить набор</h2>
 <div class="filter-row"><div><label for="search">Поиск</label><input type="search" id="search" placeholder="Например: мудрость"></div><div><label for="family">Традиция</label><select id="family"></select></div></div>
 <p class="sub" id="catalogCount"></p><div id="catalog" class="catalog"></div>
@@ -102,6 +102,7 @@ $("focusDescription").textContent=item?item.description:"Добавьте одн
 $("focusExample").textContent=item?"Пример: "+item.example:"";
 $("focusPractice").textContent=item?"Маленькое упражнение: "+item.practice:"";
 $("focusQuestion").textContent=item?"Вопрос: «"+item.question+"»":"";
+const more=$("focusDetail");more.hidden=!item;if(item)more.href="./detail.html?mode="+encodeURIComponent(state.mode)+"&id="+encodeURIComponent(record().ids[selected]);
 Array.from($("legend").children).forEach((b,i)=>b.setAttribute("aria-pressed",String(i===selected)));
 Array.from($("items").children).forEach((el,i)=>el.classList.toggle("active",i===selected))}
 function svg(tag,attrs={}){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));return e}
