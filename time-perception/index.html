@@ -278,7 +278,25 @@ $("json").addEventListener("click",function(){if(!stored.length)return setStatus
 $("delete").addEventListener("click",function(){if(!stored.length)return;if(!confirm("Безвозвратно удалить ВСЮ историю тестов субъективного времени в этом браузере? Сначала сохрани экспорт."))return;try{localStorage.removeItem(KEY)}catch(e){}stored=[];session=null;lastSessionId=null;phase="idle";resetTimers();padMsg("История очищена","Можно создать новую серию.");$("latestResult").textContent="Результаты удалены.";setStatus("История удалена из локального хранилища браузера.");controlState();refresh()});
 function xml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;")}
 function colName(i){var n=i+1,s="";while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s}
-function worksheet(matrix){var lines=matrix.map(function(row,ri){return '<row r="'+(ri+1)+'">'+row.map(function(v,ci){var address=colName(ci)+(ri+1);if(typeof v==="number"&&Number.isFinite(v))return '<c r="'+address+'"><v>'+v+'</v></c>';return '<c r="'+address+'" t="inlineStr"><is><t xml:space="preserve">'+xml(v)+'</t></is></c>'}).join("")+'</row>'}).join("");return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+lines+'</sheetData></worksheet>'}
+function worksheet(matrix){
+var rows=matrix.length,cols=matrix[0]?matrix[0].length:0;
+var widths=(matrix[0]||[]).map(function(title,i){
+var width=Math.max(13,Math.min(42,String(title).length+5));
+return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+width+'" customWidth="1"/>';
+}).join("");
+var lines=matrix.map(function(row,ri){
+return '<row r="'+(ri+1)+'">'+row.map(function(v,ci){
+var address=colName(ci)+(ri+1);
+if(typeof v==="number"&&Number.isFinite(v))return '<c r="'+address+'"><v>'+v+'</v></c>';
+return '<c r="'+address+'" t="inlineStr"><is><t xml:space="preserve">'+xml(v)+'</t></is></c>'
+}).join("")+'</row>'
+}).join("");
+var range=cols?colName(cols-1)+rows:"A1";
+return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+'<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+
+'<cols>'+widths+'</cols><sheetData>'+lines+'</sheetData><autoFilter ref="A1:'+range+'"/></worksheet>'
+}
 function crc32(buf){var c=-1;for(var i=0;i<buf.length;i++){c^=buf[i];for(var j=0;j<8;j++)c=c&1?(c>>>1)^0xEDB88320:c>>>1}return(c^(-1))>>>0}
 function zipFiles(files){var encode=new TextEncoder(),local=[],central=[],offset=0;function word(a,n){a.push(n&255,(n>>>8)&255)}function dword(a,n){a.push(n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255)}
 files.forEach(function(file){var filename=encode.encode(file[0]),bytes=encode.encode(file[1]),crc=crc32(bytes),lo=[],ce=[];dword(lo,0x04034b50);word(lo,20);word(lo,0);word(lo,0);word(lo,0);word(lo,0);dword(lo,crc);dword(lo,bytes.length);dword(lo,bytes.length);word(lo,filename.length);word(lo,0);local.push(new Uint8Array(lo),filename,bytes);
@@ -288,15 +306,25 @@ function workbook(){var trials=[headers].concat(stored.map(function(r){return fi
 stored.forEach(function(r){var key=[r.task,r.method,r.nominal_target_s||r.target_s].join("|");(by[key]||(by[key]=[])).push(r.error_pct)});
 var summary=[["Задача","Способ","Цель (с)","Попыток","Средняя ошибка (%)","Средняя абсолютная ошибка (%)","SD ошибки (п.п.)"]];
 Object.keys(by).sort().forEach(function(k){var parts=k.split("|"),xs=by[k],mean=avg(xs),sd=xs.length>1?Math.sqrt(avg(xs.map(function(x){return Math.pow(x-mean,2)}))):"";summary.push([labelTask(parts[0]),labelMethod(parts[1]),Number(parts[2]),xs.length,Number(mean.toFixed(4)),Number(avg(xs.map(Math.abs)).toFixed(4)),sd===""?"":Number(sd.toFixed(4))])});
+var bySession={};
+stored.forEach(function(r){(bySession[r.session_id]||(bySession[r.session_id]=[])).push(r)});
+var seriesSummary=[["Дата первого ответа (ISO)","Серия","Задача","Способ","Попыток","Средняя ошибка (%)","Средняя абсолютная ошибка (%)","SD ошибки (п.п.)","Условия"]];
+Object.keys(bySession).sort().forEach(function(id){
+var recs=bySession[id],first=recs[0],xs=recs.map(function(r){return r.error_pct}),mean=avg(xs);
+var sd=xs.length>1?Math.sqrt(avg(xs.map(function(x){return Math.pow(x-mean,2)}))):"";
+seriesSummary.push([first.timestamp,id,labelTask(first.task),labelMethod(first.method),xs.length,Number(mean.toFixed(4)),Number(avg(xs.map(Math.abs)).toFixed(4)),sd===""?"":Number(sd.toFixed(4)),first.context||""]);
+});
+
 var files=[
-["[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'],
+["[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'],
 ["_rels/.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
-["xl/workbook.xml",'<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Измерения" sheetId="1" r:id="rId1"/><sheet name="Статистика" sheetId="2" r:id="rId2"/></sheets></workbook>'],
-["xl/_rels/workbook.xml.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/></Relationships>'],
+["xl/workbook.xml",'<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Измерения" sheetId="1" r:id="rId1"/><sheet name="Статистика" sheetId="2" r:id="rId2"/><sheet name="По сериям" sheetId="3" r:id="rId3"/></sheets></workbook>'],
+["xl/_rels/workbook.xml.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/></Relationships>'],
 ["xl/worksheets/sheet1.xml",worksheet(trials)],
-["xl/worksheets/sheet2.xml",worksheet(summary)]];
+["xl/worksheets/sheet2.xml",worksheet(summary)],
+["xl/worksheets/sheet3.xml",worksheet(seriesSummary)]];
 return zipFiles(files)}
-$("xlsx").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");try{download(workbook(),"psy-tools-time-"+dateSuffix()+".xlsx");setStatus("Excel (.xlsx) скачан: листы «Измерения» и «Статистика».")}catch(e){setStatus("Не удалось создать Excel. Попробуй выгрузить CSV.")}});
+$("xlsx").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");try{download(workbook(),"psy-tools-time-"+dateSuffix()+".xlsx");setStatus("Excel (.xlsx) скачан: листы «Измерения», «Статистика» и «По сериям».")}catch(e){setStatus("Не удалось создать Excel. Попробуй выгрузить CSV.")}});
 window.addEventListener("storage",function(e){if(e.key===KEY&&!session){load();refresh()}});
 load();setTaskUI();refresh();controlState();
 })();
