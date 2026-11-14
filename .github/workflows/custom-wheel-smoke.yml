@@ -29,5 +29,7 @@ jobs:
         run: node wheel/virtues/tests/smoke.cjs
       - name: Test nested virtues wheel
         run: node wheel/virtues/tests/detail-smoke.cjs
+      - name: Test habits frequency wheel
+        run: node wheel/dependencies/tests/smoke.cjs
       - name: Check cross-wheel navigation and license
         run: node wheel/custom/tests/navigation.cjs
