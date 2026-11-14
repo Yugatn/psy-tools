@@ -1,0 +1,35 @@
+name: Nine streams matrix regression
+
+on:
+  push:
+    paths:
+      - "wheel/nine-streams/**"
+      - "tests/nine-streams.test.cjs"
+      - ".github/workflows/nine-streams-regression.yml"
+  pull_request:
+    paths:
+      - "wheel/nine-streams/**"
+      - "tests/nine-streams.test.cjs"
+      - ".github/workflows/nine-streams-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-nine-streams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify JavaScript syntax
+        run: node --check wheel/nine-streams/model.js
+      - name: Run data model regression tests
+        run: node --test tests/nine-streams.test.cjs
+      - name: Verify entry page exists
+        run: |
+          test -f wheel/nine-streams/index.html
+          grep -Fq '<script src="./model.js"></script>' wheel/nine-streams/index.html
+          grep -Fq 'Колесо девяти потоков' wheel/nine-streams/index.html
