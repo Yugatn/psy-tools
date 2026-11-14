@@ -111,7 +111,7 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 "use strict";
 var KEY="psytools.time-perception.v1", LIMIT=2000;
 var $=function(id){return document.getElementById(id)};
-var phase="idle",session=null,lastSessionId=null,startedAt=0,startedWith="",pointerId=null,demoTimer=null,demoTimer2=null;
+var phase="idle",session=null,lastSessionId=null,startedAt=0,startedWith="",pointerId=null,doublePointerReleased=false,demoTimer=null,demoTimer2=null;
 var stored=[];
 var task=$("task"),method=$("method"),target=$("target"),attempts=$("attempts"),context=$("context"),feedback=$("feedback");
 function setStatus(message){$("status").textContent=message}
@@ -216,7 +216,7 @@ else{phase="between";padMsg("Попытка сохранена","Подгото�
 }
 function finish(kind){
 if(phase!=="running"||!session)return;
-if(session.method==="hold"&&kind!==startedWith)return;
+if((session.method==="hold"||session.method==="double")&&kind!==startedWith)return;
 var sec=(now()-startedAt)/1000;
 if(sec<0.1||sec>180){setStatus("Попытка вне допустимого диапазона 0,1–180 с. Повтори.");phase="between";resetTimers();controlState();return;}
 recordTrial(sec,session.currentTarget);
@@ -234,15 +234,22 @@ $("estimateError").textContent="";
 recordTrial(value,session.currentTarget);
 }
 $("estimateForm").addEventListener("submit",submitEstimate);
-function cancel(){if(phase==="idle")return;resetTimers();phase=session?"between":"idle";pointerId=null;padMsg("Попытка отменена","Нажми «Подготовить попытку», чтобы начать снова.");setStatus("Отмена не изменяет результаты прошлых попыток.");controlState()}
+function cancel(){if(phase==="idle")return;resetTimers();phase=session?"between":"idle";pointerId=null;doublePointerReleased=false;padMsg("Попытка отменена","Нажми «Подготовить попытку», чтобы начать снова.");setStatus("Отмена не изменяет результаты прошлых попыток.");controlState()}
 $("newSession").addEventListener("click",newSession);$("prepare").addEventListener("click",prepare);$("cancel").addEventListener("click",cancel);$("startTap").addEventListener("click",function(){if(session&&session.method==="tap")begin("tap")});
 $("task").addEventListener("change",function(){setTaskUI();controlState()});
 var pad=$("pad");
-pad.addEventListener("pointerdown",function(e){if(!session||!(phase==="ready"||phase==="running")||e.button!==0)return;e.preventDefault();if(session.method==="hold"){if(phase!=="ready")return;pointerId=e.pointerId;try{pad.setPointerCapture(e.pointerId)}catch(err){}begin("pointer");}
-else if(session.method==="double"){if(phase==="ready")begin("pointer");else finish("pointer")}
+pad.addEventListener("pointerdown",function(e){if(!session||!(phase==="ready"||phase==="running")||e.button!==0||e.isPrimary===false)return;e.preventDefault();if(session.method==="hold"){if(phase!=="ready")return;pointerId=e.pointerId;try{pad.setPointerCapture(e.pointerId)}catch(err){}begin("pointer");}
+else if(session.method==="double"){
+if(phase==="ready"){pointerId=e.pointerId;doublePointerReleased=false;begin("pointer")}
+else if(startedWith==="pointer"&&doublePointerReleased){doublePointerReleased=false;finish("pointer")}
+}
 else if(phase==="running")finish("pointer")});
-pad.addEventListener("pointerup",function(e){if(session&&session.method==="hold"&&phase==="running"&&pointerId===e.pointerId){finish("pointer");pointerId=null}});
-pad.addEventListener("pointercancel",function(e){if(pointerId===e.pointerId){pointerId=null;cancel()}});
+pad.addEventListener("pointerup",function(e){
+if(!session||phase!=="running")return;
+if(session.method==="hold"&&pointerId===e.pointerId){finish("pointer");pointerId=null}
+else if(session.method==="double"&&startedWith==="pointer"&&pointerId===e.pointerId){doublePointerReleased=true;pointerId=null}
+});
+pad.addEventListener("pointercancel",function(e){if(pointerId===e.pointerId){pointerId=null;doublePointerReleased=false;cancel()}});
 pad.addEventListener("contextmenu",function(e){e.preventDefault()});
 window.addEventListener("keydown",function(e){if(e.code!=="Space"||e.repeat||e.altKey||e.ctrlKey||e.metaKey)return;var tag=document.activeElement&&document.activeElement.tagName;if(tag==="INPUT"||tag==="SELECT"||tag==="BUTTON"||tag==="A")return;if(!session||!(phase==="ready"||phase==="running"))return;e.preventDefault();if(session.method==="hold"){if(phase==="ready")begin("space")}else if(session.method==="double"){if(phase==="ready")begin("space");else finish("space")}else if(phase==="running")finish("space")});
 window.addEventListener("keyup",function(e){if(e.code!=="Space"||!session)return;if(session.method==="hold"&&phase==="running"&&startedWith==="space"){e.preventDefault();finish("space")}});
