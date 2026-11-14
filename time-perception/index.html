@@ -13,7 +13,7 @@
 .eyebrow{font-size:12px;letter-spacing:.19em;text-transform:uppercase;color:var(--a);font-weight:700}h1{font-size:clamp(30px,5vw,53px);letter-spacing:-.045em;line-height:1.08;margin:10px 0 18px;max-width:850px}h2{font-size:23px;margin:0 0 12px}p{color:var(--muted)}.lead{font-size:17px;max-width:820px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;margin-top:18px;box-shadow:0 12px 34px #020a1320}.full{grid-column:1/-1}
 label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,input{background:#0a1624;color:var(--text);border:1px solid #385064;border-radius:11px;padding:12px 11px;width:100%;font:inherit;min-height:47px}select:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--a);outline-offset:3px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.hint{font-size:13px;color:var(--muted);line-height:1.45;margin-top:9px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}button{font:700 15px system-ui;border-radius:12px;padding:12px 16px;background:var(--a);color:#082319;border:1px solid transparent;min-height:48px;cursor:pointer;touch-action:manipulation}button.secondary{background:var(--panel2);border-color:#3a5269;color:var(--text)}button.danger{background:transparent;border-color:#734450;color:#ffc6ca}button:disabled{opacity:.42;cursor:not-allowed}
 #pad{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:256px;border-radius:22px;border:2px solid #477f7a;background:radial-gradient(circle at center,#185e50,#102a36 65%,#0d1c2c);user-select:none;-webkit-user-select:none;touch-action:none;position:relative;padding:24px;outline-offset:4px;cursor:pointer;transition:background .12s,border-color .12s}
-#pad.active{border-color:var(--a);background:radial-gradient(circle at center,#1a8070,#103747 70%)}#pad.demo{background:radial-gradient(circle at center,#518aaf,#173552 70%);border-color:var(--b)}
+[hidden]{display:none!important}#stimulus{display:grid;place-items:center;min-height:256px;border-radius:22px;border:2px solid #538f87;background:radial-gradient(circle at center,#144e4f,#101c30 76%);overflow:hidden}#stimulus svg{display:block;width:min(92%,500px);height:242px}#estimateForm{padding:16px 0 4px}#estimateForm label{font-size:17px}#estimateForm input{max-width:240px}#estimateForm button{margin-top:10px}#pad.active{border-color:var(--a);background:radial-gradient(circle at center,#1a8070,#103747 70%)}#pad.demo{background:radial-gradient(circle at center,#518aaf,#173552 70%);border-color:var(--b)}
 #pad strong{font-size:clamp(23px,5vw,33px);letter-spacing:-.02em}#pad span{color:#c5e1dd;margin-top:12px;font-size:15px;max-width:400px}#status{min-height:52px;margin:17px 0 3px;color:var(--muted);font-weight:600}#status[role=status]{white-space:normal}
 #demoMeter{height:6px;background:#20384b;border-radius:20px;overflow:hidden;display:none;margin:13px 0}#demoMeter i{display:block;background:var(--b);height:100%;width:0}
 .statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:#0b1927;border:1px solid #284354;padding:13px;border-radius:13px}.stat .value{display:block;color:var(--a);font-size:clamp(18px,2.5vw,27px);font-weight:750;font-variant-numeric:tabular-nums}.stat .caption{display:block;font-size:12px;color:var(--muted)}.result{border-left:3px solid var(--a);padding:12px 14px;background:#0a1b24;border-radius:0 12px 12px 0;margin-top:12px;color:#d8f6ee;min-height:48px}.small{font-size:13px;color:var(--muted)}
@@ -36,10 +36,10 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 <section class="panel" aria-labelledby="settingsTitle">
 <h2 id="settingsTitle">Настройка исследования</h2>
 <label for="task">Эксперимент</label>
-<select id="task"><option value="production">Произведение: мысленно отсчитай заданное время</option><option value="reproduction">Воспроизведение: повтори показанный интервал</option></select>
+<select id="task"><option value="production">Произведение: мысленно отсчитай заданное время</option><option value="reproduction">Воспроизведение: повтори показанный интервал</option><option value="estimation">Оценка наблюдаемой длительности: сколько секунд показывали изображение?</option></select>
 <div class="fields">
-<div><label for="method">Способ ответа</label><select id="method"><option value="tap">Одно касание / пробел для остановки</option><option value="hold">Удерживать палец / пробел</option><option value="double">Два касания / два нажатия</option></select></div>
-<div><label for="target">Заданный интервал</label><select id="target"><option value="1">1 секунда</option><option value="2">2 секунды</option><option value="3">3 секунды</option><option value="5">5 секунд</option><option value="10">10 секунд</option><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="60">1 минута</option></select></div>
+<div id="methodField"><label for="method">Способ ответа</label><select id="method"><option value="tap">Одно касание / пробел для остановки</option><option value="hold">Удерживать палец / пробел</option><option value="double">Два касания / два нажатия</option></select></div>
+<div id="targetField"><label for="target">Заданный интервал</label><select id="target"><option value="1">1 секунда</option><option value="2">2 секунды</option><option value="3">3 секунды</option><option value="5">5 секунд</option><option value="10">10 секунд</option><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="60">1 минута</option></select></div>
 <div><label for="attempts">Попыток в серии</label><select id="attempts"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select></div>
 <div><label for="context">Условия (необязательно)</label><input id="context" maxlength="100" placeholder="Например, после отдыха" autocomplete="off"></div>
 </div>
@@ -52,9 +52,28 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 <div id="pad" role="button" tabindex="0" aria-label="Поле ввода временного интервала">
 <strong id="padTitleText">Выбери параметры</strong><span id="padSubtitle">Нажми «Новая серия», чтобы начать.</span>
 </div>
+<div id="stimulus" hidden>
+<svg viewBox="0 0 480 270" role="img" aria-label="Неподвижное абстрактное изображение из геометрических фигур" xmlns="http://www.w3.org/2000/svg">
+<rect width="480" height="270" rx="18" fill="#092434"/>
+<circle cx="240" cy="135" r="105" fill="none" stroke="#38a69c" stroke-width="2"/>
+<circle cx="240" cy="135" r="83" fill="none" stroke="#80e4d8" stroke-width="1.5" opacity=".8"/>
+<circle cx="240" cy="135" r="57" fill="#113e47" stroke="#b9f6db" stroke-width="1.5"/>
+<path d="M240 50 310 135 240 220 170 135Z" fill="none" stroke="#7fc5fc" stroke-width="3"/>
+<path d="M110 135H370M240 20V250" stroke="#2d6a77" stroke-width="1"/>
+<circle cx="240" cy="135" r="22" fill="#8ef1c9"/><circle cx="240" cy="135" r="7" fill="#092434"/>
+<circle cx="110" cy="135" r="6" fill="#6ab4eb"/><circle cx="370" cy="135" r="6" fill="#6ab4eb"/>
+<circle cx="240" cy="28" r="5" fill="#6ab4eb"/><circle cx="240" cy="242" r="5" fill="#6ab4eb"/>
+</svg></div>
 <div id="demoMeter" aria-hidden="true"><i id="demoBar"></i></div>
 <p id="status" role="status" aria-live="polite">Измерение ещё не начато.</p>
 <div class="controls"><button id="startTap" disabled>Начать отсчёт</button></div>
+<form id="estimateForm" hidden>
+<label for="estimatedSeconds">Сколько секунд изображение находилось на экране?</label>
+<p class="small">Введи мысленно оцененную длительность, например 8 или 12,5. Не сверяйся с часами.</p>
+<input id="estimatedSeconds" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="Секунды, например 10,5" aria-describedby="estimateError">
+<p id="estimateError" role="alert" class="small"></p>
+<button type="submit">Сохранить оценку</button>
+</form>
 <div class="result" id="latestResult" aria-live="polite">Результаты появятся здесь после попытки.</div>
 </section>
 <section class="panel full" id="history" aria-labelledby="summaryTitle">
@@ -69,17 +88,17 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 <p class="small" id="historyNote">Данные автоматически сохраняются в этом браузере. Другие устройства и профили браузера не имеют к ним доступа.</p>
 <div class="controls"><button class="secondary" id="xlsx">Скачать Excel (.xlsx)</button><button class="secondary" id="csv">Скачать CSV для Google Таблиц</button><button class="secondary" id="json">Резервная копия JSON</button><button class="danger" id="delete">Удалить результаты</button></div>
 <p class="small" id="exportNote">Для Google Таблиц: открой <a href="https://sheets.new/" target="_blank" rel="noopener noreferrer">новую таблицу</a> → Файл → Импорт → Загрузить → выбери CSV. Передача в Google происходит только при твоём самостоятельном импорте.</p>
-<div class="tableWrap"><table><thead><tr><th>Дата</th><th>Задача</th><th>Ввод</th><th>Цель, с</th><th>Измерено, с</th><th>Ошибка, %</th></tr></thead><tbody id="rows"><tr><td colspan="6">Пока нет измерений.</td></tr></tbody></table></div>
+<div class="tableWrap"><table><thead><tr><th>Дата</th><th>Задача</th><th>Ввод</th><th>Цель, с</th><th>Ответ, с</th><th>Ошибка, %</th></tr></thead><tbody id="rows"><tr><td colspan="6">Пока нет измерений.</td></tr></tbody></table></div>
 </section>
 <section class="panel full" aria-labelledby="methodTitle">
 <h2 id="methodTitle">Как интерпретировать результаты</h2>
 <div class="grid">
-<div><ol class="steps"><li><b>Произведение:</b> тебе называют длительность, а ты отмечаешь её завершение без часов. Это исследование субъективной оценки условной секунды.</li><li><b>Воспроизведение:</b> приложение сначала демонстрирует временной интервал случайной длительности (2, 3, 5, 8 или 12 с). Затем ты повторяешь его без подсказок; длительность раскрывается после ответа.</li><li><b>Способы ответа:</b> одно касание останавливает отсчёт, удержание измеряет время между нажатием и отпусканием, два касания измеряют интервал между ними.</li></ol></div>
+<div><ol class="steps"><li><b>Произведение:</b> тебе называют длительность, а ты отмечаешь её завершение без часов. Это исследование субъективной оценки условной секунды.</li><li><b>Воспроизведение:</b> приложение сначала демонстрирует временной интервал случайной длительности (2, 3, 5, 8 или 12 с). Затем ты повторяешь его без подсказок; длительность раскрывается после ответа.</li><li><b>Оценка наблюдаемой длительности:</b> заранее знаешь лишь то, что потребуется оценить время показа статичного изображения. После его исчезновения введи свою оценку в секундах. Реальная длительность заранее неизвестна.</li><li><b>Способы ответа:</b> одно касание останавливает отсчёт, удержание измеряет время между нажатием и отпусканием, два касания измеряют интервал между ними.</li></ol></div>
 <div><p><strong>Ошибка:</strong> (измерено − цель) / цель × 100%. Например, 0,8 с вместо 1 с = −20%; 1,2 с = +20%.</p><p><strong>Точность</strong> характеризует приближение к целевому интервалу, <strong>стабильность</strong> — повторяемость попыток. Метод ввода, внимание, ожидания, практика и устройство могут влиять на оба показателя.</p><p class="notice">Это экспериментальный инструмент для самонаблюдения, <strong>не</strong> психодиагностический тест и не измерение буквальной «скорости сознания». Не делай клинических заключений по результатам.</p></div>
 </div>
 <details><summary>Основание методики и ограничения</summary>
 <p class="small">В исследованиях различают time production и time reproduction, причём способ моторного ответа влияет на величину и вариативность оценок. Для сравнения условий необходимо сохранять отдельно метод ответа и целевую длительность. Веб-браузеры вносят аппаратные и программные погрешности, особенно на очень коротких интервалах; секундный тест здесь ориентировочный.</p>
-<p class="small">Источники: <a href="https://pubmed.ncbi.nlm.nih.gov/8474838/" target="_blank" rel="noopener noreferrer">Zakay (1993)</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4108993/" target="_blank" rel="noopener noreferrer">Different methods for reproducing time (2014)</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7280355/" target="_blank" rel="noopener noreferrer">Mental chronometry in the pocket? (2020)</a>.</p>
+<p class="small">Для нового режима используется экспериментальная задача verbal duration estimation, а не воспроизведение движением. Если испытуемому известно до начала наблюдения, что время предстоит оценивать, это <strong>проспективная</strong>, а не ретроспективная оценка. Длительность планируется случайным образом; реальный интервал фиксируется монотонными часами браузера, поэтому возможна небольшая аппаратно-программная погрешность.</p><p class="small">Источники: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10719320/" target="_blank" rel="noopener noreferrer">Duration estimation of a visual square (2024)</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9789145/" target="_blank" rel="noopener noreferrer">Visual-duration judgment (2022)</a>; <a href="https://pubmed.ncbi.nlm.nih.gov/8474838/" target="_blank" rel="noopener noreferrer">Zakay (1993)</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4108993/" target="_blank" rel="noopener noreferrer">Different methods for reproducing time (2014)</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7280355/" target="_blank" rel="noopener noreferrer">Mental chronometry in the pocket? (2020)</a>.</p>
 </details>
 </section>
 </div>
@@ -99,11 +118,24 @@ function isNumber(n){return typeof n==="number"&&Number.isFinite(n)}
 function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v)){stored=v.filter(function(r){return r&&typeof r==="object"&&isNumber(r.target_s)&&isNumber(r.produced_s)&&r.target_s>0&&r.produced_s>0}).slice(-LIMIT)}}catch(e){stored=[];setStatus("Не удалось прочитать локальную историю.")}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(stored.slice(-LIMIT)));return true}catch(e){setStatus("Результат рассчитан, но браузер не разрешил локальное сохранение.");return false}}
 function fixed(n,dec){return isNumber(n)?n.toFixed(dec):"—"}
-function labelTask(v){return v==="production"?"Произведение":"Воспроизведение"}
-function labelMethod(v){return v==="tap"?"Касание":v==="hold"?"Удержание":"Два касания"}
-function resetTimers(){clearTimeout(demoTimer);clearTimeout(demoTimer2);demoTimer=demoTimer2=null;$("demoMeter").style.display="none";$("demoBar").style.width="0";$("pad").classList.remove("demo","active")}
+function labelTask(v){return v==="production"?"Произведение":v==="estimation"?"Оценка показа":"Воспроизведение"}
+function labelMethod(v){return v==="typed"?"Ввод секунд":v==="tap"?"Касание":v==="hold"?"Удержание":"Два касания"}
+function resetTimers(){clearTimeout(demoTimer);clearTimeout(demoTimer2);demoTimer=demoTimer2=null;$("stimulus").hidden=true;$("pad").hidden=false;$("estimateForm").hidden=true;$("estimateError").textContent="";$("demoMeter").style.display="none";$("demoBar").style.width="0";$("pad").classList.remove("demo","active")}
 function padMsg(title,sub){$("padTitleText").textContent=title;$("padSubtitle").textContent=sub}
-function controlState(){var busy=phase==="demo"||phase==="running";task.disabled=!!session;method.disabled=!!session;target.disabled=!!session||task.value==="reproduction";attempts.disabled=!!session;$("newSession").disabled=busy;$("prepare").disabled=!session||phase!=="between";$("cancel").disabled=phase==="demo"||phase==="running"||phase==="ready";$("startTap").disabled=!(phase==="ready"&&session&&session.method==="tap");$("startTap").textContent=phase==="running"?"Отсчёт идёт…":"Начать отсчёт"}
+function setTaskUI(){
+var estimating=task.value==="estimation", reproducing=task.value==="reproduction";
+$("methodField").hidden=estimating;$("targetField").hidden=estimating||reproducing;
+if(estimating){$("taskHint").textContent="На экране появится неподвижное изображение на случайный интервал. Ты не узнаешь длительность заранее и введёшь свою оценку ПОСЛЕ исчезновения изображения. Повторные попытки могут улучшать точность благодаря обратной связи.";}
+else if(reproducing){$("taskHint").textContent="Приложение покажет случайный интервал от 2 до 12 с. После показа повтори его без таймера.";}
+else{$("taskHint").textContent="Мысленно отсчитай заданную длительность, затем отметь её завершение. Не используй часы.";}
+}
+function controlState(){
+var busy=phase==="demo"||phase==="running"||phase==="estimate";
+task.disabled=!!session;method.disabled=!!session||task.value==="estimation";target.disabled=!!session||task.value!=="production";attempts.disabled=!!session;
+$("newSession").disabled=busy;$("prepare").disabled=!session||phase!=="between";$("cancel").disabled=!session;
+$("startTap").disabled=!(phase==="ready"&&session&&session.method==="tap");$("startTap").hidden=!!session&&session.task==="estimation";
+$("startTap").textContent=phase==="running"?"Отсчёт идёт…":"Начать отсчёт";
+}
 function finishSeries(){phase="idle";padMsg("Серия завершена","Можно запустить новую серию или скачать результаты.");setStatus("Все попытки завершены. Оцени среднюю ошибку и разброс.");session=null;controlState()}
 function ready(){phase="ready";resetTimers();if(!session)return;var num=session.results.length+1;
 $("progress").textContent="Попытка "+num+" из "+session.attempts+". "+labelTask(session.task)+", "+labelMethod(session.method)+".";
@@ -111,23 +143,92 @@ if(session.method==="hold"){padMsg("Нажми и удерживай","Отпу�
 else if(session.method==="double"){padMsg("Два касания","Первое касание начинает отсчёт, второе — заканчивает. Можно дважды нажать пробел.");setStatus("Готово к двум касаниям.");}
 else{padMsg("Дождись старта","Нажми кнопку «Начать отсчёт», затем коснись поля или нажми пробел по истечении времени.");setStatus("Готово: сначала нажми кнопку под полем.");}
 controlState();$("pad").focus({preventScroll:true})}
-function prepare(){if(!session||phase!=="between")return;if(session.task==="production"){session.currentTarget=session.target;ready();return;}
-session.currentTarget=[2,3,5,8,12][Math.floor(Math.random()*5)];phase="demo";controlState();padMsg("Внимание","Сейчас на экране появится световое поле. Запомни, сколько времени оно будет видно.");setStatus("Подготовка демонстрации…");$("progress").textContent="Попытка "+(session.results.length+1)+" из "+session.attempts+". Не используй часы.";
-demoTimer=setTimeout(function(){if(phase!=="demo")return;$("pad").classList.add("demo");$("demoMeter").style.display="block";$("demoBar").style.width="100%";$("demoBar").style.transition="width "+session.currentTarget+"s linear";requestAnimationFrame(function(){$("demoBar").style.width="0%"});padMsg("Наблюдай","Запомни продолжительность свечения. Число секунд пока скрыто.");setStatus("Запоминай интервал…");demoTimer2=setTimeout(function(){if(phase!=="demo")return;ready();setStatus("Демонстрация завершена. Теперь повтори показанную длительность.");},session.currentTarget*1000)},750)}
-function newSession(){resetTimers();session={id:"s-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),task:task.value,method:method.value,target:Number(target.value),attempts:Number(attempts.value),results:[],currentTarget:0};phase="between";$("latestResult").textContent="Серия создана. Сначала выполни одну попытку.";setStatus("Подготовка серии.");$("progress").textContent="Серия: 0 из "+session.attempts;refresh();controlState();prepare()}
-function begin(kind){if(phase!=="ready"||!session)return;startedAt=now();startedWith=kind;phase="running";$("pad").classList.add("active");padMsg("Отсчёт идёт…",session.method==="hold"?"Продолжай удерживать, затем отпусти.":"Останови интервал касанием поля или пробелом.");setStatus("Таймер работает. Цифровые часы намеренно скрыты.");controlState();$("pad").focus({preventScroll:true})}
-function finish(kind){if(phase!=="running"||!session)return;if(session.method==="hold"&&kind!==startedWith)return;var sec=(now()-startedAt)/1000;if(sec<0.1){setStatus("Попытка короче 0,1 с отклонена. Повтори.");phase="between";resetTimers();controlState();return}
-if(sec>180){setStatus("Интервал длиннее 180 с отклонён. Повтори.");phase="between";resetTimers();controlState();return}
-var objective=session.currentTarget;var error=(sec-objective)/objective*100;
-var record={id:"t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),timestamp:new Date().toISOString(),session_id:session.id,task:session.task,method:session.method,target_s:objective,produced_s:Number(sec.toFixed(4)),error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ratio:Number((objective/sec).toFixed(5)),context:context.value.trim().slice(0,100)};
-stored.push(record);stored=stored.slice(-LIMIT);session.results.push(record);save();resetTimers();
-$("latestResult").textContent="Цель "+fixed(objective,2)+" с · результат "+fixed(sec,3)+" с · ошибка "+(error>=0?"+":"")+fixed(error,1)+"%. "+(error<0?"Отмечено раньше цели.":error>0?"Отмечено позже цели.":"Точно.");
-refresh();
-if(session.results.length>=session.attempts){finishSeries()}else{phase="between";padMsg("Попытка сохранена","Подготовь следующую попытку кнопкой «Подготовить попытку».");setStatus("Попытка "+session.results.length+" из "+session.attempts+" завершена.");controlState()}
+function prepare(){
+if(!session||phase!=="between")return;
+if(session.task==="production"){session.currentTarget=session.target;ready();return;}
+var intervals=session.task==="estimation"?[3,5,7,10,12,15,20,30]:[2,3,5,8,12];
+var candidates=intervals.filter(function(x){return x!==session.previousNominal});
+session.nominalTarget=candidates[Math.floor(Math.random()*candidates.length)];session.previousNominal=session.nominalTarget;
+session.currentTarget=session.nominalTarget;phase="demo";controlState();
+$("progress").textContent="Попытка "+(session.results.length+1)+" из "+session.attempts+". Без часов и подсказок.";
+if(session.task==="estimation"){
+padMsg("Подготовка наблюдения","Сейчас появится изображение. После его исчезновения укажи, сколько секунд оно было видно.");
+setStatus("Внимание: изображение скоро появится.");
+demoTimer=setTimeout(function(){
+if(phase!=="demo")return;
+$("pad").hidden=true;$("stimulus").hidden=false;
+setStatus("Наблюдай за изображением, не переключаясь на другие окна.");
+requestAnimationFrame(function(){
+if(phase!=="demo")return;
+startedAt=now();demoTimer2=setTimeout(function(){
+if(phase!=="demo")return;
+session.currentTarget=Math.max(0.001,(now()-startedAt)/1000);
+$("stimulus").hidden=true;$("pad").hidden=false;phase="estimate";
+padMsg("Время наблюдения завершено","Сколько секунд, по твоей оценке, длился показ?");
+$("estimateForm").hidden=false;$("estimatedSeconds").value="";$("estimateError").textContent="";
+setStatus("Изображение скрыто. Введи свою оценку времени: фактическая длительность пока не раскрыта.");
+controlState();$("estimatedSeconds").focus();
+},session.nominalTarget*1000)
+})
+},750);
+return;
 }
+padMsg("Внимание","Сейчас на экране появится световое поле. Запомни, сколько времени оно будет видно.");
+setStatus("Подготовка демонстрации…");
+demoTimer=setTimeout(function(){
+if(phase!=="demo")return;
+$("pad").classList.add("demo");$("demoMeter").style.display="block";$("demoBar").style.width="100%";
+$("demoBar").style.transition="width "+session.currentTarget+"s linear";
+requestAnimationFrame(function(){$("demoBar").style.width="0%"});
+padMsg("Наблюдай","Запомни продолжительность свечения. Число секунд пока скрыто.");
+setStatus("Запоминай интервал…");
+demoTimer2=setTimeout(function(){
+if(phase!=="demo")return;ready();
+setStatus("Демонстрация завершена. Теперь повтори показанную длительность.");
+},session.currentTarget*1000)
+},750)
+}
+function newSession(){resetTimers();session={id:"s-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),task:task.value,method:task.value==="estimation"?"typed":method.value,target:Number(target.value),attempts:Number(attempts.value),results:[],currentTarget:0};phase="between";$("latestResult").textContent="Серия создана. Сначала выполни одну попытку.";setStatus("Подготовка серии.");$("progress").textContent="Серия: 0 из "+session.attempts;refresh();controlState();prepare()}
+function begin(kind){if(phase!=="ready"||!session)return;startedAt=now();startedWith=kind;phase="running";$("pad").classList.add("active");padMsg("Отсчёт идёт…",session.method==="hold"?"Продолжай удерживать, затем отпусти.":"Останови интервал касанием поля или пробелом.");setStatus("Таймер работает. Цифровые часы намеренно скрыты.");controlState();$("pad").focus({preventScroll:true})}
+function recordTrial(sec,objective){
+var error=(sec-objective)/objective*100;
+var record={
+id:"t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),
+timestamp:new Date().toISOString(),session_id:session.id,task:session.task,method:session.method,
+target_s:Number(objective.toFixed(4)),produced_s:Number(sec.toFixed(4)),
+error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ratio:Number((objective/sec).toFixed(5)),
+nominal_target_s:session.task==="estimation"?session.nominalTarget:objective,
+context:context.value.trim().slice(0,100)
+};
+stored.push(record);stored=stored.slice(-LIMIT);session.results.push(record);save();resetTimers();
+$("latestResult").textContent="Фактически "+fixed(objective,3)+" с · "+(session.task==="estimation"?"твоя оценка ":"ответ ")+fixed(sec,3)+" с · ошибка "+(error>=0?"+":"")+fixed(error,1)+"%.";
+refresh();
+if(session.results.length>=session.attempts){finishSeries();}
+else{phase="between";padMsg("Попытка сохранена","Подготовь следующую попытку кнопкой «Подготовить попытку».");setStatus("Попытка "+session.results.length+" из "+session.attempts+" завершена.");controlState();}
+}
+function finish(kind){
+if(phase!=="running"||!session)return;
+if(session.method==="hold"&&kind!==startedWith)return;
+var sec=(now()-startedAt)/1000;
+if(sec<0.1||sec>180){setStatus("Попытка вне допустимого диапазона 0,1–180 с. Повтори.");phase="between";resetTimers();controlState();return;}
+recordTrial(sec,session.currentTarget);
+}
+function submitEstimate(e){
+if(e&&e.preventDefault)e.preventDefault();
+if(phase!=="estimate"||!session)return;
+var raw=$("estimatedSeconds").value.trim().replace(",",".");
+var value=Number(raw);
+if(!raw||!/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(raw)||!Number.isFinite(value)||value<0.1||value>180){
+$("estimateError").textContent="Введите число от 0,1 до 180 секунд, например 9,5.";
+$("estimatedSeconds").focus();return;
+}
+$("estimateError").textContent="";
+recordTrial(value,session.currentTarget);
+}
+$("estimateForm").addEventListener("submit",submitEstimate);
 function cancel(){if(phase==="idle")return;resetTimers();phase=session?"between":"idle";pointerId=null;padMsg("Попытка отменена","Нажми «Подготовить попытку», чтобы начать снова.");setStatus("Отмена не изменяет результаты прошлых попыток.");controlState()}
 $("newSession").addEventListener("click",newSession);$("prepare").addEventListener("click",prepare);$("cancel").addEventListener("click",cancel);$("startTap").addEventListener("click",function(){if(session&&session.method==="tap")begin("tap")});
-$("task").addEventListener("change",function(){var repro=task.value==="reproduction";target.disabled=repro;$("taskHint").textContent=repro?"Приложение покажет случайный интервал от 2 до 12 с без числа на экране. После показа повтори его: точная длительность раскроется после ответа.":"В этом режиме известна целевая длительность. Не используй часы и не считай ритмично вслух. Для интервала 1 с особенно заметны погрешности взаимодействия с экраном."});
+$("task").addEventListener("change",function(){setTaskUI();controlState()});
 var pad=$("pad");
 pad.addEventListener("pointerdown",function(e){if(!session||!(phase==="ready"||phase==="running")||e.button!==0)return;e.preventDefault();if(session.method==="hold"){if(phase!=="ready")return;pointerId=e.pointerId;try{pad.setPointerCapture(e.pointerId)}catch(err){}begin("pointer");}
 else if(session.method==="double"){if(phase==="ready")begin("pointer");else finish("pointer")}
@@ -147,8 +248,8 @@ var body=$("rows");body.replaceChildren();if(!stored.length){var tr=document.cre
 stored.slice(-25).reverse().forEach(function(r){var tr=document.createElement("tr");var vals=[new Date(r.timestamp).toLocaleString("ru-RU"),labelTask(r.task),labelMethod(r.method),fixed(r.target_s,2),fixed(r.produced_s,3),(r.error_pct>=0?"+":"")+fixed(r.error_pct,1)+"%"];vals.forEach(function(v,i){var td=document.createElement("td");td.textContent=v;if(i===5)td.className=r.error_pct<0?"neg":"pos";tr.append(td)});body.append(tr)})}
 function download(data,name,type){var blob=data instanceof Blob?data:new Blob([data],{type:type});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000)}
 function safeCSV(v){var s=String(v==null?"":v);if(/^[\s]*[=+@-]/.test(s)&&typeof v==="string")s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
-var fields=["timestamp","session_id","task","method","target_s","produced_s","error_s","error_pct","ratio","context"];
-var headers=["Дата ISO","Серия","Задача","Способ","Цель (с)","Измерено (с)","Разность (с)","Ошибка (%)","Цель / измерено","Условия"];
+var fields=["timestamp","session_id","task","method","target_s","produced_s","error_s","error_pct","ratio","context","nominal_target_s"];
+var headers=["Дата ISO","Серия","Задача","Способ","Фактическая длительность (с)","Ответ (с)","Разность (с)","Ошибка (%)","Факт / ответ","Условия","Плановая длительность (с)"];
 function csvText(){var values=[headers].concat(stored.map(function(r){return fields.map(function(f){return r[f]})}));return "\ufeff"+values.map(function(row){return row.map(safeCSV).join(";")}).join("\r\n")}
 function dateSuffix(){return new Date().toISOString().slice(0,10)}
 $("csv").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");download(csvText(),"psy-tools-time-"+dateSuffix()+".csv","text/csv;charset=utf-8");setStatus("CSV скачан. Импортируй его в Google Таблицы, указав разделитель «точка с запятой», если потребуется.")});
@@ -163,7 +264,7 @@ files.forEach(function(file){var filename=encode.encode(file[0]),bytes=encode.en
 dword(ce,0x02014b50);word(ce,20);word(ce,20);word(ce,0);word(ce,0);word(ce,0);word(ce,0);dword(ce,crc);dword(ce,bytes.length);dword(ce,bytes.length);word(ce,filename.length);word(ce,0);word(ce,0);word(ce,0);word(ce,0);dword(ce,0);dword(ce,offset);central.push(new Uint8Array(ce),filename);offset+=lo.length+filename.length+bytes.length});
 var centLength=central.reduce(function(sum,x){return sum+x.length},0),end=[];dword(end,0x06054b50);word(end,0);word(end,0);word(end,files.length);word(end,files.length);dword(end,centLength);dword(end,offset);word(end,0);return new Blob(local.concat(central,[new Uint8Array(end)]),{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
 function workbook(){var trials=[headers].concat(stored.map(function(r){return fields.map(function(f){return r[f]})}));var by={};
-stored.forEach(function(r){var key=[r.task,r.method,r.target_s].join("|");(by[key]||(by[key]=[])).push(r.error_pct)});
+stored.forEach(function(r){var key=[r.task,r.method,r.nominal_target_s||r.target_s].join("|");(by[key]||(by[key]=[])).push(r.error_pct)});
 var summary=[["Задача","Способ","Цель (с)","Попыток","Средняя ошибка (%)","Средняя абсолютная ошибка (%)","SD ошибки (п.п.)"]];
 Object.keys(by).sort().forEach(function(k){var parts=k.split("|"),xs=by[k],mean=avg(xs),sd=xs.length>1?Math.sqrt(avg(xs.map(function(x){return Math.pow(x-mean,2)}))):"";summary.push([labelTask(parts[0]),labelMethod(parts[1]),Number(parts[2]),xs.length,Number(mean.toFixed(4)),Number(avg(xs.map(Math.abs)).toFixed(4)),sd===""?"":Number(sd.toFixed(4))])});
 var files=[
@@ -176,7 +277,7 @@ var files=[
 return zipFiles(files)}
 $("xlsx").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");try{download(workbook(),"psy-tools-time-"+dateSuffix()+".xlsx");setStatus("Excel (.xlsx) скачан: листы «Измерения» и «Статистика».")}catch(e){setStatus("Не удалось создать Excel. Попробуй выгрузить CSV.")}});
 window.addEventListener("storage",function(e){if(e.key===KEY){load();refresh()}});
-load();refresh();controlState();
+load();setTaskUI();refresh();controlState();
 })();
 </script>
 </body>
