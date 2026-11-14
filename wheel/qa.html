@@ -63,9 +63,13 @@ if(page.path==="nine-streams/")return["./model.js"];
 return[];
 }
 async function getText(url){
-const res=await fetch(url,{cache:"no-store",credentials:"same-origin"});
+const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+try{
+const res=await fetch(url,{cache:"no-store",credentials:"same-origin",signal:controller.signal});
 if(!res.ok)throw Error("HTTP "+res.status+" "+res.statusText);
 return {text:await res.text(),status:res.status,url:res.url,contentType:res.headers.get("content-type")||""};
+}catch(error){if(error&&error.name==="AbortError")throw Error("Время ожидания ответа превысило 12 секунд");throw error}
+finally{clearTimeout(timer)}
 }
 function localAssets(doc,uri){
 const scripts=[...doc.querySelectorAll("script[src]")].map(node=>node.getAttribute("src")).filter(Boolean);
