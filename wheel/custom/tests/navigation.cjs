@@ -9,7 +9,7 @@ const pages=[
 "wheel/rest/index.html","wheel/creativity/index.html","wheel/self_awareness/index.html",
 "wheel/fear/index.html","wheel/sexuality/index.html","wheel/destructiveness/index.html",
 "wheel/soft-skills/index.html","wheel/nine-streams/index.html","wheel/custom/index.html",
-"wheel/virtues/index.html"
+"wheel/virtues/index.html","wheel/virtues/detail.html"
 ];
 const nav=fs.readFileSync(path.join(root,"wheel/wheel-nav.js"),"utf8");
 new vm.Script(nav);
