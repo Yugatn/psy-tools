@@ -25,5 +25,7 @@ jobs:
         run: node --version
       - name: Run constructor regression suite
         run: node wheel/custom/tests/smoke.cjs
+      - name: Test virtues wheel
+        run: node wheel/virtues/tests/smoke.cjs
       - name: Check cross-wheel navigation and license
         run: node wheel/custom/tests/navigation.cjs
