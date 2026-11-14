@@ -84,7 +84,7 @@ return{date:h.date.slice(0,35),ids,custom,values,goals,notes}}
 function sanitize(x){if(!x||x.version!==1||!x.records||typeof x.records!=="object"||Array.isArray(x.records))throw Error("Неверный формат");
 const result={version:1,mode:PRESETS.has(x.mode)?x.mode:"socrates",records:{}};for(const mode of PRESETS.keys())if(Object.hasOwn(x.records,mode))result.records[mode]=sanitizedRecord(x.records[mode],mode);
 return result}
-function load(){try{const raw=localStorage.getItem(KEY);if(raw)state=sanitize(JSON.parse(raw))}catch(_){status("Данные не удалось прочитать. Можно импортировать корректный JSON.")}}
+function load(){try{const raw=localStorage.getItem(KEY);state=raw?sanitize(JSON.parse(raw)):{version:1,mode:"socrates",records:{}}}catch(_){status("Данные не удалось прочитать. Можно импортировать корректный JSON.")}}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(_){status("Браузер не смог сохранить данные. Попробуйте экспортировать JSON.");return false}}
 function save(){if(persist())status("Данные сохранены в этом браузере.")}
 function selectIndex(index){selected=Math.min(Math.max(0,index),Math.max(record().ids.length-1,0));const item=description(record().ids[selected]);$("focusTitle").textContent=item?item.name:"Сначала выберите добродетель";
