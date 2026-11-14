@@ -3,42 +3,154 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wheel QA</title>
+<meta name="description" content="PSY-TOOLS: публичная проверка публикации всех колёс баланса, JavaScript и статических файлов GitHub Pages.">
+<title>PSY-TOOLS · Проверка публикации</title>
 <style>
-body{margin:0;background:#0b1120;color:#fff;font:15px system-ui;padding:20px}
-main{max-width:900px;margin:auto}.ok{color:#55e6b0}.bad{color:#ff7b7b}
-.card{padding:14px;margin:10px 0;background:#111a2e;border:1px solid #26324a;border-radius:12px}
-small{color:#9da9bb}.run{padding:10px 14px;border:0;border-radius:9px;cursor:pointer}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1424;color:#eaf3ff;font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;padding:18px}
+main{max-width:1050px;margin:auto}h1{font-size:clamp(26px,5vw,36px);line-height:1.18;margin:20px 0 10px}a{color:#a5e2fa}
+small,.sub{color:#bdd0df}button{color:white;background:#296a61;border:1px solid #4fbba8;border-radius:10px;padding:10px 13px;font:inherit;cursor:pointer;min-height:42px}button:disabled{opacity:.65;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid #ffcf86;outline-offset:3px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.card{border:1px solid #31465d;background:#15253b;padding:13px 15px;border-radius:13px;margin:11px 0}.card.ok{border-left:4px solid #4ac4a6}.card.bad{border-left:4px solid #e69b83}.card.running{border-left:4px solid #93b1ce}
+.title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.title b{overflow-wrap:anywhere}.status{font-size:12px;font-weight:740}.ok .status{color:#8cebd0}.bad .status{color:#ffc0ab}
+ul{padding-left:22px;margin:8px 0;color:#c9d8e6;font-size:13px}li{margin:3px 0;overflow-wrap:anywhere}
+#progress{min-height:24px;font-size:13px;color:#bbdaca}#summary strong{font-size:19px}footer{margin:24px 0;color:#b4c8d9;font-size:12px}
+@media print{body{background:white;color:black}.card{background:white;color:#111}.toolbar{display:none}li,ul,small{color:#222}}
 </style>
 </head>
-<body><main>
-<h1>Проверка «Колёс баланса»</h1>
-<p><small>Автоматическая статическая проверка страниц из текущего GitHub Pages-раздела.</small></p>
-<button class="run" id="run">Запустить проверку</button>
+<body>
+<main>
+<nav><a href="./hub.html">← Все колёса баланса</a> · <a href="./dependencies/">Колесо привычек</a></nav>
+<h1>Проверка публикации PSY-TOOLS</h1>
+<p class="sub">Проверяется <strong>реальный HTTP-ответ текущего сайта</strong>, существование страниц и подключённых локальных JS-файлов, основные элементы интерфейса и синтаксис встроенных скриптов. Проверка не обращается к личным результатам и не отправляет их. Для надёжной проверки откройте страницу на опубликованном GitHub Pages, а не через <code>file://</code>.</p>
+<div class="toolbar"><button id="run" type="button">Запустить проверку</button><button id="export" type="button" disabled>Сохранить JSON-отчёт</button><button id="print" type="button">Печать отчёта</button></div>
+<p id="progress" role="status" aria-live="polite">Проверка ещё не запускалась.</p>
+<div class="card" id="summary" aria-live="polite"><strong>Нет результатов</strong></div>
 <div id="out"></div>
+<section class="card">
+<h2>Что не проверяется автоматически</h2>
+<p class="sub">Корректность работы элементов после нажатий, сохранение JSON в каждом браузере, доступность со скринридерами, взаимодействия на iOS и Android, серверные логи, фактический статус GitHub Actions и точность психологических измерений. Эта проверка не заменяет браузерные E2E-тесты и методологическую экспертизу.</p>
+</section>
+<footer>© 2026 Югатн (Yugatn). Не содержит данных пользователя. <a href="https://github.com/Yugatn/psy-tools/blob/main/LICENSE">Лицензия PSY-TOOLS</a>.</footer>
+</main>
 <script>
-const PAGES=["index.html","health/","work/","finance/","relationships/","social/","development/","rest/","creativity/","self_awareness/","sexuality/","fear/","destructiveness/","detail/"];
-const requiredIds=["wheel","resultSection","resultsChart","pngBtn","exportJsonBtn","importJsonBtn","journal","addPlanBtn","improvementsList"];
-async function checkPage(path){
- const res=await fetch(path,{cache:"no-store"}); if(!res.ok) throw new Error("HTTP "+res.status);
- const html=await res.text(); const doc=new DOMParser().parseFromString(html,"text/html");
- const scripts=[...doc.querySelectorAll("script[src]")].map(s=>s.getAttribute("src"));
- const duplicates=scripts.filter((s,i,a)=>a.indexOf(s)!==i);
- const ids=requiredIds.filter(id=>!doc.getElementById(id));
- const inline=[...doc.querySelectorAll("script:not([src])")].map(s=>s.textContent).filter(Boolean);
- const syntax=[]; inline.forEach((code,i)=>{try{new Function(code);syntax.push("ok")}catch(e){syntax.push("ERROR: "+e.message)}});
- const shared=path==="index.html"?["./wheel-engine.js","./wheel-draw.js"]:path==="detail/"?["../wheel-engine.js"]:["../wheel-engine.js","../wheel-draw.js"];
- const missingScripts=shared.filter(s=>!scripts.includes(s));
- return {path,http:res.status,duplicates,missingIds:ids,missingScripts,syntax};
+"use strict";
+const oldIds=["wheel","resultSection","resultsChart","pngBtn","exportJsonBtn","importJsonBtn","journal","addPlanBtn","improvementsList"];
+const pageSpec=[
+{path:"index.html",kind:"classic"},
+{path:"health/",kind:"classic"},{path:"work/",kind:"classic"},{path:"finance/",kind:"classic"},
+{path:"relationships/",kind:"classic"},{path:"social/",kind:"classic"},{path:"development/",kind:"classic"},
+{path:"rest/",kind:"classic"},{path:"creativity/",kind:"classic"},{path:"self_awareness/",kind:"classic"},
+{path:"sexuality/",kind:"classic"},{path:"fear/",kind:"classic"},{path:"destructiveness/",kind:"classic"},
+{path:"detail/",kind:"classic"},
+{path:"hub.html",kind:"hub",ids:["all-wheels","wheels-list"]},
+{path:"cabinet.html",kind:"cabinet",ids:["resultsList","historyList","importBtn"]},
+{path:"soft-skills/",kind:"modern",ids:["profile","age","observer","wheel"]},
+{path:"nine-streams/",kind:"modern",ids:["organism","cube","wheel"]},
+{path:"custom/",kind:"modern",ids:["wheelSelect","catalogList","chart"]},
+{path:"virtues/",kind:"modern",ids:["mode","chart","items","focusDetail"]},
+{path:"virtues/detail.html",kind:"modern",ids:["workspace","chart","aspects"]},
+{path:"dependencies/",kind:"modern",ids:["scale","chart","items","history"]},
+{path:"qa.html",kind:"qa",ids:["run","out","summary"]}
+];
+const assetCache=new Map();
+let lastReport=null, running=false;
+function criticalScripts(page){
+if(page.kind==="classic")return page.path==="detail/"?["../wheel-engine.js"]:page.path==="index.html"?["./wheel-engine.js","./wheel-draw.js"]:["../wheel-engine.js","../wheel-draw.js"];
+if(page.path==="custom/")return["./catalog.js"];
+if(page.path==="virtues/"||page.path==="virtues/detail.html")return["./data.js"];
+if(page.path==="dependencies/")return["./catalog.js"];
+if(page.path==="nine-streams/")return["./model.js"];
+return[];
+}
+async function getText(url){
+const res=await fetch(url,{cache:"no-store",credentials:"same-origin"});
+if(!res.ok)throw Error("HTTP "+res.status+" "+res.statusText);
+return {text:await res.text(),status:res.status,url:res.url,contentType:res.headers.get("content-type")||""};
+}
+function localAssets(doc,uri){
+const scripts=[...doc.querySelectorAll("script[src]")].map(node=>node.getAttribute("src")).filter(Boolean);
+const local=scripts.map(src=>new URL(src,uri)).filter(u=>u.origin===location.origin);
+return{scripts,urls:local};
+}
+async function checkPage(page){
+const url=new URL(page.path,location.href);
+const report={path:page.path,url:url.href,http:null,errors:[],warnings:[],assets:[],inline:0};
+try{
+const response=await getText(url.href);
+report.http=response.status;
+const doc=new DOMParser().parseFromString(response.text,"text/html");
+if(!/html/i.test(response.contentType))report.warnings.push("Неожиданный Content-Type: "+response.contentType);
+if(!doc.querySelector("html")||!doc.querySelector("body"))report.errors.push("Ответ не является корректной HTML-страницей");
+const ids=page.ids||oldIds;
+for(const id of ids)if(!doc.getElementById(id))report.errors.push("Нет обязательного элемента #"+id);
+const {scripts,urls}=localAssets(doc,response.url);
+const duplicates=scripts.filter((item,i)=>scripts.indexOf(item)!==i);
+if(duplicates.length)report.errors.push("Дублирующиеся скрипты: "+duplicates.join(", "));
+for(const required of criticalScripts(page))if(!scripts.includes(required))report.errors.push("Отсутствует ссылка на "+required);
+if(page.path!=="qa.html"&&!scripts.some(s=>s.endsWith("wheel-nav.js")))report.errors.push("Нет общего меню wheel-nav.js");
+for(const element of doc.querySelectorAll("script:not([src])")){
+if(element.type&&element.type!=="text/javascript"&&element.type!=="module")continue;
+if(element.type==="module"){report.warnings.push("Модульный JS требует отдельной проверки: "+(element.id||"без ID"));continue}
+const code=element.textContent||"";if(!code.trim())continue;report.inline++;
+try{new Function(code)}catch(error){report.errors.push("Ошибка синтаксиса встроенного JS: "+error.message)}
+}
+const unique=[...new Map(urls.map(u=>[u.href,u])).values()];
+for(const target of unique){
+if(!assetCache.has(target.href))assetCache.set(target.href,getText(target.href).then(r=>({ok:true,status:r.status,text:r.text,contentType:r.contentType})).catch(error=>({ok:false,error:error.message})));
+const result=await assetCache.get(target.href);
+if(!result.ok){report.errors.push("Не загружается JS "+target.pathname+": "+result.error);report.assets.push({url:target.href,ok:false,error:result.error});continue}
+if(!/(?:javascript|ecmascript|text\/plain|octet-stream)/i.test(result.contentType))report.warnings.push("Необычный MIME для JS "+target.pathname+": "+result.contentType);
+try{new Function(result.text)}catch(error){report.errors.push("Ошибка синтаксиса JS "+target.pathname+": "+error.message)}
+report.assets.push({url:target.href,ok:true,status:result.status});
+}
+}catch(error){report.errors.push("Ошибка HTTP/сети: "+error.message)}
+return report;
+}
+function element(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function render(report){
+const out=document.getElementById("out");out.replaceChildren();
+const errors=report.results.reduce((n,r)=>n+r.errors.length,0),warnings=report.results.reduce((n,r)=>n+r.warnings.length,0);
+const failed=report.results.filter(r=>r.errors.length).length;
+const summary=document.getElementById("summary");summary.replaceChildren();
+summary.append(element("strong",failed?"Ошибки на "+failed+" из "+report.results.length+" страниц":"Все "+report.results.length+" страниц прошли статическую проверку"));
+summary.append(element("p","Ошибок: "+errors+" · предупреждений: "+warnings+" · проверено локальных JS-ресурсов: "+assetCache.size+" · дата: "+new Date(report.checkedAt).toLocaleString("ru-RU"),"sub"));
+for(const r of report.results){
+const card=element("article",undefined,"card "+(r.errors.length?"bad":"ok"));
+const title=element("div",undefined,"title"),link=element("a",r.path);link.href=r.url;link.target="_blank";link.rel="noopener noreferrer";
+title.append(link,element("span",r.errors.length?"ОШИБКА":"OK","status"));card.append(title);
+const detail=element("small","HTTP "+(r.http||"нет ответа")+" · JS-файлов: "+r.assets.length+" · встроенных скриптов: "+r.inline);
+card.append(detail);
+if(r.errors.length){const list=element("ul");for(const message of r.errors)list.append(element("li",message));card.append(list)}
+if(r.warnings.length){const list=element("ul");for(const message of r.warnings)list.append(element("li","Предупреждение: "+message));card.append(list)}
+out.append(card);
+}
 }
 async function run(){
- const out=document.getElementById("out"); out.innerHTML="<div class=card>Проверка…</div>";
- const results=[]; for(const p of PAGES){try{results.push(await checkPage(p))}catch(e){results.push({path:p,error:e.message})}}
- const bad=results.filter(r=>r.error||r.duplicates?.length||r.missingIds?.length||r.missingScripts?.length||r.syntax?.some(x=>x!=="ok"));
- out.innerHTML='<div class="card '+(bad.length?"bad":"ok")+'"><strong>'+ (bad.length?"Найдены проблемы: "+bad.length:"Ошибок не найдено")+'</strong></div>'+
- results.map(r=>'<div class="card"><strong class="'+(r.error||r.duplicates?.length||r.missingIds?.length||r.missingScripts?.length||r.syntax?.some(x=>x!=="ok")?"bad":"ok")+'">'+r.path+'</strong>'+
- (r.error?"<div class=bad>"+r.error+"</div>":"<small>HTTP "+r.http+" · duplicate scripts: "+(r.duplicates?.length||0)+" · missing IDs: "+(r.missingIds?.length||0)+" · missing scripts: "+(r.missingScripts?.length||0)+" · syntax errors: "+(r.syntax?.filter(x=>x!=="ok").length||0)+"</small>")+'</div>').join("");
+if(running)return;running=true;lastReport=null;assetCache.clear();
+const button=document.getElementById("run"),exportButton=document.getElementById("export");
+button.disabled=true;exportButton.disabled=true;document.getElementById("out").replaceChildren();
+document.getElementById("summary").textContent="Выполняется проверка…";
+const results=[];
+try{
+for(let i=0;i<pageSpec.length;i+=4){
+const group=pageSpec.slice(i,i+4);
+results.push(...await Promise.all(group.map(checkPage)));
+document.getElementById("progress").textContent="Проверено "+results.length+" из "+pageSpec.length+" страниц";
 }
-document.getElementById("run").addEventListener("click",run); run();
+lastReport={schema:1,checkedAt:new Date().toISOString(),origin:location.origin,base:location.href,results};
+render(lastReport);exportButton.disabled=false;
+}finally{button.disabled=false;running=false}
+}
+document.getElementById("run").addEventListener("click",run);
+document.getElementById("print").addEventListener("click",()=>window.print());
+document.getElementById("export").addEventListener("click",()=>{
+if(!lastReport)return;
+const blob=new Blob([JSON.stringify(lastReport,null,2)],{type:"application/json;charset=utf-8"});
+const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="psy-tools-pages-qa-"+new Date().toISOString().slice(0,10)+".json";
+document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
+});
+run();
 </script>
-</main></body></html>
+<script defer src="/psy-tools/wheel/wheel-nav.js"></script>
+</body>
+</html>
