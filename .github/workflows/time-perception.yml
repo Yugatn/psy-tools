@@ -1,0 +1,28 @@
+name: PSY-TOOLS time perception tests
+
+on:
+  push:
+    paths:
+      - 'time-perception/**'
+      - '.github/workflows/time-perception.yml'
+  pull_request:
+    paths:
+      - 'time-perception/**'
+      - '.github/workflows/time-perception.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  timing-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run self-contained web timing tests
+        run: node --test time-perception/test.cjs
