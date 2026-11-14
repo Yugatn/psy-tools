@@ -27,5 +27,7 @@ jobs:
         run: node wheel/custom/tests/smoke.cjs
       - name: Test virtues wheel
         run: node wheel/virtues/tests/smoke.cjs
+      - name: Test nested virtues wheel
+        run: node wheel/virtues/tests/detail-smoke.cjs
       - name: Check cross-wheel navigation and license
         run: node wheel/custom/tests/navigation.cjs
