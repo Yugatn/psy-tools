@@ -82,6 +82,9 @@ function createApp(initialData){
   await get("skills").children[0].querySelectorAll(".ratings button")[3].emit("click");
   ok(json().records["p2::6|together"].values.emotions===3,"new profile has independent values");
   ok(json().records["6|together"].values.emotions===7,"default profile unchanged");
+  const remembered=createApp(json());
+  ok(remembered.get("profile").value==="p2","non-default active profile survives reload");
+  ok(remembered.get("average").textContent==="3.0","reloaded active profile shows its own records");
   get("age").value="12-16";await get("age").emit("change");
   ok(get("skills").children.length===12,"adolescent wheel has twelve skills");
   get("profile").value="default";await get("profile").emit("change");
