@@ -157,3 +157,53 @@ test("hiding the tab cancels unfinished trial",()=>{
   a.element("pad").fire("pointerdown");
   assert.equal(a.records().length,0);
 });
+
+test("visual verbal estimation hides stimulus duration until a typed answer",()=>{
+  const a=makeHarness({task:"estimation",method:"hold"});
+  a.click("newSession");
+  assert.equal(a.element("method").disabled,true);
+  assert.equal(a.element("target").disabled,true);
+  assert.ok(a.runTimer(750));
+  assert.equal(a.element("stimulus").hidden,false);
+  assert.equal(a.element("demoMeter").style.display,"none");
+  const demo=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
+  assert.ok(demo,"random visual display duration chosen");
+  a.advance(demo.ms);
+  assert.ok(a.runTimer(demo.ms));
+  assert.equal(a.element("stimulus").hidden,true);
+  assert.equal(a.element("estimateForm").hidden,false);
+  assert.equal(a.element("latestResult").textContent.includes("Фактически"),false,
+    "actual duration is not revealed before answer");
+  a.element("estimatedSeconds").value="9,5";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  const [result]=a.records();
+  assert.equal(result.task,"estimation");
+  assert.equal(result.method,"typed");
+  assert.equal(result.target_s,demo.ms/1000);
+  assert.equal(result.nominal_target_s,demo.ms/1000);
+  assert.equal(result.produced_s,9.5);
+  assert.equal(result.error_pct,Number(((9.5-demo.ms/1000)/(demo.ms/1000)*100).toFixed(4)));
+});
+test("invalid verbal estimate does not save results",()=>{
+  const a=makeHarness({task:"estimation"});
+  a.click("newSession");
+  assert.ok(a.runTimer(750));
+  const demo=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
+  assert.ok(demo);
+  a.advance(demo.ms);assert.ok(a.runTimer(demo.ms));
+  a.element("estimatedSeconds").value="=1+1";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  assert.equal(a.records().length,0);
+  assert.ok(a.element("estimateError").textContent.includes("Введите число"));
+  a.element("estimatedSeconds").value="10";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  assert.equal(a.records().length,1);
+});
+test("hiding the browser tab during visual stimulus cancels trial",()=>{
+  const a=makeHarness({task:"estimation"});
+  a.click("newSession");assert.ok(a.runTimer(750));
+  a.document.hidden=true;a.document.fire("visibilitychange");
+  assert.equal(a.element("stimulus").hidden,true);
+  assert.equal(a.element("estimateForm").hidden,true);
+  assert.equal(a.records().length,0);
+});
