@@ -102,6 +102,16 @@ function createApp(initialData){
   await app.get("deleteProfile").emit("click");
   ok(app.json().profiles.length===1,"delete profile removes it");
   ok(!Object.keys(app.json().records).some(k=>k.startsWith("p2::")),"deleted profile records removed");
+  const input=app.get("importFile");
+  const backup=JSON.stringify(stored);
+  input.files=[{size:backup.length,text:async()=>backup}];
+  await input.emit("change");
+  ok(app.json().profiles.length===2,"import restores all profiles");
+  ok(app.json().records["p2::6|together"].values.emotions===3,"import restores separate child records");
+  const beforeInvalid=JSON.stringify(app.json());
+  input.files=[{size:20,text:async()=>"{ not valid JSON"}];
+  await input.emit("change");
+  ok(JSON.stringify(app.json())===beforeInvalid,"malformed JSON does not overwrite existing data");
   await app.get("clearAll").emit("click");
   ok(!app.store.has("psyToolsSoftSkillsV1"),"clear all removes local storage key");
 
