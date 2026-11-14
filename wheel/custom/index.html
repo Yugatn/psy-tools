@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Конструктор колеса баланса: выбирайте значимые для вас характеристики, добавляйте собственные, оценивайте, ставьте цели и отслеживайте динамику.">
+<link rel="canonical" href="https://yugatn.github.io/psy-tools/wheel/custom/">
+<title>Конструктор колеса баланса · PSY-TOOLS</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1120;--panel:#111b2f;--panel2:#1a2942;--stroke:#30445c;--muted:#adbdd0;--txt:#edf7ff;--accent:#68dacb}
+*{box-sizing:border-box}body{background:radial-gradient(circle at 65% 0,#18324b 0,#0b1120 65%);margin:0;color:var(--txt);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:#a8e0ff}button,input,select,textarea{font:inherit}button{background:#25405b;color:var(--txt);border:1px solid #3c5b74;border-radius:11px;padding:10px 13px;cursor:pointer;min-height:42px}button:hover{border-color:#93c7d2}button:disabled{opacity:.48;cursor:default}button.primary{background:#216e60;border-color:#379b89;font-weight:750}button.danger{background:#472d3a;border-color:#8c5867}button[aria-pressed="true"]{background:#265d53;border-color:#79e4d5}
+input,select,textarea{background:#111e32;color:#fff;border:1px solid #516883;border-radius:10px;padding:10px 12px;min-width:0;width:100%;min-height:43px}input[type="search"]{-webkit-appearance:none}textarea{min-height:63px;resize:vertical}label{display:block;font-size:13px;font-weight:670;color:#d4e3f4;margin-bottom:5px}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,svg [tabindex]:focus-visible{outline:3px solid #f7d38a;outline-offset:2px}
+.wrap{max-width:1260px;margin:auto;padding:19px clamp(12px,3vw,23px) 84px}.sitehead{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;font-size:13px}.sitehead nav{display:flex;flex-wrap:wrap;gap:14px}.eyebrow{margin-top:19px;color:var(--accent);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:12px}h1{margin:6px 0 10px;font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.03em}h2{font-size:21px;margin:0 0 10px}h3{font-size:16px;margin:0 0 6px}.lead{color:#c8d8e8;max-width:810px;line-height:1.7;margin:0 0 20px}.muted{color:var(--muted);font-size:13px}.card{background:var(--panel);border:1px solid var(--stroke);border-radius:18px;padding:clamp(13px,2vw,19px);margin-bottom:16px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.two{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:16px}.toolrow{display:flex;flex-wrap:wrap;gap:10px}.control{flex:1 1 190px}.toolrow .wide{flex:2 1 260px}
+.catalog-list{max-height:460px;overflow:auto;display:grid;gap:7px;padding:2px;align-content:start}.catalog-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#172940;border-radius:12px;padding:9px 11px;border:1px solid #2b3b54}.catalog-item strong{font-size:13px;font-weight:650}.catalog-item small{display:block;color:#aabbce;font-size:11px;margin-top:2px}.catalog-item button{padding:6px 12px;min-height:36px;flex:none;font-size:13px}.catalog-item.selected{border-color:#427b73}.add-row{display:flex;gap:8px;flex-wrap:wrap}.add-row input{flex:2 1 160px}.add-row button{flex:0 0 auto}.diagram{display:block;width:min(100%,530px);height:auto;margin:auto;overflow:visible}.diagram .ring{fill:none;stroke:#41546c;stroke-width:1}.diagram .axis{stroke:#3b5068;stroke-width:1}.diagram .sector-empty{fill:#1d314b;stroke:#12233a;stroke-width:1.2}.diagram .filled{fill:#69daca;fill-opacity:.42;stroke:#84e6d8;stroke-width:1}.diagram .target{fill:none;stroke:#e7b46a;stroke-width:2;stroke-dasharray:4 5;stroke-linejoin:round}.diagram .index{fill:#d6e8f7;font-size:12px;font-weight:800}.diagram .center{fill:#101d30;stroke:#59788b;stroke-width:1.5}.diagram .main-number{fill:#f2faff;text-anchor:middle;font-weight:900;font-size:29px}.diagram .small{fill:#b2d1d9;text-anchor:middle;font-size:11px}.diagram .slice-hit{fill:transparent;cursor:pointer}.diagram .slice-hit:focus-visible{stroke:#f7d38a;stroke-width:3}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:9px 0}.stat{background:var(--panel2);padding:10px 7px;text-align:center;border-radius:12px}.stat strong{display:block;font-size:22px}.stat span{display:block;color:#adbbd1;font-size:11px}.legend{font-size:12px;color:#aec3d4}.tag{display:inline-block;background:#204b50;color:#bdf5e9;padding:2px 7px;border-radius:6px;font-size:11px;margin-left:5px}
+.rays{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.ray{border:1px solid #31435c;background:#15253d;border-radius:14px;padding:13px;min-width:0}.ray-top{display:flex;justify-content:space-between;gap:8px;align-items:start}.ray-top b{font-size:15px}.ray-top small{color:#aab9ca;display:block;margin-top:4px}.ray-actions{display:flex;gap:4px;flex-wrap:wrap}.ray-actions button{min-height:31px;padding:3px 9px;border-radius:8px}.ray-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0}.ray-fields label{font-size:12px}.ray-note{font-size:12px;color:#aabbd0}.ray-note textarea{margin-top:5px}.ray-note textarea::placeholder{color:#8298b4}.history{padding:0;margin:0;list-style:none}.history li{padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:9px;border-bottom:1px solid #32415a;font-size:13px}.history button{min-height:36px}.note{background:#172a41;padding:11px 13px;border-left:3px solid #69daca;border-radius:0 10px 10px 0;color:#b7cde0;font-size:13px}.status{min-height:22px;font-size:13px;color:#a9ecdc;margin-top:11px}.empty{color:#a8bdd2;background:#15253b;border:1px dashed #38516c;padding:17px;border-radius:12px;font-size:13px;text-align:center}.small-link{font-size:12px}.tip{margin-top:10px}.footer{margin-top:21px;color:#9db4c9;font-size:12px;line-height:1.7}
+@media(max-width:920px){.two{grid-template-columns:1fr}}@media(max-width:680px){.rays{grid-template-columns:1fr}.catalog-list{max-height:350px}}@media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.ray-fields{grid-template-columns:1fr}}
+@media print{body{background:white;color:#111}.card,.ray{box-shadow:none;background:white;border-color:#bbb;break-inside:avoid}.sitehead,.toolbar,.catalog-controls,.catalog-list,.add-row,.tool-buttons,.history-actions,.footer,.status,.hide-print{display:none!important}.wrap{max-width:none;padding:0}.two{display:block}.diagram .index,.diagram .small,.diagram .main-number{fill:#111}.diagram .center{fill:white}.diagram .ring,.diagram .axis{stroke:#888}.lead,.muted,.legend,.ray-top small,.stat span,.note{color:#333}.stat,.note{background:#eee}.ray-note textarea{color:#111;background:white}.ray-fields select{color:#111;background:white}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="sitehead"><a href="../hub.html">← Все колёса</a><nav aria-label="Перемещение"><a href="../">Основное колесо</a><a href="../soft-skills/">Гибкие навыки детей</a><a href="../cabinet.html">Мои результаты</a></nav></header>
+<div class="eyebrow">PSY-TOOLS · индивидуальное развитие</div>
+<h1>Конструктор колеса баланса</h1>
+<p class="lead">Выбирайте именно те характеристики жизни и развития, которые для вас важны. Используйте большой каталог, добавляйте собственные лучи, сравнивайте текущие оценки с желаемыми и возвращайтесь к своим результатам. Здесь нет универсального списка «правильных» сфер.</p>
+<section class="card"><h2>Мои колёса</h2><div class="toolrow">
+<div class="control wide"><label for="wheelSelect">Выбрать сохранённое колесо</label><select id="wheelSelect"></select></div>
+<div class="toolbar tool-buttons" style="align-self:end"><button type="button" id="newWheel" class="primary">+ Новое</button><button type="button" id="renameWheel">Название</button><button type="button" id="copyWheel">Копия</button><button type="button" id="deleteWheel" class="danger">Удалить</button></div></div><p class="muted">Вы можете создавать несколько независимых колёс — например, для личной жизни, обучения или профессионального развития. Рекомендуется 6–16 лучей; технический максимум одного колеса — 48.</p></section>
+<div class="two">
+<div>
+<section class="card">
+<h2>1. Выберите характеристики</h2>
+<div class="toolrow catalog-controls">
+<div class="control wide"><label for="searchCatalog">Поиск по характеристикам</label><input type="search" id="searchCatalog" placeholder="Например: доверие, время, обучение" autocomplete="off"></div>
+<div class="control"><label for="category">Раздел каталога</label><select id="category"><option value="">Все разделы</option></select></div></div>
+<p class="muted" id="catalogCount"></p>
+<div class="catalog-list" id="catalogList" aria-live="polite"></div>
+<div class="tip"><button id="starter" type="button">Добавить 8 базовых сфер</button><span class="muted"> Быстрый старт для пустого колеса.</span></div>
+</section>
+<section class="card">
+<h2>Своя характеристика</h2><label for="customName">Что вы хотите исследовать?</label>
+<div class="add-row"><input id="customName" maxlength="64" autocomplete="off" placeholder="Например: качество моей ежедневной практики"><button type="button" class="primary" id="addCustom">Добавить луч</button></div>
+<p class="muted">Каталог не может охватить буквально все возможные характеристики. Любую собственную формулировку можно добавить отдельно. Ограничение 48 лучей действует только для читаемости одного колеса.</p>
+</section>
+</div>
+<div>
+<section class="card"><h2>2. Мой результат</h2><svg id="chart" class="diagram" viewBox="0 0 500 500" role="img" aria-label="Колесо пока пустое"></svg>
+<div class="stats"><div class="stat"><strong id="rated">0 / 0</strong><span>оценено</span></div><div class="stat"><strong id="mean">—</strong><span>среднее / 10</span></div><div class="stat"><strong id="targetGap">—</strong><span>средний разрыв до цели</span></div></div>
+<p class="legend">Бирюзовые сектора — текущие оценки. Оранжевые пунктирные границы — желаемый уровень. Неоценённый луч не равен нулю.</p></section>
+<section class="card"><h2>3. Сохраните прогресс</h2>
+<div class="toolbar"><button class="primary" id="saveSnapshot" type="button">Снимок прогресса</button><button id="exportAll" type="button">Экспорт JSON</button><button id="importAll" type="button">Импорт JSON</button><input id="importFile" type="file" accept="application/json,.json" hidden><button id="print" type="button">Печать / PDF</button></div><p class="status" id="status" role="status"></p>
+<p class="note">Данные хранятся только в этом браузере (localStorage). У других устройств нет автоматического доступа, но люди в том же профиле браузера могут увидеть ваши записи. Не вносите чувствительные персональные или медицинские сведения.</p></section>
+<section class="card"><h2>История прохождений</h2><ul class="history" id="history"></ul><div class="toolbar history-actions" style="margin-top:12px"><button type="button" id="clearScores">Сбросить текущие оценки</button><button type="button" class="danger" id="deleteAll">Удалить все данные конструктора</button></div></section>
+</div>
+</div>
+<section class="card"><h2>Мои выбранные лучи <span class="tag" id="selectedCount">0</span></h2><p class="muted">Порядок лучей можно менять стрелками. Сначала выберите характеристику, затем оцените её текущее проявление и, при желании, установите цель. Пустое значение означает, что оценка пока не дана.</p><div class="rays" id="selected"></div></section>
+<section class="card"><h2>Как интерпретировать колесо</h2><p class="muted">Это инструмент личной рефлексии, а не стандартизованный психометрический тест и не клиническая диагностика. Средняя оценка — условная арифметическая величина, зависящая от выбранных лучей. Не сравнивайте её с результатами других людей или разных наборов характеристик. Для отслеживания динамики лучше сохранять одинаковые лучи и одинаковый способ оценивания.</p><p class="muted">История сохраняет состав лучей, оценки, желаемый уровень и заметки на момент снимка. При восстановлении снимка текущий состав колеса заменяется — предварительно сделайте резервную копию, если хотите сохранить прежнюю конфигурацию.</p></section>
+<footer class="footer">© 2026 Югатн (Yugatn) · PSY-TOOLS. <a href="../../LICENSE">Условия использования</a> · <a href="../hub.html">Каталог колёс</a> · <a href="../../">Главная</a>. Не медицинская диагностика.</footer>
+</main>
+<script src="./catalog.js"></script>
+<script>
+(function(){
+"use strict";
+const STORAGE="wheelBalanceCustomV1",MAX_WHEELS=24,MAX_RAYS=48,MAX_HISTORY=40,MAX_FILE=2097152;
+const CATALOG=Array.isArray(window.PSY_WHEEL_CATALOG)?window.PSY_WHEEL_CATALOG:[];
+const CATEGORIES=Array.isArray(window.PSY_WHEEL_CATEGORIES)?window.PSY_WHEEL_CATEGORIES:[];
+const CATALOG_MAP=new Map(CATALOG.map(x=>[x.id,x]));
+const $=id=>document.getElementById(id);
+const uid=prefix=>prefix+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const newWheel=title=>({id:uid("w"),title,items:[],history:[]});
+let data={version:1,active:null,wheels:[]};
+const current=()=>data.wheels.find(x=>x.id===data.active)||data.wheels[0];
+function status(text){$("status").textContent=text}
+function text(x,max){return typeof x==="string"?x.trim().slice(0,max):""}
+function score(v){return Number.isInteger(v)&&v>=0&&v<=10?v:null}
+function safeItem(obj){if(!obj||typeof obj!=="object")return null;const id=text(obj.id,72),title=text(obj.title,64),category=text(obj.category,48)||"Свои характеристики";if(!id||!title)return null;return {id,title,category,score:score(obj.score),goal:score(obj.goal),note:typeof obj.note==="string"?obj.note.slice(0,300):""}}
+function sanitize(input){if(!input||typeof input!=="object"||input.version!==1||!Array.isArray(input.wheels))throw Error("Неподдерживаемая схема");
+const out={version:1,active:null,wheels:[]},seen=new Set();
+for(const w of input.wheels.slice(0,MAX_WHEELS)){if(!w||typeof w!=="object")continue;const id=text(w.id,72),title=text(w.title,64);if(!id||seen.has(id))continue;seen.add(id);
+const items=[],itemIds=new Set();if(Array.isArray(w.items))for(const original of w.items.slice(0,MAX_RAYS)){const item=safeItem(original);if(!item||itemIds.has(item.id))continue;itemIds.add(item.id);items.push(item)}
+const history=[];if(Array.isArray(w.history))for(const h of w.history.slice(-MAX_HISTORY)){if(!h||typeof h!=="object"||typeof h.date!=="string"||!Number.isFinite(Date.parse(h.date))||!Array.isArray(h.items))continue;
+const histItems=[],histSeen=new Set();for(const orig of h.items.slice(0,MAX_RAYS)){const i=safeItem(orig);if(i&&!histSeen.has(i.id)){histSeen.add(i.id);histItems.push(i)}}history.push({date:h.date.slice(0,32),items:histItems})}
+out.wheels.push({id,title,items,history})}
+if(!out.wheels.length)out.wheels.push(newWheel("Моё колесо"));
+out.active=out.wheels.some(w=>w.id===input.active)?input.active:out.wheels[0].id;return out}
+function load(){try{const raw=localStorage.getItem(STORAGE);if(raw){data=sanitize(JSON.parse(raw));return}}catch(e){status("Не удалось восстановить сохранение. При необходимости импортируйте резервную копию.")}
+const w=newWheel("Моё колесо");data={version:1,active:w.id,wheels:[w]}}
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(data));return true}catch(e){status("Ошибка записи в браузер. Экспортируйте JSON для сохранения.");return false}}
+function update(){if(persist())status("Изменения сохранены на этом устройстве.")}
+function option(value,title){const o=document.createElement("option");o.value=value;o.textContent=title;return o}
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function button(txt,callback,cls){const b=el("button",cls||"",txt);b.type="button";b.addEventListener("click",callback);return b}
+function makeSelect(label,value,onChange){const wrapper=el("div");const l=el("label","",label);const select=el("select");select.append(option("","Не оценено"));for(let i=0;i<=10;i++)select.append(option(String(i),String(i)+"/10"));select.value=value===null?"":String(value);
+select.setAttribute("aria-label",label);select.addEventListener("change",e=>{onChange(e.target.value===""?null:Number(e.target.value))});wrapper.append(l,select);return wrapper}
+function renderWheelOptions(){const select=$("wheelSelect");select.replaceChildren();data.wheels.forEach(w=>select.append(option(w.id,w.title+" · "+w.items.length+" лучей")));select.value=current().id;$("deleteWheel").disabled=data.wheels.length===1}
+function renderCategoryOptions(){const select=$("category");select.replaceChildren(option("","Все разделы"));CATEGORIES.forEach(c=>select.append(option(c,c)));select.value=""}
+function renderCatalog(){const w=current(),selected=new Set(w.items.map(x=>x.id)),term=$("searchCatalog").value.trim().toLocaleLowerCase("ru"),category=$("category").value;
+const matches=CATALOG.filter(x=>(!category||x.category===category)&&(!term||(x.title+" "+x.category).toLocaleLowerCase("ru").includes(term)));
+$("catalogCount").textContent=matches.length+" из "+CATALOG.length+" характеристик · выбрано "+w.items.length+"/"+MAX_RAYS;
+const list=$("catalogList");list.replaceChildren();
+for(const item of matches.slice(0,200)){const row=el("div","catalog-item"+(selected.has(item.id)?" selected":"")),name=el("div"),title=el("strong","",item.title),cat=el("small","",item.category);
+name.append(title,cat);const isSelected=selected.has(item.id);const b=button(isSelected?"Убрать":"+ Добавить",()=>isSelected?remove(item.id):add(item),"");b.setAttribute("aria-pressed",String(isSelected));if(!isSelected&&w.items.length>=MAX_RAYS)b.disabled=true;row.append(name,b);list.append(row)}
+if(!matches.length)list.append(el("div","empty","Ничего не найдено. Добавьте свою характеристику в поле ниже."))}
+function add(obj){const w=current();if(w.items.some(x=>x.id===obj.id)){status("Эта характеристика уже добавлена.");return}if(w.items.length>=MAX_RAYS){status("Достигнут предел 48 лучей. Создайте ещё одно тематическое колесо.");return}
+w.items.push({id:obj.id,title:obj.title,category:obj.category,score:null,goal:null,note:""});update();render()}
+function remove(id){const w=current(),index=w.items.findIndex(x=>x.id===id);if(index<0)return;const item=w.items[index];if((item.score!==null||item.goal!==null||item.note)&&!confirm("Убрать «"+item.title+"»? Текущие оценки и заметка луча будут удалены из этого колеса, история сохранится."))return;w.items.splice(index,1);update();render()}
+function move(id,offset){const w=current(),index=w.items.findIndex(x=>x.id===id),newIndex=index+offset;if(index<0||newIndex<0||newIndex>=w.items.length)return;const [item]=w.items.splice(index,1);w.items.splice(newIndex,0,item);update();render()}
+function renderRays(){const w=current(),root=$("selected");root.replaceChildren();$("selectedCount").textContent=w.items.length;
+if(!w.items.length){root.append(el("div","empty","Выберите характеристики из каталога или создайте собственный луч."));return}
+w.items.forEach((item,index)=>{const card=el("article","ray");card.id="ray-"+index;
+const heading=el("div","ray-top"),title=el("div");title.append(el("b","",(index+1)+". "+item.title),el("small","",item.category));
+const actions=el("div","ray-actions");const up=button("↑",()=>move(item.id,-1)),down=button("↓",()=>move(item.id,1)),del=button("×",()=>remove(item.id));
+up.disabled=index===0;down.disabled=index===w.items.length-1;
+up.setAttribute("aria-label","Поднять: "+item.title);down.setAttribute("aria-label","Опустить: "+item.title);del.setAttribute("aria-label","Удалить: "+item.title);
+actions.append(up,down,del);heading.append(title,actions);card.append(heading);
+const fields=el("div","ray-fields");
+fields.append(makeSelect("Текущее состояние",item.score,v=>{item.score=v;update();draw();}),makeSelect("Желаемый уровень",item.goal,v=>{item.goal=v;update();draw()}));
+card.append(fields);
+const noteWrap=el("div","ray-note");const label=el("label","","Наблюдение / следующий шаг");const note=el("textarea");note.maxLength=300;note.value=item.note;note.placeholder="Что именно я хочу улучшить?";note.setAttribute("aria-label","Заметка: "+item.title);
+note.addEventListener("input",e=>{item.note=e.target.value.slice(0,300);persist()});noteWrap.append(label,note);card.append(noteWrap);root.append(card)})}
+function svg(tag,props){const node=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(props||{}))node.setAttribute(k,String(v));return node}
+function polygon(cx,cy,r,a0,a1){const pieces=Math.max(5,Math.ceil((a1-a0)/.07)),points=[[cx,cy]];for(let j=0;j<=pieces;j++){const angle=a0+(a1-a0)*j/pieces;points.push([cx+Math.cos(angle)*r,cy+Math.sin(angle)*r])}return points.map((pt,i)=>(i?"L ":"M ")+pt[0].toFixed(2)+" "+pt[1].toFixed(2)).join(" ")+" Z"}
+function draw(){const chart=$("chart"),w=current(),items=w.items,n=items.length,c=250,r=177;chart.replaceChildren();const values=items.filter(x=>x.score!==null);const avg=values.length?values.reduce((a,b)=>a+b.score,0)/values.length:null;
+const gaps=items.filter(x=>x.score!==null&&x.goal!==null);const gap=gaps.length?gaps.reduce((a,b)=>a+b.goal-b.score,0)/gaps.length:null;
+$("rated").textContent=values.length+" / "+n;$("mean").textContent=avg===null?"—":avg.toFixed(1);$("targetGap").textContent=gap===null?"—":(gap>0?"+":"")+gap.toFixed(1);
+if(!n){const t=svg("text",{x:c,y:c,"text-anchor":"middle",fill:"#b8c9d8","font-size":17});t.textContent="Выберите лучи";chart.append(t);chart.setAttribute("aria-label","Нет выбранных характеристик");return}
+const step=Math.PI*2/n;
+for(let i=0;i<n;i++){const a=-Math.PI/2+i*step,b=a+step;chart.append(svg("path",{d:polygon(c,c,r,a,b),class:"sector-empty"}))}
+for(let level=2;level<=10;level+=2)chart.append(svg("circle",{cx:c,cy:c,r:r*level/10,class:"ring"}));
+items.forEach((item,index)=>{const a=-Math.PI/2+index*step,b=a+step;
+chart.append(svg("line",{x1:c,y1:c,x2:c+Math.cos(a)*r,y2:c+Math.sin(a)*r,class:"axis"}));
+if(item.score!==null&&item.score>0)chart.append(svg("path",{d:polygon(c,c,r*item.score/10,a+.004,b-.004),class:"filled"}));
+if(item.goal!==null&&item.goal>0)chart.append(svg("path",{d:polygon(c,c,r*item.goal/10,a+.005,b-.005),class:"target"}));
+const angle=a+step/2;const num=svg("text",{x:c+Math.cos(angle)*(r+21),y:c+Math.sin(angle)*(r+21)+4,"text-anchor":"middle",class:"index"});if(n<=24||index%Math.ceil(n/24)===0){num.textContent=index+1;chart.append(num)}
+const hit=svg("path",{d:polygon(c,c,r,a,b),class:"slice-hit",role:"button",tabindex:0,"aria-label":item.title+", "+(item.score===null?"нет оценки":item.score+"/10")});
+const tip=svg("title");tip.textContent=item.title+" · "+(item.score===null?"не оценено":item.score+"/10");hit.append(tip);
+const go=()=>{const node=$("ray-"+index);if(node)node.scrollIntoView({behavior:"smooth",block:"center"})};
+hit.addEventListener("click",go);hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}});chart.append(hit)});
+chart.append(svg("circle",{cx:c,cy:c,r:51,class:"center"}));
+const textBig=svg("text",{x:c,y:c+3,class:"main-number"});textBig.textContent=avg===null?"—":avg.toFixed(1);chart.append(textBig);
+const textSmall=svg("text",{x:c,y:c+22,class:"small"});textSmall.textContent=values.length+"/"+n+" оценено";chart.append(textSmall);
+chart.setAttribute("aria-label","Колесо из "+n+" лучей. Оценено "+values.length+". Среднее "+(avg===null?"не определено":avg.toFixed(1)+" из 10"))}
+function renderHistory(){const root=$("history");root.replaceChildren();const hist=current().history;if(!hist.length){root.append(el("li","", "Пока нет сохранённых снимков."));return}
+hist.slice().reverse().forEach((entry)=>{const li=el("li"),label=el("span");let date=entry.date;try{date=new Date(entry.date).toLocaleString("ru-RU")}catch(e){}
+const scored=entry.items.filter(x=>x.score!==null);const avg=scored.length?(scored.reduce((sum,i)=>sum+i.score,0)/scored.length).toFixed(1):"—";label.textContent=date+" · "+entry.items.length+" лучей · среднее "+avg;const restore=button("Восстановить",()=>{if(!confirm("Восстановить состав лучей, оценки, цели и заметки из этого снимка? Текущая версия будет заменена. История сохранится."))return;
+current().items=entry.items.map(i=>({...i}));update();render()});li.append(label,restore);root.append(li)})}
+function render(){renderWheelOptions();renderCatalog();renderRays();draw();renderHistory()}
+$("searchCatalog").addEventListener("input",renderCatalog);
+$("category").addEventListener("change",renderCatalog);
+$("wheelSelect").addEventListener("change",e=>{data.active=e.target.value;update();render()});
+$("newWheel").addEventListener("click",()=>{if(data.wheels.length>=MAX_WHEELS){status("Достигнут предел "+MAX_WHEELS+" колёс.");return}const name=prompt("Название нового колеса:","Моё новое колесо");if(name===null)return;const w=newWheel(text(name,64)||"Моё колесо");data.wheels.push(w);data.active=w.id;update();render()});
+$("renameWheel").addEventListener("click",()=>{const w=current(),name=prompt("Название колеса:",w.title);if(name===null)return;w.title=text(name,64)||w.title;update();render()});
+$("copyWheel").addEventListener("click",()=>{if(data.wheels.length>=MAX_WHEELS){status("Достигнут предел колёс.");return}const w=current(),copy=newWheel(text(w.title+" (копия)",64));copy.items=w.items.map(i=>({...i}));data.wheels.push(copy);data.active=copy.id;update();render()});
+$("deleteWheel").addEventListener("click",()=>{if(data.wheels.length<2)return;const w=current();if(!confirm("Удалить колесо «"+w.title+"» вместе с оценками и историей?"))return;data.wheels=data.wheels.filter(x=>x.id!==w.id);data.active=data.wheels[0].id;update();render()});
+$("addCustom").addEventListener("click",()=>{const input=$("customName"),title=text(input.value,64);if(!title){status("Напишите название собственной характеристики.");input.focus();return}if(current().items.some(x=>x.title.toLocaleLowerCase("ru")===title.toLocaleLowerCase("ru"))){status("Луч с таким названием уже выбран.");return}
+add({id:uid("u"),title,category:"Свои характеристики"});if(current().items.some(x=>x.title===title))input.value=""});
+$("customName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("addCustom").click()}});
+$("starter").addEventListener("click",()=>{const w=current();if(w.items.length&&!confirm("Добавить базовые сферы к текущим лучам?"))return;const names=["Физическое здоровье","Психологическое благополучие","Отношения","Семья","Образование","Работа","Финансы","Отдых"];
+for(const title of names){if(w.items.length>=MAX_RAYS)break;if(!w.items.some(i=>i.title===title))w.items.push({id:uid("starter"),title,category:"Базовые сферы",score:null,goal:null,note:""})}update();render()});
+$("saveSnapshot").addEventListener("click",()=>{const w=current();if(!w.items.length){status("Для снимка сначала выберите хотя бы один луч.");return}w.history.push({date:new Date().toISOString(),items:w.items.map(i=>({...i}))});w.history=w.history.slice(-MAX_HISTORY);update();renderHistory();status("Снимок сохранён локально — "+w.history.length+" в истории.")});
+$("clearScores").addEventListener("click",()=>{if(!confirm("Сбросить только текущие оценки и цели? Состав лучей, заметки и история останутся."))return;current().items.forEach(i=>{i.score=null;i.goal=null});update();render()});
+$("deleteAll").addEventListener("click",()=>{if(!confirm("Удалить безвозвратно ВСЕ колёса конструктора, их историю и заметки в этом браузере?"))return;try{localStorage.removeItem(STORAGE)}catch(e){status("Не удалось удалить данные из хранилища браузера.");return}const w=newWheel("Моё колесо");data={version:1,active:w.id,wheels:[w]};render();status("Локальные данные конструктора удалены.")});
+$("exportAll").addEventListener("click",()=>{const payload=JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2),blob=new Blob([payload],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="psy-tools-custom-wheels-"+new Date().toISOString().slice(0,10)+".json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status("Подготовлен JSON с вашими колёсами. Храните файл в безопасном месте.")});
+$("importAll").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];e.target.value="";if(!file)return;if(file.size>MAX_FILE){status("Файл больше 2 МБ. Импорт отменён.");return}
+try{const incoming=sanitize(JSON.parse(await file.text()));if(!confirm("Заменить все текущие колёса "+incoming.wheels.length+" импортированными? Перед заменой сохраните резервную копию."))return;
+const old=data;data=incoming;if(!persist()){data=old;render();return}render();status("Импортировано колёс: "+data.wheels.length+".")}catch(e){status("Импорт не выполнен: файл не соответствует формату конструктора.")}});
+$("print").addEventListener("click",()=>window.print());
+window.addEventListener("storage",e=>{if(e.key===STORAGE){load();render();status("Данные обновлены после изменения в другой вкладке.")}});
+load();renderCategoryOptions();render();
+})();
+</script>
+<script defer src="../wheel-nav.js"></script>
+</body>
+</html>
