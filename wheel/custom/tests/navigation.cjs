@@ -8,7 +8,8 @@ const pages=[
 "wheel/relationships/index.html","wheel/social/index.html","wheel/development/index.html",
 "wheel/rest/index.html","wheel/creativity/index.html","wheel/self_awareness/index.html",
 "wheel/fear/index.html","wheel/sexuality/index.html","wheel/destructiveness/index.html",
-"wheel/soft-skills/index.html","wheel/nine-streams/index.html","wheel/custom/index.html"
+"wheel/soft-skills/index.html","wheel/nine-streams/index.html","wheel/custom/index.html",
+"wheel/virtues/index.html"
 ];
 const nav=fs.readFileSync(path.join(root,"wheel/wheel-nav.js"),"utf8");
 new vm.Script(nav);
@@ -21,6 +22,6 @@ for(const page of pages){
 }
 for(const route of [
 "/psy-tools/wheel/hub.html","/psy-tools/wheel/","/psy-tools/wheel/custom/",
-"/psy-tools/wheel/soft-skills/","/psy-tools/wheel/nine-streams/"
+"/psy-tools/wheel/soft-skills/","/psy-tools/wheel/nine-streams/","/psy-tools/wheel/virtues/"
 ])assert.ok(nav.includes(route),"Navigation missing "+route);
 console.log("PASS: navigation installed on "+pages.length+" wheels/pages; license and JS verified");
