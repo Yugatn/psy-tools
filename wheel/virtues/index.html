@@ -112,7 +112,7 @@ pane.append(svg("circle",{cx:c,cy:c,r:52,class:"center"}));const text=svg("text"
 function renderLegend(){const pane=$("legend");pane.replaceChildren();record().ids.forEach((id,i)=>{const item=description(id),b=btn((i+1)+". "+item.name,()=>{selectIndex(i);const target=$("item-"+i);if(target)target.scrollIntoView({behavior:"smooth",block:"center"})});b.setAttribute("aria-pressed",String(i===selected));pane.append(b)})}
 function dropdown(name,value,onChange){const box=make("div"),label=make("label",name),sel=make("select");sel.setAttribute("aria-label",name);sel.append(opt("","Не оценено"));for(let i=0;i<=10;i++)sel.append(opt(String(i),i+"/10"));sel.value=score(value)===null?"":String(value);sel.addEventListener("change",e=>onChange(e.target.value===""?null:Number(e.target.value)));box.append(label,sel);return box}
 function renderItems(){const pane=$("items");pane.replaceChildren();const r=record();if(!r.ids.length){pane.append(make("div","Выберите качество из каталога.","hint"));return}
-r.ids.forEach((id,i)=>{const info=description(id),item=make("article",undefined,"item");item.id="item-"+i;const header=make("div",undefined,"item-header"),head=make("div"),name=make("b",(i+1)+". "+info.name),family=make("small",info.family);
+r.ids.forEach((id,i)=>{const info=description(id),item=make("article",undefined,"item");item.id="item-"+i;const header=make("div",undefined,"item-header"),head=make("div"),name=make("b",(i+1)+". "+info.name),family=make("small",info.family+(info.subgroup?" · "+info.subgroup:""));
 head.append(name,family);const remove=btn("Убрать",()=>removeVirtue(id));remove.setAttribute("aria-label","Убрать "+info.name);header.append(head,remove);item.append(header);
 const box=make("div",undefined,"scoregrid");
 box.append(dropdown("Наблюдалось (0–10)",r.values[id],v=>{if(v===null)delete r.values[id];else r.values[id]=v;save();draw()}),
@@ -122,7 +122,7 @@ note.addEventListener("input",e=>{r.notes[id]=e.target.value.slice(0,350);persis
 function renderCatalog(){const list=$("catalog");list.replaceChildren();const r=record(),filter=$("family").value,q=$("search").value.trim().toLocaleLowerCase("ru");
 const items=DATA.catalog.filter(x=>(!filter||x.family===filter)&&(!q||(x.name+" "+x.family).toLocaleLowerCase("ru").includes(q)));
 $("catalogCount").textContent=items.length+" из "+DATA.catalog.length+" добродетелей · выбрано "+r.ids.length+"/"+MAX_RAYS;
-for(const entry of items){const row=make("div",undefined,"entry"),label=make("div");label.append(make("b",entry.name),make("small",entry.family));
+for(const entry of items){const row=make("div",undefined,"entry"),label=make("div");label.append(make("b",entry.name),make("small",entry.family+(entry.subgroup?" · "+entry.subgroup:"")));
 const selected=r.ids.includes(entry.id),button=btn(selected?"Убрать":"+ Добавить",()=>selected?removeVirtue(entry.id):addVirtue(entry.id));
 button.setAttribute("aria-pressed",String(selected));if(!selected&&r.ids.length>=MAX_RAYS)button.disabled=true;row.append(label,button);list.append(row)}
 if(!items.length)list.append(make("p","Ничего не найдено; можно добавить свою формулировку.","hint"))}
