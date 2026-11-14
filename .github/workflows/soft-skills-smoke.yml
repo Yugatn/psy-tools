@@ -1,0 +1,25 @@
+name: Children's soft-skills wheel smoke tests
+
+on:
+  push:
+    paths:
+      - 'wheel/soft-skills/**'
+      - '.github/workflows/soft-skills-smoke.yml'
+  pull_request:
+    paths:
+      - 'wheel/soft-skills/**'
+      - '.github/workflows/soft-skills-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Node.js version
+        run: node --version
+      - name: Test children's wheel (no dependencies)
+        run: node wheel/soft-skills/tests/smoke.cjs
