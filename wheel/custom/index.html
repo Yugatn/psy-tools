@@ -56,7 +56,7 @@ input,select,textarea{background:#111e32;color:#fff;border:1px solid #516883;bor
 </div>
 <section class="card"><h2>Мои выбранные лучи <span class="tag" id="selectedCount">0</span></h2><p class="muted">Порядок лучей можно менять стрелками. Сначала выберите характеристику, затем оцените её текущее проявление и, при желании, установите цель. Пустое значение означает, что оценка пока не дана.</p><div class="rays" id="selected"></div></section>
 <section class="card"><h2>Как интерпретировать колесо</h2><p class="muted">Это инструмент личной рефлексии, а не стандартизованный психометрический тест и не клиническая диагностика. Средняя оценка — условная арифметическая величина, зависящая от выбранных лучей. Не сравнивайте её с результатами других людей или разных наборов характеристик. Для отслеживания динамики лучше сохранять одинаковые лучи и одинаковый способ оценивания.</p><p class="muted">История сохраняет состав лучей, оценки, желаемый уровень и заметки на момент снимка. При восстановлении снимка текущий состав колеса заменяется — предварительно сделайте резервную копию, если хотите сохранить прежнюю конфигурацию.</p></section>
-<footer class="footer">© 2026 Югатн (Yugatn) · PSY-TOOLS. <a href="../../LICENSE">Условия использования</a> · <a href="../hub.html">Каталог колёс</a> · <a href="../../">Главная</a>. Не медицинская диагностика.</footer>
+<footer class="footer">© 2026 Югатн (Yugatn) · PSY-TOOLS. <a href="https://github.com/Yugatn/psy-tools/blob/main/LICENSE">Условия использования</a> · <a href="../hub.html">Каталог колёс</a> · <a href="../../">Главная</a>. Не медицинская диагностика.</footer>
 </main>
 <script src="./catalog.js"></script>
 <script>
@@ -99,7 +99,7 @@ function renderCatalog(){const w=current(),selected=new Set(w.items.map(x=>x.id)
 const matches=CATALOG.filter(x=>(!category||x.category===category)&&(!term||(x.title+" "+x.category).toLocaleLowerCase("ru").includes(term)));
 $("catalogCount").textContent=matches.length+" из "+CATALOG.length+" характеристик · выбрано "+w.items.length+"/"+MAX_RAYS;
 const list=$("catalogList");list.replaceChildren();
-for(const item of matches.slice(0,200)){const row=el("div","catalog-item"+(selected.has(item.id)?" selected":"")),name=el("div"),title=el("strong","",item.title),cat=el("small","",item.category);
+for(const item of matches){const row=el("div","catalog-item"+(selected.has(item.id)?" selected":"")),name=el("div"),title=el("strong","",item.title),cat=el("small","",item.category);
 name.append(title,cat);const isSelected=selected.has(item.id);const b=button(isSelected?"Убрать":"+ Добавить",()=>isSelected?remove(item.id):add(item),"");b.setAttribute("aria-pressed",String(isSelected));if(!isSelected&&w.items.length>=MAX_RAYS)b.disabled=true;row.append(name,b);list.append(row)}
 if(!matches.length)list.append(el("div","empty","Ничего не найдено. Добавьте свою характеристику в поле ниже."))}
 function add(obj){const w=current();if(w.items.some(x=>x.id===obj.id)){status("Эта характеристика уже добавлена.");return}if(w.items.length>=MAX_RAYS){status("Достигнут предел 48 лучей. Создайте ещё одно тематическое колесо.");return}
