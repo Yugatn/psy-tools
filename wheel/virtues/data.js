@@ -70,7 +70,16 @@ const groups=[
 {id:"via",title:"VIA · 24 сильные стороны характера",blurb:"Исследовательская классификация 24 сильных сторон. Здесь предложены оригинальные вопросы для размышления, не воспроизводятся шкалы и задания официального опросника VIA.",ids:rows.filter(r=>r[2]==="VIA").map(r=>r[0]),source:"via"},
 {id:"personal",title:"Моя подборка добродетелей",blurb:"Выберите любое сочетание из каталога или добавьте собственные качества. Такая подборка отражает индивидуальные ценности и не является диагностикой.",ids:[],source:"modern"}
 ];
-const catalog=rows.map(r=>Object.freeze({id:r[0],name:r[1],family:r[2],description:r[3],example:r[4],practice:r[5],question:r[6]}));
+const viaDomains={
+"Мудрость и познание":["via_creativity","via_curiosity","via_judgment","via_learning","via_perspective"],
+"Мужество":["via_bravery","via_perseverance","via_honesty","via_zest"],
+"Человечность":["via_love","via_kindness","via_social"],
+"Справедливость":["via_team","via_fairness","via_leadership"],
+"Умеренность":["via_forgiveness","via_modesty","via_prudence","via_selfreg"],
+"Трансцендентность":["via_beauty","via_gratitude","via_hope","via_humor","via_spirituality"]
+};
+const subgroups=Object.fromEntries(Object.entries(viaDomains).flatMap(([title,ids])=>ids.map(id=>[id,title])));
+const catalog=rows.map(r=>Object.freeze({id:r[0],name:r[1],family:r[2],subgroup:subgroups[r[0]]||null,description:r[3],example:r[4],practice:r[5],question:r[6]}));
 if(new Set(catalog.map(x=>x.id)).size!==catalog.length)throw Error("Duplicate virtue IDs");
 root.VIRTUE_WHEEL=Object.freeze({sources:Object.freeze(sources),presets:Object.freeze(groups),catalog:Object.freeze(catalog)});
 })(window);
