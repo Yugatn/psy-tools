@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Колесо привычек и возможных зависимостей: частота действий за 30 дней, самонаблюдение за контролем и последствиями, история. Не диагностический тест.">
+<link rel="canonical" href="https://yugatn.github.io/psy-tools/wheel/dependencies/">
+<title>Колесо привычек и возможных зависимостей · PSY-TOOLS</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1120;--panel:#111e31;--panel2:#182940;--line:#30465f;--text:#eff7ff;--muted:#b6c9da;--accent:#81e0d2}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#18384a,#0b1120 56%);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}button,select,input,textarea{font:inherit}button{background:#27425c;color:#fff;border:1px solid #45617b;border-radius:11px;padding:9px 13px;min-height:42px;cursor:pointer}button:hover{border-color:#97d8d0}button.primary{background:#1d7165;border-color:#39a894;font-weight:750}button.danger{background:#462d37;border-color:#925e6a}button:disabled{opacity:.47;cursor:default}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,svg [tabindex]:focus-visible{outline:3px solid #eac477;outline-offset:2px}
+input,select,textarea{width:100%;min-width:0;border:1px solid #536b84;background:#13243b;border-radius:10px;padding:10px 12px;color:#fff;min-height:43px}textarea{min-height:66px;resize:vertical}a{color:#a8dff5}.wrap{max-width:1220px;padding:20px clamp(12px,3vw,23px) 88px;margin:auto}.sitehead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}.sitehead nav{display:flex;flex-wrap:wrap;gap:13px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:#8ddacb;margin:23px 0 4px}h1{font-size:clamp(26px,4.6vw,42px);line-height:1.18;letter-spacing:-.025em;margin:5px 0 10px}h2{font-size:21px;margin:0 0 11px;line-height:1.3}h3{font-size:16px;margin:0 0 6px}.lead{color:#c5d6e5;line-height:1.72;max-width:880px;margin:0 0 20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:clamp(14px,2vw,20px);margin-bottom:16px}.sub{font-size:13px;color:var(--muted);line-height:1.65}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.field{flex:1 1 210px}.field label,label{font-size:13px;color:#d5e5ef;font-weight:700;display:block;margin-bottom:5px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.88fr);gap:16px;align-items:start}.diagram{width:min(100%,520px);height:auto;display:block;margin:4px auto;overflow:visible}.diagram .bg{fill:#23394e;stroke:#122239;stroke-width:1}.diagram .ring{fill:none;stroke:#455e75;stroke-width:1}.diagram .axis{stroke:#4e6379;stroke-width:1}.diagram .fill{fill:#72d9cc;fill-opacity:.58;stroke:#a3f7eb;stroke-width:1}.diagram .label{fill:#e7f3fd;text-anchor:middle;font-size:12px;font-weight:750}.diagram .center{fill:#102038;stroke:#648e90;stroke-width:1.5}.diagram .center-label{fill:white;font-size:21px;font-weight:800;text-anchor:middle}.diagram .caption{fill:#b4dad8;text-anchor:middle;font-size:10px}.diagram .hit{fill:transparent;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:9px 0 12px}.stat{background:var(--panel2);border-radius:12px;padding:11px 7px;text-align:center}.stat b{font-size:22px;display:block}.stat span{font-size:11px;color:#afc6d6}.tag{border:1px solid #4b8376;background:#1b463f;border-radius:6px;padding:1px 7px;color:#c0f6e9;font-size:11px;font-weight:650}
+.scale{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.scale div{padding:9px 4px;background:#1a3045;border:1px solid #2f4860;text-align:center;border-radius:9px;min-width:0}.scale b{display:block;font-size:14px}.scale span{font-size:10px;color:#adc6d7;display:block}.scale small{font-size:10px;color:#b7d7d1;display:block}
+.catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:410px;overflow:auto;align-content:start;padding:2px}.catalog-item{display:flex;justify-content:space-between;align-items:center;gap:9px;background:#17283f;border:1px solid #2f4760;border-radius:11px;padding:10px}.catalog-item b{display:block;font-size:13px;font-weight:650}.catalog-item small{display:block;color:#aac2d4;font-size:11px;margin-top:3px}.catalog-item button{font-size:12px;min-height:34px;padding:5px 10px;flex:none}.catalog-item button[aria-pressed="true"]{background:#286b60}.selected-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.item{padding:14px;background:#172940;border:1px solid #344b65;border-radius:13px;min-width:0}.itemhead{display:flex;gap:10px;justify-content:space-between;align-items:start}.itemhead b{font-size:15px}.itemhead small{font-size:11px;color:#adc4d4;display:block;margin-top:3px}.itemhead button{font-size:12px;min-height:32px;padding:3px 8px}.item p{color:#bcd0de;font-size:12px;line-height:1.6}.item label{margin-top:10px}.marker-head{font-weight:720;color:#dfedf4;font-size:13px;margin-top:14px}.markers{display:grid;gap:9px}.marker label{font-weight:500;font-size:12px;color:#c7d9e5}.marker select{font-size:13px}.notes-label{margin-top:12px}.toolbar{display:flex;gap:9px;flex-wrap:wrap}.addrow{display:flex;gap:8px;flex-wrap:wrap}.addrow input{flex:2 1 190px}.addrow button{flex:none}.history{list-style:none;padding:0;margin:0}.history li{border-bottom:1px solid #324a60;padding:11px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px}.history button{font-size:12px;min-height:35px}
+.note{border-left:3px solid #e4b773;border-radius:0 9px 9px 0;background:#382f2b;color:#f2e0c5;padding:12px 13px;font-size:13px;line-height:1.65}.explain{border-left:3px solid #80e4d1;background:#183345;border-radius:0 10px 10px 0;padding:12px;font-size:13px;color:#c7dfeb}.status{color:#a1e7d5;font-size:13px;min-height:24px;margin:8px 0}.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.legend button{text-align:left;min-height:37px;font-size:12px;padding:7px 9px}.legend button[aria-pressed="true"]{background:#275f56;border-color:#8ae8d5}.footer{font-size:12px;line-height:1.7;color:#b2c6d8;margin:22px 0}
+@media(max-width:940px){.layout{grid-template-columns:1fr}.catalog{max-height:300px}}@media(max-width:680px){.selected-list,.catalog{grid-template-columns:1fr}.scale{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:380px){.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:span 2}.scale{grid-template-columns:repeat(2,1fr)}}
+@media print{body{background:white;color:#111}.card,.item,.catalog-item{background:white;border:1px solid #999;break-inside:avoid}.wrap{padding:0}.layout{display:block}.sitehead,.toolbar,.catalog,.addrow,.legend,.history button,.footer,.status{display:none!important}.diagram .center-label,.diagram .caption,.diagram .label{fill:#111}.diagram .center{fill:white}.sub,.item p,.stat span{color:#333}.stats .stat,.scale div{background:#eee}.note,.explain{color:#222;background:#fff}select,textarea{color:#111;background:#fff}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="sitehead"><a href="../hub.html">← Каталог колёс</a><nav aria-label="Быстрые переходы"><a href="../virtues/">Добродетели</a><a href="../custom/">Конструктор</a><a href="../cabinet.html">Мои результаты</a></nav></header>
+<div class="eyebrow">Наблюдение привычек · 30 дней</div>
+<h1>Колесо привычек и возможных зависимостей</h1>
+<p class="lead">Сколько дней за последний месяц вы употребляли определённые продукты, вещества или занимались тем или иным делом? Выберите интересующие вас области, оцените <strong>частоту</strong> и отдельно отметьте, возникали ли трудности контроля. Музыка, мясо, спорт или ежедневная переписка сами по себе не являются зависимостью.</p>
+<section class="card"><h2>1. Шкала частоты</h2><p class="sub">За <strong>последние 30 дней, включая сегодня</strong>: считайте количество календарных дней, когда действие происходило хотя бы один раз. Это не число порций, сигарет, часов, доз или отдельных эпизодов в день.</p>
+<div class="scale" id="scale"></div>
+<p class="sub">«Не было» означает 0 дней за указанные 30 дней, <strong>а не «никогда в жизни»</strong>. Если частоту определить трудно, оставьте «Не оценено». Категории частоты — авторская шкала самонаблюдения, не клинические пороги риска.</p></section>
+<div class="layout">
+<section class="card"><h2>2. Круг частоты</h2><svg id="chart" class="diagram" viewBox="0 0 500 500" role="img" aria-label="Данные не заполнены"></svg><div class="stats"><div class="stat"><b id="count">0 / 11</b><span>оценено</span></div><div class="stat"><b id="daily">0</b><span>ежедневно · 30 дней</span></div><div class="stat"><b id="flags">0</b><span>области с отмеченными трудностями</span></div></div>
+<p class="sub">Длина сектора отражает только частоту. Большой сектор — не диагноз и не «плохая привычка». Нажмите на номер сектора или название области, чтобы перейти к записи.</p>
+<div id="legend" class="legend"></div></section>
+<div>
+<section class="card"><h2>3. Выберите области наблюдения</h2>
+<div class="row"><div class="field"><label for="search">Поиск</label><input id="search" type="search" placeholder="Алкоголь, сладкое, игры…"></div><div class="field"><label for="category">Раздел</label><select id="category"></select></div></div>
+<p class="sub" id="catalogCount"></p><div class="catalog" id="catalog"></div>
+<div style="margin-top:13px"><label for="customName">Собственная привычка или занятие</label><div class="addrow"><input id="customName" maxlength="65" placeholder="Например, онлайн-покупки"><button id="addCustom" class="primary">Добавить</button></div></div>
+<p class="sub">Первоначально выбраны ваши 11 примеров. Можно удалить любой луч, добавить другие или создать свой (до 36 лучей). Примеры не являются рейтингом опасности.</p></section>
+<section class="card"><h2>4. История</h2>
+<div class="toolbar"><button class="primary" id="snapshot">Сохранить снимок</button><button id="export">Экспорт JSON</button><button id="import">Импорт JSON</button><input type="file" id="importFile" hidden accept=".json,application/json"><button id="print">Печать</button></div>
+<p role="status" class="status" id="status"></p><ul class="history" id="history"></ul>
+<div class="toolbar" style="margin-top:12px"><button id="clearCurrent">Сбросить оценки</button><button class="danger" id="clearAll">Удалить все данные</button></div></section>
+</div>
+</div>
+<section class="card"><h2>5. Мои наблюдения</h2><p class="sub">В карточке каждой области дополнительно можно отметить три ситуации: трудно остановиться, занятие вытесняет другие важные дела, поведение продолжается несмотря на негативные последствия. <strong>Ответы «Да» — повод для внимательного разговора, но не диагностические критерии сами по себе.</strong> Ответы необязательны.</p><div id="items" class="selected-list"></div></section>
+<section class="card"><h2>Как понимать результаты</h2><p class="explain">Частота и зависимость — разные вещи. Расстройство, связанное с играми, в МКБ-11 характеризуется потерей контроля, повышением приоритета игры и продолжением вопреки негативным последствиям при значительном нарушении функционирования. Диагностика расстройств, связанных с психоактивными веществами, требует отдельной клинической оценки; эти три вопроса не заменяют её.</p>
+<p class="sub">Не считайте общую «сумму зависимостей» и не сравнивайте с другими людьми: употребление сладкого, прослушивание музыки и употребление алкоголя имеют принципиально разные последствия. При регулярном тяжёлом употреблении алкоголя резкая отмена без медицинской поддержки может быть опасной. Не изменяйте назначенный приём лекарств на основании колеса.</p>
+<div class="note"><strong>Приватность:</strong> результаты и заметки записываются исключительно в localStorage этого браузера и не отправляются в наш серверный кабинет. Однако любой человек с доступом к тому же профилю браузера может их прочитать. Не указывайте имена, адреса, сведения о приобретении веществ или иные идентифицирующие детали. Экспортируемый JSON храните отдельно и безопасно.</div>
+<p class="sub">Источники: <a href="https://www.who.int/standards/classifications/frequently-asked-questions/gaming-disorder/" target="_blank" rel="noopener noreferrer">ВОЗ: игровое расстройство (МКБ-11)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11403181/" target="_blank" rel="noopener noreferrer">Клинические требования МКБ-11 к зависимости от веществ</a> · <a href="https://www.niaaa.nih.gov/health-professionals-communities/core-resource-on-alcohol/alcohol-use-disorder-risk-diagnosis-recovery" target="_blank" rel="noopener noreferrer">NIAAA: алкогольное расстройство и синдром отмены</a>.</p>
+</section>
+<footer class="footer">© 2026 Югатн (Yugatn) · PSY-TOOLS · <a href="https://github.com/Yugatn/psy-tools/blob/main/LICENSE">Лицензия</a> · <a href="../hub.html">Другие колёса</a>. Недиагностический инструмент самонаблюдения.</footer>
+</main>
+<script src="./catalog.js"></script>
+<script>
+(function(){
+"use strict";
+const C=window.PSY_DEPENDENCY_DATA;if(!C){document.body.textContent="Не удалось загрузить каталог.";return}
+const KEY="psyToolsHabitFrequencyV1",MAX_ITEMS=36,MAX_HISTORY=40,MAX_FILE=2500000;
+const $=id=>document.getElementById(id),base=new Map(C.items.map(x=>[x.id,x]));
+const KEYS=["control","priority","consequences"],PROMPTS={
+control:"Было трудно прекратить или сократить, когда вы сами этого хотели?",
+priority:"Из-за этого откладывались другие важные дела или отношения?",
+consequences:"Вы продолжали, несмотря на заметные нежелательные последствия?"
+};
+const choices=[["","Не отвечал(а)"],["no","Нет"],["yes","Да"],["unsure","Не уверен(а)"]];
+const text=(value,max)=>typeof value==="string"?value.trim().slice(0,max):"";
+const rating=v=>Number.isInteger(v)&&v>=0&&v<=6?v:null;
+const initial=()=>({version:1,selected:[...C.defaults],custom:{},records:{},history:[]});
+let data=initial(),stale=false;
+function status(s){$("status").textContent=s}
+function labelFor(id){return base.get(id)||data.custom[id]?base.get(id)||{id,title:data.custom[id],category:"Мои области",info:"Личная формулировка для самонаблюдения."}:null}
+function safeRecord(rec){const r={frequency:null,markers:{},note:""};if(rec&&typeof rec==="object"&&!Array.isArray(rec)){r.frequency=rating(rec.frequency);if(rec.markers&&typeof rec.markers==="object"){for(const k of KEYS)if(["yes","no","unsure"].includes(rec.markers[k]))r.markers[k]=rec.markers[k]}r.note=text(rec.note,450)}return r}
+function safeBody(input){const out={selected:[],custom:{},records:{}};
+if(input&&input.custom&&typeof input.custom==="object"&&!Array.isArray(input.custom))for(const [id,value] of Object.entries(input.custom).slice(0,60)){if(/^u-[a-z0-9-]{5,42}$/i.test(id)){const t=text(value,65);if(t)out.custom[id]=t}}
+const source=input&&Array.isArray(input.selected)?input.selected:C.defaults;
+for(const id of source.slice(0,MAX_ITEMS)){if(typeof id!=="string"||out.selected.includes(id)||(!base.has(id)&&!out.custom[id]))continue;out.selected.push(id)}
+for(const id of out.selected)out.records[id]=safeRecord(input&&input.records&&input.records[id]);
+return out}
+function sanitize(input){if(!input||input.version!==1||!Array.isArray(input.selected)||!input.records||typeof input.records!=="object"||Array.isArray(input.records))throw Error("Invalid backup");
+const body=safeBody(input),history=[];if(Array.isArray(input.history))for(const entry of input.history.slice(-MAX_HISTORY)){if(!entry||typeof entry.date!=="string"||!Number.isFinite(Date.parse(entry.date)))continue;const snap=safeBody(entry);history.push({...snap,date:entry.date.slice(0,35)})}
+return {version:1,...body,history}}
+function load(){try{const raw=localStorage.getItem(KEY);data=raw?sanitize(JSON.parse(raw)):initial()}catch(_){data=initial();status("Не удалось прочитать сохранённые данные. Проверьте резервную копию.")}}
+function persist(){if(stale){status("Данные изменены в другой вкладке. Перезагрузите страницу перед продолжением, чтобы избежать потери записей.");return false}
+try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(_){status("Не удалось сохранить данные. Экспортируйте резервную копию JSON.");return false}}
+function save(){if(persist())status("Сохранено только в этом браузере.")}
+function record(id){return data.records[id]||(data.records[id]=safeRecord(null))}
+function el(tag,cls,t){const node=document.createElement(tag);if(cls)node.className=cls;if(t!==undefined)node.textContent=t;return node}
+function btn(title,fn){const b=el("button","",title);b.type="button";b.addEventListener("click",fn);return b}
+function option(value,title){const o=el("option","",title);o.value=value;return o}
+function add(id,title){if(data.selected.includes(id))return;if(data.selected.length>=MAX_ITEMS){status("Максимум 36 лучей. Можно сократить список перед добавлением.");return}
+if(title)data.custom[id]=title;data.selected.push(id);data.records[id]=safeRecord(null);save();render()}
+function remove(id){const rec=record(id);if((rec.frequency!==null||rec.note||Object.keys(rec.markers).length)&&!confirm("Убрать «"+labelFor(id).title+"» из текущего колеса? Данные в истории сохранятся."))return;
+data.selected=data.selected.filter(x=>x!==id);delete data.records[id];delete data.custom[id];save();render()}
+function draw(){const chart=$("chart"),ids=data.selected,n=ids.length,c=250,R=172;chart.replaceChildren();const assessed=ids.filter(id=>rating(record(id).frequency)!==null),daily=ids.filter(id=>record(id).frequency===6).length,flags=ids.filter(id=>KEYS.some(k=>record(id).markers[k]==="yes")).length;
+$("count").textContent=assessed.length+" / "+n;$("daily").textContent=daily;$("flags").textContent=flags;
+if(!n){const t=svg("text",{x:c,y:c,"text-anchor":"middle",fill:"#b8cada","font-size":17});t.textContent="Выберите области";chart.append(t);chart.setAttribute("aria-label","Нет областей");return}
+const step=2*Math.PI/n;
+for(let i=0;i<n;i++){const a=-Math.PI/2+i*step;chart.append(svg("path",{d:sector(c,c,R,a,a+step),class:"bg"}))}
+for(let lv=1;lv<=6;lv++)chart.append(svg("circle",{cx:c,cy:c,r:R*lv/6,class:"ring"}));
+ids.forEach((id,i)=>{const a=-Math.PI/2+i*step,b=a+step,m=(a+b)/2,v=rating(record(id).frequency);
+chart.append(svg("line",{x1:c,y1:c,x2:c+R*Math.cos(a),y2:c+R*Math.sin(a),class:"axis"}));
+if(v!==null&&v>0)chart.append(svg("path",{d:sector(c,c,R*v/6,a+.006,b-.006),class:"fill"}));
+if(n<=24||i%Math.ceil(n/24)===0){const num=svg("text",{x:c+(R+23)*Math.cos(m),y:c+(R+23)*Math.sin(m)+4,class:"label"});num.textContent=i+1;chart.append(num)}
+const hit=svg("path",{d:sector(c,c,R,a,b),class:"hit",tabindex:0,role:"button","aria-label":labelFor(id).title+": "+(v===null?"не оценено":C.frequency[v].label)});
+hit.addEventListener("click",()=>scrollTo(id));hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();scrollTo(id)}});chart.append(hit)});
+chart.append(svg("circle",{cx:c,cy:c,r:53,class:"center"}));const label=svg("text",{x:c,y:c+1,class:"center-label"});label.textContent=assessed.length+"/"+n;chart.append(label);
+const note=svg("text",{x:c,y:c+22,class:"caption"});note.textContent="за 30 дней";chart.append(note);chart.setAttribute("aria-label","Колесо частоты. Оценено "+assessed.length+" из "+n+" областей. Ежедневно: "+daily+". Отмечены трудности: "+flags)}
+function svg(tag,attrs){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(attrs||{}))e.setAttribute(k,String(v));return e}
+function sector(cx,cy,r,a,b){const n=Math.max(5,Math.ceil((b-a)/.1)),points=[[cx,cy]];for(let j=0;j<=n;j++){const z=a+(b-a)*j/n;points.push([cx+r*Math.cos(z),cy+r*Math.sin(z)])}
+return points.map((p,i)=>(i?"L ":"M ")+p[0].toFixed(2)+" "+p[1].toFixed(2)).join(" ")+" Z"}
+function scrollTo(id){const i=data.selected.indexOf(id),card=$("item-"+i);if(card)card.scrollIntoView({behavior:"smooth",block:"center"})}
+function catalog(){const category=$("category").value,q=$("search").value.trim().toLocaleLowerCase("ru");
+const matches=C.items.filter(x=>(!category||x.category===category)&&(!q||(x.title+" "+x.info+" "+x.category).toLocaleLowerCase("ru").includes(q)));
+$("catalogCount").textContent="Найдено "+matches.length+" из "+C.items.length+" · выбрано "+data.selected.length+"/"+MAX_ITEMS;
+const root=$("catalog");root.replaceChildren();
+for(const x of matches){const row=el("div","catalog-item"),l=el("div"),name=el("b","",x.title),cat=el("small","",x.category);
+l.append(name,cat);const chosen=data.selected.includes(x.id),button=btn(chosen?"Убрать":"+ Добавить",()=>chosen?remove(x.id):add(x.id));button.setAttribute("aria-pressed",String(chosen));if(!chosen&&data.selected.length>=MAX_ITEMS)button.disabled=true;row.append(l,button);root.append(row)}
+if(!matches.length)root.append(el("p","sub","Ничего не найдено. Добавьте свою область."))}
+function frequencySelect(id){const sel=el("select");sel.setAttribute("aria-label","Частота: "+labelFor(id).title);sel.append(option("","Не оценено"));
+for(const item of C.frequency)sel.append(option(String(item.value),item.value+" · "+item.label+" ("+item.days+")"));
+const r=record(id);sel.value=r.frequency===null?"":String(r.frequency);sel.addEventListener("change",e=>{r.frequency=e.target.value===""?null:Number(e.target.value);save();draw();renderLegend()});return sel}
+function markerSelect(id,key){const sel=el("select");sel.setAttribute("aria-label",labelFor(id).title+": "+PROMPTS[key]);
+for(const [value,title] of choices)sel.append(option(value,title));
+sel.value=record(id).markers[key]||"";sel.addEventListener("change",e=>{if(!e.target.value)delete record(id).markers[key];else record(id).markers[key]=e.target.value;save();draw()});return sel}
+function renderItems(){const root=$("items");root.replaceChildren();if(!data.selected.length){root.append(el("p","sub","Выберите хотя бы одну область выше."));return}
+data.selected.forEach((id,i)=>{const x=labelFor(id),r=record(id),card=el("article","item");card.id="item-"+i;
+const head=el("div","itemhead"),title=el("div"),name=el("b","",(i+1)+". "+x.title),cat=el("small","",x.category);
+title.append(name,cat);const removeButton=btn("Убрать",()=>remove(id));removeButton.setAttribute("aria-label","Убрать "+x.title);head.append(title,removeButton);card.append(head);
+card.append(el("p","",x.info));const label=el("label","","Частота за последние 30 дней");card.append(label,frequencySelect(id));
+card.append(el("div","marker-head","Добровольная рефлексия о контроле"));const ms=el("div","markers");
+for(const key of KEYS){const box=el("div","marker"),l=el("label","",PROMPTS[key]);box.append(l,markerSelect(id,key));ms.append(box)}card.append(ms);
+const noteLabel=el("label","notes-label","Наблюдение / контекст (необязательно)"),note=el("textarea");note.value=r.note;note.maxLength=450;note.placeholder="Как я использовал это занятие или продукт? Что заметил?";note.setAttribute("aria-label","Заметка: "+x.title);
+note.addEventListener("input",e=>{r.note=e.target.value.slice(0,450);persist()});card.append(noteLabel,note);root.append(card)})}
+function renderLegend(){const root=$("legend");root.replaceChildren();data.selected.forEach((id,i)=>{const x=labelFor(id),v=record(id).frequency,button=btn((i+1)+". "+x.title+" · "+(v===null?"—":String(v)),()=>scrollTo(id));button.setAttribute("aria-label",x.title+": "+(v===null?"Не оценено":C.frequency[v].label));root.append(button)})}
+function renderHistory(){const root=$("history");root.replaceChildren();if(!data.history.length){root.append(el("li","sub","Нет сохранённых снимков."));return}
+for(const snap of data.history.slice().reverse()){const li=el("li"),d=el("span");let date=snap.date;try{date=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(snap.date))}catch(_){}const rated=snap.selected.filter(id=>snap.records[id]&&snap.records[id].frequency!==null).length;
+d.textContent=date+" · "+rated+"/"+snap.selected.length+" оценено";const b=btn("Восстановить",()=>{if(!confirm("Заменить текущий набор и оценки историческим снимком? История сохранится."))return;if(stale){status("Обновите вкладку перед восстановлением.");return}
+const hist=data.history;data={version:1,...safeBody(snap),history:hist};if(persist()){render();status("Снимок восстановлен.")}});li.append(d,b);root.append(li)}}
+function render(){catalog();renderItems();renderLegend();draw();renderHistory()}
+function init(){for(const group of C.categories)$("category").append(option(group,group));$("category").prepend(option("","Все разделы"));$("category").value="";
+for(const t of C.frequency){const item=el("div");item.append(el("b","",String(t.value)),el("span","",t.label),el("small","",t.days));$("scale").append(item)}
+load();render()}
+$("search").addEventListener("input",catalog);$("category").addEventListener("change",catalog);
+$("addCustom").addEventListener("click",()=>{const input=$("customName"),title=text(input.value,65);if(!title){status("Напишите название занятия или привычки.");return}
+if(data.selected.some(id=>labelFor(id).title.toLocaleLowerCase("ru")===title.toLocaleLowerCase("ru"))){status("Такое название уже есть среди выбранных.");return}
+const id="u-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);add(id,title);if(data.selected.includes(id))input.value=""});
+$("customName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("addCustom").click()}});
+$("snapshot").addEventListener("click",()=>{if(!data.selected.length){status("Сначала выберите области наблюдения.");return}if(stale){status("Перезагрузите страницу после обновления в другой вкладке.");return}
+data.history.push({date:new Date().toISOString(),...safeBody(data)});data.history=data.history.slice(-MAX_HISTORY);
+if(persist()){renderHistory();status("Снимок сохранён. Для сравнения вернитесь через 30 дней.")}});
+$("clearCurrent").addEventListener("click",()=>{if(!confirm("Сбросить оценки, заметки и ответы о контроле? Выбранные области и история сохранятся."))return;
+if(stale){status("Сначала обновите вкладку.");return}for(const id of data.selected)data.records[id]=safeRecord(null);if(persist())render()});
+$("clearAll").addEventListener("click",()=>{if(!confirm("Удалить безвозвратно ВСЕ локальные записи этого колеса, включая историю?"))return;
+if(stale){status("Сначала обновите вкладку.");return}try{localStorage.removeItem(KEY)}catch(_){status("Не удалось удалить данные из браузера.");return}data=initial();render();status("Данные колеса удалены из браузера.")});
+$("export").addEventListener("click",()=>{const json=JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2),blob=new Blob([json],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=el("a");a.href=url;a.download="psy-tools-habits-"+new Date().toISOString().slice(0,10)+".json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status("Подготовлен JSON. Храните его безопасно.")});
+$("import").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;if(f.size>MAX_FILE){status("Файл больше 2,5 МБ.");return}
+try{const next=sanitize(JSON.parse(await f.text()));if(!confirm("Заменить текущие записи импортированными? Перед импортом сделайте экспорт."))return;if(stale){status("Сначала обновите страницу.");return}
+const previous=data;data=next;if(!persist()){data=previous;return}render();status("Импортировано: "+data.selected.length+" областей, "+data.history.length+" снимков.")}catch(_){status("Импорт отклонён: неверный формат JSON.")}});
+$("print").addEventListener("click",()=>window.print());
+window.addEventListener("storage",e=>{if(e.key===KEY){stale=true;status("Данные изменились в другой вкладке. Обновите эту страницу перед редактированием.")}});
+init();
+})();
+</script>
+<script defer src="../wheel-nav.js"></script>
+</body>
+</html>
