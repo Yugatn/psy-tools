@@ -118,20 +118,20 @@ function add(id,title){if(data.selected.includes(id))return;if(data.selected.len
 if(title)data.custom[id]=title;data.selected.push(id);data.records[id]=safeRecord(null);save();render()}
 function remove(id){const rec=record(id);if((rec.frequency!==null||rec.note||Object.keys(rec.markers).length)&&!confirm("Убрать «"+labelFor(id).title+"» из текущего колеса? Данные в истории сохранятся."))return;
 data.selected=data.selected.filter(x=>x!==id);delete data.records[id];delete data.custom[id];save();render()}
-function draw(){const chart=$("chart"),ids=data.selected,n=ids.length,c=250,R=172;chart.replaceChildren();const assessed=ids.filter(id=>rating(record(id).frequency)!==null),daily=ids.filter(id=>record(id).frequency===6).length,flags=ids.filter(id=>KEYS.some(k=>record(id).markers[k]==="yes")).length;
+function draw(){const chart=$("chart"),ids=data.selected,n=ids.length,c=250,R=172;chart.replaceChildren();const assessed=ids.filter(id=>isAssessed(record(id).frequency)),daily=ids.filter(id=>["daily","many_daily"].includes(record(id).frequency)).length,flags=ids.filter(id=>KEYS.some(k=>record(id).markers[k]==="yes")).length;
 $("count").textContent=assessed.length+" / "+n;$("daily").textContent=daily;$("flags").textContent=flags;
 if(!n){const t=svg("text",{x:c,y:c,"text-anchor":"middle",fill:"#b8cada","font-size":17});t.textContent="Выберите области";chart.append(t);chart.setAttribute("aria-label","Нет областей");return}
 const step=2*Math.PI/n;
 for(let i=0;i<n;i++){const a=-Math.PI/2+i*step;chart.append(svg("path",{d:sector(c,c,R,a,a+step),class:"bg"}))}
-for(let lv=1;lv<=6;lv++)chart.append(svg("circle",{cx:c,cy:c,r:R*lv/6,class:"ring"}));
-ids.forEach((id,i)=>{const a=-Math.PI/2+i*step,b=a+step,m=(a+b)/2,v=rating(record(id).frequency);
+for(let lv=3;lv<=9;lv+=3)chart.append(svg("circle",{cx:c,cy:c,r:R*lv/9,class:"ring"}));
+ids.forEach((id,i)=>{const a=-Math.PI/2+i*step,b=a+step,m=(a+b)/2,f=record(id).frequency,v=weight(f);
 chart.append(svg("line",{x1:c,y1:c,x2:c+R*Math.cos(a),y2:c+R*Math.sin(a),class:"axis"}));
-if(v!==null&&v>0)chart.append(svg("path",{d:sector(c,c,R*v/6,a+.006,b-.006),class:"fill"}));
+if(v!==null&&v>0)chart.append(svg("path",{d:sector(c,c,R*v/9,a+.006,b-.006),class:"fill"}));
 if(n<=24||i%Math.ceil(n/24)===0){const num=svg("text",{x:c+(R+23)*Math.cos(m),y:c+(R+23)*Math.sin(m)+4,class:"label"});num.textContent=i+1;chart.append(num)}
-const hit=svg("path",{d:sector(c,c,R,a,b),class:"hit",tabindex:0,role:"button","aria-label":labelFor(id).title+": "+(v===null?"не оценено":C.frequency[v].label)});
+const hit=svg("path",{d:sector(c,c,R,a,b),class:"hit",tabindex:0,role:"button","aria-label":labelFor(id).title+": "+(f===null?"Не оценено":OPTIONS.get(f).label)});
 hit.addEventListener("click",()=>scrollTo(id));hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();scrollTo(id)}});chart.append(hit)});
 chart.append(svg("circle",{cx:c,cy:c,r:53,class:"center"}));const label=svg("text",{x:c,y:c+1,class:"center-label"});label.textContent=assessed.length+"/"+n;chart.append(label);
-const note=svg("text",{x:c,y:c+22,class:"caption"});note.textContent="за 30 дней";chart.append(note);chart.setAttribute("aria-label","Колесо частоты. Оценено "+assessed.length+" из "+n+" областей. Ежедневно: "+daily+". Отмечены трудности: "+flags)}
+const note=svg("text",{x:c,y:c+22,class:"caption"});note.textContent="обычная частота";chart.append(note);chart.setAttribute("aria-label","Колесо частоты и опыта. Оценено "+assessed.length+" из "+n+" областей. Ежедневно или чаще: "+daily+". Отмечены трудности: "+flags)}
 function svg(tag,attrs){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(attrs||{}))e.setAttribute(k,String(v));return e}
 function sector(cx,cy,r,a,b){const n=Math.max(5,Math.ceil((b-a)/.1)),points=[[cx,cy]];for(let j=0;j<=n;j++){const z=a+(b-a)*j/n;points.push([cx+r*Math.cos(z),cy+r*Math.sin(z)])}
 return points.map((p,i)=>(i?"L ":"M ")+p[0].toFixed(2)+" "+p[1].toFixed(2)).join(" ")+" Z"}
@@ -143,9 +143,14 @@ const root=$("catalog");root.replaceChildren();
 for(const x of matches){const row=el("div","catalog-item"),l=el("div"),name=el("b","",x.title),cat=el("small","",x.category);
 l.append(name,cat);const chosen=data.selected.includes(x.id),button=btn(chosen?"Убрать":"+ Добавить",()=>chosen?remove(x.id):add(x.id));button.setAttribute("aria-pressed",String(chosen));if(!chosen&&data.selected.length>=MAX_ITEMS)button.disabled=true;row.append(l,button);root.append(row)}
 if(!matches.length)root.append(el("p","sub","Ничего не найдено. Добавьте свою область."))}
-function frequencySelect(id){const sel=el("select");sel.setAttribute("aria-label","Частота: "+labelFor(id).title);sel.append(option("","Не оценено"));
-for(const item of C.frequency)sel.append(option(String(item.value),item.value+" · "+item.label+" ("+item.days+")"));
-const r=record(id);sel.value=r.frequency===null?"":String(r.frequency);sel.addEventListener("change",e=>{r.frequency=e.target.value===""?null:Number(e.target.value);save();draw();renderLegend()});return sel}
+function frequencySelect(id){
+const sel=el("select");sel.setAttribute("aria-label","Типичная частота или статус: "+labelFor(id).title);
+sel.append(option("","Не оценено"));
+for(const item of C.frequency)sel.append(option(item.value,item.label+" — "+item.hint));
+const r=record(id);sel.value=r.frequency===null?"":r.frequency;
+sel.addEventListener("change",e=>{r.frequency=frequency(e.target.value);save();draw();renderLegend()});
+return sel
+}
 function markerSelect(id,key){const sel=el("select");sel.setAttribute("aria-label",labelFor(id).title+": "+PROMPTS[key]);
 for(const [value,title] of choices)sel.append(option(value,title));
 sel.value=record(id).markers[key]||"";sel.addEventListener("change",e=>{if(!e.target.value)delete record(id).markers[key];else record(id).markers[key]=e.target.value;save();draw()});return sel}
@@ -153,19 +158,21 @@ function renderItems(){const root=$("items");root.replaceChildren();if(!data.sel
 data.selected.forEach((id,i)=>{const x=labelFor(id),r=record(id),card=el("article","item");card.id="item-"+i;
 const head=el("div","itemhead"),title=el("div"),name=el("b","",(i+1)+". "+x.title),cat=el("small","",x.category);
 title.append(name,cat);const removeButton=btn("Убрать",()=>remove(id));removeButton.setAttribute("aria-label","Убрать "+x.title);head.append(title,removeButton);card.append(head);
-card.append(el("p","",x.info));const label=el("label","","Частота за последние 30 дней");card.append(label,frequencySelect(id));
+card.append(el("p","",x.info));const label=el("label","","Обычная частота / текущий статус");card.append(label,frequencySelect(id));
+if(r.legacy30days!==null)card.append(el("p","sub","Архив прежней 30-дневной шкалы: "+r.legacy30days+"/6 ("+oldBuckets[r.legacy30days]+"). Новую оценку нужно выбрать отдельно."));
 card.append(el("div","marker-head","Добровольная рефлексия о контроле"));const ms=el("div","markers");
 for(const key of KEYS){const box=el("div","marker"),l=el("label","",PROMPTS[key]);box.append(l,markerSelect(id,key));ms.append(box)}card.append(ms);
 const noteLabel=el("label","notes-label","Наблюдение / контекст (необязательно)"),note=el("textarea");note.value=r.note;note.maxLength=450;note.placeholder="Как я использовал это занятие или продукт? Что заметил?";note.setAttribute("aria-label","Заметка: "+x.title);
 note.addEventListener("input",e=>{r.note=e.target.value.slice(0,450);persist()});card.append(noteLabel,note);root.append(card)})}
-function renderLegend(){const root=$("legend");root.replaceChildren();data.selected.forEach((id,i)=>{const x=labelFor(id),v=record(id).frequency,button=btn((i+1)+". "+x.title+" · "+(v===null?"—":String(v)),()=>scrollTo(id));button.setAttribute("aria-label",x.title+": "+(v===null?"Не оценено":C.frequency[v].label));root.append(button)})}
+function renderLegend(){const root=$("legend");root.replaceChildren();data.selected.forEach((id,i)=>{const x=labelFor(id),v=record(id).frequency,name=v===null?"—":OPTIONS.get(v).label,button=btn((i+1)+". "+x.title+" · "+name,()=>scrollTo(id));button.setAttribute("aria-label",x.title+": "+(v===null?"Не оценено":name));root.append(button)})}
 function renderHistory(){const root=$("history");root.replaceChildren();if(!data.history.length){root.append(el("li","sub","Нет сохранённых снимков."));return}
-for(const snap of data.history.slice().reverse()){const li=el("li"),d=el("span");let date=snap.date;try{date=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(snap.date))}catch(_){}const rated=snap.selected.filter(id=>snap.records[id]&&snap.records[id].frequency!==null).length;
+for(const snap of data.history.slice().reverse()){const li=el("li"),d=el("span");let date=snap.date;try{date=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(snap.date))}catch(_){}const rated=snap.selected.filter(id=>snap.records[id]&&isAssessed(snap.records[id].frequency)).length;
 d.textContent=date+" · "+rated+"/"+snap.selected.length+" оценено";const b=btn("Восстановить",()=>{if(!confirm("Заменить текущий набор и оценки историческим снимком? История сохранится."))return;if(stale){status("Обновите вкладку перед восстановлением.");return}
-const hist=data.history;data={version:1,...safeBody(snap),history:hist};if(persist()){render();status("Снимок восстановлен.")}});li.append(d,b);root.append(li)}}
+const hist=data.history;data={version:SCHEMA,...safeBody(snap),history:hist,archived30day:data.archived30day};if(persist()){render();status("Снимок восстановлен.")}});li.append(d,b);root.append(li)}
+for(const snap of data.archived30day){const li=el("li"),label=el("span");let date=snap.date;try{date=new Date(date).toLocaleDateString("ru-RU")}catch(_){}const rated=snap.selected.filter(id=>snap.records[id]&&snap.records[id].legacy30days!==null).length;label.textContent="Архив 30-дневной шкалы · "+date+" · "+rated+" записей (без конвертации)";li.append(label);root.append(li)}}
 function render(){catalog();renderItems();renderLegend();draw();renderHistory()}
 function init(){for(const group of C.categories)$("category").append(option(group,group));$("category").prepend(option("","Все разделы"));$("category").value="";
-for(const t of C.frequency){const item=el("div");item.append(el("b","",String(t.value)),el("span","",t.label),el("small","",t.days));$("scale").append(item)}
+for(const t of C.frequency){const item=el("div");item.append(el("b","",t.label),el("small","",t.hint));$("scale").append(item)}
 load();render()}
 $("search").addEventListener("input",catalog);$("category").addEventListener("change",catalog);
 $("addCustom").addEventListener("click",()=>{const input=$("customName"),title=text(input.value,65);if(!title){status("Напишите название занятия или привычки.");return}
@@ -174,7 +181,7 @@ const id="u-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
 $("customName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("addCustom").click()}});
 $("snapshot").addEventListener("click",()=>{if(!data.selected.length){status("Сначала выберите области наблюдения.");return}if(stale){status("Перезагрузите страницу после обновления в другой вкладке.");return}
 data.history.push({date:new Date().toISOString(),...safeBody(data)});data.history=data.history.slice(-MAX_HISTORY);
-if(persist()){renderHistory();status("Снимок сохранён. Для сравнения вернитесь через 30 дней.")}});
+if(persist()){renderHistory();status("Снимок сохранён. Повторите оценку в удобный срок, сохраняя критерии.")}});
 $("clearCurrent").addEventListener("click",()=>{if(!confirm("Сбросить оценки, заметки и ответы о контроле? Выбранные области и история сохранятся."))return;
 if(stale){status("Сначала обновите вкладку.");return}for(const id of data.selected)data.records[id]=safeRecord(null);if(persist())render()});
 $("clearAll").addEventListener("click",()=>{if(!confirm("Удалить безвозвратно ВСЕ локальные записи этого колеса, включая историю?"))return;
