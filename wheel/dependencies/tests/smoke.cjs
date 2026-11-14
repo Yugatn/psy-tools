@@ -40,17 +40,17 @@ function start(initial){
   let checks=0;function ok(value,message){assert.ok(value,message);checks++}
   const a=start(),get=a.get;
   ok(a.catalog.items.length===35,"35 activity choices");
-  ok(a.catalog.frequency.length===13,"13 frequency and status responses");
-  ok(new Set(a.catalog.frequency.map(x=>x.value)).size===13,"unique frequency values");
+  ok(a.catalog.frequency.length===14,"14 frequency and status responses");
+  ok(new Set(a.catalog.frequency.map(x=>x.value)).size===14,"unique frequency values");
   ok(a.catalog.frequency[0].label==="Несколько раз в день","first response multiple per day");
   ok(a.catalog.frequency.some(x=>x.value==="abstinent_3y"&&x.level===0),"3+ year abstinence represented, not dependence level");
   ok(a.catalog.frequency.some(x=>x.value==="never"&&x.level===0),"no lifetime experience represented");
   ok(a.catalog.frequency.some(x=>x.value==="decline"&&x.level===null),"privacy refusal is not zero");
   ok(get("items").children.length===11,"11 default rays");
-  ok(get("scale").children.length===13,"all options visibly explained");
+  ok(get("scale").children.length===14,"all options visibly explained");
   ok(get("count").textContent==="0 / 11","unrated does not equal no experience");
   let card=get("items").children[0],select=card.children[3];
-  ok(select.children.length===14,"13 choices plus unanswered");
+  ok(select.children.length===15,"14 choices plus unanswered");
   select.value="never";await select.emit("change");
   ok(a.saved().version===2,"new schema v2");
   ok(a.saved().records.sweet.frequency==="never","never experienced is distinct value");
