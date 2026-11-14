@@ -80,9 +80,9 @@ const preset=DATA&&DATA.presets.find(p=>p.id===mode);
 const definitions=new Map(DATA?DATA.catalog.map(v=>[v.id,v]):[]);
 const validScore=x=>Number.isInteger(x)&&x>=0&&x<=10?x:null;
 const safeText=(x,max)=>typeof x==="string"?x.slice(0,max):"";
-let data,record,detail,entry;
+let data,record,detail,entry,stale=false;
 function status(x){$("status").textContent=x}
-function trySave(){try{localStorage.setItem(KEY,JSON.stringify(data));status("Изменения сохранены в браузере.");return true}catch(_){status("Браузер не смог сохранить данные. Вернитесь к основному колесу и экспортируйте JSON.");return false}}
+function trySave(){if(stale){status("Записи изменены в другой вкладке. Обновите эту страницу перед продолжением, чтобы не перезаписать изменения.");return false}try{localStorage.setItem(KEY,JSON.stringify(data));status("Изменения сохранены в браузере.");return true}catch(_){status("Браузер не смог сохранить данные. Вернитесь к основному колесу и экспортируйте JSON.");return false}}
 function safeDetail(x){const o={ratings:{},evidence:safeText(x&&x.evidence,600),plan:safeText(x&&x.plan,360),history:[]};
 for(const dim of dims){const v=validScore(x&&x.ratings&&x.ratings[dim.id]);if(v!==null)o.ratings[dim.id]=v}
 if(x&&Array.isArray(x.history))for(const h of x.history.slice(-MAX_HISTORY)){if(!h||typeof h.date!=="string"||!Number.isFinite(Date.parse(h.date)))continue;
@@ -135,7 +135,7 @@ $("plan").addEventListener("input",e=>{detail.plan=safeText(e.target.value,360);
 $("saveSnapshot").addEventListener("click",()=>{detail.history.push({date:new Date().toISOString(),ratings:{...detail.ratings},evidence:detail.evidence,plan:detail.plan});detail.history=detail.history.slice(-MAX_HISTORY);if(trySave())renderHistory()});
 $("reset").addEventListener("click",()=>{if(!confirm("Сбросить только четыре оценки? Наблюдение, план и история сохранятся."))return;detail.ratings={};trySave();render()});
 $("print").addEventListener("click",()=>window.print());
-window.addEventListener("storage",e=>{if(e.key!==KEY)return;status("Данные изменены в другой вкладке. Перезагрузите страницу, прежде чем продолжить, чтобы не перезаписать изменения.")});
+window.addEventListener("storage",e=>{if(e.key!==KEY)return;stale=true;status("Данные изменены в другой вкладке. Обновите страницу: сохранение временно заблокировано для защиты новых записей.")});
 render()
 }
 boot()
