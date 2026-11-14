@@ -52,13 +52,19 @@ items:Object.freeze(items),
 categories:Object.freeze(groups.map(g=>g[0])),
 defaults:Object.freeze(defaults),
 frequency:Object.freeze([
-Object.freeze({value:0,label:"Не было",days:"0 дней"}),
-Object.freeze({value:1,label:"Очень редко",days:"1–2 дня"}),
-Object.freeze({value:2,label:"Редко",days:"3–5 дней"}),
-Object.freeze({value:3,label:"Иногда",days:"6–10 дней"}),
-Object.freeze({value:4,label:"Часто",days:"11–19 дней"}),
-Object.freeze({value:5,label:"Почти ежедневно",days:"20–29 дней"}),
-Object.freeze({value:6,label:"Ежедневно",days:"30 дней"})
+Object.freeze({"value":"many_daily","label":"Несколько раз в день","hint":"2 и более эпизода в сутки в обычные дни","level":9}),
+Object.freeze({"value":"daily","label":"Ежедневно","hint":"Обычно один раз в день","level":8}),
+Object.freeze({"value":"many_weekly","label":"Несколько раз в неделю","hint":"Примерно 2–6 дней или эпизодов в неделю","level":7}),
+Object.freeze({"value":"weekly","label":"Каждую неделю","hint":"Обычно около одного раза в неделю","level":6}),
+Object.freeze({"value":"many_monthly","label":"Несколько раз в месяц","hint":"Обычно 2–3 раза в месяц","level":5}),
+Object.freeze({"value":"monthly","label":"Раз в месяц","hint":"Обычно около одного раза в месяц","level":4}),
+Object.freeze({"value":"many_yearly","label":"Несколько раз в год","hint":"Обычно 2–11 раз в год","level":3}),
+Object.freeze({"value":"yearly","label":"Раз в год","hint":"Примерно один раз в год","level":2}),
+Object.freeze({"value":"every_few_years","label":"Раз в несколько лет","hint":"Нерегулярно, эпизодически; возможно несколько лет между случаями","level":1}),
+Object.freeze({"value":"inactive_1_3y","label":"Не было 1–3 года","hint":"Опыт раньше был, за последние 1–3 года не было","level":0}),
+Object.freeze({"value":"abstinent_3y","label":"Воздерживаюсь более трёх лет","hint":"Опыт был, осознанное воздержание длится больше 3 лет","level":0}),
+Object.freeze({"value":"never","label":"Не было такого опыта","hint":"Ни разу в жизни","level":0}),
+Object.freeze({"value":"decline","label":"Не хочу отвечать","hint":"Осознанный пропуск: никакая частота не предполагается","level":null})
 ])
 });
 })(window);
