@@ -142,6 +142,8 @@ test("xlsx and CSV exports contain recognizable formats and summary sheet",async
   assert.equal(bytes.toString("binary",0,4),"PK\x03\x04");
   assert.ok(bytes.includes(Buffer.from("xl/worksheets/sheet1.xml")));
   assert.ok(bytes.includes(Buffer.from("xl/worksheets/sheet2.xml")));
+  assert.ok(bytes.includes(Buffer.from("xl/worksheets/sheet3.xml")));
+  assert.ok(bytes.includes(Buffer.from("По сериям")));
   assert.ok(bytes.includes(Buffer.from("Статистика")));
   const csv=await a.files[1].text();
   assert.ok(csv.startsWith("\ufeff"));
