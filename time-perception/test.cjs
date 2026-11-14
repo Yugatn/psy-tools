@@ -77,7 +77,7 @@ function makeHarness(options = {}) {
     advance(ms){time+=ms},
     click(id){element(id).click()},
     records(){return JSON.parse(stored.get("psytools.time-perception.v1")||"[]")},
-    runTimer(ms){for(const [id,t] of scheduled){if(t.ms===ms){scheduled.delete(id);t.cb();return true}}return false}
+    runTimer(ms){for(const [id,t] of scheduled){if(t.ms===ms){scheduled.delete(id);time+=ms;t.cb();return true}}return false}
   };
 }
 test("one tap measures relative timing error and saves locally",()=>{
@@ -168,7 +168,6 @@ test("visual verbal estimation hides stimulus duration until a typed answer",()=
   assert.equal(a.element("demoMeter").style.display,"none");
   const demo=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
   assert.ok(demo,"random visual display duration chosen");
-  a.advance(demo.ms);
   assert.ok(a.runTimer(demo.ms));
   assert.equal(a.element("stimulus").hidden,true);
   assert.equal(a.element("estimateForm").hidden,false);
@@ -190,7 +189,7 @@ test("invalid verbal estimate does not save results",()=>{
   assert.ok(a.runTimer(750));
   const demo=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
   assert.ok(demo);
-  a.advance(demo.ms);assert.ok(a.runTimer(demo.ms));
+  assert.ok(a.runTimer(demo.ms));
   a.element("estimatedSeconds").value="=1+1";
   a.element("estimateForm").fire("submit",{preventDefault(){}});
   assert.equal(a.records().length,0);
@@ -206,4 +205,56 @@ test("hiding the browser tab during visual stimulus cancels trial",()=>{
   assert.equal(a.element("stimulus").hidden,true);
   assert.equal(a.element("estimateForm").hidden,true);
   assert.equal(a.records().length,0);
+});
+
+test("blind series hides the actual duration, past table and exports until completion",()=>{
+  const a=makeHarness({task:"estimation",attempts:"3",feedback:"blind"});
+  a.click("newSession");
+  assert.ok(a.runTimer(750));
+  const first=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
+  assert.ok(first);
+  assert.ok(a.runTimer(first.ms));
+  a.element("estimatedSeconds").value="9";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  assert.equal(a.records().length,1);
+  assert.ok(a.element("latestResult").textContent.includes("после завершения серии"));
+  assert.equal(a.element("statBias").textContent,"—");
+  assert.equal(a.element("xlsx").disabled,true);
+  assert.ok(a.element("rows").children[0].children[0].textContent.includes("после последней попытки"));
+  a.click("prepare");assert.ok(a.runTimer(750));
+  const second=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
+  assert.ok(a.runTimer(second.ms));a.element("estimatedSeconds").value="9";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  a.click("prepare");assert.ok(a.runTimer(750));
+  const third=Array.from(a.scheduled.values()).find(x=>[3000,5000,7000,10000,12000,15000,20000,30000].includes(x.ms));
+  assert.ok(a.runTimer(third.ms));a.element("estimatedSeconds").value="9";
+  a.element("estimateForm").fire("submit",{preventDefault(){}});
+  assert.equal(a.records().length,3);
+  assert.equal(a.element("statN").textContent,"3");
+  assert.notEqual(a.element("statBias").textContent,"—");
+  assert.equal(a.element("xlsx").disabled,false);
+});
+test("completed-series metrics survive browser refresh from local history",()=>{
+  const a=makeHarness({method:"double",feedback:"immediate",attempts:"3"});
+  a.click("newSession");
+  for(let i=0;i<3;i++){
+    if(i)a.click("prepare");
+    a.element("pad").fire("pointerdown");
+    a.advance(1000+i*100);
+    a.element("pad").fire("pointerdown");
+  }
+  assert.equal(a.element("statN").textContent,"3");
+  assert.notEqual(a.element("statBias").textContent,"—");
+});
+test("reproduction never shows a duration-progress bar",()=>{
+  const a=makeHarness({task:"reproduction",method:"double"});
+  a.click("newSession");a.runTimer(750);
+  assert.equal(a.element("stimulus").hidden,false);
+  assert.equal(a.element("demoMeter").style.display,"none");
+  assert.ok(!a.element("status").textContent.includes("5 секунд"));
+  const duration=Array.from(a.scheduled.values()).find(x=>[2000,3000,5000,8000,12000].includes(x.ms));
+  assert.ok(duration);
+  a.runTimer(duration.ms);
+  a.element("pad").fire("pointerdown");a.advance(3000);a.element("pad").fire("pointerdown");
+  assert.equal(a.records()[0].target_s,duration.ms/1000);
 });
