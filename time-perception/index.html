@@ -156,45 +156,41 @@ if(!session||phase!=="between")return;
 if(session.task==="production"){session.currentTarget=session.target;ready();return;}
 var intervals=session.task==="estimation"?[3,5,7,10,12,15,20,30]:[2,3,5,8,12];
 var candidates=intervals.filter(function(x){return x!==session.previousNominal});
-session.nominalTarget=candidates[Math.floor(Math.random()*candidates.length)];session.previousNominal=session.nominalTarget;
-session.currentTarget=session.nominalTarget;phase="demo";controlState();
+session.nominalTarget=candidates[Math.floor(Math.random()*candidates.length)];
+session.previousNominal=session.nominalTarget;
+session.currentTarget=session.nominalTarget;
+phase="demo";controlState();
 $("progress").textContent="Попытка "+(session.results.length+1)+" из "+session.attempts+". Без часов и подсказок.";
-if(session.task==="estimation"){
-padMsg("Подготовка наблюдения","Сейчас появится изображение. После его исчезновения укажи, сколько секунд оно было видно.");
+padMsg("Подготовка наблюдения","Сейчас появится неподвижное изображение. Запомни продолжительность показа.");
 setStatus("Внимание: изображение скоро появится.");
 demoTimer=setTimeout(function(){
 if(phase!=="demo")return;
 $("pad").hidden=true;$("stimulus").hidden=false;
 setStatus("Наблюдай за изображением, не переключаясь на другие окна.");
+// Первый кадр показывает стимул; следующий кадр запускает монотонный отсчёт.
+// Это уменьшает расхождение между временем JS и моментом первого рисования.
 requestAnimationFrame(function(){
 if(phase!=="demo")return;
-startedAt=now();demoTimer2=setTimeout(function(){
+requestAnimationFrame(function(){
+if(phase!=="demo")return;
+startedAt=now();
+demoTimer2=setTimeout(function(){
 if(phase!=="demo")return;
 session.currentTarget=Math.max(0.001,(now()-startedAt)/1000);
+if(session.task==="estimation"){
 $("stimulus").hidden=true;$("pad").hidden=false;phase="estimate";
 padMsg("Время наблюдения завершено","Сколько секунд, по твоей оценке, длился показ?");
 $("estimateForm").hidden=false;$("estimatedSeconds").value="";$("estimateError").textContent="";
 setStatus("Изображение скрыто. Введи свою оценку времени: фактическая длительность пока не раскрыта.");
 controlState();$("estimatedSeconds").focus();
-},session.nominalTarget*1000)
-})
-},750);
-return;
-}
-padMsg("Внимание","Сейчас на экране появится световое поле. Запомни, сколько времени оно будет видно.");
-setStatus("Подготовка демонстрации…");
-demoTimer=setTimeout(function(){
-if(phase!=="demo")return;
-$("pad").classList.add("demo");$("demoMeter").style.display="block";$("demoBar").style.width="100%";
-$("demoBar").style.transition="width "+session.currentTarget+"s linear";
-requestAnimationFrame(function(){$("demoBar").style.width="0%"});
-padMsg("Наблюдай","Запомни продолжительность свечения. Число секунд пока скрыто.");
-setStatus("Запоминай интервал…");
-demoTimer2=setTimeout(function(){
-if(phase!=="demo")return;ready();
+}else{
+ready();
 setStatus("Демонстрация завершена. Теперь повтори показанную длительность.");
-},session.currentTarget*1000)
-},750)
+}
+},session.nominalTarget*1000);
+});
+});
+},750);
 }
 function newSession(){resetTimers();session={id:"s-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),task:task.value,method:task.value==="estimation"?"typed":method.value,feedback:feedback.value,target:Number(target.value),attempts:Number(attempts.value),results:[],currentTarget:0};phase="between";$("latestResult").textContent="Серия создана. Сначала выполни одну попытку.";setStatus("Подготовка серии.");$("progress").textContent="Серия: 0 из "+session.attempts;refresh();controlState();prepare()}
 function begin(kind){if(phase!=="ready"||!session)return;startedAt=now();startedWith=kind;phase="running";$("pad").classList.add("active");padMsg("Отсчёт идёт…",session.method==="hold"?"Продолжай удерживать, затем отпусти.":"Останови интервал касанием поля или пробелом.");setStatus("Таймер работает. Цифровые часы намеренно скрыты.");controlState();$("pad").focus({preventScroll:true})}
@@ -205,7 +201,7 @@ id:"t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),
 timestamp:new Date().toISOString(),session_id:session.id,task:session.task,method:session.method,
 target_s:Number(objective.toFixed(4)),produced_s:Number(sec.toFixed(4)),
 error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ratio:Number((objective/sec).toFixed(5)),
-nominal_target_s:session.task==="estimation"?session.nominalTarget:objective,
+nominal_target_s:session.task==="production"?objective:session.nominalTarget,
 context:context.value.trim().slice(0,100)
 };
 stored.push(record);stored=stored.slice(-LIMIT);session.results.push(record);
