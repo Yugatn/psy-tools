@@ -96,7 +96,7 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 <h2 id="methodTitle">Как интерпретировать результаты</h2>
 <div class="grid">
 <div><ol class="steps"><li><b>Произведение:</b> тебе называют длительность, а ты отмечаешь её завершение без часов. Это исследование субъективной оценки условной секунды.</li><li><b>Воспроизведение:</b> приложение сначала демонстрирует временной интервал случайной длительности (2, 3, 5, 8 или 12 с). Затем ты повторяешь его без подсказок; длительность раскрывается после ответа.</li><li><b>Оценка наблюдаемой длительности:</b> заранее знаешь лишь то, что потребуется оценить время показа статичного изображения. После его исчезновения введи свою оценку в секундах. Реальная длительность заранее неизвестна.</li><li><b>Способы ответа:</b> одно касание останавливает отсчёт, удержание измеряет время между нажатием и отпусканием, два касания измеряют интервал между ними.</li></ol></div>
-<div><p><strong>Ошибка:</strong> (измерено − цель) / цель × 100%. Например, 0,8 с вместо 1 с = −20%; 1,2 с = +20%.</p><p><strong>Точность</strong> характеризует приближение к целевому интервалу, <strong>стабильность</strong> — повторяемость попыток. Метод ввода, внимание, ожидания, практика и устройство могут влиять на оба показателя.</p><p class="notice">Это экспериментальный инструмент для самонаблюдения, <strong>не</strong> психодиагностический тест и не измерение буквальной «скорости сознания». Не делай клинических заключений по результатам.</p></div>
+<div><p><strong>Ошибка:</strong> (измерено − цель) / цель × 100%. Например, 0,8 с вместо 1 с = −20%; 1,2 с = +20%.</p><p><strong>Точность</strong> характеризует приближение к целевому интервалу, <strong>стабильность</strong> — повторяемость попыток. Коэффициент «ответ / факт» выше 1 означает превышение длительности; ниже 1 — недооценку. Метод ввода, внимание, ожидания, практика и устройство могут влиять на оба показателя.</p><p class="notice">Это экспериментальный инструмент для самонаблюдения, <strong>не</strong> психодиагностический тест и не измерение буквальной «скорости сознания». Не делай клинических заключений по результатам.</p></div>
 </div>
 <details><summary>Основание методики и ограничения</summary>
 <p class="small">В исследованиях различают time production и time reproduction, причём способ моторного ответа влияет на величину и вариативность оценок. Для сравнения условий необходимо сохранять отдельно метод ответа и целевую длительность. Веб-браузеры вносят аппаратные и программные погрешности, особенно на очень коротких интервалах; секундный тест здесь ориентировочный.</p>
@@ -117,7 +117,7 @@ var task=$("task"),method=$("method"),target=$("target"),attempts=$("attempts"),
 function setStatus(message){$("status").textContent=message}
 function now(){return performance.now()}
 function isNumber(n){return typeof n==="number"&&Number.isFinite(n)}
-function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v)){stored=v.filter(function(r){return r&&typeof r==="object"&&isNumber(r.target_s)&&isNumber(r.produced_s)&&r.target_s>0&&r.produced_s>0}).slice(-LIMIT);lastSessionId=stored.length?stored[stored.length-1].session_id:null}}catch(e){stored=[];setStatus("Не удалось прочитать локальную историю.")}}
+function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v)){stored=v.filter(function(r){return r&&typeof r==="object"&&isNumber(r.target_s)&&isNumber(r.produced_s)&&r.target_s>0&&r.produced_s>0}).slice(-LIMIT);stored.forEach(function(r){r.ratio=Number((r.produced_s/r.target_s).toFixed(5))});lastSessionId=stored.length?stored[stored.length-1].session_id:null}}catch(e){stored=[];setStatus("Не удалось прочитать локальную историю.")}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(stored.slice(-LIMIT)));return true}catch(e){setStatus("Результат рассчитан, но браузер не разрешил локальное сохранение.");return false}}
 function fixed(n,dec){return isNumber(n)?n.toFixed(dec):"—"}
 function labelTask(v){return v==="production"?"Произведение":v==="estimation"?"Оценка показа":"Воспроизведение"}
@@ -200,7 +200,7 @@ var record={
 id:"t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),
 timestamp:new Date().toISOString(),session_id:session.id,task:session.task,method:session.method,
 target_s:Number(objective.toFixed(4)),produced_s:Number(sec.toFixed(4)),
-error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ratio:Number((objective/sec).toFixed(5)),
+error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ratio:Number((sec/objective).toFixed(5)),
 nominal_target_s:session.task==="production"?objective:session.nominalTarget,
 context:context.value.trim().slice(0,100)
 };
@@ -270,7 +270,7 @@ stored.slice(-25).reverse().forEach(function(r){var tr=document.createElement("t
 function download(data,name,type){var blob=data instanceof Blob?data:new Blob([data],{type:type});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000)}
 function safeCSV(v){var s=String(v==null?"":v);if(/^[\s]*[=+@-]/.test(s)&&typeof v==="string")s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
 var fields=["timestamp","session_id","task","method","target_s","produced_s","error_s","error_pct","ratio","context","nominal_target_s"];
-var headers=["Дата ISO","Серия","Задача","Способ","Фактическая длительность (с)","Ответ (с)","Разность (с)","Ошибка (%)","Факт / ответ","Условия","Плановая длительность (с)"];
+var headers=["Дата ISO","Серия","Задача","Способ","Фактическая длительность (с)","Ответ (с)","Разность (с)","Ошибка (%)","Ответ / факт","Условия","Плановая длительность (с)"];
 function csvText(){var values=[headers].concat(stored.map(function(r){return fields.map(function(f){return r[f]})}));return "\ufeff"+values.map(function(row){return row.map(safeCSV).join(";")}).join("\r\n")}
 function dateSuffix(){return new Date().toISOString().slice(0,10)}
 $("csv").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");download(csvText(),"psy-tools-time-"+dateSuffix()+".csv","text/csv;charset=utf-8");setStatus("CSV скачан. Импортируй его в Google Таблицы, указав разделитель «точка с запятой», если потребуется.")});
