@@ -33,3 +33,5 @@ jobs:
         run: node wheel/dependencies/tests/smoke.cjs
       - name: Check cross-wheel navigation and license
         run: node wheel/custom/tests/navigation.cjs
+      - name: Check all GitHub Pages routes and scripts
+        run: node wheel/tests/qa-sanity.cjs
