@@ -68,6 +68,16 @@ function launch(seed){
   g("mode").value="socrates";await g("mode").fire("change");
   check(g("average").textContent==="7.0","return to socratic model");
   const saved=x.snapshot();check(launch(saved).get("average").textContent==="7.0","restore after reload");
+  const enhanced=JSON.parse(JSON.stringify(saved));
+  enhanced.records.socrates.details={wisdom:{ratings:{understanding:4,action:8},evidence:"Проверил утверждение",plan:"Продолжить проверку",history:[{date:"2026-11-14T03:00:00.000Z",ratings:{understanding:3},evidence:"Ранее",plan:"Практика"}]}};
+  const nested=launch(enhanced);
+  check(nested.get("rated").textContent==="1/5","nested backup leaves first-level score intact");
+  nested.get("mode").value="plato";await nested.get("mode").fire("change");
+  nested.get("mode").value="socrates";await nested.get("mode").fire("change");
+  check(nested.snapshot().records.socrates.details.wisdom.ratings.action===8,"nested ratings survive model switch");
+  check(nested.snapshot().records.socrates.details.wisdom.history.length===1,"nested history survives model switch");
+  await nested.get("snapshot").fire("click");
+  check(nested.snapshot().records.socrates.history.at(-1).details.wisdom.plan==="Продолжить проверку","first-level snapshot includes nested action plan");
   g("mode").value="personal";await g("mode").fire("change");
   g("customName").value="Моя добродетель";await g("addCustom").fire("click");
   check(x.snapshot().records.personal.ids.length===1,"add custom virtue");
