@@ -120,9 +120,9 @@ function record(id){return data.records[id]||(data.records[id]=safeRecord(null))
 function el(tag,cls,t){const node=document.createElement(tag);if(cls)node.className=cls;if(t!==undefined)node.textContent=t;return node}
 function btn(title,fn){const b=el("button","",title);b.type="button";b.addEventListener("click",fn);return b}
 function option(value,title){const o=el("option","",title);o.value=value;return o}
-function add(id,title){if(data.selected.includes(id))return;if(data.selected.length>=MAX_ITEMS){status("Максимум 36 лучей. Можно сократить список перед добавлением.");return}
+function add(id,title){if(stale){status("Перезагрузите страницу перед добавлением.");return}if(data.selected.includes(id))return;if(data.selected.length>=MAX_ITEMS){status("Максимум 36 лучей. Можно сократить список перед добавлением.");return}
 if(title)data.custom[id]=title;data.selected.push(id);data.records[id]=safeRecord(null);save();render()}
-function remove(id){const rec=record(id);if((rec.frequency!==null||rec.note||Object.keys(rec.markers).length)&&!confirm("Убрать «"+labelFor(id).title+"» из текущего колеса? Данные в истории сохранятся."))return;
+function remove(id){if(stale){status("Перезагрузите страницу перед удалением.");return}const rec=record(id);if((rec.frequency!==null||rec.note||Object.keys(rec.markers).length||Object.values(rec.self).some(v=>v!==null))&&!confirm("Убрать «"+labelFor(id).title+"» из текущего колеса? Данные в истории сохранятся."))return;
 data.selected=data.selected.filter(x=>x!==id);delete data.records[id];delete data.custom[id];save();render()}
 function draw(){const chart=$("chart"),ids=data.selected,n=ids.length,c=250,R=172;chart.replaceChildren();const assessed=ids.filter(id=>isAssessed(record(id).frequency)),daily=ids.filter(id=>["daily","many_daily"].includes(record(id).frequency)).length,flags=ids.filter(id=>KEYS.some(k=>record(id).markers[k]==="yes")).length;
 $("count").textContent=assessed.length+" / "+n;$("daily").textContent=daily;$("flags").textContent=flags;
@@ -154,12 +154,12 @@ const sel=el("select");sel.setAttribute("aria-label","Типичная част�
 sel.append(option("","Не оценено"));
 for(const item of C.frequency)sel.append(option(item.value,item.label+" — "+item.hint));
 const r=record(id);sel.value=r.frequency===null?"":r.frequency;
-sel.addEventListener("change",e=>{r.frequency=frequency(e.target.value);save();draw();renderLegend()});
+sel.addEventListener("change",e=>{if(stale){status("Перезагрузите страницу перед изменением.");sel.value=r.frequency===null?"":r.frequency;return}r.frequency=frequency(e.target.value);save();draw();renderLegend()});
 return sel
 }
 function markerSelect(id,key){const sel=el("select");sel.setAttribute("aria-label",labelFor(id).title+": "+PROMPTS[key]);
 for(const [value,title] of choices)sel.append(option(value,title));
-sel.value=record(id).markers[key]||"";sel.addEventListener("change",e=>{if(!e.target.value)delete record(id).markers[key];else record(id).markers[key]=e.target.value;save();draw()});return sel}
+sel.value=record(id).markers[key]||"";sel.addEventListener("change",e=>{if(stale){status("Перезагрузите страницу перед изменением.");sel.value=record(id).markers[key]||"";return}if(!e.target.value)delete record(id).markers[key];else record(id).markers[key]=e.target.value;save();draw()});return sel}
 function selfSelect(id,key){
 const scale=selfScales[key],sel=el("select");
 sel.setAttribute("aria-label",labelFor(id).title+": "+scale.title);
@@ -180,7 +180,7 @@ if(r.legacy30days!==null)card.append(el("p","sub","Архив прежней 30-
 card.append(el("div","marker-head","Добровольная рефлексия о контроле"));const ms=el("div","markers");
 for(const key of KEYS){const box=el("div","marker"),l=el("label","",PROMPTS[key]);box.append(l,markerSelect(id,key));ms.append(box)}card.append(ms);
 const noteLabel=el("label","notes-label","Наблюдение / контекст (необязательно)"),note=el("textarea");note.value=r.note;note.maxLength=450;note.placeholder="Как я использовал это занятие или продукт? Что заметил?";note.setAttribute("aria-label","Заметка: "+x.title);
-note.addEventListener("input",e=>{r.note=e.target.value.slice(0,450);persist()});card.append(noteLabel,note);
+note.addEventListener("input",e=>{if(stale){status("Перезагрузите страницу перед вводом новой заметки.");return}r.note=e.target.value.slice(0,450);persist()});card.append(noteLabel,note);
 const extra=el("section","self-assessment");
 extra.append(el("h4","","Влечение и возможность выбора"));
 extra.append(el("p","sub","Ответьте, только если вопрос применим. 0 и «Не оценено» — разные ответы."));
@@ -205,7 +205,7 @@ function init(){for(const group of C.categories)$("category").append(option(grou
 for(const t of C.frequency){const item=el("div");item.append(el("b","",t.label),el("small","",t.hint));$("scale").append(item)}
 load();render()}
 $("search").addEventListener("input",catalog);$("category").addEventListener("change",catalog);
-$("addCustom").addEventListener("click",()=>{const input=$("customName"),title=text(input.value,65);if(!title){status("Напишите название занятия или привычки.");return}
+$("addCustom").addEventListener("click",()=>{if(stale){status("Сначала перезагрузите страницу.");return}const input=$("customName"),title=text(input.value,65);if(!title){status("Напишите название занятия или привычки.");return}
 if(data.selected.some(id=>labelFor(id).title.toLocaleLowerCase("ru")===title.toLocaleLowerCase("ru"))){status("Такое название уже есть среди выбранных.");return}
 const id="u-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);add(id,title);if(data.selected.includes(id))input.value=""});
 $("customName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("addCustom").click()}});
