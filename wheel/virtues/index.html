@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Колесо добродетелей: Сократ, Платон, Аристотель, современная этика и VIA. Самооценка поступков, вопросы для размышления, история развития.">
+<link rel="canonical" href="https://yugatn.github.io/psy-tools/wheel/virtues/">
+<title>Колесо добродетелей · PSY-TOOLS</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1120;--panel:#111d30;--panel2:#182a40;--line:#2c4057;--text:#f0f7ff;--muted:#b0c1d6;--accent:#79ddc8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 70% 0%,#18364a 0,#0b1120 58%);margin:0;color:var(--text);font:15px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:#a2e2fa}button,input,select,textarea{font:inherit}button{background:#294159;border:1px solid #4b637a;color:var(--text);border-radius:11px;padding:10px 13px;min-height:42px;cursor:pointer}button:hover{border-color:#87cabb}button.primary{background:#216d61;border-color:#40ac95;font-weight:750}button.danger{background:#462a38;border-color:#885767}button:disabled{opacity:.5;cursor:default}button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,svg [tabindex]:focus-visible{outline:3px solid #fbd08c;outline-offset:2px}
+select,input,textarea{color:#fff;border:1px solid #526b82;background:#14263b;border-radius:10px;padding:10px 12px;width:100%;min-height:43px}textarea{min-height:70px;resize:vertical}.wrap{max-width:1180px;margin:auto;padding:16px clamp(12px,3vw,24px) 86px}
+header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:13px}header nav{display:flex;gap:15px;flex-wrap:wrap}.eyebrow{font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.09em;font-weight:800;margin:23px 0 4px}h1{font-size:clamp(28px,5vw,42px);line-height:1.14;letter-spacing:-.03em;margin:4px 0 11px}h2{font-size:21px;line-height:1.28;margin:0 0 13px}h3{font-size:16px;margin:0 0 4px}.lead{line-height:1.7;color:#c3d4e4;max-width:830px;margin-bottom:19px}.card{padding:clamp(14px,2vw,19px);background:var(--panel);border:1px solid var(--line);border-radius:18px;margin-bottom:16px}.sub,.hint{font-size:13px;color:var(--muted);line-height:1.56}.line{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{flex:1 1 220px}.field label{display:block;color:#d6e6f5;font-size:13px;font-weight:740;margin:0 0 7px}.mode-desc{margin:12px 0 3px;color:#c4d5e4;font-size:13px}.two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(290px,.85fr);gap:16px}.chart{width:min(100%,530px);height:auto;display:block;margin:auto;overflow:visible}.chart .ring{fill:none;stroke:#455973;stroke-width:1}.chart .empty-slice{fill:#263950;stroke:#142438;stroke-width:1}.chart .filled-slice{fill:#6fe2c9;fill-opacity:.38;stroke:#81f6d9;stroke-width:1.2}.chart .target{fill:none;stroke:#edb876;stroke-width:2;stroke-dasharray:4 5}.chart .axis{stroke:#475b72;stroke-width:1}.chart .label{fill:#e5f2fd;font-size:12px;font-weight:800;text-anchor:middle}.chart .center{fill:#0e1d2f;stroke:#567a83;stroke-width:1.5}.chart .large{fill:white;font-size:29px;font-weight:850;text-anchor:middle}.chart .small{fill:#a9d5cf;font-size:11px;text-anchor:middle}.chart .hit{fill:transparent;cursor:pointer}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:9px 0}.metric{background:var(--panel2);border-radius:12px;padding:9px 7px;text-align:center}.metric b{font-size:22px;display:block}.metric span{font-size:11px;color:#aac0d3}.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.concepts button{text-align:left;font-size:12px;display:flex;justify-content:space-between;gap:5px;align-items:center;padding:9px}.concepts button[aria-pressed="true"]{background:#1f615e;border-color:#86e3d6}.concepts button .n{color:#a6c4d5;font-weight:800}.focus{border-left:3px solid var(--accent);background:#173148;border-radius:0 10px 10px 0;padding:11px 13px;margin-top:11px}.focus p{font-size:13px;color:#d3e5f2;margin:7px 0}.focus strong{color:#fff}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item{padding:13px;border:1px solid #32465d;background:#14253a;border-radius:13px;min-width:0}.item.active{border-color:#8edecb}.item-header{display:flex;gap:10px;align-items:start;justify-content:space-between}.item-header b{font-size:15px}.item-header small{display:block;font-size:11px;color:#b3c7d9;margin-top:4px}.item-header button{min-height:32px;padding:3px 9px}.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.scoregrid label{font-size:12px;color:#cbd8e9;display:block;margin-bottom:4px}.item textarea{margin-top:6px;min-height:55px;font-size:13px}.item .field-note{font-size:12px;margin-top:8px;color:#ccd9e8}.history{list-style:none;margin:0;padding:0}.history li{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #2f4157;padding:11px 0;font-size:13px}.history li:last-child{border-bottom:0}.filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:310px;overflow:auto;padding:2px}.catalog .entry{padding:10px;border:1px solid #32445d;border-radius:11px;background:#16273e;display:flex;justify-content:space-between;gap:10px;align-items:center}.entry b{display:block;font-size:13px}.entry small{display:block;font-size:11px;color:#a9bdd1}.entry button{min-height:35px;padding:6px 9px;flex:none;font-size:12px}.entry button[aria-pressed="true"]{background:#215e55}.custom-row{display:flex;gap:8px;flex-wrap:wrap}.custom-row input{flex:2 1 180px}.custom-row button{flex:0 0 auto}.status{min-height:22px;color:#a5ead5;font-size:13px;margin:9px 0 0}.warn{border-left:3px solid #e3b070;background:#3a302d;color:#f5dcc1;padding:12px 13px;border-radius:0 10px 10px 0;font-size:13px;line-height:1.65}footer{color:#acbfd0;font-size:12px;line-height:1.7;margin-top:24px}footer a{color:#a4d8fa}
+@media(max-width:860px){.two{grid-template-columns:1fr}}@media(max-width:620px){.list,.catalog{grid-template-columns:1fr}.concepts{grid-template-columns:1fr 1fr}.history li{align-items:start;flex-direction:column}}@media(max-width:370px){.scoregrid,.filter-row,.metrics{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:span 2}}
+@media print{body{background:white;color:#111}.wrap{padding:0}.card,.item{background:white;border-color:#aaa;break-inside:avoid}.two{display:block}.chart .ring,.chart .axis{stroke:#aaa}.chart .label,.chart .large,.chart .small{fill:#111}.chart .center{fill:white}header,.toolbar,.catalog,.filter-row,.custom-row,.status,footer,.hide-print,.concepts{display:none!important}.sub,.hint,.lead,.item-header small,.metric span{color:#333}.metric{background:#eee}.warn,.focus{background:#fff;color:#111}.item textarea,.item select{color:#111;background:#fff}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><a href="../hub.html">← Каталог колёс</a><nav aria-label="Быстрые ссылки"><a href="../custom/">Конструктор</a><a href="../soft-skills/">Гибкие навыки</a><a href="../cabinet.html">Личный кабинет</a></nav></header>
+<div class="eyebrow">Этика добродетелей · образовательный инструмент</div>
+<h1>Колесо добродетелей</h1>
+<p class="lead">Размышляйте не о том, насколько вы «хороший человек», а о конкретных поступках, мотивах и возможностях развития. Сравните исторические концепции Сократа, Платона и Аристотеля с современной философией и исследовательской классификацией VIA.</p>
+<section class="card"><h2>1. Выберите философскую модель</h2>
+<div class="line"><div class="field"><label for="mode">Традиция и набор добродетелей</label><select id="mode"></select></div></div>
+<p class="mode-desc" id="modeInfo"></p>
+<p class="sub">Для каждого набора сохраняется отдельный результат. Можете дополнять или сокращать число лучей, сохраняя авторскую подборку для личной рефлексии.</p></section>
+<div class="two">
+<div><section class="card"><h2>2. Колесо поступков</h2>
+<svg id="chart" class="chart" viewBox="0 0 500 500" role="img" aria-label="Колесо ещё не оценено"></svg>
+<div class="metrics"><div class="metric"><b id="rated">0/5</b><span>оценено</span></div><div class="metric"><b id="average">—</b><span>условное среднее</span></div><div class="metric"><b id="snapCount">0</b><span>снимков истории</span></div></div><p class="sub">Бирюзовый — оценка наблюдаемых поступков, оранжевая линия — желаемый уровень. Незаполненный сектор — не отсутствие добродетели, а отсутствие оценки. Нажмите на номер сектора, чтобы выбрать качество.</p></section>
+<section class="card"><h2>3. Сохраните наблюдение</h2><div class="toolbar">
+<button id="snapshot" class="primary">Сохранить снимок</button><button id="export">Экспорт JSON</button><button id="import">Импорт JSON</button><input type="file" id="importFile" accept=".json,application/json" hidden><button id="print">Печать</button></div><p class="status" id="status" role="status"></p>
+<p class="warn">Данные хранятся только в localStorage браузера. Другой человек в этом же профиле браузера может прочитать оценки и заметки. Не записывайте личные идентификаторы и чувствительные сведения. Файл JSON нужно хранить самостоятельно.</p></section>
+<section class="card"><h2>История наблюдений</h2><ul class="history" id="history"></ul><div class="toolbar" style="margin-top:11px"><button id="reset">Сбросить текущие оценки</button><button id="clearMode">Очистить эту модель</button><button id="clearAll" class="danger">Удалить все данные добродетелей</button></div></section></div>
+<div><section class="card"><h2>Качества выбранного набора</h2><div id="legend" class="concepts"></div><div class="focus" aria-live="polite"><h3 id="focusTitle">Выберите добродетель</h3><p id="focusDescription"></p><p id="focusExample"></p><p id="focusPractice"></p><p id="focusQuestion"></p></div></section>
+<section class="card"><h2>Дополнить набор</h2>
+<div class="filter-row"><div><label for="search">Поиск</label><input type="search" id="search" placeholder="Например: мудрость"></div><div><label for="family">Традиция</label><select id="family"></select></div></div>
+<p class="sub" id="catalogCount"></p><div id="catalog" class="catalog"></div>
+<div style="margin-top:15px"><label for="customName">Собственная формулировка добродетели</label><div class="custom-row"><input id="customName" maxlength="55" placeholder="Например: бережность в диалоге"><button id="addCustom" class="primary">Добавить</button></div></div></section></div></div>
+<section class="card"><h2>4. Оцените конкретные проявления</h2>
+<p class="sub">Оценивайте только знакомые вам ситуации последних нескольких недель. От 0 — выбранное качество почти не проявлялось в наблюдаемых действиях до 10 — проявлялось устойчиво в релевантных ситуациях. Это субъективная шкала самоотчёта, не научно валидированный психометрический тест и не характеристика ценности личности.</p>
+<div id="items" class="list"></div></section>
+<section class="card"><h2>Методологические оговорки и источники</h2>
+<p class="sub">Сократ не оставил собственных сочинений; «сократическое» здесь относится к добродетелям, обсуждаемым в ранних диалогах Платона, а не к доказанному авторскому списку Сократа. В «Государстве» Платона выделяют четыре кардинальные добродетели. Аристотелевские категории имеют исторический контекст; их современное применение требует осмысления. В современном исследовании характера VIA выделяют 24 сильные стороны, но научная валидность инструмента VIA не распространяется автоматически на эту авторскую шкалу.</p>
+<p class="sub">Не используйте результаты для сравнения нравственности людей, отбора на работу, оценки детей или принятия клинических решений. Конкретные описания упражнений и вопросы составлены специально для PSY-TOOLS, не воспроизводят официальных опросников.</p>
+<div id="sources" class="sub"></div></section>
+<footer>© 2026 Югатн (Yugatn) · PSY-TOOLS · <a href="https://github.com/Yugatn/psy-tools/blob/main/LICENSE">Условия использования</a> · <a href="../hub.html">Другие колёса</a>.</footer>
+</main>
+<script src="./data.js"></script>
+<script>
+(function(){
+"use strict";
+const DATA=window.VIRTUE_WHEEL;if(!DATA){document.body.textContent="Не удалось загрузить каталог добродетелей.";return}
+const KEY="wheelBalanceVirtuesV1",MAX_RAYS=32,MAX_HISTORY=35,MAX_BYTES=1250000;
+const PRESETS=new Map(DATA.presets.map(x=>[x.id,x]));
+const ALL=new Map(DATA.catalog.map(x=>[x.id,x]));
+const $=id=>document.getElementById(id);
+const make=(tag,txt,cls)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e};
+const btn=(title,fn,cls)=>{const e=make("button",title,cls);e.type="button";e.addEventListener("click",fn);return e};
+const opt=(value,title)=>{const e=make("option",title);e.value=value;return e};
+const score=x=>Number.isInteger(x)&&x>=0&&x<=10?x:null;
+const trimmed=(x,max)=>typeof x==="string"?x.trim().slice(0,max):"";
+const fresh=mode=>({ids:PRESETS.get(mode).ids.slice(),custom:{},values:{},goals:{},notes:{},history:[]});
+let state={version:1,mode:"socrates",records:{}},selected=0;
+function status(message){$("status").textContent=message}
+function record(){return state.records[state.mode]||(state.records[state.mode]=fresh(state.mode))}
+function description(id){const r=record();if(ALL.has(id))return ALL.get(id);if(r.custom[id])return {id,name:r.custom[id],family:"Личная формулировка",description:"Ваше личное определение качества.",example:"Выберите один конкретный поступок.",practice:"Сформулируйте посильное действие для следующей недели.",question:"В каком действии может проявиться это качество?"};return null}
+function sanitizedRecord(x,mode){const base=fresh(mode);if(!x||typeof x!=="object")return base;
+const custom={},ids=[],seen=new Set();
+if(x.custom&&typeof x.custom==="object"&&!Array.isArray(x.custom))for(const [id,name] of Object.entries(x.custom)){if(/^user-[a-z0-9-]{4,45}$/i.test(id)){const str=trimmed(name,55);if(str)custom[id]=str}}
+if(Array.isArray(x.ids)){for(const id of x.ids.slice(0,MAX_RAYS)){if(typeof id!=="string"||seen.has(id)||(!ALL.has(id)&&!custom[id]))continue;seen.add(id);ids.push(id)}}else{ids.push(...base.ids)}
+base.ids=ids;base.custom=custom;
+for(const [source,target] of [["values","values"],["goals","goals"]]){if(x[source]&&typeof x[source]==="object"){for(const id of ids){const v=score(x[source][id]);if(v!==null)base[target][id]=v}}}
+if(x.notes&&typeof x.notes==="object"){for(const id of ids){const t=trimmed(x.notes[id],350);if(t)base.notes[id]=t}}
+if(Array.isArray(x.history))for(const h of x.history.slice(-MAX_HISTORY)){if(!h||typeof h!=="object"||typeof h.date!=="string"||!Number.isFinite(Date.parse(h.date)))continue;const temp=sanitizedSnapshot(h);if(temp)base.history.push(temp)}
+return base}
+function sanitizedSnapshot(h){if(!h||!Array.isArray(h.ids))return null;const ids=[],seen=new Set(),custom={};
+if(h.custom&&typeof h.custom==="object")for(const [id,name] of Object.entries(h.custom)){if(/^user-[a-z0-9-]{4,45}$/i.test(id)&&trimmed(name,55))custom[id]=trimmed(name,55)}
+for(const id of h.ids.slice(0,MAX_RAYS))if(typeof id==="string"&&!seen.has(id)&&(ALL.has(id)||custom[id])){ids.push(id);seen.add(id)}
+const values={},goals={},notes={};
+for(const id of ids){const v=score(h.values&&h.values[id]),g=score(h.goals&&h.goals[id]);if(v!==null)values[id]=v;if(g!==null)goals[id]=g;const n=trimmed(h.notes&&h.notes[id],350);if(n)notes[id]=n}
+return{date:h.date.slice(0,35),ids,custom,values,goals,notes}}
+function sanitize(x){if(!x||x.version!==1||!x.records||typeof x.records!=="object"||Array.isArray(x.records))throw Error("Неверный формат");
+const result={version:1,mode:PRESETS.has(x.mode)?x.mode:"socrates",records:{}};for(const mode of PRESETS.keys())if(Object.hasOwn(x.records,mode))result.records[mode]=sanitizedRecord(x.records[mode],mode);
+return result}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw)state=sanitize(JSON.parse(raw))}catch(_){status("Данные не удалось прочитать. Можно импортировать корректный JSON.")}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(_){status("Браузер не смог сохранить данные. Попробуйте экспортировать JSON.");return false}}
+function save(){if(persist())status("Данные сохранены в этом браузере.")}
+function selectIndex(index){selected=Math.min(Math.max(0,index),Math.max(record().ids.length-1,0));const item=description(record().ids[selected]);$("focusTitle").textContent=item?item.name:"Сначала выберите добродетель";
+$("focusDescription").textContent=item?item.description:"Добавьте одно качество из каталога.";
+$("focusExample").textContent=item?"Пример: "+item.example:"";
+$("focusPractice").textContent=item?"Маленькое упражнение: "+item.practice:"";
+$("focusQuestion").textContent=item?"Вопрос: «"+item.question+"»":"";
+Array.from($("legend").children).forEach((b,i)=>b.setAttribute("aria-pressed",String(i===selected)));
+Array.from($("items").children).forEach((el,i)=>el.classList.toggle("active",i===selected))}
+function svg(tag,attrs={}){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));return e}
+function pathFor(cx,cy,r,a0,a1){const segments=Math.max(4,Math.ceil((a1-a0)/.08)),pts=[[cx,cy]];for(let n=0;n<=segments;n++){const a=a0+(a1-a0)*n/segments;pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r])}return pts.map((p,i)=>(i?"L ":"M ")+p[0].toFixed(2)+" "+p[1].toFixed(2)).join(" ")+" Z"}
+function draw(){const pane=$("chart"),r=record(),ids=r.ids,n=ids.length,c=250,R=171;pane.replaceChildren();const values=ids.filter(id=>score(r.values[id])!==null);const average=values.length?values.reduce((s,id)=>s+r.values[id],0)/values.length:null;
+$("rated").textContent=values.length+"/"+n;$("average").textContent=average===null?"—":average.toFixed(1);$("snapCount").textContent=r.history.length;
+if(!n){const t=svg("text",{x:c,y:c,"text-anchor":"middle",fill:"#d7e8f3","font-size":18});t.textContent="Выберите добродетели";pane.append(t);pane.setAttribute("aria-label","Пока нет выбранных добродетелей");return}
+const step=2*Math.PI/n;
+for(let i=0;i<n;i++){const a=-Math.PI/2+step*i,b=a+step;pane.append(svg("path",{d:pathFor(c,c,R,a,b),class:"empty-slice"}))}
+for(let scale=2;scale<=10;scale+=2)pane.append(svg("circle",{cx:c,cy:c,r:R*scale/10,class:"ring"}));
+ids.forEach((id,i)=>{const a=-Math.PI/2+step*i,b=a+step,mid=a+step/2;
+pane.append(svg("line",{x1:c,y1:c,x2:c+R*Math.cos(a),y2:c+R*Math.sin(a),class:"axis"}));
+const v=score(r.values[id]),g=score(r.goals[id]);if(v!==null&&v>0)pane.append(svg("path",{d:pathFor(c,c,R*v/10,a+.003,b-.003),class:"filled-slice"}));
+if(g!==null&&g>0)pane.append(svg("path",{d:pathFor(c,c,R*g/10,a+.005,b-.005),class:"target"}));
+if(n<=24||i%Math.ceil(n/24)===0){const label=svg("text",{x:c+(R+22)*Math.cos(mid),y:c+(R+22)*Math.sin(mid)+4,class:"label"});label.textContent=i+1;pane.append(label)}
+const hit=svg("path",{d:pathFor(c,c,R,a,b),class:"hit",role:"button",tabindex:0,"aria-label":description(id).name+": "+(v===null?"не оценено":v+"/10")});hit.addEventListener("click",()=>selectIndex(i));hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectIndex(i)}});pane.append(hit)});
+pane.append(svg("circle",{cx:c,cy:c,r:52,class:"center"}));const text=svg("text",{x:c,y:c+2,class:"large"});text.textContent=average===null?"—":average.toFixed(1);pane.append(text);const small=svg("text",{x:c,y:c+20,class:"small"});small.textContent=values.length+"/"+n+" оценено";pane.append(small);pane.setAttribute("aria-label",n+" добродетелей, оценено "+values.length+", условное среднее "+(average===null?"нет оценки":average.toFixed(1)))}
+function renderLegend(){const pane=$("legend");pane.replaceChildren();record().ids.forEach((id,i)=>{const item=description(id),b=btn((i+1)+". "+item.name,()=>{selectIndex(i);const target=$("item-"+i);if(target)target.scrollIntoView({behavior:"smooth",block:"center"})});b.setAttribute("aria-pressed",String(i===selected));pane.append(b)})}
+function dropdown(name,value,onChange){const box=make("div"),label=make("label",name),sel=make("select");sel.setAttribute("aria-label",name);sel.append(opt("","Не оценено"));for(let i=0;i<=10;i++)sel.append(opt(String(i),i+"/10"));sel.value=score(value)===null?"":String(value);sel.addEventListener("change",e=>onChange(e.target.value===""?null:Number(e.target.value)));box.append(label,sel);return box}
+function renderItems(){const pane=$("items");pane.replaceChildren();const r=record();if(!r.ids.length){pane.append(make("div","Выберите качество из каталога.","hint"));return}
+r.ids.forEach((id,i)=>{const info=description(id),item=make("article",undefined,"item");item.id="item-"+i;const header=make("div",undefined,"item-header"),head=make("div"),name=make("b",(i+1)+". "+info.name),family=make("small",info.family);
+head.append(name,family);const remove=btn("Убрать",()=>removeVirtue(id));remove.setAttribute("aria-label","Убрать "+info.name);header.append(head,remove);item.append(header);
+const box=make("div",undefined,"scoregrid");
+box.append(dropdown("Наблюдалось (0–10)",r.values[id],v=>{if(v===null)delete r.values[id];else r.values[id]=v;save();draw()}),
+dropdown("Желаемый уровень",r.goals[id],v=>{if(v===null)delete r.goals[id];else r.goals[id]=v;save();draw()}));item.append(box);
+const noteLabel=make("label","Наблюдение / пример поступка", "field-note"),note=make("textarea");note.value=r.notes[id]||"";note.maxLength=350;note.placeholder="Что удалось? Какой небольшой поступок попробовать?";note.setAttribute("aria-label","Заметка: "+info.name);
+note.addEventListener("input",e=>{r.notes[id]=e.target.value.slice(0,350);persist()});item.append(noteLabel,note);pane.append(item)})}
+function renderCatalog(){const list=$("catalog");list.replaceChildren();const r=record(),filter=$("family").value,q=$("search").value.trim().toLocaleLowerCase("ru");
+const items=DATA.catalog.filter(x=>(!filter||x.family===filter)&&(!q||(x.name+" "+x.family).toLocaleLowerCase("ru").includes(q)));
+$("catalogCount").textContent=items.length+" из "+DATA.catalog.length+" добродетелей · выбрано "+r.ids.length+"/"+MAX_RAYS;
+for(const entry of items){const row=make("div",undefined,"entry"),label=make("div");label.append(make("b",entry.name),make("small",entry.family));
+const selected=r.ids.includes(entry.id),button=btn(selected?"Убрать":"+ Добавить",()=>selected?removeVirtue(entry.id):addVirtue(entry.id));
+button.setAttribute("aria-pressed",String(selected));if(!selected&&r.ids.length>=MAX_RAYS)button.disabled=true;row.append(label,button);list.append(row)}
+if(!items.length)list.append(make("p","Ничего не найдено; можно добавить свою формулировку.","hint"))}
+function addVirtue(id,name){const r=record();if(r.ids.includes(id))return;if(r.ids.length>=MAX_RAYS){status("Максимум 32 луча на одно колесо. Можно создать другую подборку.");return}
+if(name)r.custom[id]=name;if(!description(id)){status("Качество отсутствует в каталоге.");return}r.ids.push(id);selected=r.ids.length-1;save();render()}
+function removeVirtue(id){const r=record(),i=r.ids.indexOf(id);if(i===-1)return;if((r.values[id]!==undefined||r.notes[id])&&!confirm("Убрать «"+description(id).name+"»? Его текущая оценка и заметка будут удалены; история останется."))return;
+r.ids.splice(i,1);delete r.values[id];delete r.goals[id];delete r.notes[id];delete r.custom[id];selected=0;save();render()}
+function renderHistory(){const ul=$("history");ul.replaceChildren();const r=record();if(!r.history.length){ul.append(make("li","Снимков пока нет.","hint"));return}
+for(const snapshot of r.history.slice().reverse()){const li=make("li"),label=make("span");let date=snapshot.date;try{date=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(snapshot.date))}catch(_){}const rated=snapshot.ids.filter(id=>score(snapshot.values[id])!==null);
+label.textContent=date+" · "+snapshot.ids.length+" лучей · оценено "+rated.length;const b=btn("Восстановить",()=>{if(!confirm("Восстановить состав лучей, оценки, цели и заметки? Текущие данные заменятся; старые снимки останутся."))return;
+const history=r.history;r.ids=snapshot.ids.slice();r.custom={...snapshot.custom};r.values={...snapshot.values};r.goals={...snapshot.goals};r.notes={...snapshot.notes};r.history=history;selected=0;save();render()});li.append(label,b);ul.append(li)}}
+function render(){const mode=PRESETS.get(state.mode);$("mode").value=state.mode;$("modeInfo").textContent=mode.blurb;renderLegend();renderCatalog();renderItems();draw();renderHistory();selectIndex(Math.min(selected,record().ids.length-1))}
+function startup(){for(const p of DATA.presets)$("mode").append(opt(p.id,p.title));
+$("family").append(opt("","Все традиции"));for(const c of [...new Set(DATA.catalog.map(x=>x.family))])$("family").append(opt(c,c));
+const sources=$("sources");sources.textContent="Источники: ";for(const [key,name] of [["socrates","Сократические диалоги"],["plato","Платон"],["aristotle","Аристотель"],["modern","Этика добродетелей"],["epistemology","Эпистемология добродетелей"],["via","VIA: психометрическая программа"]]){const link=make("a",name);link.href=DATA.sources[key];link.target="_blank";link.rel="noopener noreferrer";sources.append(link,document.createTextNode(" · "))}
+load();render()}
+$("mode").addEventListener("change",e=>{state.mode=e.target.value;selected=0;save();render()});
+$("search").addEventListener("input",renderCatalog);$("family").addEventListener("change",renderCatalog);
+$("addCustom").addEventListener("click",()=>{const input=$("customName"),name=trimmed(input.value,55);if(!name){status("Введите название добродетели.");return}
+if(record().ids.some(id=>description(id).name.toLocaleLowerCase("ru")===name.toLocaleLowerCase("ru"))){status("Такая добродетель уже есть в этом наборе.");return}
+const id="user-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9);addVirtue(id,name);if(record().ids.includes(id))input.value=""});
+$("customName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("addCustom").click()}});
+$("snapshot").addEventListener("click",()=>{const r=record();if(!r.ids.length){status("Сначала выберите хотя бы одну добродетель.");return}
+r.history.push({date:new Date().toISOString(),ids:r.ids.slice(),custom:{...r.custom},values:{...r.values},goals:{...r.goals},notes:{...r.notes}});
+r.history=r.history.slice(-MAX_HISTORY);if(persist()){draw();renderHistory();status("Снимок сохранён в браузере.")}});
+$("reset").addEventListener("click",()=>{if(!confirm("Сбросить оценки и желаемые уровни, сохранив лучи и историю?"))return;record().values={};record().goals={};save();render()});
+$("clearMode").addEventListener("click",()=>{if(!confirm("Очистить все данные выбранной модели, включая её историю?"))return;state.records[state.mode]=fresh(state.mode);selected=0;save();render()});
+$("clearAll").addEventListener("click",()=>{if(!confirm("Удалить ВСЕ данные Колеса добродетелей в этом браузере?"))return;try{localStorage.removeItem(KEY)}catch(_){status("Не удалось удалить запись браузера.");return}
+state={version:1,mode:"socrates",records:{}};selected=0;render();status("Данные добродетелей удалены из этого браузера.")});
+$("export").addEventListener("click",()=>{const json=JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),blob=new Blob([json],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=make("a");a.href=url;a.download="psy-tools-virtues-"+new Date().toISOString().slice(0,10)+".json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status("Резервная копия подготовлена. Храните её безопасно.")});
+$("import").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];e.target.value="";if(!file)return;if(file.size>MAX_BYTES){status("Файл больше допустимого размера 1,25 МБ.");return}
+try{const next=sanitize(JSON.parse(await file.text()));if(!confirm("Заменить текущие записи данными из файла? Сначала экспортируйте резервную копию."))return;const old=state;state=next;if(!persist()){state=old;return}selected=0;render();status("Импорт завершён. Данные сохранены локально.")}catch(_){status("Импорт отменён: неверная структура JSON.")}});
+$("print").addEventListener("click",()=>window.print());
+window.addEventListener("storage",e=>{if(e.key===KEY){load();render();status("Данные перечитаны после изменения в другой вкладке.")}});
+startup();
+})();
+</script>
+<script defer src="../wheel-nav.js"></script>
+</body>
+</html>
