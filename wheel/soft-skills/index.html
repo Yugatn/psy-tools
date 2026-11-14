@@ -94,7 +94,7 @@ data.profiles=sanitizeProfiles(raw.profiles);
 for(const profile of data.profiles){for(const a of Object.keys(GROUPS)){for(const b of ["together","parent","child"]){const k=(profile.id==="default"?"":profile.id+"::")+a+"|"+b;if(raw.records[k])data.records[k]=safeRecord(raw.records[k],GROUPS[a])}}}
 if(typeof raw.activeProfile==="string"&&data.profiles.some(p=>p.id===raw.activeProfile))activeProfile=raw.activeProfile;
 }catch(_){showStatus("Не удалось восстановить данные. Рекомендуем экспорт и проверку хранилища браузера.")}}
-function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(data));return true}catch(_){showStatus("Не удалось сохранить данные в этом браузере. Экспортируйте JSON.");return false}}
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({...data,activeProfile}));return true}catch(_){showStatus("Не удалось сохранить данные в этом браузере. Экспортируйте JSON.");return false}}
 function record(){const k=key();if(!data.records[k])data.records[k]=safeRecord(null,GROUPS[age]);return data.records[k]}
 function getValue(id){const v=record().values[id];return Number.isInteger(v)?v:null}
 function showStatus(s){$("status").textContent=s}
