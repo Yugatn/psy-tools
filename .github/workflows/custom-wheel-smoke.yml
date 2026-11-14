@@ -3,13 +3,13 @@ name: Custom balance wheel smoke tests
 on:
   push:
     paths:
-      - 'wheel/custom/**'
-      - 'wheel/wheel-nav.js'
+      - 'wheel/**'
+      - 'LICENSE'
       - '.github/workflows/custom-wheel-smoke.yml'
   pull_request:
     paths:
-      - 'wheel/custom/**'
-      - 'wheel/wheel-nav.js'
+      - 'wheel/**'
+      - 'LICENSE'
       - '.github/workflows/custom-wheel-smoke.yml'
 
 permissions:
@@ -25,3 +25,5 @@ jobs:
         run: node --version
       - name: Run constructor regression suite
         run: node wheel/custom/tests/smoke.cjs
+      - name: Check cross-wheel navigation and license
+        run: node wheel/custom/tests/navigation.cjs
