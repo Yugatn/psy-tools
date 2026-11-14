@@ -1,0 +1,27 @@
+name: Custom balance wheel smoke tests
+
+on:
+  push:
+    paths:
+      - 'wheel/custom/**'
+      - 'wheel/wheel-nav.js'
+      - '.github/workflows/custom-wheel-smoke.yml'
+  pull_request:
+    paths:
+      - 'wheel/custom/**'
+      - 'wheel/wheel-nav.js'
+      - '.github/workflows/custom-wheel-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Node.js version
+        run: node --version
+      - name: Run constructor regression suite
+        run: node wheel/custom/tests/smoke.cjs
