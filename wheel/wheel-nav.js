@@ -21,6 +21,7 @@
       ["Самоосознание", "/psy-tools/wheel/self_awareness/"]
     ]],
     ["Тематические", [
+      ["Колесо добродетелей", "/psy-tools/wheel/virtues/"],
       ["Гибкие навыки детей", "/psy-tools/wheel/soft-skills/"],
       ["Матрица девяти потоков", "/psy-tools/wheel/nine-streams/"],
       ["Страхи", "/psy-tools/wheel/fear/"],
