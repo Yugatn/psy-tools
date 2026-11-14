@@ -91,7 +91,7 @@ test("one tap measures relative timing error and saves locally",()=>{
   assert.equal(records[0].target_s,1);
   assert.equal(records[0].produced_s,1.25);
   assert.equal(records[0].error_pct,25);
-  assert.equal(records[0].ratio,0.8);
+  assert.equal(records[0].ratio,1.25);
   assert.equal(a.element("statN").textContent,"1");
 });
 test("hold by pointer measures from down to up",()=>{
