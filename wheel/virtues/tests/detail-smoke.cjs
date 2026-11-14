@@ -21,12 +21,12 @@ function launch(query,initial){
   remove(){}
  }
  document={getElementById(id){if(!nodes.has(id))nodes.set(id,new E("div"));return nodes.get(id)},createElement:tag=>new E(tag),createElementNS:(_ns,tag)=>new E(tag),body:new E("body")};
- const win={location:{search:query},addEventListener(){},print(){}};
+ const events={};const win={location:{search:query},addEventListener(type,fn){events[type]=fn},print(){}};
  new Function("window",dataJS)(win);
  const storage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)};
  new Function("document","window","localStorage","confirm","URLSearchParams",script)(document,win,storage,()=>true,URLSearchParams);
  const get=id=>document.getElementById(id),current=()=>JSON.parse(store.get("wheelBalanceVirtuesV1")||"null");
- return {get,current,store};
+ return {get,current,store,events};
 }
 (async()=>{
  let n=0;const check=(v,msg)=>{assert.ok(v,msg);n++};
@@ -69,5 +69,10 @@ function launch(query,initial){
  const personal={version:1,mode:"personal",records:{personal:{ids:["user-test-abc"],custom:{"user-test-abc":"Бережность"},values:{},goals:{},notes:{},history:[]}}};
  const custom=launch("?mode=personal&id=user-test-abc",personal);
  check(custom.get("pageTitle").textContent.includes("Бережность"),"custom virtue detail");
+ const beforeStale=JSON.stringify(a.current());
+ a.events.storage({key:"wheelBalanceVirtuesV1"});
+ x=get("aspects").children[0].children[3];x.value="10";await x.fire("change");
+ check(JSON.stringify(a.current())===beforeStale,"stale tab cannot overwrite localStorage");
+ check(get("status").textContent.includes("Обновите"),"stale tab explains recovery");
  console.log("PASS: "+n+" nested virtue wheel smoke assertions");
 })().catch(e=>{console.error(e);process.exitCode=1});
