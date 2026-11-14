@@ -42,6 +42,8 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 <div id="targetField"><label for="target">Заданный интервал</label><select id="target"><option value="1">1 секунда</option><option value="2">2 секунды</option><option value="3">3 секунды</option><option value="5">5 секунд</option><option value="10">10 секунд</option><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="60">1 минута</option></select></div>
 <div><label for="attempts">Попыток в серии</label><select id="attempts"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select></div>
 <div><label for="context">Условия (необязательно)</label><input id="context" maxlength="100" placeholder="Например, после отдыха" autocomplete="off"></div>
+<div><label for="feedback">Показывать результаты</label>
+<select id="feedback"><option value="blind" selected>Только после всей серии</option><option value="immediate">После каждой попытки</option></select></div>
 </div>
 <p class="hint" id="taskHint">В этом режиме известна целевая длительность. Не используй часы и не считай ритмично вслух. Для интервала 1 с особенно заметны погрешности взаимодействия с экраном.</p>
 <div class="controls"><button id="newSession">Новая серия</button><button id="prepare" class="secondary" disabled>Подготовить попытку</button><button id="cancel" class="secondary" disabled>Отменить попытку</button></div>
@@ -109,13 +111,13 @@ label{display:block;font-weight:650;font-size:14px;margin:14px 0 6px}select,inpu
 "use strict";
 var KEY="psytools.time-perception.v1", LIMIT=2000;
 var $=function(id){return document.getElementById(id)};
-var phase="idle",session=null,startedAt=0,startedWith="",pointerId=null,demoTimer=null,demoTimer2=null;
+var phase="idle",session=null,lastSessionId=null,startedAt=0,startedWith="",pointerId=null,demoTimer=null,demoTimer2=null;
 var stored=[];
-var task=$("task"),method=$("method"),target=$("target"),attempts=$("attempts"),context=$("context");
+var task=$("task"),method=$("method"),target=$("target"),attempts=$("attempts"),context=$("context"),feedback=$("feedback");
 function setStatus(message){$("status").textContent=message}
 function now(){return performance.now()}
 function isNumber(n){return typeof n==="number"&&Number.isFinite(n)}
-function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v)){stored=v.filter(function(r){return r&&typeof r==="object"&&isNumber(r.target_s)&&isNumber(r.produced_s)&&r.target_s>0&&r.produced_s>0}).slice(-LIMIT)}}catch(e){stored=[];setStatus("Не удалось прочитать локальную историю.")}}
+function load(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v)){stored=v.filter(function(r){return r&&typeof r==="object"&&isNumber(r.target_s)&&isNumber(r.produced_s)&&r.target_s>0&&r.produced_s>0}).slice(-LIMIT);lastSessionId=stored.length?stored[stored.length-1].session_id:null}}catch(e){stored=[];setStatus("Не удалось прочитать локальную историю.")}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(stored.slice(-LIMIT)));return true}catch(e){setStatus("Результат рассчитан, но браузер не разрешил локальное сохранение.");return false}}
 function fixed(n,dec){return isNumber(n)?n.toFixed(dec):"—"}
 function labelTask(v){return v==="production"?"Произведение":v==="estimation"?"Оценка показа":"Воспроизведение"}
@@ -131,12 +133,18 @@ else{$("taskHint").textContent="Мысленно отсчитай заданну
 }
 function controlState(){
 var busy=phase==="demo"||phase==="running"||phase==="estimate";
-task.disabled=!!session;method.disabled=!!session||task.value==="estimation";target.disabled=!!session||task.value!=="production";attempts.disabled=!!session;
+task.disabled=!!session;method.disabled=!!session||task.value==="estimation";target.disabled=!!session||task.value!=="production";attempts.disabled=!!session;feedback.disabled=!!session;
 $("newSession").disabled=busy;$("prepare").disabled=!session||phase!=="between";$("cancel").disabled=!session;
-$("startTap").disabled=!(phase==="ready"&&session&&session.method==="tap");$("startTap").hidden=!!session&&session.task==="estimation";
+$("startTap").disabled=!(phase==="ready"&&session&&session.method==="tap");$("startTap").hidden=!!session&&(session.method!=="tap"||session.task==="estimation");
+var hide=!!(session&&session.feedback==="blind");["xlsx","csv","json"].forEach(function(id){$(id).disabled=hide});
 $("startTap").textContent=phase==="running"?"Отсчёт идёт…":"Начать отсчёт";
 }
-function finishSeries(){phase="idle";padMsg("Серия завершена","Можно запустить новую серию или скачать результаты.");setStatus("Все попытки завершены. Оцени среднюю ошибку и разброс.");session=null;controlState()}
+function finishSeries(){
+lastSessionId=session?session.id:lastSessionId;
+phase="idle";padMsg("Серия завершена","Можно запустить новую серию или скачать результаты.");
+setStatus("Все попытки завершены. Результаты и статистика серии открыты.");
+session=null;controlState();refresh();
+}
 function ready(){phase="ready";resetTimers();if(!session)return;var num=session.results.length+1;
 $("progress").textContent="Попытка "+num+" из "+session.attempts+". "+labelTask(session.task)+", "+labelMethod(session.method)+".";
 if(session.method==="hold"){padMsg("Нажми и удерживай","Отпусти палец или пробел, когда, по твоему ощущению, интервал закончится.");setStatus("Готово к удержанию. Нажатие запускает отсчёт.");}
@@ -188,7 +196,7 @@ setStatus("Демонстрация завершена. Теперь повто�
 },session.currentTarget*1000)
 },750)
 }
-function newSession(){resetTimers();session={id:"s-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),task:task.value,method:task.value==="estimation"?"typed":method.value,target:Number(target.value),attempts:Number(attempts.value),results:[],currentTarget:0};phase="between";$("latestResult").textContent="Серия создана. Сначала выполни одну попытку.";setStatus("Подготовка серии.");$("progress").textContent="Серия: 0 из "+session.attempts;refresh();controlState();prepare()}
+function newSession(){resetTimers();session={id:"s-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),task:task.value,method:task.value==="estimation"?"typed":method.value,feedback:feedback.value,target:Number(target.value),attempts:Number(attempts.value),results:[],currentTarget:0};phase="between";$("latestResult").textContent="Серия создана. Сначала выполни одну попытку.";setStatus("Подготовка серии.");$("progress").textContent="Серия: 0 из "+session.attempts;refresh();controlState();prepare()}
 function begin(kind){if(phase!=="ready"||!session)return;startedAt=now();startedWith=kind;phase="running";$("pad").classList.add("active");padMsg("Отсчёт идёт…",session.method==="hold"?"Продолжай удерживать, затем отпусти.":"Останови интервал касанием поля или пробелом.");setStatus("Таймер работает. Цифровые часы намеренно скрыты.");controlState();$("pad").focus({preventScroll:true})}
 function recordTrial(sec,objective){
 var error=(sec-objective)/objective*100;
@@ -200,8 +208,12 @@ error_s:Number((sec-objective).toFixed(4)),error_pct:Number(error.toFixed(4)),ra
 nominal_target_s:session.task==="estimation"?session.nominalTarget:objective,
 context:context.value.trim().slice(0,100)
 };
-stored.push(record);stored=stored.slice(-LIMIT);session.results.push(record);save();resetTimers();
-$("latestResult").textContent="Фактически "+fixed(objective,3)+" с · "+(session.task==="estimation"?"твоя оценка ":"ответ ")+fixed(sec,3)+" с · ошибка "+(error>=0?"+":"")+fixed(error,1)+"%.";
+stored.push(record);stored=stored.slice(-LIMIT);session.results.push(record);
+var persisted=save();resetTimers();
+$("latestResult").textContent=session.feedback==="blind"?
+"Ответ записан. Длительность и ошибка откроются после завершения серии.":
+"Фактически "+fixed(objective,3)+" с · "+(session.task==="estimation"?"твоя оценка ":"ответ ")+fixed(sec,3)+" с · ошибка "+(error>=0?"+":"")+fixed(error,1)+"%.";
+if(!persisted)$("latestResult").textContent+=" Внимание: браузер не сохранил историю, рекомендуем скачать резервную копию после серии.";
 refresh();
 if(session.results.length>=session.attempts){finishSeries();}
 else{phase="between";padMsg("Попытка сохранена","Подготовь следующую попытку кнопкой «Подготовить попытку».");setStatus("Попытка "+session.results.length+" из "+session.attempts+" завершена.");controlState();}
@@ -241,10 +253,16 @@ window.addEventListener("keyup",function(e){if(e.code!=="Space"||!session)return
 document.addEventListener("visibilitychange",function(){if(document.hidden&&(phase==="running"||phase==="demo")){cancel();setStatus("Попытка отменена: вкладка была скрыта. Это предотвращает искажение измерения.")}});
 window.addEventListener("pagehide",function(){if(phase==="running"||phase==="demo")cancel()});
 function avg(xs){return xs.reduce(function(a,b){return a+b},0)/(xs.length||1)}
-function refresh(){var rows=session?session.results:[];var values=rows.map(function(r){return r.error_pct});var mean=values.length?avg(values):NaN;var sd=values.length>1?Math.sqrt(avg(values.map(function(x){return Math.pow(x-mean,2)}))):NaN;
+function refresh(){var rows=session?session.results:(lastSessionId?stored.filter(function(r){return r.session_id===lastSessionId}):[]);var values=rows.map(function(r){return r.error_pct});var mean=values.length?avg(values):NaN;var sd=values.length>1?Math.sqrt(avg(values.map(function(x){return Math.pow(x-mean,2)}))):NaN;
 $("statN").textContent=String(rows.length);$("statBias").textContent=values.length?(mean>=0?"+":"")+fixed(mean,1)+"%":"—";$("statMAE").textContent=values.length?fixed(avg(values.map(Math.abs)),1)+"%":"—";$("statSD").textContent=values.length>1?fixed(sd,1):"—";
 $("historyNote").textContent="Локально сохранено "+stored.length+" попыток. Таблица показывает 25 последних; экспорт включает всю историю. Данные не отправляются на сервер.";
-var body=$("rows");body.replaceChildren();if(!stored.length){var tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.textContent="Пока нет измерений.";tr.append(td);body.append(tr);return}
+var body=$("rows");body.replaceChildren();
+if(session&&session.feedback==="blind"){
+$("statBias").textContent="—";$("statMAE").textContent="—";$("statSD").textContent="—";
+$("historyNote").textContent="Слепая серия: точные длительности, ответы и экспорт скрыты до её завершения. Сохранено попыток в серии: "+session.results.length+".";
+var tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;
+td.textContent="Результаты серии будут показаны после последней попытки.";tr.append(td);body.append(tr);return;}
+if(!stored.length){var tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.textContent="Пока нет измерений.";tr.append(td);body.append(tr);return}
 stored.slice(-25).reverse().forEach(function(r){var tr=document.createElement("tr");var vals=[new Date(r.timestamp).toLocaleString("ru-RU"),labelTask(r.task),labelMethod(r.method),fixed(r.target_s,2),fixed(r.produced_s,3),(r.error_pct>=0?"+":"")+fixed(r.error_pct,1)+"%"];vals.forEach(function(v,i){var td=document.createElement("td");td.textContent=v;if(i===5)td.className=r.error_pct<0?"neg":"pos";tr.append(td)});body.append(tr)})}
 function download(data,name,type){var blob=data instanceof Blob?data:new Blob([data],{type:type});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000)}
 function safeCSV(v){var s=String(v==null?"":v);if(/^[\s]*[=+@-]/.test(s)&&typeof v==="string")s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
@@ -254,7 +272,7 @@ function csvText(){var values=[headers].concat(stored.map(function(r){return fie
 function dateSuffix(){return new Date().toISOString().slice(0,10)}
 $("csv").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");download(csvText(),"psy-tools-time-"+dateSuffix()+".csv","text/csv;charset=utf-8");setStatus("CSV скачан. Импортируй его в Google Таблицы, указав разделитель «точка с запятой», если потребуется.")});
 $("json").addEventListener("click",function(){if(!stored.length)return setStatus("Нет результатов для экспорта.");download(JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),records:stored},null,2),"psy-tools-time-"+dateSuffix()+".json","application/json;charset=utf-8");setStatus("Создана локальная резервная копия JSON.")});
-$("delete").addEventListener("click",function(){if(!stored.length)return;if(!confirm("Безвозвратно удалить ВСЮ историю тестов субъективного времени в этом браузере? Сначала сохрани экспорт."))return;try{localStorage.removeItem(KEY)}catch(e){}stored=[];session=null;phase="idle";resetTimers();padMsg("История очищена","Можно создать новую серию.");$("latestResult").textContent="Результаты удалены.";setStatus("История удалена из локального хранилища браузера.");controlState();refresh()});
+$("delete").addEventListener("click",function(){if(!stored.length)return;if(!confirm("Безвозвратно удалить ВСЮ историю тестов субъективного времени в этом браузере? Сначала сохрани экспорт."))return;try{localStorage.removeItem(KEY)}catch(e){}stored=[];session=null;lastSessionId=null;phase="idle";resetTimers();padMsg("История очищена","Можно создать новую серию.");$("latestResult").textContent="Результаты удалены.";setStatus("История удалена из локального хранилища браузера.");controlState();refresh()});
 function xml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;")}
 function colName(i){var n=i+1,s="";while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s}
 function worksheet(matrix){var lines=matrix.map(function(row,ri){return '<row r="'+(ri+1)+'">'+row.map(function(v,ci){var address=colName(ci)+(ri+1);if(typeof v==="number"&&Number.isFinite(v))return '<c r="'+address+'"><v>'+v+'</v></c>';return '<c r="'+address+'" t="inlineStr"><is><t xml:space="preserve">'+xml(v)+'</t></is></c>'}).join("")+'</row>'}).join("");return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+lines+'</sheetData></worksheet>'}
@@ -276,7 +294,7 @@ var files=[
 ["xl/worksheets/sheet2.xml",worksheet(summary)]];
 return zipFiles(files)}
 $("xlsx").addEventListener("click",function(){if(!stored.length)return setStatus("Для экспорта сначала выполни хотя бы одну попытку.");try{download(workbook(),"psy-tools-time-"+dateSuffix()+".xlsx");setStatus("Excel (.xlsx) скачан: листы «Измерения» и «Статистика».")}catch(e){setStatus("Не удалось создать Excel. Попробуй выгрузить CSV.")}});
-window.addEventListener("storage",function(e){if(e.key===KEY){load();refresh()}});
+window.addEventListener("storage",function(e){if(e.key===KEY&&!session){load();refresh()}});
 load();setTaskUI();refresh();controlState();
 })();
 </script>
