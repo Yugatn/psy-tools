@@ -121,6 +121,7 @@ test("reproduction shows stimulus first, then measures two taps",()=>{
   assert.ok(demo,"one of the prespecified random durations was selected");
   assert.ok(a.runTimer(demo.ms));
   a.element("pad").fire("pointerdown");
+  a.element("pad").fire("pointerup");
   a.advance(2500);
   a.element("pad").fire("pointerdown");
   const r=a.records()[0];
@@ -240,6 +241,7 @@ test("completed-series metrics survive browser refresh from local history",()=>{
   for(let i=0;i<3;i++){
     if(i)a.click("prepare");
     a.element("pad").fire("pointerdown");
+    a.element("pad").fire("pointerup");
     a.advance(1000+i*100);
     a.element("pad").fire("pointerdown");
   }
@@ -255,6 +257,21 @@ test("reproduction never shows a duration-progress bar",()=>{
   const duration=Array.from(a.scheduled.values()).find(x=>[2000,3000,5000,8000,12000].includes(x.ms));
   assert.ok(duration);
   a.runTimer(duration.ms);
-  a.element("pad").fire("pointerdown");a.advance(3000);a.element("pad").fire("pointerdown");
+  a.element("pad").fire("pointerdown");a.element("pad").fire("pointerup");a.advance(3000);a.element("pad").fire("pointerdown");
   assert.equal(a.records()[0].target_s,duration.ms/1000);
+});
+
+test("second finger or a second pointerdown before release cannot terminate a double tap",()=>{
+  const a=makeHarness({method:"double"});
+  a.click("newSession");
+  a.element("pad").fire("pointerdown",{pointerId:17,isPrimary:true});
+  a.advance(500);
+  a.element("pad").fire("pointerdown",{pointerId:23,isPrimary:false});
+  a.element("pad").fire("pointerdown",{pointerId:17,isPrimary:true});
+  assert.equal(a.records().length,0);
+  a.element("pad").fire("pointerup",{pointerId:17});
+  a.advance(500);
+  a.element("pad").fire("pointerdown",{pointerId:18,isPrimary:true});
+  assert.equal(a.records().length,1);
+  assert.equal(a.records()[0].produced_s,1);
 });
