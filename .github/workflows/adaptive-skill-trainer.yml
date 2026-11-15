@@ -1,0 +1,28 @@
+name: Adaptive Skill Trainer validation
+on:
+  push:
+    paths:
+      - 'trainer/**'
+      - '.github/workflows/adaptive-skill-trainer.yml'
+  pull_request:
+    paths:
+      - 'trainer/**'
+      - '.github/workflows/adaptive-skill-trainer.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check trainer/data.js
+          node --check trainer/core.js
+          node --check trainer/app.js
+      - name: Curriculum and local state tests
+        run: node --test trainer/test.cjs
