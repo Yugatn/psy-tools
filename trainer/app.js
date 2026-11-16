@@ -204,14 +204,14 @@
     const before=rating("До практики · субъективная уверенность",response.before);
     const after=rating("После практики · субъективная уверенность",response.after);
     scale.append(before.wrapper,after.wrapper); practice.append(scale);
-    const applied=make("input"); applied.type="checkbox"; applied.checked=response.practiced;
-    const label=make("label", "tick"); label.append(applied,make("span", "", "Я пробовал(а) действие вне тренажёра (самоотчёт, отдельно от журнала повторений)"));
-    practice.append(label);
+    if (response.practiced && !history.length) {
+      practice.append(make("p", "helper", "Отметка практики из прежней версии сохранена. Для повторений используйте чек-лист выше."));
+    }
     const saveButton=make("button", "primary", "Сохранить рефлексию");
     saveButton.type="button";
     saveButton.addEventListener("click", () => {
       state=core.practice(state,item.id,{
-        practiced:applied.checked,note:note.value,
+        practiced:response.practiced,note:note.value,
         before:before.select.value ? Number(before.select.value) : null,
         after:after.select.value ? Number(after.select.value) : null
       },data);
