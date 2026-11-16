@@ -22,20 +22,20 @@ test("every scenario has feedback and observable indicators", () => {
 });
 test("fresh state contains no tracked information", () => {
   assert.deepEqual(core.freshState(), {version: 1, responses: {}});
-  assert.deepEqual(core.progress(core.freshState(), data, "5-7"), {total: 4, explored: 0, practiced: 0});
+  assert.deepEqual(core.progress(core.freshState(), data, "4-6"), {total: 4, explored: 0, practiced: 0});
 });
 test("answer is recorded without altering previous object", () => {
   const first = core.freshState();
   const second = core.answer(first, "s01", 0, data, "2026-11-15T00:00:00.000Z");
   assert.equal(first.responses.s01, undefined);
   assert.equal(second.responses.s01.option, 0);
-  assert.deepEqual(core.progress(second, data, "5-7"), {total: 4, explored: 1, practiced: 0});
+  assert.deepEqual(core.progress(second, data, "4-6"), {total: 4, explored: 1, practiced: 0});
 });
 test("practice only registers after selecting option and never asserts clinical mastery", () => {
   assert.throws(() => core.practice(core.freshState(), "s01", {practiced:true}, data));
   let state = core.answer(core.freshState(), "s01", 1, data);
   state = core.practice(state, "s01", {practiced: true, before: 2, after: 4, note: "Попробовал безопасную паузу"}, data);
-  assert.equal(core.progress(state, data, "5-7").practiced, 1);
+  assert.equal(core.progress(state, data, "4-6").practiced, 1);
   assert.equal(state.responses.s01.after, 4);
   assert.equal("mastery" in state.responses.s01, false);
   const changed = core.answer(state, "s01", 2, data);
@@ -68,13 +68,13 @@ test("reported practice cannot be imported without a selected option", () => {
 });
 test("recommendations prefer unexplored, then unpracticed situations", () => {
   let s = core.freshState();
-  assert.equal(core.nextScenario(s, data, "5-7").id, "s01");
+  assert.equal(core.nextScenario(s, data, "4-6").id, "s01");
   s = core.answer(s,"s01",0,data);
-  assert.equal(core.nextScenario(s, data, "5-7").id, "s02");
+  assert.equal(core.nextScenario(s, data, "4-6").id, "s02");
   for (const id of ["s02","s03","s04"]) s=core.answer(s,id,0,data);
-  assert.equal(core.nextScenario(s, data, "5-7").id, "s01");
+  assert.equal(core.nextScenario(s, data, "4-6").id, "s01");
   s=core.practice(s,"s01",{practiced:true},data);
-  assert.equal(core.nextScenario(s, data, "5-7").id, "s02");
+  assert.equal(core.nextScenario(s, data, "4-6").id, "s02");
 });
 test("export can be imported without losing responses", () => {
   const original = core.answer(core.freshState(),"s09",0,data);
