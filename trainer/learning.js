@@ -62,6 +62,15 @@
     next.entries[id] = rows.sort((a,b) => a.day.localeCompare(b.day)).slice(-MAX_DAYS);
     return next;
   }
+  function undoLast(journal,data,id) {
+    if (!itemsById(data).has(id)) throw new Error("Неизвестная ситуация");
+    const next = normalizeJournal(journal,data);
+    if (next.entries[id] && next.entries[id].length) {
+      next.entries[id].pop();
+      if (!next.entries[id].length) delete next.entries[id];
+    }
+    return next;
+  }
   function learningStatus(item,response,journal) {
     if (!response) return "не начато";
     const entries = journal.entries[item.id] || [];
@@ -113,6 +122,6 @@
   }
   return {
     VERSION, BACKUP_VERSION, REVIEW, MAX_DAYS, dayOf, dateNumber, freshJournal, normalizeJournal,
-    record, learningStatus, isDue, stats, recommend, exportBundle, importBundle
+    record, undoLast, learningStatus, isDue, stats, recommend, exportBundle, importBundle
   };
 });
