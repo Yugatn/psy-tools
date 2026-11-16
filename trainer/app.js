@@ -1,48 +1,59 @@
-/* Adaptive Skill Trainer UI. No tracking, server, external libraries or account. */
+/* Adaptive Skill Trainer UI v1.1. Local first; no tracking, no external API. */
 (() => {
   "use strict";
   const data = globalThis.AdaptiveSkillData;
   const core = globalThis.AdaptiveSkillCore;
+  const learning = globalThis.AdaptiveSkillLearning;
   const $ = id => document.getElementById(id);
-  const STORE = "psyToolsAdaptiveTrainerStateV1";
+  const STORE = "psyToolsAdaptiveTrainerStateV1"; // retained for seamless v1 upgrade
   const ENABLED = "psyToolsAdaptiveTrainerSaveEnabledV1";
-  if (!data || !core || !core.validateCurriculum(data)) {
+  const JOURNAL = "psyToolsAdaptiveTrainerJournalV1";
+  if (!data || !core || !learning || !core.validateCurriculum(data)) {
     $("status").textContent = "Учебный набор не загрузился или содержит ошибку."; return;
   }
-  const ageSelect = $("age");
-  const skillSelect = $("skill");
-  const saveSwitch = $("save");
-  let state = core.freshState();
-  let saveEnabled = false;
-  let currentId = data.scenarios[0].id;
-  function make(tag, className, value) {
+  const ageSelect = $("age"), skillSelect = $("skill"), saveSwitch = $("save");
+  let state = core.freshState(), journal = learning.freshJournal();
+  let saveEnabled = false, currentId = data.scenarios[0].id;
+  function make(tag, cls, text) {
     const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (value !== undefined) node.textContent = value;
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
     return node;
   }
-  function append(parent, ...children) { children.forEach(child => parent.append(child)); return parent; }
-  function notice(message) { $("status").textContent = message; }
+  function notice(text) { $("status").textContent = text; }
+  function dateToday() { return learning.dayOf(new Date()); }
   function store() {
     if (!saveEnabled) return;
     try {
       localStorage.setItem(STORE, core.safeJSON(state, data));
+      localStorage.setItem(JOURNAL, JSON.stringify(learning.normalizeJournal(journal, data)));
       localStorage.setItem(ENABLED, "1");
-    } catch (_) {
-      notice("Не удалось записать данные в браузере. Можно экспортировать JSON.");
-    }
+    } catch (_) { notice("Не удалось записать данные. Можно экспортировать резервную копию JSON."); }
   }
   function clearStored() {
-    try { localStorage.removeItem(STORE); localStorage.removeItem(ENABLED); }
-    catch (_) { notice("Браузер не разрешил удалить локальные данные. Очистите данные сайта вручную."); }
+    try {
+      localStorage.removeItem(STORE); localStorage.removeItem(JOURNAL);
+      localStorage.removeItem(ENABLED);
+    } catch (_) { notice("Удаление из браузерного хранилища запрещено. Очистите данные сайта вручную."); }
   }
   try {
     saveEnabled = localStorage.getItem(ENABLED) === "1";
     if (saveEnabled) {
-      const saved = localStorage.getItem(STORE);
-      if (saved) state = core.normalizeState(JSON.parse(saved), data);
+      const old = localStorage.getItem(STORE);
+      if (old) state = core.normalizeState(JSON.parse(old), data);
+      const log = localStorage.getItem(JOURNAL);
+      if (log) {
+        try { journal = learning.normalizeJournal(JSON.parse(log), data); }
+        catch (_) {
+          journal = learning.freshJournal();
+          notice("Повреждён журнал повторений. Старые ответы сохранены; экспортируйте резервную копию.");
+        }
+      }
     }
-  } catch (_) { saveEnabled = false; state = core.freshState(); notice("Локальная история не прочитана. Работает временная сессия."); }
+  } catch (_) {
+    saveEnabled = false; state = core.freshState(); journal = learning.freshJournal();
+    notice("Невозможно прочитать сохранённую историю. Начата временная сессия; старые данные не удалены.");
+  }
   saveSwitch.checked = saveEnabled;
   data.ages.forEach(item => {
     const option = make("option", "", item.label); option.value = item.id; ageSelect.append(option);
@@ -51,175 +62,217 @@
     const option = make("option", "", item.label); option.value = item.id; skillSelect.append(option);
   });
   function visibleRows() {
-    return data.scenarios.filter(item => item.age === ageSelect.value && (!skillSelect.value || item.skill === skillSelect.value));
+    return data.scenarios.filter(item =>
+      item.age === ageSelect.value && (!skillSelect.value || item.skill === skillSelect.value));
   }
-  function choice(id) { return state.responses[id] || null; }
+  function responseFor(id) { return state.responses[id] || null; }
+  function stageFor(item) { return learning.learningStatus(item, responseFor(item.id), journal); }
   function renderSummary() {
-    const selection = core.progress(state, data, ageSelect.value, skillSelect.value);
-    $("summary").textContent = "Разобрано: " + selection.explored + " из " + selection.total +
-      " · применено в жизни (самоотчёт): " + selection.practiced;
+    const selection = learning.stats(state, journal, data, ageSelect.value, skillSelect.value);
+    $("summary").textContent = "Не начато: " + selection.notStarted + " · В процессе: " + selection.inProgress +
+      " · Закреплено (самоотчёт): " + selection.reinforced + " · Всего: " + selection.total;
     $("progressBar").max = Math.max(1, selection.total);
-    $("progressBar").value = selection.practiced;
+    $("progressBar").value = selection.reinforced;
     $("progressLabel").textContent = selection.total ?
-      Math.round(100 * selection.practiced / selection.total) + "% практик отмечено" : "Нет упражнений";
+      selection.reinforced + " из " + selection.total + " с повторной практикой" : "Нет упражнений";
     const age = data.ages.find(item => item.id === ageSelect.value);
     $("ageHelp").textContent = age ? age.helper : "";
     $("privacyMode").textContent = saveEnabled ?
-      "Сохранение включено. Результаты доступны всем, кто откроет этот профиль браузера." :
-      "Приватная временная сессия: после закрытия или обновления вкладки данные могут исчезнуть.";
+      "Сохранение включено. Любой пользователь этого профиля браузера может прочитать историю." :
+      "Временная сессия без постоянного сохранения; обновление страницы обычно сбрасывает записи.";
   }
   function renderList() {
-    const target = $("exerciseList");
-    target.replaceChildren();
+    const panel = $("exerciseList"); panel.replaceChildren();
     visibleRows().forEach(item => {
-      const response = choice(item.id);
+      const status = stageFor(item);
+      const due = learning.isDue(item, responseFor(item.id), journal, dateToday());
       const button = make("button", "exercise-item" + (currentId === item.id ? " selected" : ""), item.title);
       button.type = "button";
       button.setAttribute("aria-current", currentId === item.id ? "true" : "false");
-      const flag = make("span", "mini-status", response ? (response.practiced ? "Практика" : "Разобрано") : "Новое");
-      button.append(flag);
-      button.addEventListener("click", () => { currentId = item.id; render(); });
-      target.append(button);
+      button.append(make("span", "mini-status", due ? "Повторить" : status));
+      button.addEventListener("click", () => { currentId = item.id; render(); $("scenario").focus(); });
+      panel.append(button);
     });
-    if (!target.childElementCount) target.textContent = "Для этого фильтра упражнений пока нет.";
+    if (!panel.childElementCount) panel.textContent = "В этой программе пока нет упражнений по выбранному навыку.";
   }
-  function questionList(parent, title, values) {
+  function itemsList(parent, heading, lines) {
     const section = make("section", "subsection");
-    section.append(make("h3", "", title));
-    const list = make("ul", "");
-    values.forEach(value => list.append(make("li", "", value)));
+    section.append(make("h3", "", heading));
+    const list = make("ul");
+    lines.forEach(line => list.append(make("li", "", line)));
     section.append(list); parent.append(section);
   }
-  function ratingControl(labelText, chosen) {
+  function rating(labelText, value) {
     const wrapper = make("label", "field");
     wrapper.append(make("span", "", labelText));
-    const select = make("select", "");
+    const select = make("select");
     const unknown = make("option", "", "Не оцениваю"); unknown.value = ""; select.append(unknown);
-    for (let i = 1; i <= 5; i += 1) {
-      const opt = make("option", "", i + (i === 1 ? " · пока трудно" : i === 5 ? " · уверенно" : ""));
-      opt.value = String(i); select.append(opt);
+    for (let i=1;i<=5;i++) {
+      const option = make("option", "", i + (i===1 ? " · пока трудно" : i===5 ? " · уверенно" : ""));
+      option.value = String(i); select.append(option);
     }
-    select.value = chosen === null || chosen === undefined ? "" : String(chosen);
+    select.value = value === null || value === undefined ? "" : String(value);
     wrapper.append(select);
-    return { wrapper, select };
+    return {wrapper,select};
   }
   function renderScenario() {
-    const panel = $("scenario");
-    panel.replaceChildren();
-    const item = data.scenarios.find(row => row.id === currentId && row.age === ageSelect.value && (!skillSelect.value || row.skill === skillSelect.value));
+    const panel = $("scenario"); panel.replaceChildren();
+    const item = visibleRows().find(row => row.id === currentId);
     if (!item) { panel.append(make("p", "", "Выберите ситуацию слева.")); return; }
-    const response = choice(item.id);
-    const skill = data.skills.find(s => s.id === item.skill);
+    const response = responseFor(item.id);
+    const skill = data.skills.find(x => x.id === item.skill);
     panel.append(make("div", "eyebrow", skill.label + " · " + ageSelect.value));
+    panel.append(make("p", "review-state", "Редакционный статус: " + learning.REVIEW.editorial +
+      " · Научная проверка: " + learning.REVIEW.evidence));
     panel.append(make("h2", "", item.title));
     panel.append(make("p", "situation", item.situation));
     panel.append(make("p", "goal", "Цель: " + item.goal));
-    panel.append(make("h3", "", "Как бы ты поступил(а)?"));
+    panel.append(make("h3", "", "Шаг 1 · Как можно поступить?"));
     const options = make("div", "choices");
-    item.options.forEach((option, index) => {
-      const active = Boolean(response && response.option === index);
-      const btn = make("button", "choice" + (active ? " active" : ""), option.text);
-      btn.type = "button";
-      btn.setAttribute("aria-pressed", active ? "true" : "false");
-      btn.addEventListener("click", () => {
-        state = core.answer(state, item.id, index, data); store(); render();
-        notice("Вариант выбран. Прочитай объяснение и перейди к практике.");
+    item.options.forEach((option,index) => {
+      const chosen = Boolean(response && response.option === index);
+      const button = make("button", "choice" + (chosen ? " active" : ""), option.text);
+      button.type = "button"; button.setAttribute("aria-pressed", chosen ? "true" : "false");
+      button.addEventListener("click", () => {
+        if (response && response.option !== index) {
+          journal = learning.normalizeJournal(journal, data);
+          delete journal.entries[item.id]; // New approach: start a new evidence trail.
+        }
+        state = core.answer(state, item.id, index, data);
+        store(); render(); $("scenario").focus();
+        notice("Решение выбрано. Прочитайте обратную связь и попробуйте действие в жизни.");
       });
-      options.append(btn);
+      options.append(button);
     });
     panel.append(options);
     if (!response) {
-      panel.append(make("p", "quiet", "Здесь нет баллов за «хорошего человека». Варианты помогают обсудить возможные последствия."));
+      panel.append(make("p", "quiet", "Нет баллов за «хорошего человека»; любой ответ служит поводом исследовать последствия. Можно пропустить вопрос."));
       return;
     }
     const feedback = item.options[response.option];
-    const explanation = make("div", "feedback " + feedback.type);
-    explanation.append(make("strong", "", "Разбор варианта"));
+    const explanation = make("section", "feedback " + feedback.type);
+    explanation.append(make("strong", "", "Обсудим последствия"));
     explanation.append(make("p", "", feedback.feedback));
     panel.append(explanation);
-    questionList(panel, "Вопросы для размышления", item.questions);
-    questionList(panel, "Наблюдаемые ориентиры освоения", item.criteria);
+    itemsList(panel, "Шаг 2 · Вопросы для размышления", item.questions);
     const practice = make("section", "practice");
-    practice.append(make("h3", "", "Попробуй в реальной жизни"));
+    practice.append(make("h3", "", "Шаг 3 · Действие вне тренажёра"));
     practice.append(make("p", "", item.practice));
-    practice.append(make("p", "helper", "Для младших возрастов взрослый поддерживает, но не требует ответа и не оценивает личность."));
-    const noteLabel = make("label", "field");
-    noteLabel.append(make("span", "", "Короткая рефлексия (необязательно; не вводите имена и личные данные)"));
-    const note = make("textarea", "reflection");
-    note.maxLength = core.MAX_NOTE; note.rows = 3;
-    note.placeholder = "Что получилось? Что попробую иначе?";
-    note.value = response.note || "";
-    noteLabel.append(note);
-    practice.append(noteLabel);
-    const scale = make("div", "scale");
-    const before = ratingControl("До практики · субъективная уверенность", response.before);
-    const after = ratingControl("После практики · субъективная уверенность", response.after);
-    scale.append(before.wrapper, after.wrapper);
-    practice.append(scale);
-    const appliedLabel = make("label", "tick");
-    const applied = make("input"); applied.type = "checkbox"; applied.checked = response.practiced;
-    appliedLabel.append(applied, make("span", "", "Я действительно попробовал(а) действие вне тренажёра"));
-    practice.append(appliedLabel);
-    const saveButton = make("button", "primary", "Сохранить рефлексию");
-    saveButton.type = "button";
+    practice.append(make("p", "helper", "Способ выбирает участник: устно, письменно, рисунком или через добровольную ролевую игру. Обсуждать личные подробности не обязательно."));
+    const fieldset = make("fieldset", "indicators");
+    fieldset.append(make("legend", "", "Что действительно получилось?"));
+    const checks=[];
+    item.criteria.forEach(criterion => {
+      const label = make("label", "tick");
+      const check = make("input"); check.type = "checkbox"; checks.push(check);
+      label.append(check, make("span", "", criterion)); fieldset.append(label);
+    });
+    practice.append(fieldset);
+    const history = journal.entries[item.id] || [];
+    practice.append(make("p", "helper", history.length ?
+      "Дни подтверждённой вами практики: " + history.map(row => row.day).join(", ") :
+      "Повторения не записаны. «Закреплено» появится после двух выполнений всех критериев с интервалом от трёх дней."));
+    const logButton=make("button", "secondary", "Записать практику за сегодня");
+    logButton.type="button";
+    logButton.addEventListener("click", () => {
+      const met=checks.flatMap((check,i) => check.checked ? [i] : []);
+      try {
+        const nextJournal = learning.record(journal, data, item.id, met, dateToday());
+        const nextState = core.practice(state, item.id, {
+          practiced:true, note: response.note || "", before:response.before, after:response.after
+        }, data);
+        journal = nextJournal; state = nextState; store(); render();
+        notice("Записано наблюдение за сегодня. Отметку можно исправить или отменить.");
+      } catch (error) { notice(error.message); }
+    });
+    practice.append(logButton);
+    const undo = make("button", "secondary", "Отменить последнюю запись");
+    undo.type="button"; undo.disabled = history.length === 0;
+    undo.addEventListener("click", () => {
+      journal=learning.undoLast(journal,data,item.id); store(); render();
+      notice("Последняя запись практики отменена.");
+    });
+    practice.append(undo);
+    practice.append(make("p", "helper", "Один день засчитывается один раз. «Закреплено» — предварительный самоотчёт, а не подтверждение педагогом или диагноз."));
+    practice.append(make("h3", "", "Шаг 4 · Рефлексия"));
+    const noteLabel=make("label", "field");
+    noteLabel.append(make("span", "", "Что получилось и что хотите попробовать иначе? (необязательно)"));
+    const note=make("textarea", "reflection"); note.maxLength=core.MAX_NOTE; note.rows=3;
+    note.placeholder="Без имён других людей и личных медицинских данных";
+    note.value=response.note || ""; noteLabel.append(note); practice.append(noteLabel);
+    const scale=make("div", "scale");
+    const before=rating("До практики · субъективная уверенность",response.before);
+    const after=rating("После практики · субъективная уверенность",response.after);
+    scale.append(before.wrapper,after.wrapper); practice.append(scale);
+    const applied=make("input"); applied.type="checkbox"; applied.checked=response.practiced;
+    const label=make("label", "tick"); label.append(applied,make("span", "", "Я пробовал(а) действие вне тренажёра (самоотчёт, отдельно от журнала повторений)"));
+    practice.append(label);
+    const saveButton=make("button", "primary", "Сохранить рефлексию");
+    saveButton.type="button";
     saveButton.addEventListener("click", () => {
-      state = core.practice(state, item.id, {
-        practiced: applied.checked,
-        note: note.value,
-        before: before.select.value ? Number(before.select.value) : null,
-        after: after.select.value ? Number(after.select.value) : null
-      }, data);
-      store(); render(); notice("Рефлексия обновлена" + (applied.checked ? " · практика отмечена по самоотчёту." : "."));
+      state=core.practice(state,item.id,{
+        practiced:applied.checked,note:note.value,
+        before:before.select.value ? Number(before.select.value) : null,
+        after:after.select.value ? Number(after.select.value) : null
+      },data);
+      store();render();notice("Рефлексия обновлена. Для повторного закрепления используйте отдельную запись реальной практики.");
     });
     practice.append(saveButton);
     panel.append(practice);
-    if (item.adult) panel.append(make("p", "adult-tip", "Подсказка взрослому: " + item.adult));
-    const next = make("button", "secondary", "Следующая ситуация");
-    next.type = "button"; next.addEventListener("click", () => {
-      const rows = visibleRows(); const pos = rows.findIndex(row => row.id === currentId);
-      if (rows.length) { currentId = rows[(pos + 1) % rows.length].id; render(); $("scenario").focus(); }
+    if (item.adult) panel.append(make("p","adult-tip","Для взрослого: " + item.adult));
+    const next=make("button","secondary","Следующая ситуация");
+    next.type="button";
+    next.addEventListener("click",() => {
+      const rows=visibleRows(), pos=rows.findIndex(row=>row.id===currentId);
+      if (rows.length) { currentId=rows[(pos+1)%rows.length].id;render();panel.focus(); }
     });
     panel.append(next);
   }
   function render() {
-    const rows = visibleRows();
-    if (rows.length && !rows.some(row => row.id === currentId)) currentId = rows[0].id;
-    renderSummary(); renderList(); renderScenario();
+    const rows=visibleRows();
+    if (rows.length && !rows.some(row => row.id===currentId)) currentId=rows[0].id;
+    renderSummary();renderList();renderScenario();
   }
-  ageSelect.addEventListener("change", render);
-  skillSelect.addEventListener("change", render);
-  $("recommend").addEventListener("click", () => {
-    const picked = core.nextScenario(state, data, ageSelect.value, skillSelect.value);
-    if (picked) { currentId = picked.id; render(); $("scenario").focus(); notice("Подобрана ситуация, которую ещё не разбирали или не применили."); }
+  ageSelect.addEventListener("change",render);
+  skillSelect.addEventListener("change",render);
+  $("recommend").addEventListener("click",() => {
+    const item=learning.recommend(state,journal,data,ageSelect.value,skillSelect.value,dateToday());
+    if (item) { currentId=item.id;render();$("scenario").focus();notice("Выбран следующий шаг или повторение через несколько дней."); }
   });
-  saveSwitch.addEventListener("change", () => {
-    saveEnabled = saveSwitch.checked;
-    if (saveEnabled) { store(); notice("Сохранение включено только для этого профиля браузера."); }
-    else { clearStored(); notice("Локальное сохранение отключено, ранее сохранённые данные удалены из хранилища."); }
+  saveSwitch.addEventListener("change",() => {
+    saveEnabled=saveSwitch.checked;
+    if (saveEnabled) { store();notice("Сохранение включено только для этого профиля браузера."); }
+    else { clearStored();notice("Постоянное сохранение выключено. Локальные записи удалены."); }
     renderSummary();
   });
-  $("export").addEventListener("click", () => {
-    const content = core.safeJSON(state, data);
-    const url = URL.createObjectURL(new Blob([content], {type: "application/json;charset=utf-8"}));
-    const anchor = document.createElement("a");
-    anchor.href = url; anchor.download = "adaptive-skill-trainer-v1.json";
-    document.body.append(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
-    notice("Экспортирован JSON с ответами и рефлексиями. Храните файл приватно.");
+  $("export").addEventListener("click",() => {
+    const content=learning.exportBundle(state,journal,data,core);
+    const url=URL.createObjectURL(new Blob([content],{type:"application/json;charset=utf-8"}));
+    const anchor=document.createElement("a");
+    anchor.href=url;anchor.download="adaptive-skill-trainer-v2.json";
+    document.body.append(anchor);anchor.click();anchor.remove();
+    // Defer revocation until browser has started the download.
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+    notice("Экспортирована история v2. Файл содержит рефлексии — храните его приватно.");
   });
-  $("import").addEventListener("change", async event => {
-    const file = event.target.files && event.target.files[0]; if (!file) return;
+  $("import").addEventListener("change",async event => {
+    const file=event.target.files && event.target.files[0];if (!file) return;
     try {
-      if (file.size > 1000000) throw new Error("Файл слишком большой (максимум 1 МБ)");
-      const loaded = core.normalizeState(JSON.parse(await file.text()), data);
-      if (!confirm("Заменить текущую историю данными из файла?")) return;
-      state = loaded; store(); render(); notice("История импортирована и проверена.");
+      if (file.size>1000000) throw new Error("Размер файла больше 1 МБ");
+      const restored=learning.importBundle(JSON.parse(await file.text()),data,core);
+      if (!confirm("Заменить текущие ответы и историю практики содержимым файла?")) return;
+      state=restored.state;journal=restored.journal;store();render();
+      notice(restored.legacy ?
+        "Формат v1 импортирован; ответы сохранены, но старые записи не считаются многодневным закреплением." :
+        "Резервная копия v2 проверена и импортирована.");
     } catch (error) { notice("Импорт отклонён: " + error.message); }
-    finally { event.target.value = ""; }
+    finally {event.target.value="";}
   });
-  $("reset").addEventListener("click", () => {
-    if (!confirm("Удалить все ответы и заметки тренажёра в этой сессии и браузере?")) return;
-    state = core.freshState(); clearStored(); saveEnabled = false; saveSwitch.checked = false;
-    render(); notice("Ответы и локальная история удалены.");
+  $("reset").addEventListener("click",() => {
+    if (!confirm("Удалить все ответы, рефлексии и журнал повторений из сессии и локального хранилища?")) return;
+    state=core.freshState();journal=learning.freshJournal();
+    clearStored();saveEnabled=false;saveSwitch.checked=false;render();
+    notice("Текущая история удалена.");
   });
   render();
 })();
