@@ -10,13 +10,14 @@
   <link rel="stylesheet" href="./style.css">
   <script defer src="./data.js"></script>
   <script defer src="./core.js"></script>
+  <script defer src="./learning.js"></script>
   <script defer src="./app.js"></script>
 </head>
 <body>
   <div class="shell">
     <header class="top">
       <a href="../" class="back">← PSY-TOOLS</a>
-      <span class="tag">Образовательный прототип · v1.0</span>
+      <span class="tag">Образовательный прототип · v1.1</span>
     </header>
     <section class="hero">
       <div class="kicker">Развитие через практику</div>
@@ -32,11 +33,12 @@
       </div>
       <p class="helper" id="ageHelp"></p>
       <p class="stat" id="summary"></p>
+      <p class="helper">«Закреплено» — только самоотчёт после практики в разные дни, не психологическая оценка и не гарантия устойчивого навыка.</p>
       <div class="progressline"><progress id="progressBar" max="1" value="0"></progress><span id="progressLabel">0%</span></div>
     </section>
     <main class="layout">
       <aside class="card sidebar" aria-label="Список ситуаций">
-        <h2>Ситуации</h2><p class="helper">Выбирай любое упражнение. Отмеченная практика — твой самоотчёт, не измерение способности.</p>
+        <h2>Ситуации</h2><p class="helper">Выбирай любое упражнение. Статусы «не начато / в процессе / закреплено» описывают только твои действия и повторение.</p>
         <nav id="exerciseList" aria-label="Список упражнений"></nav>
       </aside>
       <article id="scenario" class="card scenario" tabindex="-1" aria-label="Текущая ситуация">
@@ -45,12 +47,12 @@
     </main>
     <section class="card storage" aria-label="Управление результатами">
       <h2>Мои данные</h2>
-      <p>По умолчанию тренировка работает без постоянного сохранения. Сервер не используется, аккаунтов нет. Не вводите настоящие имена детей, медицинские сведения или другие чувствительные данные.</p>
+      <p>По умолчанию тренировка работает без постоянного сохранения. Сервер не используется, аккаунтов нет. Не вводите настоящие имена детей, медицинские сведения или другие чувствительные данные. Редакционный статус упражнений: «на проверке»; научная проверка: «не подтверждено».</p>
       <label class="tick"><input id="save" type="checkbox"><span>Сохранять прогресс в этом профиле браузера (localStorage)</span></label>
       <p class="helper" id="privacyMode"></p>
       <div class="actions">
-        <button id="export" type="button" class="secondary">Экспорт JSON</button>
-        <label for="import" class="file-button">Импорт JSON</label><input id="import" type="file" accept=".json,application/json">
+        <button id="export" type="button" class="secondary">Экспорт JSON (v2)</button>
+        <label for="import" class="file-button">Импорт JSON (v1/v2)</label><input id="import" type="file" accept=".json,application/json">
         <button id="reset" type="button" class="danger">Удалить историю</button>
       </div>
       <p class="helper">Один профиль браузера не защищает данные от других людей, пользующихся этим же профилем. Для разных участников используйте разные профили браузера. JSON может содержать личные заметки.</p>

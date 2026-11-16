@@ -24,5 +24,6 @@ jobs:
           node --check trainer/data.js
           node --check trainer/core.js
           node --check trainer/app.js
+          node --check trainer/learning.js
       - name: Curriculum and local state tests
-        run: node --test trainer/test.cjs
+        run: node --test trainer/*.test.cjs
