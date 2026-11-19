@@ -197,7 +197,10 @@ footer{margin-top:12px;border-top:1px solid var(--line);color:var(--muted);font-
   for(const btn of $("presets").children)btn.disabled=s.status==="running";
   announce(s);
  }
- function frame(){render();rafId=requestAnimationFrame(frame);}
+ function frame(){rafId=null;render();scheduleFrame();}
+ function scheduleFrame(){
+  if(timer.status==="running"&&!document.hidden&&rafId===null)rafId=requestAnimationFrame(frame);
+ }
  function playCompletion(){
   if(!$("sound").checked)return;
   try{
@@ -236,17 +239,16 @@ footer{margin-top:12px;border-top:1px solid var(--line);color:var(--muted);font-
  $("start").addEventListener("click",()=>{
   try{
    primeAudio();
-   timer=E.start(timer,Date.now());armed=true;store();render();
+   timer=E.start(timer,Date.now());armed=true;store();render();scheduleFrame();
   }catch(err){$("status").textContent=err.message;}
  });
  $("pause").addEventListener("click",()=>{timer=E.pause(timer,Date.now());armed=false;store();render();});
  $("reset").addEventListener("click",()=>{timer=E.reset(timer);armed=false;store();render();});
  $("sound").addEventListener("change",primeAudio);
- document.addEventListener("visibilitychange",()=>{if(!document.hidden)render();});
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden){render();scheduleFrame();}});
  // rAF can be throttled while hidden; wall-clock deadline stays authoritative.
  document.addEventListener("pagehide",()=>store());
- setInputs(timer.durationMs);refreshPreset();render();
- rafId=requestAnimationFrame(frame);
+ setInputs(timer.durationMs);refreshPreset();render();scheduleFrame();
  if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
   const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
   sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(err){}};
