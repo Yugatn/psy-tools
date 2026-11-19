@@ -186,19 +186,18 @@ function findCities(){
   "Показано "+items.length+". Если город не виден, уточните название или регион.");
 }
 function choose(c,group){
- const suggested=group==="WORLD"?c.zone:group==="BY"?"Europe/Minsk":
-   coordsToZone?coordsToZone(c.latitude,c.longitude):"";
+ try{
+ const suggestion=E.suggestZone(c,group,coordsToZone);
  candidate={id:group.toLowerCase()+":"+c.id,name:c.name,
    country:group==="RU"?"Россия":group==="BY"?"Беларусь":c.country,
-   region:c.region||"",zone:suggested,confidence:group==="RU"?"suggested":"confirmed"};
+   region:c.region||"",zone:suggestion.zone,confidence:suggestion.confidence};
  $("candidate-name").textContent=c.name+(c.region?" · "+c.region:"")+" · "+candidate.country;
- $("candidate-source").textContent=group==="RU"?
-  "Временная зона предложена по координатам и может быть неточной — проверьте её, особенно у границ.":
-  group==="BY"?"Единая IANA-зона Беларуси: Europe/Minsk.":"Международный город с заранее заданной зоной.";
- $("zone").value=suggested;
+ $("candidate-source").textContent=suggestion.explanation;
+ $("zone").value=suggestion.zone;
  $("candidate-status").textContent="";
  $("candidate").hidden=false;
  $("candidate").scrollIntoView({behavior:"smooth",block:"nearest"});
+ }catch(err){notify("search-status",err.message);}
 }
 function saveChoice(asHome){
  if(!candidate)return;
