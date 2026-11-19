@@ -127,6 +127,23 @@ footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
   <p class="muted">Подсчёт повторений цифр в строках, столбцах и диагоналях. Названия традиционные; это не измерение способностей.</p>
   <div class="lines" id="lines"></div>
 </section>
+<section class="card" aria-labelledby="compare-title">
+  <h2 id="compare-title">Сопоставить две даты</h2>
+  <p class="muted">Сравните <b>только арифметическую структуру</b> двух матриц. Различия в количестве цифр не измеряют психологическую совместимость, здоровье или отношения.</p>
+  <div class="form-grid">
+    <div><label for="compare-date">Вторая дата рождения</label><input type="date" id="compare-date"></div>
+    <div><button id="compare-run" type="button" class="primary" style="width:100%">Сравнить цифры и линии</button></div>
+  </div>
+  <p id="compare-status" class="tip" role="status" aria-live="polite"></p>
+  <div id="compare-output" hidden>
+    <h3>Цифры 1–9</h3>
+    <div style="overflow-x:auto"><table class="source-table" id="compare-table"></table></div>
+    <h3>Восемь числовых линий</h3>
+    <div style="overflow-x:auto"><table class="source-table" id="compare-lines"></table></div>
+    <p class="tip">Знак «+» означает больше повторений во второй записи; «−» — меньше. Это арифметическое различие, а не оценка субъектов.</p>
+    <div class="actions"><button type="button" id="compare-copy">Скопировать сравнение</button><button type="button" id="compare-csv">Экспорт CSV</button></div>
+  </div>
+</section>
 <section class="card" aria-labelledby="details-title">
   <h2 id="details-title">Значения девяти цифр</h2>
   <p class="muted">Символические темы, используемые в некоторых нумерологических школах. Повторения цифры не устанавливают психологическое свойство или состояние здоровья.</p>
@@ -162,7 +179,7 @@ footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
 const $=id=>document.getElementById(id);
 const C=window.PythagorasCalculator;
 if(!C){$("form-error").textContent="Не удалось загрузить расчётный модуль.";return;}
-let result=null;
+let result=null,comparison=null;
 function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
 function clear(el){el.replaceChildren();}
 function countLabel(n){return n===0?"Нет в записи":n+" "+(n%10===1&&n%100!==11?"повторение":(n%10>=2&&n%10<=4&&!(n%100>=12&&n%100<=14)?"повторения":"повторений"));}
@@ -250,17 +267,69 @@ function exportMatrixSVG(r){
  const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml;charset=utf-8"});
  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="pythagoras-"+r.date.iso+".svg";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function compareText(c){
+ const header=["Сравнение матриц — только арифметика",
+  c.first.date.display+" / "+c.second.date.display,
+  "Цифра;Первая дата;Вторая дата;Разница"];
+ for(const x of c.digits)header.push(x.digit+";"+x.a+";"+x.b+";"+x.difference);
+ header.push("Линия;Первая дата;Вторая дата;Разница");
+ for(const x of c.lines)header.push(x.name+";"+x.a+";"+x.b+";"+x.difference);
+ header.push("Не оценка психологической совместимости.");
+ return header.join("\n");
+}
+function renderCompareTable(id,records,firstTitle,secondTitle,firstKey){
+ const table=$(id);table.replaceChildren();
+ const header=node("tr");
+ [firstKey,firstTitle,secondTitle,"Разница"].forEach(v=>header.appendChild(node("th","",v)));
+ const th=node("thead");th.appendChild(header);table.appendChild(th);
+ const body=node("tbody");
+ for(const item of records){
+  const tr=node("tr");
+  [String(item.digit??item.name),String(item.a),String(item.b),String(item.difference>0?"+"+item.difference:item.difference)].forEach(v=>tr.appendChild(node("td","",v)));
+  body.appendChild(tr);
+ }
+ table.appendChild(body);
+}
+function compareTwoDates(){
+ $("compare-status").textContent="";
+ if(!result){$("compare-status").textContent="Сначала рассчитайте первую матрицу.";return;}
+ try{
+  comparison=C.compareDates(result.date.iso,$("compare-date").value,{firstDayRule:result.rule});
+  renderCompareTable("compare-table",comparison.digits,result.date.display,comparison.second.date.display,"Цифра");
+  renderCompareTable("compare-lines",comparison.lines,result.date.display,comparison.second.date.display,"Линия");
+  $("compare-output").hidden=false;
+  $("compare-status").textContent="Сравнение построено. Вторую дату приложение не сохраняет.";
+ }catch(e){comparison=null;$("compare-output").hidden=true;$("compare-status").textContent=e.message;}
+}
 function compute(){
  $("form-error").textContent="";$("calculate-status").textContent="";
  try{
   const r=C.calculate($("date").value,{firstDayRule:$("dayrule").value});
-  result=r;renderNumbers(r);renderMatrix(r);renderSources(r);renderLines(r);renderDetails(r);$("results").hidden=false;
+  result=r;comparison=null;$("compare-output").hidden=true;renderNumbers(r);renderMatrix(r);renderSources(r);renderLines(r);renderDetails(r);$("results").hidden=false;
   $("results").scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){result=null;$("results").hidden=true;$("form-error").textContent=e.message;}
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();compute();});
-$("form").addEventListener("reset",()=>{result=null;$("results").hidden=true;$("form-error").textContent="";$("calculate-status").textContent="";});
+$("form").addEventListener("reset",()=>{result=null;comparison=null;$("results").hidden=true;$("compare-output").hidden=true;$("form-error").textContent="";$("calculate-status").textContent="";});
 $("example").addEventListener("click",()=>{$("date").value="1992-03-14";$("dayrule").value="significant";compute();});
+$("compare-run").addEventListener("click",compareTwoDates);
+$("compare-copy").addEventListener("click",async()=>{
+ if(!comparison)return;
+ try{await copy(compareText(comparison));$("compare-status").textContent="Текст сравнения скопирован.";}
+ catch(e){$("compare-status").textContent="Копирование недоступно в этом браузере.";}
+});
+$("compare-csv").addEventListener("click",()=>{
+ if(!comparison)return;
+ const rows=[["Раздел","Показатель","Первая дата","Вторая дата","Разница"]];
+ for(const d of comparison.digits)rows.push(["Цифра",String(d.digit),d.a,d.b,d.difference]);
+ for(const l of comparison.lines)rows.push(["Линия",l.name,l.a,l.b,l.difference]);
+ const csv="\ufeff"+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ const a=document.createElement("a");a.href=url;a.download="pythagoras-comparison.csv";document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $("compare-status").textContent="CSV сохранён.";
+});
+
 async function copy(text){
  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true;}
  const box=node("textarea");box.value=text;box.style.position="fixed";box.style.top="-2000px";document.body.appendChild(box);box.select();
