@@ -1,0 +1,35 @@
+name: Pythagoras Mini App checks
+
+on:
+  push:
+    paths:
+      - "mini-apps/pythagoras/**"
+      - "tests/pythagoras-mini-app.test.cjs"
+      - ".github/workflows/pythagoras-mini-app.yml"
+  pull_request:
+    paths:
+      - "mini-apps/pythagoras/**"
+      - "tests/pythagoras-mini-app.test.cjs"
+      - ".github/workflows/pythagoras-mini-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax check
+        run: node --check mini-apps/pythagoras/calculator.js
+      - name: Regression tests
+        run: node --test tests/pythagoras-mini-app.test.cjs
+      - name: Verify Mini App entry point
+        run: |
+          test -f mini-apps/pythagoras/index.html
+          grep -Fq '<script src="./calculator.js"></script>' mini-apps/pythagoras/index.html
+          grep -Fq 'telegram-web-app.js' mini-apps/pythagoras/index.html
