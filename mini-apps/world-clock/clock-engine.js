@@ -143,6 +143,35 @@
   candidates.sort((a,b)=>a.ms-b.ms);
   return {zone,date,time,candidates,status:candidates.length===0?"gap":candidates.length>1?"fold":"unique"};
  }
+ const RUSSIAN_ZONE_CORRECTIONS=Object.freeze({
+  "Вяземский|Хабаровский край":"Asia/Vladivostok",
+  "Горняк|Алтайский край":"Asia/Barnaul",
+  "Николаевск-на-Амуре|Хабаровский край":"Asia/Vladivostok",
+  "Облучье|Еврейская автономная область":"Asia/Vladivostok",
+  "Светогорск|Ленинградская область":"Europe/Moscow",
+  "Северо-Курильск|Сахалинская область":"Asia/Sakhalin"
+ });
+ function suggestZone(city,country,geoLookup,instant=Date.now()){
+  if(!city||typeof city!=="object")throw Error("Не выбран город.");
+  if(country==="WORLD")return {zone:validateZone(city.zone),confidence:"confirmed",
+    explanation:"Часовая зона указана в проверенной подборке городов."};
+  if(country==="BY")return {zone:"Europe/Minsk",confidence:"confirmed",
+    explanation:"Для городов Беларуси используется IANA Europe/Minsk."};
+  if(country!=="RU")throw Error("Неизвестный справочник страны.");
+  if(typeof geoLookup!=="function")throw Error("Нет локальной географической базы часовых поясов.");
+  const corrected=RUSSIAN_ZONE_CORRECTIONS[city.name+"|"+city.region];
+  const predicted=validateZone(corrected||geoLookup(city.latitude,city.longitude));
+  const actual=Math.round(offsetSeconds(instant,predicted)/60);
+  const m=/^UTC([+-])(\d{1,2})(?::(\d\d))?$/.exec(String(city.utcCurrent||""));
+  let warning="Пояс предложен по координатам, проверьте IANA-зону перед добавлением.";
+  if(corrected)warning="Пояс скорректирован для города: географическая аппроксимация у границ ошибалась.";
+  if(m){
+   const expected=(m[1]==="-"?-1:1)*(+m[2]*60+(+(m[3]||0)));
+   if(expected!==actual)warning="Предупреждение: найденная зона расходится со справочным UTC города ("+
+    city.utcCurrent+" против "+offsetLabel(actual*60)+"). Проверьте зону вручную.";
+  }
+  return {zone:predicted,confidence:corrected?"confirmed":"suggested",explanation:warning};
+ }
  function normalizeCity(city){
   if(!city||typeof city!=="object")throw Error("Нет данных города.");
   const id=String(city.id||"").slice(0,130),name=String(city.name||"").slice(0,100);
@@ -198,5 +227,5 @@
  }
  return Object.freeze({VERSION,KEY,MAX_CITIES,presetCities,validateZone,snapshot,offsetSeconds,
   offsetLabel,differenceLabel,parseDateTime,resolveWallTime,normalizeCity,defaultState,
-  normalizeState,addCity,removeCity,moveCity,searchPresets});
+  normalizeState,addCity,removeCity,moveCity,searchPresets,suggestZone});
 });
