@@ -47,3 +47,27 @@ test("форматирование результата содержит дат�
  assert.match(text,/1111/);
  assert.match(text,/не психологическая диагностика/);
 });
+
+test("each cell transparently separates date digits and working digits",()=>{
+ const r=C.calculate("14.03.1992");
+ for(let d=1;d<=9;d++) assert.equal(r.counts[d],r.dateCounts[d]+r.workingCounts[d]);
+ assert.equal(r.dateCounts[1],2);
+ assert.equal(r.workingCounts[1],2);
+ assert.equal(r.excludedZeros,1);
+ assert.equal(r.nonZeroTotal,Object.values(r.dateCounts).reduce((a,b)=>a+b,0)+Object.values(r.workingCounts).reduce((a,b)=>a+b,0));
+});
+test("explicitly compares competing leading-zero conventions",()=>{
+ const two=C.compareRules("03.09.2001");
+ assert.equal(two.changed,true);
+ assert.deepEqual(two.significant.working,[15,6,9,9]);
+ assert.deepEqual(two.literal.working,[15,6,15,6]);
+ assert.equal(two.changes.length,9);
+ assert.ok(two.changes.some(x=>x.difference!==0));
+ assert.equal(C.compareRules("14.03.1992").changed,false);
+});
+test("formatted export states rule and origin counts",()=>{
+ const txt=C.formatText(C.calculate("14.03.1992"));
+ assert.match(txt,/Правило для дней 01–09:/);
+ assert.match(txt,/Источники цифр:/);
+ assert.match(txt,/не психологическая диагностика/);
+});
