@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081b2a">
+<meta name="description" content="CRM Exercise Timer — интервальные напоминания для отжиманий, приседаний, упражнений на пресс и растяжку с целями и дневным учётом.">
+<title>Таймер упражнений — автономная версия CRM</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#0a1929);--panel:var(--tg-theme-secondary-bg-color,#13283c);--text:var(--tg-theme-text-color,#eff6ff);--muted:var(--tg-theme-hint-color,#adc0d0);--accent:var(--tg-theme-button-color,#268b88);--button-text:var(--tg-theme-button-text-color,#fff);--border:#3a6175;--mint:#93edce;--yellow:#f0d092;--error:#ffbaa9}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 20% -12%,#1e4b55,transparent 62%),var(--bg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:1130px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 14px max(40px,env(safe-area-inset-bottom))}
+a{color:#a3e8e0}h1{font-size:clamp(31px,7vw,49px);letter-spacing:-.045em;line-height:1.12;margin:7px 0 12px}h2{font-size:21px;margin:0 0 12px}h3{font-size:17px;margin:0}
+.hero{padding:5px 0 19px}.hero p{max-width:870px;color:var(--muted)}.eyebrow{color:var(--mint);font-weight:750;letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:17px;margin-bottom:14px}
+.muted,.help{color:var(--muted);font-size:13px}.tiny{font-size:12px;color:var(--muted)}.tag{display:inline-flex;padding:3px 9px;border:1px solid #5e9f9c;border-radius:99px;font-size:12px;color:#c4f4df}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.9fr);gap:14px;align-items:start}
+button,input,select{font:inherit}button{min-height:42px;border:1px solid #527c86;background:#2d485d;color:var(--text);padding:9px 13px;border-radius:10px;font-weight:650;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--button-text)}
+button.danger{background:#543443;border-color:#916c73}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #d7edd4;outline-offset:2px}
+input:not([type=checkbox]),select{width:100%;min-width:0;min-height:42px;background:#0c1c2d;color:var(--text);border:1px solid #526e84;border-radius:10px;padding:9px}
+label{font-size:12px;display:block;font-weight:650;margin-bottom:4px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:#c5d9dc}
+.check input{width:19px;height:19px;accent-color:#64bbb0}
+.check label{margin:0}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions button{flex:0 1 auto}
+.exercise-list{display:grid;gap:11px}
+.exercise{background:#10243a;border:1px solid #3e6879;border-radius:15px;padding:14px}
+.exercise.ready{border-color:#e0b87b;background:#253342}
+.exercise.done-day{border-color:#629d83}
+.exercise-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.exercise-head h3{font-size:18px}
+.exercise-group{color:#97c3c8;font-size:12px}
+.clock{font-size:clamp(27px,5vw,39px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.035em;margin:12px 0 4px}
+.progress-track{height:8px;background:#2e4a5b;border-radius:15px;overflow:hidden;margin-top:9px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#27bba3,#b3e0a9);border-radius:15px}
+.exercise .config{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.exercise .config button{min-height:38px}
+.subcount{font-size:12px;color:#c5d6dd}
+.status{min-height:21px;margin-top:9px;color:#c5ead1;font-size:13px}
+.status.error{color:var(--error)}
+.status.warn{color:var(--yellow)}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.metric{padding:12px;border-radius:12px;background:#103243;border:1px solid #3e7080}
+.metric strong{display:block;font-size:30px;letter-spacing:-.04em;line-height:1.2;font-variant-numeric:tabular-nums}
+.metric span{display:block;color:var(--muted);font-size:12px}
+.notice{border-left:3px solid #d8b676;padding:11px 13px;background:#27313d;border-radius:0 9px 9px 0;font-size:12px;color:#d5dbdf}
+.history{list-style:none;padding:0;margin:7px 0;max-height:340px;overflow:auto}
+.history li{display:flex;justify-content:space-between;gap:8px;font-size:12px;border-bottom:1px solid #315368;padding:8px 0}
+#hold-panel[hidden],#custom-panel[hidden]{display:none!important}
+#hold-panel{padding:11px;border-radius:13px;background:#254b50;border:1px solid #5a9b92;margin:11px 0}
+#hold-clock{font-size:32px;font-variant-numeric:tabular-nums;font-weight:800}
+.custom-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.footer{margin-top:13px;border-top:1px solid #355367;padding:17px 0;color:var(--muted);font-size:12px}
+@media(max-width:780px){.layout{grid-template-columns:1fr}.cols{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.cols,.custom-form{grid-template-columns:1fr}.card{padding:13px}.actions button{flex:1 1 100px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head>
+<body><main>
+<nav class="tiny"><a href="../../">CRM</a> / Таймер упражнений</nav>
+<header class="hero">
+ <div class="eyebrow">Движение · гибкие интервалы · локальный дневник</div>
+ <h1>Таймер упражнений</h1>
+ <p>Выберите упражнения и частоту напоминаний: например, 8 отжиманий каждые 20 минут или 12 приседаний каждые 15 минут. Назначьте посильный дневной предел подходов, чтобы напоминания не превращались в бесконечную нагрузку.</p>
+ <span class="tag">Telegram-ready Mini App · расчёты на устройстве</span>
+</header>
+<div class="layout">
+ <div>
+  <section class="card">
+   <h2>Режим напоминаний</h2>
+   <div class="cols">
+    <div><label for="window-start">С какого времени</label><input id="window-start" type="time" value="09:00"></div>
+    <div><label for="window-end">До какого времени</label><input id="window-end" type="time" value="18:00"></div>
+    <div><label for="timezone-note">Часовой пояс</label><input id="timezone-note" type="text" readonly value="Локальные часы устройства"></div>
+   </div>
+   <div class="actions">
+    <button id="start" type="button" class="primary">Запустить программу</button>
+    <button id="pause" type="button" disabled>Пауза</button>
+    <button id="notification" type="button">Разрешить уведомления</button>
+    <label class="check"><input id="sound" type="checkbox"> Тихий сигнал при напоминании</label>
+   </div>
+   <p id="program-status" class="status" role="status" aria-live="polite">Выберите упражнения и нажмите «Запустить».</p>
+   <p class="help">Отсчёт до следующего напоминания рассчитывается по времени устройства. Вне выбранного окна новые подходы не предлагаются. При долгом отсутствии приложение не пытается «догнать» все пропущенные повторы.</p>
+  </section>
+  <section class="card">
+   <h2>Мои упражнения</h2>
+   <p class="help">Каждый интервал индивидуален. Включите упражнения, настройте цель на один подход и число подходов в день. Начальные значения — примеры интерфейса, не персональная тренировочная программа.</p>
+   <div id="exercise-list" class="exercise-list"></div>
+   <div class="actions"><button id="show-custom" type="button">+ Своё упражнение</button></div>
+   <div id="custom-panel" hidden>
+    <h3 style="margin:14px 0 10px">Добавить упражнение</h3>
+    <form id="custom-form" class="custom-form">
+      <div><label for="custom-name">Название</label><input id="custom-name" type="text" maxlength="100" required placeholder="Например, выпады"></div>
+      <div><label for="custom-group">Группа мышц</label><select id="custom-group"></select></div>
+      <div><label for="custom-unit">Единица цели</label><select id="custom-unit"><option value="reps">Повторения</option><option value="seconds">Секунды</option></select></div>
+      <div><label for="custom-target">Цель на подход</label><input id="custom-target" type="number" min="1" max="300" value="8" required></div>
+      <div><label for="custom-interval">Интервал, минут</label><select id="custom-interval"></select></div>
+      <div><label for="custom-cap">Максимум подходов в день</label><input id="custom-cap" type="number" min="1" max="30" value="3" required></div>
+      <button class="primary" type="submit">Добавить в список</button>
+      <button id="cancel-custom" type="button">Отмена</button>
+    </form>
+   </div>
+  </section>
+ </div>
+ <div>
+  <section class="card">
+   <h2>Сегодня</h2>
+   <div class="summary">
+    <div class="metric"><strong id="stat-sets">0</strong><span>Подходов выполнено</span></div>
+    <div class="metric"><strong id="stat-reps">0</strong><span>Повторений</span></div>
+    <div class="metric"><strong id="stat-seconds">0</strong><span>Секунд удержания</span></div>
+    <div class="metric"><strong id="stat-skips">0</strong><span>Пропущенных напоминаний</span></div>
+   </div>
+   <h3 style="margin-top:18px">Дневник</h3>
+   <ul id="history" class="history"><li>Ещё нет записей</li></ul>
+   <p class="help">Нажатие «Выполнено» фиксирует один подход с назначенным количеством повторений или секунд. Приложение не может проверить фактическое выполнение упражнения.</p>
+  </section>
+  <section class="card">
+   <h2>Секундомер подхода</h2>
+   <p class="help">Для планки, растяжки и других упражнений на удержание включается отдельный обратный отсчёт на заданное число секунд.</p>
+   <div id="hold-panel" hidden>
+    <div id="hold-label" class="muted"></div>
+    <div id="hold-clock" role="timer" aria-live="off">00:30</div>
+    <p id="hold-status" class="help"></p>
+    <button id="hold-cancel" type="button">Остановить отсчёт</button>
+   </div>
+   <p class="notice">Когда секундомер закончится, нажмите «Выполнено» вручную. История не пополняется автоматически без вашего подтверждения.</p>
+  </section>
+  <section class="card">
+   <h2>Приватность и экспорт</h2>
+   <div class="check"><input id="remember" type="checkbox"><label for="remember">Запоминать программу и дневник на этом устройстве</label></div>
+   <p class="help">По умолчанию выключено. После включения данные сохраняются только в localStorage данного браузерного профиля. Это не зашифрованная медицинская запись.</p>
+   <div class="actions">
+     <button id="export" type="button">Экспорт JSON</button>
+     <button id="csv" type="button">Дневник CSV</button>
+     <button id="import" type="button">Импорт JSON</button>
+     <button id="clear-history" type="button">Очистить дневник</button>
+     <button id="reset" type="button" class="danger">Сброс</button>
+   </div>
+   <input id="file" type="file" accept="application/json,.json" hidden>
+   <p id="storage-status" class="status" role="status" aria-live="polite"></p>
+  </section>
+ </div>
+</div>
+<section class="card">
+ <h2>Безопасность нагрузки</h2>
+ <p class="notice">Интервалы 10–20 минут — это настройка <b>напоминаний</b>, а не рекомендация многократно выполнять тяжёлые упражнения весь день. Подбирайте объём под подготовку, чередуйте нагрузку и отдых, не тренируйтесь через боль, головокружение или выраженную усталость. При заболеваниях или ограничениях проконсультируйтесь со специалистом. Упражнения на мобильность выполняйте без рывков и болезненного растяжения.</p>
+ <p class="help">Уведомления браузера и звук могут работать только при открытой странице и при разрешениях платформы. Telegram Mini App не является системным будильником: после полного закрытия гарантированных уведомлений нет. Время и режим сна определяются настройками устройства, не отправляются на сервер.</p>
+</section>
+<footer class="footer">
+ CRM · Таймер упражнений. Локальный пользовательский инструмент, не медицинская диагностика и не персональная лечебная программа. <a href="../age-tenure/">Калькулятор возраста и стажа</a> · <a href="https://yugatn.github.io/psy-tools/mini-apps/exercise-timer/">Код</a>
+</footer>
+</main>
+<!-- Автономный HTML: JS встроен. Не требует загрузки engine.js с сервера. -->
+<script>
+/* CRM · Exercise interval timer v1.0. All calculations run locally.
+ * Deadlines use absolute epoch milliseconds, never interval callback counts.
+ * Reminders are best-effort while page is open; no background service.
+ */
+(function(root,factory){"use strict";const api=factory();
+ if(typeof module==="object"&&module.exports)module.exports=api;
+ if(root)root.CrmExerciseTimer=api;
+})(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
+"use strict";
+const VERSION="1.0.0",KEY="crm.exercise-timer.v1",MAX_EXERCISES=30,MAX_HISTORY=5000;
+const GROUPS=Object.freeze([
+ ["upper","Грудь и руки"],["legs","Ноги и ягодицы"],
+ ["core","Пресс и корпус"],["mobility","Растяжка и мобильность"],
+ ["back","Спина"],["full","Всё тело"]
+]);
+const TEMPLATES=Object.freeze([
+ {id:"pushups",name:"Отжимания",group:"upper",unit:"reps",target:8,intervalMin:20,dailyMax:3},
+ {id:"squats",name:"Приседания",group:"legs",unit:"reps",target:12,intervalMin:20,dailyMax:3},
+ {id:"crunches",name:"Скручивания на пресс",group:"core",unit:"reps",target:10,intervalMin:60,dailyMax:3},
+ {id:"plank",name:"Планка",group:"core",unit:"seconds",target:30,intervalMin:60,dailyMax:3},
+ {id:"stretch",name:"Лёгкая растяжка",group:"mobility",unit:"seconds",target:40,intervalMin:60,dailyMax:4},
+ {id:"shoulders",name:"Мобильность плеч",group:"mobility",unit:"seconds",target:30,intervalMin:90,dailyMax:4}
+]);
+const ALLOWED_INTERVALS=Object.freeze([10,15,20,30,45,60,90,120,180,240]);
+const assertNow=ms=>{if(!Number.isFinite(ms)||ms<0||ms>8.64e15)throw Error("Некорректное системное время.");return ms;};
+function pad(n){return String(n).padStart(2,"0");}
+function dayKey(ms){const d=new Date(assertNow(ms));return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parseClock(text){
+ const m=/^([01]\d|2[0-3]):([0-5]\d)$/.exec(String(text||""));
+ if(!m)throw Error("Рабочие часы должны иметь формат ЧЧ:ММ.");
+ return +m[1]*60+ +m[2];
+}
+function validWindow(window){
+ const start=String(window?.start??""),end=String(window?.end??"");
+ const a=parseClock(start),b=parseClock(end);
+ if(a>=b)throw Error("Время начала должно быть раньше времени окончания (без перехода через полночь).");
+ return {start,end};
+}
+function inWindow(ms,window){
+ const d=new Date(assertNow(ms)),minute=d.getHours()*60+d.getMinutes();
+ return minute>=parseClock(window.start)&&minute<parseClock(window.end);
+}
+function nextAllowedAt(ms,window){
+ const t=new Date(assertNow(ms)),start=parseClock(window.start),end=parseClock(window.end);
+ const min=t.getHours()*60+t.getMinutes();
+ if(min<start){t.setHours(Math.floor(start/60),start%60,0,0);return t.getTime();}
+ if(min>=end){t.setDate(t.getDate()+1);t.setHours(Math.floor(start/60),start%60,0,0);return t.getTime();}
+ return ms;
+}
+function nextDayStart(ms,window){
+ const date=new Date(assertNow(ms)),begin=parseClock(window.start);
+ date.setDate(date.getDate()+1);date.setHours(Math.floor(begin/60),begin%60,0,0);
+ return date.getTime();
+}
+function validExercise(e){
+ if(!e||typeof e!=="object")throw Error("Неверная запись упражнения.");
+ const id=String(e.id||""),name=String(e.name||"").trim(),group=String(e.group||""),
+  unit=String(e.unit||"");
+ if(!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error("Неверный идентификатор упражнения.");
+ if(!name||name.length>100||/[<>]/.test(name))throw Error("Название упражнения должно содержать 1–100 символов без HTML.");
+ if(!GROUPS.some(g=>g[0]===group))throw Error("Выберите группу мышц.");
+ if(!["reps","seconds"].includes(unit))throw Error("Неверная единица цели.");
+ if(!Number.isInteger(e.target)||e.target<1||e.target>(unit==="reps"?300:600))
+  throw Error("Цель: 1–300 повторений либо 1–600 секунд.");
+ if(!ALLOWED_INTERVALS.includes(e.intervalMin))throw Error("Интервал: 10, 15, 20, 30, 45, 60, 90, 120, 180 или 240 минут.");
+ if(!Number.isInteger(e.dailyMax)||e.dailyMax<1||e.dailyMax>30)
+  throw Error("Дневной предел подходов: от 1 до 30.");
+ return {id,name,group,unit,target:e.target,intervalMin:e.intervalMin,
+  dailyMax:e.dailyMax,enabled:e.enabled===true,
+  nextDueAt:e.nextDueAt===null||e.nextDueAt===undefined?null:assertNow(e.nextDueAt)};
+}
+function defaultState(){
+ return {schema:"crm-exercise-timer",version:1,running:false,
+  window:{start:"09:00",end:"18:00"},
+  exercises:TEMPLATES.map(x=>({...x,enabled:false,nextDueAt:null})),
+  history:[]};
+}
+function normalizeState(input){
+ if(!input||input.schema!=="crm-exercise-timer"||input.version!==1)throw Error("Неподдерживаемый файл упражнений.");
+ if(!Array.isArray(input.exercises)||input.exercises.length>MAX_EXERCISES||!Array.isArray(input.history)||
+   input.history.length>MAX_HISTORY)throw Error("Превышен предел записей.");
+ const window=validWindow(input.window),seen=new Set();
+ const exercises=input.exercises.map(e=>{const item=validExercise(e);
+  if(seen.has(item.id))throw Error("Повторяется ID упражнения.");seen.add(item.id);return item;});
+ const history=input.history.map(row=>{
+  if(!row||typeof row!=="object"||!["done","skip"].includes(row.kind)||!seen.has(row.exerciseId)||
+     typeof row.id!=="string"||row.id.length>140||!Number.isFinite(row.at)||row.at<0||row.at>8.64e15||
+     !Number.isInteger(row.amount)||row.amount<0||row.amount>600)
+   throw Error("Повреждена запись журнала тренировок.");
+  return {id:row.id,exerciseId:row.exerciseId,at:row.at,kind:row.kind,amount:row.amount};
+ });
+ return {schema:"crm-exercise-timer",version:1,running:input.running===true,window,exercises,history};
+}
+function countToday(history,id,now){
+ const day=dayKey(now);
+ return history.reduce((n,x)=>n+(x.exerciseId===id&&x.kind==="done"&&dayKey(x.at)===day?1:0),0);
+}
+function sync(state,now=Date.now()){
+ const s=normalizeState(state);assertNow(now);
+ if(!s.running)return s;
+ for(const e of s.exercises){
+  if(!e.enabled){e.nextDueAt=null;continue;}
+  const done=countToday(s.history,e.id,now);
+  if(done>=e.dailyMax){
+   if(e.nextDueAt===null||e.nextDueAt<=now){
+    e.nextDueAt=nextDayStart(now,s.window);
+   }
+   continue;
+  }
+  if(e.nextDueAt===null||dayKey(e.nextDueAt)<dayKey(now)){
+   e.nextDueAt=nextAllowedAt(now+e.intervalMin*60000,s.window);
+  }else if(e.nextDueAt<=now&&!inWindow(now,s.window)){
+   e.nextDueAt=nextAllowedAt(now+e.intervalMin*60000,s.window);
+  }
+ }
+ return s;
+}
+function start(state,now=Date.now()){
+ const s=normalizeState(state);assertNow(now);
+ if(!s.exercises.some(x=>x.enabled))throw Error("Включите хотя бы одно упражнение.");
+ if(s.running)return sync(s,now);
+ s.running=true;
+ for(const e of s.exercises)e.nextDueAt=e.enabled?nextAllowedAt(now+e.intervalMin*60000,s.window):null;
+ return sync(s,now);
+}
+function pause(state){const s=normalizeState(state);s.running=false;return s;}
+function updateExercise(state,id,changes,now=Date.now()){
+ const s=normalizeState(state),idx=s.exercises.findIndex(x=>x.id===id);
+ if(idx<0)throw Error("Упражнение не найдено.");
+ const merged=validExercise({...s.exercises[idx],...changes});
+ if(s.running){
+   // A new cadence begins at the moment of the deliberate change.
+   merged.nextDueAt=merged.enabled?nextAllowedAt(now+merged.intervalMin*60000,s.window):null;
+ }
+ s.exercises[idx]=merged;return sync(s,now);
+}
+function addExercise(state,exercise,now=Date.now()){
+ const s=normalizeState(state);if(s.exercises.length>=MAX_EXERCISES)throw Error("Максимум "+MAX_EXERCISES+" упражнений.");
+ const e=validExercise(exercise);
+ if(s.exercises.some(x=>x.id===e.id))throw Error("Уже есть упражнение с таким идентификатором.");
+ if(s.running&&e.enabled)e.nextDueAt=nextAllowedAt(now+e.intervalMin*60000,s.window);
+ s.exercises.push(e);return s;
+}
+function removeExercise(state,id){
+ const s=normalizeState(state);
+ if(s.history.some(x=>x.exerciseId===id))
+  throw Error("Для удаления упражнения с историей сначала очистите журнал.");
+ s.exercises=s.exercises.filter(x=>x.id!==id);return s;
+}
+function changeWindow(state,window,now=Date.now()){
+ const s=normalizeState(state);s.window=validWindow(window);
+ if(s.running)for(const e of s.exercises)
+  e.nextDueAt=e.enabled?nextAllowedAt(now+e.intervalMin*60000,s.window):null;
+ return sync(s,now);
+}
+function record(state,id,kind,now=Date.now()){
+ if(!["done","skip"].includes(kind))throw Error("Неверное действие.");
+ let s=sync(state,now),e=s.exercises.find(x=>x.id===id);
+ if(!s.running||!e||!e.enabled)throw Error("Запустите программу и включите упражнение.");
+ if(!inWindow(now,s.window))throw Error("Сейчас вне настроенного времени напоминаний.");
+ const done=countToday(s.history,id,now);
+ if(done>=e.dailyMax)throw Error("Дневной предел подходов достигнут.");
+ const idx=s.history.length;
+ s.history.push({id:id+"-"+Math.floor(now)+"-"+idx,exerciseId:id,at:now,
+  kind,amount:kind==="done"?e.target:0});
+ if(s.history.length>MAX_HISTORY)s.history.splice(0,s.history.length-MAX_HISTORY);
+ const newCount=kind==="done"?done+1:done;
+ e.nextDueAt=newCount>=e.dailyMax?nextDayStart(now,s.window):
+  nextAllowedAt(now+e.intervalMin*60000,s.window);
+ return s;
+}
+function overview(state,now=Date.now()){
+ const s=sync(state,now);
+ return {state:s,asOf:now,running:s.running,items:s.exercises.map(e=>{
+  const done=countToday(s.history,e.id,now);
+  const capped=done>=e.dailyMax;
+  const due=s.running&&e.enabled&&!capped&&inWindow(now,s.window)&&e.nextDueAt!==null&&e.nextDueAt<=now;
+  const remaining=e.nextDueAt===null?null:Math.max(0,e.nextDueAt-now);
+  return {...e,done,capped,due,remainingMs:remaining,
+   status:!e.enabled?"off":!s.running?"paused":capped?"limit":due?"due":!inWindow(now,s.window)?"quiet":"waiting"};
+ })};
+}
+function dailyStats(state,now=Date.now()){
+ const s=normalizeState(state),key=dayKey(now),ids=new Map(s.exercises.map(e=>[e.id,e]));
+ const rows=s.history.filter(x=>dayKey(x.at)===key),byGroup={};
+ let sets=0,skipped=0,reps=0,seconds=0;
+ for(const ev of rows){
+  const e=ids.get(ev.exerciseId);if(!e)continue;
+  if(ev.kind==="skip"){skipped++;continue;}
+  sets++;byGroup[e.group]=(byGroup[e.group]||0)+1;
+  if(e.unit==="reps")reps+=ev.amount;else seconds+=ev.amount;
+ }
+ return {day:key,sets,skipped,reps,seconds,byGroup,
+  events:rows.slice().sort((a,b)=>b.at-a.at)};
+}
+function formatCountdown(ms){
+ if(ms===null)return "—";
+ const sec=Math.ceil(Math.max(0,ms)/1000),hh=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;
+ return (hh?String(hh).padStart(2,"0")+":":"")+pad(m)+":"+pad(s);
+}
+function exportCsv(state){
+ const s=normalizeState(state),labels=new Map(s.exercises.map(e=>[e.id,e.name]));
+ const esc=v=>{let x=String(v??"");if(/^[\s]*[=+\-@]/.test(x))x="'"+x;
+  return '"'+x.replace(/"/g,'""')+'"';};
+ const rows=[["Дата-время ISO","Упражнение","Действие","Количество","Единица"]];
+ for(const e of s.history){
+  const exercise=s.exercises.find(x=>x.id===e.exerciseId);
+  rows.push([new Date(e.at).toISOString(),labels.get(e.exerciseId),
+   e.kind==="done"?"Выполнено":"Пропущено",e.amount,exercise?.unit==="seconds"?"секунды":"повторения"]);
+ }
+ return "\ufeff"+rows.map(r=>r.map(esc).join(";")).join("\r\n");
+}
+return Object.freeze({VERSION,KEY,GROUPS,TEMPLATES,ALLOWED_INTERVALS,
+ parseClock,validWindow,inWindow,nextAllowedAt,nextDayStart,dayKey,validExercise,
+ defaultState,normalizeState,countToday,sync,start,pause,updateExercise,addExercise,
+ removeExercise,changeWindow,record,overview,dailyStats,formatCountdown,exportCsv});
+});
+
+</script>
+<script>
+(function(){
+"use strict";
+const E=window.CrmExerciseTimer,$=id=>document.getElementById(id);
+const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
+let state=E.defaultState(),seenAlerts=new Set(),hold=null,previousToday="",seenStatus="",audioContext=null;
+const status=(id,message,kind="")=>{const n=$(id);n.textContent=message;n.className="status"+(kind?" "+kind:"");};
+const clock=ms=>new Date(ms).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+const today=()=>E.dayKey(Date.now());
+function persist(){
+ try{if($("remember").checked)localStorage.setItem(E.KEY,JSON.stringify(state));
+   else localStorage.removeItem(E.KEY);
+ }catch(e){status("storage-status","Не удалось сохранить программу на устройстве.","error");}
+}
+try{
+ const saved=localStorage.getItem(E.KEY);
+ if(saved){state=E.normalizeState(JSON.parse(saved));$("remember").checked=true;}
+}catch(e){status("storage-status","Сохранённые данные недоступны. Загружены примеры упражнений.","error");}
+function fromUnit(e){return e.unit==="seconds"?"сек":"повторений";}
+function groupLabel(id){return E.GROUPS.find(x=>x[0]===id)?.[1]||id;}
+function selectField(options,value){
+ const sel=el("select");
+ for(const [key,label] of options){const opt=el("option","",String(label));opt.value=String(key);sel.appendChild(opt);}
+ sel.value=String(value);
+ return sel;
+}
+function field(labelText,node){
+ const wrap=el("div");const name=el("label","",labelText);name.htmlFor=node.id;
+ wrap.append(name,node);return wrap;
+}
+function updateItem(id,changes){
+ try{state=E.updateExercise(state,id,changes,Date.now());persist();renderCards();tick();}
+ catch(err){status("program-status",err.message,"error");renderCards();}
+}
+function notifyDue(item){
+ const token=item.id+"-"+item.nextDueAt;
+ if(seenAlerts.has(token))return;
+ seenAlerts.add(token);
+ if(seenAlerts.size>300)seenAlerts.clear();
+ if($("sound").checked)beep();
+ if(window.Notification&&window.Notification.permission==="granted"&&document.visibilityState==="visible"){
+  try{new window.Notification("Время размяться",{
+    body:item.name+": "+item.target+" "+fromUnit(item)+". Можно пропустить подход.",tag:"exercise-"+item.id
+  });}catch(e){}
+ }
+}
+function beep(){
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio)return;
+  audioContext=audioContext||new Audio();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+  gain.gain.value=.055;osc.frequency.value=740;
+  osc.connect(gain);gain.connect(audioContext.destination);
+  osc.start();osc.stop(audioContext.currentTime+.16);
+ }catch(e){}
+}
+function mark(id,kind){
+ try{
+  state=E.record(state,id,kind,Date.now());
+  if(hold&&hold.id===id){hold=null;$("hold-panel").hidden=true;}
+  seenAlerts.clear();persist();renderCards();drawHistory(Date.now());tick();
+ }
+ catch(err){status("program-status",err.message,"error");}
+}
+function startHold(item){
+ if(item.unit!=="seconds")return;
+ hold={id:item.id,name:item.name,target:item.target,deadline:Date.now()+item.target*1000};
+ $("hold-panel").hidden=false;$("hold-label").textContent=item.name;$("hold-status").textContent="Выполняйте в комфортном темпе.";
+ tick();
+}
+function drawCard(item){
+ const card=el("article","exercise");card.id="exercise-"+item.id;
+ const head=el("div","exercise-head"),title=el("div");
+ title.append(el("h3","",item.name),el("div","exercise-group",groupLabel(item.group)));
+ const enable=el("input");enable.type="checkbox";enable.checked=item.enabled;enable.id="enable-"+item.id;
+ enable.addEventListener("change",()=>updateItem(item.id,{enabled:enable.checked}));
+ const check=el("div","check");const cLabel=el("label","","Включить");cLabel.htmlFor=enable.id;check.append(enable,cLabel);
+ head.append(title,check);card.appendChild(head);
+ const time=el("div","clock","—");time.id="count-"+item.id;card.appendChild(time);
+ const line=el("div","subcount","");line.id="state-"+item.id;card.appendChild(line);
+ const track=el("div","progress-track");const fill=el("div","progress-fill");fill.id="fill-"+item.id;track.appendChild(fill);card.appendChild(track);
+ const controls=el("div","config");
+ const target=el("input");target.type="number";target.min="1";target.max=String(item.unit==="reps"?300:600);target.value=String(item.target);target.id="target-"+item.id;
+ target.addEventListener("change",()=>updateItem(item.id,{target:Number(target.value)}));
+ const every=selectField(E.ALLOWED_INTERVALS.map(x=>[x,x+" минут"]),item.intervalMin);every.id="every-"+item.id;
+ every.addEventListener("change",()=>updateItem(item.id,{intervalMin:Number(every.value)}));
+ const cap=el("input");cap.type="number";cap.min="1";cap.max="30";cap.value=String(item.dailyMax);cap.id="cap-"+item.id;
+ cap.addEventListener("change",()=>updateItem(item.id,{dailyMax:Number(cap.value)}));
+ controls.append(field("Цель, "+(item.unit==="reps"?"повторений":"секунд"),target),
+  field("Повторять через",every),field("Подходов за день, макс.",cap));
+ card.appendChild(controls);
+ const actions=el("div","actions");
+ const done=el("button","primary","Выполнено");done.type="button";done.id="done-"+item.id;
+ done.addEventListener("click",()=>mark(item.id,"done"));
+ const skip=el("button","","Пропустить");skip.type="button";skip.id="skip-"+item.id;
+ skip.addEventListener("click",()=>mark(item.id,"skip"));
+ actions.append(done,skip);
+ if(item.unit==="seconds"){
+  const holdBtn=el("button","","Таймер подхода");holdBtn.type="button";
+  holdBtn.addEventListener("click",()=>startHold(item));actions.appendChild(holdBtn);
+ }
+ if(item.id.startsWith("custom-")){
+   const del=el("button","danger","Удалить");del.type="button";
+   del.addEventListener("click",()=>{
+    try{
+     if(!window.confirm("Удалить упражнение «"+item.name+"»?"))return;
+     state=E.removeExercise(state,item.id);persist();renderCards();drawHistory(Date.now());tick();
+    }catch(err){status("storage-status",err.message,"error");}
+   });
+   actions.appendChild(del);
+ }
+ card.appendChild(actions);return card;
+}
+function renderCards(){
+ const list=$("exercise-list");list.replaceChildren();
+ for(const e of state.exercises)list.appendChild(drawCard(e));
+}
+function drawHistory(now){
+ const stat=E.dailyStats(state,now);
+ $("stat-sets").textContent=String(stat.sets);$("stat-reps").textContent=String(stat.reps);
+ $("stat-seconds").textContent=String(stat.seconds);$("stat-skips").textContent=String(stat.skipped);
+ const root=$("history");root.replaceChildren();
+ if(!stat.events.length){root.appendChild(el("li","","Пока нет выполненных подходов."));return;}
+ for(const evt of stat.events.slice(0,18)){
+  const ref=state.exercises.find(x=>x.id===evt.exerciseId);
+  const l=el("li"),label=el("span","",(ref?.name||"Упражнение")+
+    " · "+(evt.kind==="done"?"выполнено":"пропущено")+
+    (evt.kind==="done"?" ("+evt.amount+" "+(ref?.unit==="seconds"?"сек":"повт.")+")":""));
+  l.append(label,el("span","",clock(evt.at)));root.appendChild(l);
+ }
+}
+function drawHold(now){
+ if(!hold)return;
+ const r=Math.max(0,hold.deadline-now);
+ $("hold-clock").textContent=E.formatCountdown(r);
+ if(!r)$("hold-status").textContent="Время подхода вышло. Подтвердите выполнение кнопкой «Выполнено» у упражнения.";
+}
+function tick(){
+ const now=Date.now(),overview=E.overview(state,now);
+ const old=state.exercises.map(e=>[e.id,e.nextDueAt]);
+ state=overview.state;
+ if(old.some(([id,due])=>state.exercises.find(e=>e.id===id)?.nextDueAt!==due))persist();
+ $("start").disabled=state.running;$("pause").disabled=!state.running;
+ for(const item of overview.items){
+  const root=$("exercise-"+item.id),count=$("count-"+item.id),line=$("state-"+item.id),fill=$("fill-"+item.id);
+  if(!root||!count||!line)continue;
+  root.className="exercise"+(item.due?" ready":"")+(item.capped?" done-day":"");
+  const remain=item.remainingMs;
+  count.textContent=item.status==="off"?"Выключено":item.status==="paused"?"Пауза":
+   item.capped?"Цель дня":item.due?"Пора!":E.formatCountdown(remain);
+  const captions={off:"Включите для напоминаний.",paused:"Программа приостановлена.",
+   limit:"Дневной предел выполнен.",due:"Время подхода. Можно сделать или пропустить.",
+   quiet:"Период тишины. Следующее напоминание позже.",waiting:"До следующего подхода."};
+  line.textContent=captions[item.status]+" Выполнено сегодня: "+item.done+" из "+item.dailyMax+".";
+  fill.style.width=(item.done/item.dailyMax*100).toFixed(2)+"%";
+  const done=$("done-"+item.id),skip=$("skip-"+item.id);
+  done.disabled=!state.running||!item.enabled||item.capped||!E.inWindow(now,state.window);
+  skip.disabled=!state.running||!item.enabled||!E.inWindow(now,state.window);
+  if(item.due)notifyDue(item);
+ }
+ const runningLabel=state.running?"Программа активна. Напоминания действуют только в выбранные часы.":
+  "Программа на паузе. Включите упражнения и нажмите «Запустить».";
+ if($("program-status").dataset.running!==String(state.running)){
+  $("program-status").dataset.running=String(state.running);
+  status("program-status",runningLabel);
+ }
+ if(today()!==previousToday){previousToday=today();drawHistory(now);}
+ drawHold(now);
+}
+function toggleRemember(){
+ persist();status("storage-status",$("remember").checked?"Локальное сохранение включено.":"Локальное сохранение выключено; сохранённая копия очищена.");
+}
+function download(filename,text,mime){
+ const blob=new Blob([text],{type:mime}),uri=URL.createObjectURL(blob),link=el("a");
+ link.href=uri;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(uri),1000);
+}
+function init(){
+ const group=$("custom-group");
+ for(const [id,name] of E.GROUPS){const o=el("option","",name);o.value=id;group.appendChild(o);}
+ for(const mins of E.ALLOWED_INTERVALS){const o=el("option","",mins+" минут");o.value=String(mins);$("custom-interval").appendChild(o);}
+ $("custom-group").value="upper";$("custom-interval").value="20";
+ $("window-start").value=state.window.start;$("window-end").value=state.window.end;
+ $("timezone-note").value=Intl.DateTimeFormat().resolvedOptions().timeZone||"Локальные часы устройства";
+ for(const id of ["window-start","window-end"])$(id).addEventListener("change",()=>{
+  try{state=E.changeWindow(state,{start:$("window-start").value,end:$("window-end").value},Date.now());
+   persist();tick();}catch(err){status("program-status",err.message,"error");}
+ });
+ $("start").addEventListener("click",()=>{
+  try{state=E.start(state,Date.now());persist();tick();}
+  catch(err){status("program-status",err.message,"error");}
+ });
+ $("pause").addEventListener("click",()=>{state=E.pause(state);persist();tick();});
+ $("notification").addEventListener("click",async()=>{
+  if(!("Notification" in window)){status("storage-status","Системные уведомления недоступны в этом браузере.");return;}
+  try{const permission=await window.Notification.requestPermission();
+   status("storage-status",permission==="granted"?"Разрешение на уведомления получено.":"Разрешение на уведомления не предоставлено.");
+  }catch(err){status("storage-status","Платформа не разрешила запросить уведомления.");}
+ });
+ $("show-custom").addEventListener("click",()=>{$("custom-panel").hidden=false;});
+ $("cancel-custom").addEventListener("click",()=>{$("custom-panel").hidden=true;});
+ $("custom-unit").addEventListener("change",()=>{
+  $("custom-target").max=$("custom-unit").value==="seconds"?"600":"300";
+ });
+ $("custom-form").addEventListener("submit",event=>{
+  event.preventDefault();
+  try{
+   const name=$("custom-name").value.trim(),id="custom-"+Date.now().toString(36)+"-"+Math.floor(Math.random()*1e6);
+   state=E.addExercise(state,{id,name,group:$("custom-group").value,unit:$("custom-unit").value,
+    target:Number($("custom-target").value),intervalMin:Number($("custom-interval").value),
+    dailyMax:Number($("custom-cap").value),enabled:false,nextDueAt:null},Date.now());
+   persist();renderCards();tick();$("custom-panel").hidden=true;$("custom-form").reset();
+   $("custom-interval").value="20";status("storage-status","Упражнение добавлено. Включите его в списке.");
+  }catch(err){status("storage-status",err.message,"error");}
+ });
+ $("hold-cancel").addEventListener("click",()=>{hold=null;$("hold-panel").hidden=true;});
+ $("remember").addEventListener("change",toggleRemember);
+ $("export").addEventListener("click",()=>download("crm-exercise-timer.json",JSON.stringify(state,null,2),"application/json;charset=utf-8"));
+ $("csv").addEventListener("click",()=>download("crm-exercise-log.csv",E.exportCsv(state),"text/csv;charset=utf-8"));
+ $("import").addEventListener("click",()=>$("file").click());
+ $("file").addEventListener("change",async event=>{
+  const file=event.target.files?.[0];event.target.value="";if(!file)return;
+  if(file.size>500000){status("storage-status","Файл слишком большой (максимум 500 КБ).","error");return;}
+  try{
+   const next=E.normalizeState(JSON.parse(await file.text()));
+   if(!window.confirm("Заменить текущую программу упражнений и дневник?"))return;
+   state=next;hold=null;$("hold-panel").hidden=true;seenAlerts.clear();
+   $("window-start").value=state.window.start;$("window-end").value=state.window.end;
+   persist();renderCards();drawHistory(Date.now());tick();
+   status("storage-status","Настройки импортированы.");
+  }catch(err){status("storage-status","Ошибка импорта: "+err.message,"error");}
+ });
+ $("clear-history").addEventListener("click",()=>{
+  if(!window.confirm("Удалить историю тренировок без удаления списка упражнений?"))return;
+  state.history=[];persist();drawHistory(Date.now());tick();status("storage-status","Дневник очищен.");
+ });
+ $("reset").addEventListener("click",()=>{
+  if(!window.confirm("Сбросить программу, цели и журнал упражнений?"))return;
+  state=E.defaultState();hold=null;$("hold-panel").hidden=true;
+  $("window-start").value=state.window.start;$("window-end").value=state.window.end;
+  persist();seenAlerts.clear();renderCards();drawHistory(Date.now());tick();status("storage-status","Программа сброшена.");
+ });
+ // Notifications and sounds are opt-in. No event loops or network request in background.
+ renderCards();drawHistory(Date.now());tick();
+ setInterval(()=>{if(document.visibilityState!=="hidden")tick();},1000);
+ document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="hidden"){drawHistory(Date.now());tick();}});
+ if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
+  const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
+  sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(err){}};
+  document.head.appendChild(sdk);
+ }
+}
+init();
+})();
+</script></body></html>
