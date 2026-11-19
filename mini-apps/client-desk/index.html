@@ -226,7 +226,7 @@ button.danger{background:#3a2834;border-color:#795060;color:#ffd2d8}
 .pill.green{background:#234c3d;border-color:#4a9679;color:#c7f7d9}
 .pill.red{background:#55303b;border-color:#9c5e70;color:#ffced6}
 .pill.violet{background:#3c3158;border-color:#826db2;color:#e7d8ff}
-.timer-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.timer-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:16px;align-items:stretch}
 .timer-card,.timer-card.soon,.timer-card.overdue,.timer-card.finished{position:relative;opacity:1;background:#1b2330;border:1px solid #364255;border-left:5px solid var(--client-color,#70809b);border-radius:15px;padding:20px 21px;min-width:0;box-shadow:0 8px 24px #050b141a}
 .timer-card[data-color="slate"]{--client-color:#8c98ab}.timer-card[data-color="blue"]{--client-color:#759dff}.timer-card[data-color="teal"]{--client-color:#59b9ba}.timer-card[data-color="violet"]{--client-color:#ad8fe8}.timer-card[data-color="amber"]{--client-color:#d9aa68}.timer-card[data-color="rose"]{--client-color:#e58ca6}.timer-card[data-color="green"]{--client-color:#73c99d}
 .timer-card.soon{background:#292938}.timer-card.overdue{background:#30252c}.timer-card.finished{background:#1a222c}
@@ -262,6 +262,22 @@ footer{border-top-color:#364256}
 @media(min-width:1150px){.world-layout{display:block}.grid-auto{grid-template-columns:repeat(4,minmax(0,1fr))}.card-heading h2{font-size:22px}}
 @media(max-width:1050px){main{padding:20px 18px 50px}.timer-list{grid-template-columns:1fr}}
 @media(max-width:600px){main{padding:14px 12px 42px}.card{padding:16px}.timer-count{font-size:31px}.timer-fields{width:100%}.timer-fields select{max-width:none}.city-result{align-items:flex-start;flex-direction:column}.metric{padding:12px}}
+
+
+/* Flexible multi-row customer card gallery */
+.timer-card{display:flex;flex-direction:column;min-height:300px}
+.timer-title{min-height:30px}
+.timer-title strong{overflow-wrap:anywhere}
+.timer-meta{gap:5px;display:grid}
+.timer-card .timer-row{margin-top:auto;display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.timer-card .timer-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:9px}
+.timer-card .timer-fields select{min-width:0;max-width:none;width:100%;font-size:13px}
+.timer-card .timer-row>.actions{display:flex;flex-wrap:wrap;gap:7px;width:100%}
+.timer-card .timer-row>.actions button,.timer-card .timer-row>.actions a{flex:1 1 auto;text-align:center;justify-content:center}
+.timer-card .quick-actions{display:contents}
+.timer-card .timer-count{font-size:clamp(26px,2.4vw,35px);white-space:normal;overflow-wrap:anywhere}
+@media(max-width:1050px){.timer-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}}
+@media(max-width:600px){.timer-list{grid-template-columns:1fr;gap:12px}.timer-card{min-height:0}}
 
 </style></head><body><main>
 <nav class="tiny"><a href="../../">PSY-TOOLS</a> / CRM · Центр времени</nav>
