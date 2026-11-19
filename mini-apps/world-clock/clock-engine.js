@@ -202,8 +202,12 @@
   const current=normalizeState(state),item=normalizeCity(city);
   const extras=current.extras.filter(c=>c.id!==item.id&&c.id!==current.home.id);
   if(asHome){
-    if(current.home.id!==item.id)extras.unshift(current.home);
-    return normalizeState({...current,home:item,extras:extras.slice(0,MAX_CITIES-1)});
+    if(current.home.id!==item.id){
+      if(current.extras.length>=MAX_CITIES-1&&!current.extras.some(c=>c.id===item.id))
+        throw Error("Достигнут лимит городов. Удалите один дополнительный город перед заменой основного.");
+      extras.unshift(current.home);
+    }
+    return normalizeState({...current,home:item,extras});
   }
   if(item.id===current.home.id||current.extras.some(c=>c.id===item.id))return current;
   if(current.extras.length>=MAX_CITIES-1)throw Error("Можно сохранить не более "+MAX_CITIES+" городов вместе с основным.");
