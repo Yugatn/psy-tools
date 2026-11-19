@@ -48,6 +48,12 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 .aspect{padding:10px 11px;border:1px solid #3a4d63;border-radius:11px;background:#0d1b2e;font-size:13px}
 .aspect b{color:#e9c88f}
 
+.zone-control{margin:12px 0;border:1px solid #486a80;background:#102a40;padding:13px;border-radius:13px}
+.zone-control .cols{align-items:end}
+.zone-note{color:#c7d4df;font-size:12px;line-height:1.5;margin:8px 0 0}
+.zone-warning{color:#f0c59a}
+.zone-ok{color:#a6e1cc}
+#zone-choice-wrap[hidden]{display:none!important}
 .city-lookup{margin:12px 0 16px;padding:13px;background:#112a40;border:1px solid #416782;border-radius:13px}
 .city-results{display:grid;gap:6px;max-height:300px;overflow-y:auto;overscroll-behavior:contain;margin-top:9px;padding-right:2px}
 .city-results[hidden]{display:none!important}
@@ -82,7 +88,28 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
   <div><label for="birth-time">Местное время рождения</label><input type="time" id="birth-time" value="12:00" required></div>
   <div><label for="offset">UTC-смещение в дату рождения</label><input type="text" id="offset" inputmode="text" value="+00:00" placeholder="+03:00" maxlength="6" aria-describedby="offset-help"></div>
  </div>
- <p class="help" id="offset-help">Важно: UTC-смещение зависит от исторической даты и летнего времени. Оно <b>не вычисляется по городу автоматически</b>. Для Москвы, например, нельзя использовать одно значение для всех эпох.</p>
+ <section class="zone-control" aria-labelledby="zone-heading">
+  <h3 id="zone-heading">Историческое время и часовой пояс</h3>
+  <div class="cols">
+   <div><label for="zone-mode">Способ определения UTC</label>
+    <select id="zone-mode">
+      <option value="manual">Ввести UTC-смещение вручную</option>
+      <option value="iana">Вычислить по исторической зоне IANA</option>
+    </select>
+   </div>
+   <div><label for="zone-id">Часовой пояс рождения</label><select id="zone-id">
+    <option value="">Выберите часовую зону</option>
+   </select></div>
+  </div>
+  <p class="zone-note" id="zone-preview" role="status" aria-live="polite">При ручном режиме укажите достоверное смещение UTC в дату рождения.</p>
+  <div id="zone-choice-wrap" hidden>
+   <label for="zone-choice">Время при переводе часов назад — какой из двух моментов?</label>
+   <select id="zone-choice"><option value="">Выберите первое или второе вхождение</option></select>
+   <p class="zone-warning small">Часы показывали одинаковое время дважды. Выберите вариант по документам или переключитесь на ручной ввод.</p>
+  </div>
+  <p class="help">Данные часовых поясов берутся из браузера, не из географического API. Беларусь — Europe/Minsk; для городов России зона выбирается отдельно из списка, так как регионы и исторические правила различаются. Автоматический расчёт возможен не для всех исторических дат.</p>
+ </section>
+ <p class="help" id="offset-help">В ручном режиме введите действовавшее на дату рождения UTC-смещение. В автоматическом режиме используется выбранная IANA-зона с учётом исторических переходов часов; поле UTC блокируется. Если зона неизвестна, не угадывайте её по долготе.</p>
  <div class="rowcheck"><input type="checkbox" id="unknown-time"><label for="unknown-time">Точное время рождения неизвестно</label></div>
  <div id="location-fields">
 
@@ -177,6 +204,7 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 </main>
 <script src="./vendor/astronomy.browser.min.js"></script>
 <script src="./chart.js"></script>
+<script src="./timezones.js"></script>
 <script src="./cities-ru-data.js"></script>
 <script src="./city-catalog.js"></script>
 <script src="./cities-by-data.js"></script>
@@ -185,18 +213,19 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const E=window.NatalChartEngine, A=window.Astronomy;
+const E=window.NatalChartEngine, A=window.Astronomy, TZ=window.NatalTimeZones;
 const NS="http://www.w3.org/2000/svg";
 const CITY={
- Moscow:{place:"Москва",lat:55.7558,lon:37.6173},
- Stockholm:{place:"Стокгольм",lat:59.3293,lon:18.0686},
- London:{place:"Лондон",lat:51.5074,lon:-0.1278},
- Bangkok:{place:"Бангкок",lat:13.7563,lon:100.5018},
- DaNang:{place:"Дананг",lat:16.0544,lon:108.2022},
- NewYork:{place:"Нью-Йорк",lat:40.7128,lon:-74.006}
+ Moscow:{place:"Москва",lat:55.7558,lon:37.6173,zone:"Europe/Moscow"},
+ Stockholm:{place:"Стокгольм",lat:59.3293,lon:18.0686,zone:"Europe/Stockholm"},
+ London:{place:"Лондон",lat:51.5074,lon:-0.1278,zone:"Europe/London"},
+ Bangkok:{place:"Бангкок",lat:13.7563,lon:100.5018,zone:"Asia/Bangkok"},
+ DaNang:{place:"Дананг",lat:16.0544,lon:108.2022,zone:"Asia/Ho_Chi_Minh"},
+ NewYork:{place:"Нью-Йорк",lat:40.7128,lon:-74.006,zone:"America/New_York"}
 };
 let result=null;
 let selectedReferenceCity=null;
+let zoneResult=null;
 const CATALOGS={RU:window.RussianCityCatalog,BY:window.BelarusCityCatalog};
 const currentCatalog=()=>CATALOGS[$("city-country").value]||null;
 const currentCountryName=()=>$("city-country").value==="BY"?"Беларусь":"Россия";
@@ -213,6 +242,77 @@ function resetReferenceSelection(clearCoordinates){
  $("ru-selected").textContent="";
  if(clearCoordinates){$("place").value="";$("lat").value="";$("lon").value="";}
 }
+function syncZonePreview(){
+ const auto=$("zone-mode").value==="iana"&&!$("unknown-time").checked;
+ $("offset").disabled=auto||$("unknown-time").checked;
+ $("zone-id").disabled=!auto;
+ $("zone-choice-wrap").hidden=true;
+ $("zone-choice").replaceChildren();
+ const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Выберите момент рождения";
+ $("zone-choice").appendChild(placeholder);
+ zoneResult=null;
+ if(!auto){
+  $("zone-preview").className="zone-note";
+  $("zone-preview").textContent=$("unknown-time").checked?"Время рождения неизвестно: ASC и дома не рассчитываются.":
+  "Ручной режим: проверьте смещение по историческому часовому поясу на дату рождения.";
+  return;
+ }
+ if(!TZ){$("zone-preview").textContent="Встроенный модуль часовых зон не загрузился. Переключитесь на ручной режим.";return;}
+ if(!$("zone-id").value){
+  $("zone-preview").textContent="Выберите IANA-зону. Нельзя определять её только по координатам.";
+  return;
+ }
+ try{
+  zoneResult=TZ.resolve($("birth-date").value,$("birth-time").value,$("zone-id").value);
+  $("zone-preview").className="zone-note "+(zoneResult.status==="unique"?"zone-ok":"zone-warning");
+  if(zoneResult.status==="unique"){
+   const c=zoneResult.candidates[0];
+   $("zone-preview").textContent="Исторический UTC "+c.offset+" · UTC-момент "+c.utcISO+" ("+zoneResult.zone+").";
+  }else if(zoneResult.status==="ambiguous"){
+   $("zone-preview").textContent="Время повторялось при переводе часов назад. Нельзя выбирать случайный момент.";
+   zoneResult.candidates.forEach((c,i)=>{
+    const opt=document.createElement("option");opt.value=String(i);
+    opt.textContent=(i===0?"Первое":"Второе")+" вхождение · UTC "+c.offset+" · "+c.utcISO;
+    $("zone-choice").appendChild(opt);
+   });
+   $("zone-choice-wrap").hidden=false;
+  }else $("zone-preview").textContent=zoneResult.message+" Проверьте часы или используйте ручной UTC-режим.";
+ }catch(err){$("zone-preview").className="zone-note zone-warning";$("zone-preview").textContent=err.message;}
+}
+function selectedZoneInput(){
+ if($("unknown-time").checked||$("zone-mode").value==="manual")return {};
+ if(!TZ)throw Error("Модуль исторических зон недоступен. Используйте ручной режим.");
+ const current=TZ.resolve($("birth-date").value,$("birth-time").value,$("zone-id").value);
+ if(current.status==="gap")throw Error(current.message);
+ const index=current.status==="unique"?0:Number($("zone-choice").value);
+ if(current.status==="ambiguous"&&$("zone-choice").value==="")
+  throw Error("Местное время повторялось. Укажите первое или второе вхождение.");
+ const choice=current.candidates[index];
+ if(!choice)throw Error("Выберите достоверный момент рождения в исторической зоне.");
+ return {utcOffsetSeconds:choice.offsetSeconds,timeZone:current.zone};
+}
+function setZoneForCountry(country){
+ if(country==="BY"){
+  $("zone-mode").value="iana";$("zone-id").value="Europe/Minsk";
+ }else{
+  $("zone-mode").value="manual";$("zone-id").value="";
+ }
+ syncZonePreview();
+}
+function initTimeZones(){
+ if(TZ)for(const zone of TZ.ZONES){
+  const opt=document.createElement("option");opt.value=zone.id;opt.textContent=zone.label;
+  $("zone-id").appendChild(opt);
+ }
+ ["zone-id","zone-mode","birth-date","birth-time"].forEach(id=>$(id).addEventListener("change",syncZonePreview));
+ $("zone-choice").addEventListener("change",()=>{
+  if(zoneResult?.status==="ambiguous"&&$("zone-choice").value!==""){
+   const c=zoneResult.candidates[Number($("zone-choice").value)];
+   $("zone-preview").textContent="Выбрано "+(Number($("zone-choice").value)===0?"первое":"второе")+" вхождение: UTC "+c.offset+" · "+c.utcISO;
+  }
+ });
+ syncZonePreview();
+}
 function selectReferenceCity(city){
  if(!city)return;
  selectedReferenceCity=city;
@@ -224,6 +324,7 @@ function selectReferenceCity(city){
  $("lon").value=String(city.longitude);
  $("ru-selected").textContent="Выбрано: "+city.name+" · "+city.region+" · "+currentCountryName()+" · "+city.latitude.toFixed(5)+"°, "+city.longitude.toFixed(5)+"°.";
  $("ru-state").textContent="Текущий UTC-ориентир: "+city.utcCurrent+" (не подставляется в поле исторического UTC).";
+ if($("city-country").value==="BY"&&$("zone-mode").value==="manual")setZoneForCountry("BY");
  closeCityResults();
 }
 function renderCities(){
@@ -275,7 +376,7 @@ function initCountryCities(){
  refreshCountryRegions();
  $("city-country").addEventListener("change",()=>{
   resetReferenceSelection(true);$("ru-search").value="";refreshCountryRegions();
-  $("preset").value="";
+  $("preset").value="";setZoneForCountry($("city-country").value);
  });
  $("ru-search").addEventListener("input",()=>{
   if(selectedReferenceCity)resetReferenceSelection(true);
@@ -304,9 +405,10 @@ function initCountryCities(){
 }
 function toggleUnknown(){
  const unknown=$("unknown-time").checked;
- ["birth-time","offset","lat","lon","place","preset","ru-search","ru-region","city-country"].forEach(id=>{$(id).disabled=unknown;});
+ ["birth-time","lat","lon","place","preset","ru-search","ru-region","city-country","zone-mode"].forEach(id=>{$(id).disabled=unknown;});
  if(unknown)closeCityResults();
  $("location-fields").style.opacity=unknown?"0.5":"1";
+ syncZonePreview();
 }
 $("unknown-time").addEventListener("change",toggleUnknown);
 $("preset").addEventListener("change",()=>{
@@ -315,9 +417,10 @@ $("preset").addEventListener("change",()=>{
   resetReferenceSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();
   $("ru-state").textContent="Выбран международный пресет. Проверьте историческое UTC-смещение.";
   $("place").value=c.place;$("lat").value=String(c.lat);$("lon").value=String(c.lon);
+  if(c.zone){$("zone-mode").value="iana";$("zone-id").value=c.zone;syncZonePreview();}
  }
 });
-function fields(){return {date:$("birth-date").value,time:$("birth-time").value,utcOffset:$("offset").value,latitude:$("lat").value,longitude:$("lon").value,place:$("place").value,unknownTime:$("unknown-time").checked};}
+function fields(){return {date:$("birth-date").value,time:$("birth-time").value,utcOffset:$("offset").value,latitude:$("lat").value,longitude:$("lon").value,place:$("place").value,unknownTime:$("unknown-time").checked,...selectedZoneInput()};}
 function clear(x){x.replaceChildren();}
 function linePoint(cx,cy,r,deg){
  const a=(Math.PI-E.norm(deg)*Math.PI/180);
@@ -386,7 +489,7 @@ function renderStats(r){
  else{items.push(["Время","Неизвестно"]);items.push(["Дома","Не рассчитываются"]);}
  for(const [k,v]of items){const div=el("div","stat");div.appendChild(el("span","",k));div.appendChild(el("b","",v));root.appendChild(div);}
  $("moment-info").textContent="Расчётный момент UTC: "+r.moment.utcISO+(r.moment.place?" · "+r.moment.place:"");
- $("accuracy-note").textContent=r.note;
+ $("accuracy-note").textContent=r.note+(r.moonRange?" Диапазон Луны 00–24 UTC: "+r.moonRange.start.sign+" "+E.formatDegree(r.moonRange.start.degree)+" — "+r.moonRange.end.sign+" "+E.formatDegree(r.moonRange.end.degree)+(r.moonRange.changesSign?" (знак меняется)":"")+".":"")+(r.moment.timeZone?" Временная зона: "+r.moment.timeZone+".":"");
  $("house-legend").textContent=r.angles?"Равнодомные дома · MC отдельно":"Без домов и ASC";
 }
 function renderPlanets(r){
@@ -422,11 +525,11 @@ $("form").addEventListener("reset",()=>{
  resetReferenceSelection(false);closeCityResults();
  setTimeout(()=>{
   $("preset").value="";$("ru-search").value="";$("ru-region").value="";
-  refreshCountryRegions();
+  refreshCountryRegions();$("zone-mode").value="manual";$("zone-id").value="";
   toggleUnknown();
  },0);
 });
-$("demo").addEventListener("click",()=>{resetReferenceSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();$("ru-state").textContent="Выбран пример: Гринвич.";$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
+$("demo").addEventListener("click",()=>{resetReferenceSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();$("ru-state").textContent="Выбран пример: Гринвич.";$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";$("zone-mode").value="iana";$("zone-id").value="Europe/London";toggleUnknown();calculate();});
 async function clipboard(text){
  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return;}
  const box=document.createElement("textarea");box.value=text;box.style.position="fixed";box.style.left="-9999px";document.body.appendChild(box);box.select();
@@ -458,7 +561,7 @@ function telegram(){
  script.onload=()=>{try{const w=window.Telegram?.WebApp;w?.ready();w?.expand();}catch{}};
  document.head.appendChild(script);
 }
-initCountryCities();toggleUnknown();telegram();
+initCountryCities();initTimeZones();toggleUnknown();telegram();
 })();
 </script>
 </body></html>
