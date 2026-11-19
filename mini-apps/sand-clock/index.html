@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1421">
+<meta name="description" content="Песочные часы PSY-TOOLS: точный обратный отсчёт, физически связанная с временем SVG-анимация песка, интервалы, пауза и возобновление.">
+<title>Песочные часы — PSY-TOOLS Mini App</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#091423);--panel:var(--tg-theme-secondary-bg-color,#152739);--ink:var(--tg-theme-text-color,#edf3f8);--muted:var(--tg-theme-hint-color,#abb9ca);--accent:var(--tg-theme-button-color,#b28143);--accent-ink:var(--tg-theme-button-text-color,#fff);--line:#425164;--sand:#eebd75;--teal:#91c7c8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -12%,#294252 0%,transparent 65%),var(--bg);color:var(--ink);line-height:1.5}
+main{max-width:960px;margin:auto;padding:max(16px,env(safe-area-inset-top)) 15px max(35px,env(safe-area-inset-bottom))}
+a{color:#a5dbdd}h1{font-size:clamp(30px,7vw,48px);line-height:1.15;margin:6px 0 10px;letter-spacing:-.045em}
+h2{font-size:20px;margin:0 0 10px}p{margin:8px 0}.muted,.help{color:var(--muted);font-size:13px}
+.eyebrow{color:#e8c88f;font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+.hero{padding:12px 0 22px}.hero p{max-width:670px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,1fr);gap:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:13px;min-width:0}
+.sand-stage{background:radial-gradient(ellipse at 50% 40%,#1b3447,transparent 80%),#0c1a2a;border:1px solid #4e657a;border-radius:18px;display:grid;place-items:center;position:relative;overflow:hidden}
+.sand-stage svg{width:100%;max-width:410px;min-height:270px;display:block;filter:drop-shadow(0 15px 18px #0003)}
+.glass-shine{opacity:.75}.sand-stream{stroke-dasharray:4 7;animation:fall .55s linear infinite}
+@keyframes fall{to{stroke-dashoffset:-22}}
+.sand-stage.paused .sand-stream,.sand-stage.idle .sand-stream,.sand-stage.completed .sand-stream{animation-play-state:paused}
+#flow{opacity:0}.sand-stage.running #flow{opacity:1}
+.sand-stage.finished{box-shadow:inset 0 0 0 1px #a9d7ae}
+.timer-display{font-size:clamp(37px,8vw,62px);font-variant-numeric:tabular-nums;letter-spacing:-.045em;font-weight:800;text-align:center;line-height:1.1;margin:13px 0 2px}
+.timer-sub{text-align:center;color:var(--muted);font-size:13px}
+.status{min-height:25px;color:#ccebd7;font-size:13px;margin-top:10px}
+.progress{width:100%;height:8px;background:#34485c;border-radius:20px;overflow:hidden;margin-top:15px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#c99751,#f3d49b);border-radius:20px}
+button,input{font:inherit}button{background:#31495e;border:1px solid #5a7186;color:var(--ink);padding:10px 15px;border-radius:11px;min-height:44px;font-weight:700;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid #bce5e6;outline-offset:2px}
+button:disabled{opacity:.43;cursor:not-allowed}button[aria-pressed=true]{background:#6c5738;border-color:#efc885}
+.button-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.button-row button{flex:1 1 100px}
+label{font-size:13px;font-weight:650;display:block;margin-bottom:5px}
+input[type=number]{background:#0d1b2d;color:var(--ink);border:1px solid #577084;border-radius:10px;padding:11px;min-width:0;width:100%;min-height:45px}
+.preset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.preset-grid button{font-size:13px;padding:9px 5px}
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:12px 0}
+.check input{width:18px;height:18px;accent-color:#cda45e}
+.check label{margin:0;font-weight:400}
+.help-box{border-left:3px solid #d3ae72;padding:10px 13px;border-radius:0 10px 10px 0;background:#272b36;color:#c8d3e0;font-size:12px;margin-top:14px}
+footer{margin-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:16px 0}
+@media(max-width:750px){.layout{grid-template-columns:1fr}.card{padding:15px}.sand-stage svg{max-width:350px}}
+@media(max-width:430px){.preset-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.button-row button{flex:1 1 90px}}
+@media(prefers-reduced-motion:reduce){.sand-stream{animation:none!important}}
+</style></head>
+<body><main>
+<nav class="help"><a href="../../">PSY-TOOLS</a> / Песочные часы</nav>
+<header class="hero"><div class="eyebrow">Время · внимание · концентрация</div>
+<h1>Песочные часы</h1>
+<p>Обратный таймер с визуальным пересыпанием песка. Количество песка в колбах связано с фактической долей прошедшего времени, поэтому пауза, сворачивание приложения и возврат не ускоряют и не замедляют отсчёт.</p></header>
+<div class="layout">
+ <div class="card">
+  <div id="stage" class="sand-stage idle" aria-label="Песочные часы, визуальный индикатор оставшегося времени">
+   <svg id="hourglass" viewBox="0 0 360 440" role="img" aria-label="Верхняя колба постепенно пустеет, нижняя заполняется в соответствии с обратным отсчётом">
+    <defs>
+     <linearGradient id="glass" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#9fbbc6" stop-opacity=".16"/><stop offset=".5" stop-color="#d7eef6" stop-opacity=".06"/><stop offset="1" stop-color="#d2e6eb" stop-opacity=".19"/></linearGradient>
+     <linearGradient id="sand" x1="0" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#f8dfa5"/><stop offset=".6" stop-color="#ebbd75"/><stop offset="1" stop-color="#bf8542"/></linearGradient>
+     <clipPath id="upper-clip"><path d="M92 75 H268 L188 206 H172 Z"/></clipPath>
+     <clipPath id="lower-clip"><path d="M172 226 H188 L268 357 H92 Z"/></clipPath>
+    </defs>
+    <rect x="78" y="51" width="204" height="19" rx="8" fill="#7a5b3e" stroke="#e0b477" stroke-width="2"/>
+    <rect x="93" y="69" width="14" height="297" rx="6" fill="#bd945b" opacity=".65"/>
+    <rect x="253" y="69" width="14" height="297" rx="6" fill="#bd945b" opacity=".65"/>
+    <path d="M92 75 H268 L188 206 Q180 215 188 226 L268 357 H92 L172 226 Q180 215 172 206 Z"
+      fill="url(#glass)" stroke="#b8d8e4" stroke-width="3.5" stroke-linejoin="round"/>
+    <g clip-path="url(#upper-clip)">
+      <rect id="upper-sand" x="85" y="75" width="190" height="131" fill="url(#sand)"/>
+      <path id="upper-surface" d="M94 76 H266" stroke="#fff0c7" stroke-opacity=".7" stroke-width="2"/>
+    </g>
+    <g clip-path="url(#lower-clip)">
+      <rect id="lower-sand" x="85" y="357" width="190" height="0" fill="url(#sand)"/>
+      <path id="lower-surface" d="" stroke="#fff0c7" stroke-opacity=".6" stroke-width="2"/>
+    </g>
+    <g id="flow">
+      <path id="sand-stream" class="sand-stream" d="M180 206 V356" fill="none" stroke="#f8d796" stroke-width="3" stroke-linecap="round"/>
+      <circle id="grain-1" cx="178" cy="278" r="2" fill="#f6d18b"/>
+      <circle id="grain-2" cx="182" cy="309" r="1.4" fill="#f4d298"/>
+    </g>
+    <path class="glass-shine" d="M107 89 Q124 120 160 185 M253 90 Q234 124 201 188 M110 341 Q134 299 164 246"
+      fill="none" stroke="#d9eff8" stroke-width="3" stroke-linecap="round" stroke-opacity=".35"/>
+    <rect x="78" y="362" width="204" height="19" rx="8" fill="#7a5b3e" stroke="#e0b477" stroke-width="2"/>
+    <rect x="68" y="381" width="224" height="16" rx="7" fill="#513d2e" stroke="#bb8e59" stroke-width="2"/>
+   </svg>
+  </div>
+  <div id="display" class="timer-display" role="timer" aria-live="off">05:00</div>
+  <div id="timer-detail" class="timer-sub">Готово к началу</div>
+  <div class="progress" role="progressbar" id="progress-track" aria-label="Доля завершённого интервала" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill"></div></div>
+  <div class="button-row">
+   <button id="start" class="primary" type="button">Начать</button>
+   <button id="pause" type="button" disabled>Пауза</button>
+   <button id="reset" type="button">Сброс</button>
+  </div>
+  <p class="status" id="status" role="status" aria-live="polite">Выберите интервал и нажмите «Начать».</p>
+ </div>
+ <div>
+  <section class="card" aria-labelledby="presets-heading">
+   <h2 id="presets-heading">Интервалы</h2>
+   <div id="presets" class="preset-grid" role="group" aria-label="Готовые интервалы таймера"></div>
+   <h2 style="margin-top:20px">Свой интервал</h2>
+   <form id="duration-form">
+    <div class="fields">
+     <div><label for="hours">Часы</label><input id="hours" type="number" min="0" max="24" step="1" inputmode="numeric" value="0" required></div>
+     <div><label for="minutes">Минуты</label><input id="minutes" type="number" min="0" max="59" step="1" inputmode="numeric" value="5" required></div>
+     <div><label for="seconds">Секунды</label><input id="seconds" type="number" min="0" max="59" step="1" inputmode="numeric" value="0" required></div>
+    </div>
+    <button id="apply" style="margin-top:11px;width:100%" type="submit">Установить интервал</button>
+   </form>
+   <p class="help">От 1 секунды до 24 часов. Изменение интервала сбрасывает текущий отсчёт.</p>
+  </section>
+  <section class="card" aria-labelledby="notice-heading">
+   <h2 id="notice-heading">Окончание отсчёта</h2>
+   <div class="check"><input type="checkbox" id="sound"><label for="sound">Короткий звуковой сигнал</label></div>
+   <div class="check"><input type="checkbox" id="vibrate"><label for="vibrate">Вибрация, если поддерживается</label></div>
+   <p class="help">Сигнал и вибрация срабатывают, когда приложение открыто и браузер разрешает воспроизведение. При закрытом приложении системное уведомление не гарантируется.</p>
+   <div class="help-box">Изображение — геометрическая модель песочных часов. Верхний объём уменьшается, а нижний увеличивается на ту же долю времени. Движение отдельных песчинок декоративное; решающее значение имеет уровень песка, который пересчитывается непосредственно по таймеру.</div>
+  </section>
+ </div>
+</div>
+<footer>
+ <p>PSY-TOOLS · Приложение без регистрации и сервера. Текущий отсчёт хранится локально: после закрытия и повторного открытия страницы время пересчитывается по сохранённому моменту окончания. Зависит от правильности системных часов устройства.</p>
+ <p><a href="../world-clock/">Мировые часы</a> · <a href="../natal-chart/">Натальная карта</a> · <a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/sand-clock">Код и тесты</a></p>
+</footer>
+</main>
+<script src="./timer-engine.js"></script>
+<script>
+(function(){
+ "use strict";
+ const $=id=>document.getElementById(id),E=window.SandTimerEngine;
+ let timer=E.create(),lastDisplay="",lastStatus=null,rafId=null,armed=false,audioCtx=null;
+ const put=(id,v)=>$(id).setAttribute("y",String(v));
+ function store(){
+  try{localStorage.setItem(E.KEY,JSON.stringify(timer));}
+  catch(err){$("status").textContent="Хранение недоступно. Отсчёт работает до закрытия страницы.";}
+ }
+ try{const saved=localStorage.getItem(E.KEY);if(saved)timer=E.restore(saved,Date.now());}
+ catch(err){timer=E.create();}
+ function setInputs(ms){
+  const x=E.toFields(ms);
+  $("hours").value=String(x.hours);$("minutes").value=String(x.minutes);$("seconds").value=String(x.seconds);
+ }
+ function refreshPreset(){
+  for(const button of $("presets").children){
+   button.setAttribute("aria-pressed",String(Number(button.dataset.ms)===timer.durationMs));
+  }
+ }
+ function announce(s){
+  if(s.status===lastStatus)return;
+  lastStatus=s.status;
+  const captions={idle:"Выберите интервал и нажмите «Начать».",
+   running:"Песок пересыпается. Отсчёт продолжается.",
+   paused:"Пауза. Положение песка зафиксировано.",
+   completed:"Время вышло. Песок пересыпался."};
+  $("status").textContent=captions[s.status];
+  if(s.status==="completed"&&armed){
+   armed=false;
+   playCompletion();
+   if($("vibrate").checked&&navigator.vibrate)navigator.vibrate([170,80,170]);
+  }
+ }
+ function sandFrame(s){
+  const H=131,upperY=206-H*s.topSandHeight,bottomY=357-H*s.bottomSandHeight;
+  const top=$("upper-sand"),bottom=$("lower-sand");
+  top.setAttribute("y",upperY.toFixed(4));top.setAttribute("height",(206-upperY).toFixed(4));
+  bottom.setAttribute("y",bottomY.toFixed(4));bottom.setAttribute("height",(357-bottomY).toFixed(4));
+  // Surface clipping by the trapezoidal chamber ensures illustrated volume
+  // is proportional to elapsed time, not merely the animation frame count.
+  $("upper-surface").setAttribute("d","M90 "+upperY.toFixed(4)+" H270");
+  $("lower-surface").setAttribute("d","M90 "+bottomY.toFixed(4)+" H270");
+  $("sand-stream").setAttribute("d","M180 208 V"+Math.max(bottomY,222).toFixed(3));
+  $("grain-1").setAttribute("cy",(208+(Math.max(225,bottomY)-208)*0.42).toFixed(2));
+  $("grain-2").setAttribute("cy",(208+(Math.max(225,bottomY)-208)*0.76).toFixed(2));
+  $("stage").className="sand-stage "+s.status+(s.status==="completed"?" finished":"");
+ }
+ function render(){
+  const now=Date.now(),s=E.snapshot(timer,now);
+  if(timer.status==="running"&&s.status==="completed"){
+   timer=E.restore(timer,now);store();
+  }
+  sandFrame(s);
+  const text=E.formatMs(s.remainingMs);
+  if(text!==lastDisplay){$("display").textContent=text;lastDisplay=text;
+   document.title=(s.status==="running"?text+" · ":"")+"Песочные часы — PSY-TOOLS";
+  }
+  $("timer-detail").textContent=s.status==="running"?
+   "Прошло "+Math.floor(s.elapsedMs/1000)+" секунд · "+Math.round(s.progress*100)+"%":
+   s.status==="paused"?"Осталось "+E.formatMs(s.remainingMs):
+   s.status==="completed"?"Интервал завершён":"Интервал "+E.formatMs(s.durationMs);
+  $("progress-fill").style.width=(s.progress*100).toFixed(3)+"%";
+  $("progress-track").setAttribute("aria-valuenow",String(Math.round(s.progress*100)));
+  $("start").textContent=s.status==="paused"?"Продолжить":s.status==="completed"?"Повторить":"Начать";
+  $("start").disabled=s.status==="running";
+  $("pause").disabled=s.status!=="running";
+  $("apply").disabled=s.status==="running";
+  for(const id of ["hours","minutes","seconds"])$(id).disabled=s.status==="running";
+  for(const btn of $("presets").children)btn.disabled=s.status==="running";
+  announce(s);
+ }
+ function frame(){render();rafId=requestAnimationFrame(frame);}
+ function playCompletion(){
+  if(!$("sound").checked)return;
+  try{
+   const Audio=window.AudioContext||window.webkitAudioContext;
+   if(!Audio)return;
+   audioCtx=audioCtx||new Audio();
+   if(audioCtx.state==="suspended")audioCtx.resume();
+   const t=audioCtx.currentTime;
+   [0,.22,.44].forEach((d,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type="sine";o.frequency.value=[659,784,988][i];
+    g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.16,t+d+.018);
+    g.gain.exponentialRampToValueAtTime(.0001,t+d+.20);
+    o.connect(g);g.connect(audioCtx.destination);o.start(t+d);o.stop(t+d+.21);
+   });
+  }catch(err){$("status").textContent="Время вышло. Звук заблокирован настройками браузера.";}
+ }
+ function primeAudio(){
+  if(!$("sound").checked)return;
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  try{if(Audio){audioCtx=audioCtx||new Audio();if(audioCtx.state==="suspended")audioCtx.resume();}}catch(err){}
+ }
+ function apply(ms){
+  try{timer=E.replaceDuration(timer,ms);setInputs(ms);refreshPreset();store();render();}
+  catch(err){$("status").textContent=err.message;}
+ }
+ for(const p of E.PRESETS){
+  const b=document.createElement("button");b.type="button";b.textContent=p.label;b.dataset.ms=String(p.ms);
+  b.addEventListener("click",()=>apply(p.ms));$("presets").appendChild(b);
+ }
+ $("duration-form").addEventListener("submit",e=>{
+  e.preventDefault();
+  try{apply(E.fromFields($("hours").value,$("minutes").value,$("seconds").value));}
+  catch(err){$("status").textContent=err.message;}
+ });
+ $("start").addEventListener("click",()=>{
+  try{
+   primeAudio();
+   timer=E.start(timer,Date.now());armed=true;store();render();
+  }catch(err){$("status").textContent=err.message;}
+ });
+ $("pause").addEventListener("click",()=>{timer=E.pause(timer,Date.now());armed=false;store();render();});
+ $("reset").addEventListener("click",()=>{timer=E.reset(timer);armed=false;store();render();});
+ $("sound").addEventListener("change",primeAudio);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)render();});
+ // rAF can be throttled while hidden; wall-clock deadline stays authoritative.
+ document.addEventListener("pagehide",()=>store());
+ setInputs(timer.durationMs);refreshPreset();render();
+ rafId=requestAnimationFrame(frame);
+ if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
+  const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
+  sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(err){}};
+  document.head.appendChild(sdk);
+ }
+})();
+</script>
+</body></html>
