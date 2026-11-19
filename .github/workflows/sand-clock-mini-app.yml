@@ -1,0 +1,36 @@
+name: Sand Clock Mini App regression
+
+on:
+  push:
+    paths:
+      - "mini-apps/sand-clock/**"
+      - "tests/sand-clock.test.cjs"
+      - ".github/workflows/sand-clock-mini-app.yml"
+  pull_request:
+    paths:
+      - "mini-apps/sand-clock/**"
+      - "tests/sand-clock.test.cjs"
+      - ".github/workflows/sand-clock-mini-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: JavaScript syntax
+        run: node --check mini-apps/sand-clock/timer-engine.js
+      - name: Countdown, sand-volume and reload tests
+        run: node --test tests/sand-clock.test.cjs
+      - name: Verify static entrypoint
+        run: |
+          test -f mini-apps/sand-clock/index.html
+          grep -Fq '<script src="./timer-engine.js"></script>' mini-apps/sand-clock/index.html
+          grep -Fq 'id="upper-sand"' mini-apps/sand-clock/index.html
+          grep -Fq 'id="lower-sand"' mini-apps/sand-clock/index.html
