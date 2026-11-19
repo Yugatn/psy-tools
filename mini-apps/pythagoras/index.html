@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1423">
+<meta name="description" content="Калькулятор квадрата Пифагора — четыре рабочих числа, психоматрица 3×3, линии и прозрачная методика.">
+<title>Квадрат Пифагора · Мини-приложение PSY-TOOLS</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#0a1423);--panel:var(--tg-theme-secondary-bg-color,#142336);--text:var(--tg-theme-text-color,#edf6ff);--muted:var(--tg-theme-hint-color,#acbfd0);--accent:var(--tg-theme-button-color,#4fa0bf);--accentText:var(--tg-theme-button-text-color,#fff);--line:#41576a;--glow:rgba(86,187,224,.26)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+main{max-width:790px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 15px max(38px,env(safe-area-inset-bottom))}
+h1{font-size:clamp(30px,7vw,44px);letter-spacing:-.035em;line-height:1.13;margin:9px 0 12px}
+h2{font-size:21px;margin:0 0 12px}h3{font-size:16px;margin:0 0 7px}
+a{color:#8ddbf1;text-underline-offset:3px}.muted{color:var(--muted)}p{margin:7px 0}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #548ca2;border-radius:999px;padding:5px 11px;font-size:12px;color:#aee9f6;background:#14384a}
+.hero{padding:12px 0 20px}.sub{color:var(--muted);font-size:15px;max-width:650px}.hero-grid{display:flex;gap:11px;align-items:center;margin-bottom:10px}
+.logo{display:grid;grid-template-columns:repeat(3,9px);grid-template-rows:repeat(3,9px);gap:3px;transform:rotate(-10deg);filter:drop-shadow(0 0 10px #3e8ba0)}
+.logo i{display:block;border-radius:2px;background:linear-gradient(135deg,#a0edff,#4d859f)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:18px;margin-bottom:15px;box-shadow:0 12px 30px rgba(0,0,0,.1)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end}
+label{font-size:13px;font-weight:650;display:block;margin-bottom:6px}
+input,select,button{font:inherit}
+input[type=date],select{width:100%;padding:12px 11px;border-radius:12px;background:var(--bg);border:1px solid #547086;color:var(--text);min-height:48px}
+input[type=date]{color-scheme:dark}
+button{border-radius:12px;background:#253b50;color:var(--text);border:1px solid #4c677a;padding:11px 14px;min-height:44px;font-weight:650;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #b6e9ff;outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:15px}
+.tip{font-size:12px;color:var(--muted);margin-top:9px}
+.error{color:#ffb9ad;min-height:1.5em;font-size:13px;margin:8px 0 0}
+.status{font-size:13px;color:#94e8d4;min-height:1.5em}
+.results[hidden]{display:none!important}
+.work-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.work{padding:12px 7px;text-align:center;border-radius:13px;background:var(--bg);border:1px solid #3c5c74}
+.work b{display:block;font-size:26px;line-height:1.2;font-variant-numeric:tabular-nums}
+.work small{font-size:11px;color:var(--muted)}
+.explain{margin-top:13px;font-size:13px;color:var(--muted);line-height:1.65}
+.matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:540px;margin:10px auto 0}
+.cell{background:var(--bg);border:1px solid #3b6177;border-radius:15px;min-height:118px;padding:10px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
+.cell:hover,.cell:focus-visible{border-color:#9bdaf3}
+.cell .num{font-size:12px;color:#8ccae0;font-weight:750}
+.cell .digits{font-size:clamp(16px,4vw,27px);font-weight:750;letter-spacing:.01em;overflow-wrap:anywhere;line-height:1.24}
+.cell .name{font-size:11px;color:var(--muted);font-weight:450;line-height:1.2;text-align:center}
+.cell .count{font-size:12px;color:var(--muted)}
+.cell.empty .digits{opacity:.55}
+.cell.active{outline:2px solid var(--accent);outline-offset:1px;background:#1c4156}
+.meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px;align-items:center;font-size:12px;color:var(--muted)}
+.meta span{border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+.lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.line{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.line-head{display:flex;justify-content:space-between;gap:7px;font-size:13px}
+.line-head b{font-variant-numeric:tabular-nums}
+.line-digits{font-size:11px;color:var(--muted)}
+.bar{background:#203950;border-radius:20px;height:5px;margin-top:9px;overflow:hidden}
+.bar div{height:100%;background:#6ebbd4;border-radius:20px}
+.nine-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.nine-card{border:1px solid #405d73;border-radius:12px;padding:11px;background:var(--bg)}
+.nine-card strong{font-size:15px}.nine-card p{font-size:12px;color:var(--muted);margin:3px 0 0}.nine-card.selected{border-color:#8bd9f0;background:#174159}
+.disclaimer{background:rgba(200,153,69,.08);border:1px solid #806740;border-radius:14px;padding:13px 14px;font-size:12px;color:var(--muted)}
+.disclaimer b{color:var(--text)}
+footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
+@media(max-width:540px){.form-grid{grid-template-columns:1fr}.card{padding:14px;border-radius:15px}.work b{font-size:22px}.work{padding:10px 3px}.cell{min-height:108px}.nine-cards{grid-template-columns:1fr 1fr}.lines{grid-template-columns:1fr}.actions>button{flex:1 1 140px}}
+@media(max-width:360px){.work-grid{grid-template-columns:repeat(2,1fr)}.nine-cards{grid-template-columns:1fr}.cell .name{font-size:10px}}
+@media print{body{background:#fff;color:#111}main{max-width:100%}.card{break-inside:avoid;box-shadow:none;background:#fff;color:#111}.cell,.work,.line,.nine-card{background:#fff;color:#111}a,button,.actions,form,#calculate-status{display:none!important}.results[hidden]{display:none}.muted,.name,.tip,footer{color:#444}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="hero-grid"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="chip">PSY-TOOLS · Mini App</span></div>
+  <h1>Квадрат Пифагора</h1>
+  <p class="sub">Бесплатный калькулятор психоматрицы по дате рождения. Четыре рабочих числа, девять ячеек и восемь числовых линий — с прозрачным объяснением вычислений.</p>
+</header>
+<section class="card" aria-labelledby="input-title">
+<h2 id="input-title">Дата рождения</h2>
+<form id="form" novalidate>
+<div class="form-grid">
+ <div><label for="date">Полная дата</label><input type="date" id="date" name="date" required aria-describedby="date-help"><p class="tip" id="date-help">Например, 14.03.1992</p></div>
+ <div><label for="dayrule">Правило для дней 01–09</label>
+ <select id="dayrule" name="dayrule">
+  <option value="significant">Первая значимая цифра (03 → 3)</option>
+  <option value="literal">Первая цифра записи (03 → 0)</option>
+ </select></div>
+</div>
+<p class="tip">В нумерологических школах есть разные правила для дат с ведущим нулём. Выбранный вариант отражается в расчёте.</p>
+<div class="actions">
+<button class="primary" type="submit">Рассчитать матрицу</button>
+<button type="button" id="example">Показать пример</button>
+<button type="reset" id="reset">Очистить</button>
+</div>
+<p id="form-error" class="error" role="alert" aria-live="polite"></p>
+</form>
+</section>
+
+<div id="results" class="results" hidden aria-live="polite">
+<section class="card" aria-labelledby="working-title">
+  <h2 id="working-title">Четыре рабочих числа</h2>
+  <div class="work-grid" id="working"></div>
+  <div class="explain" id="work-explanation"></div>
+</section>
+<section class="card" aria-labelledby="matrix-title">
+  <h2 id="matrix-title">Психоматрица 3 × 3</h2>
+  <p class="muted">Выберите цифру, чтобы выделить её описание. Пустая клетка не означает отсутствия качества у человека.</p>
+  <div class="matrix" id="matrix" role="group" aria-label="Девять клеток психоматрицы"></div>
+  <div class="meta" id="matrix-meta"></div>
+</section>
+<section class="card" aria-labelledby="lines-title">
+  <h2 id="lines-title">Линии психоматрицы</h2>
+  <p class="muted">Подсчёт повторений цифр в строках, столбцах и диагоналях. Названия традиционные; это не измерение способностей.</p>
+  <div class="lines" id="lines"></div>
+</section>
+<section class="card" aria-labelledby="details-title">
+  <h2 id="details-title">Значения девяти цифр</h2>
+  <p class="muted">Символические темы, используемые в некоторых нумерологических школах. Повторения цифры не устанавливают психологическое свойство или состояние здоровья.</p>
+  <div class="nine-cards" id="details"></div>
+  <div class="actions">
+    <button id="copy" type="button">Скопировать результат</button>
+    <button id="share" type="button" class="primary">Поделиться</button>
+    <button id="print" type="button">Печать / PDF</button>
+  </div>
+  <p class="tip">При копировании или отправке передаётся результат вместе с указанной датой рождения. Делитесь только с согласия человека, чьи данные используются.</p>
+  <p id="calculate-status" class="status" aria-live="polite"></p>
+</section>
+</div>
+
+<section class="disclaimer">
+<b>Методологическое ограничение.</b> Квадрат Пифагора здесь — арифметическая реализация нумерологической традиции, а не научно валидированный личностный тест. Названия «здоровье», «удача», «память», «темперамент» и другие не имеют диагностического или предсказательного значения. Результат нельзя использовать для медицинских, профессиональных и юридических выводов.
+</section>
+<section class="card" style="margin-top:16px" aria-labelledby="method-title">
+<h2 id="method-title">Как выполняется расчёт</h2>
+<p class="muted">1. Записываем дату восемью цифрами ДДММГГГГ. 2. Складываем все цифры — первое рабочее число. 3. Складываем цифры первого числа — второе. 4. Из первого вычитаем удвоенную первую цифру дня согласно выбранному правилу — третье. 5. Складываем цифры третьего — четвёртое. 6. Считаем появления цифр от 1 до 9 в самой дате и всех четырёх числах, нули пропускаем.</p>
+<p class="tip">Вариант с дополнительным «+19» для годов после 2000 в этой версии <b>не применяется</b>; он существует в отдельных школах. Формат квадратной сетки: 1–4–7 / 2–5–8 / 3–6–9.</p>
+</section>
+<footer>
+<p>PSY-TOOLS · автор философского проекта АС — Югатн. Приложение не читает Telegram-профиль и не отправляет дату рождения на сервер. Расчёт выполняется только на устройстве; история дат не сохраняется.</p>
+<p><a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/pythagoras" target="_blank" rel="noopener noreferrer">Исходный код и методика</a> · <a href="../../wheel/hub.html">Все колёса</a></p>
+</footer>
+</main>
+<script src="./calculator.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const C=window.PythagorasCalculator;
+if(!C){$("form-error").textContent="Не удалось загрузить расчётный модуль.";return;}
+let result=null;
+function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
+function clear(el){el.replaceChildren();}
+function countLabel(n){return n===0?"Нет в записи":n+" "+(n%10===1&&n%100!==11?"повторение":(n%10>=2&&n%10<=4&&!(n%100>=12&&n%100<=14)?"повторения":"повторений"));}
+function renderNumbers(r){
+ const box=$("working");clear(box);
+ r.working.forEach((n,i)=>{const d=node("div","work"),num=node("b","",String(n));d.append(num,node("small","",String(i+1)+"-е число"));box.append(d);});
+ const values=[
+ "1. Сумма цифр даты "+r.date.display+" = "+r.working[0]+".",
+ "2. Сумма цифр первого числа = "+r.working[1]+".",
+ "3. "+r.working[0]+" − 2 × "+r.firstDayDigit+" = "+r.working[2]+".",
+ "4. Сумма цифр третьего числа = "+r.working[3]+"."
+ ];
+ const exp=$("work-explanation");clear(exp);values.forEach(s=>exp.appendChild(node("p","",s)));
+}
+function renderMatrix(r){
+ const root=$("matrix");clear(root);
+ r.layout.flat().forEach(x=>{
+  const b=node("button","cell"+(x.count===0?" empty":""),undefined);b.type="button";
+  b.setAttribute("aria-label",x.digit+", "+x.name+", "+countLabel(x.count));
+  b.dataset.digit=String(x.digit);
+  b.append(node("span","num",String(x.digit)),node("span","digits",x.symbols||"—"),node("span","name",x.name),node("span","count",countLabel(x.count)));
+  b.addEventListener("click",()=>{document.querySelectorAll(".cell").forEach(e=>e.classList.toggle("active",e===b));document.querySelectorAll(".nine-card").forEach(e=>e.classList.toggle("selected",e.dataset.digit===b.dataset.digit));$("details-title").scrollIntoView({behavior:"smooth",block:"start"});});
+  root.appendChild(b);
+ });
+ const info=$("matrix-meta");clear(info);info.append(node("span","",r.nonZeroTotal+" ненулевых цифр всего"),node("span","",r.rule==="literal"?"Буквальный первый разряд":"Первая значимая цифра"));
+}
+function renderLines(r){
+ const root=$("lines");clear(root);
+ const max=Math.max(...r.lines.map(l=>l.count),1);
+ r.lines.forEach(l=>{
+   const d=node("div","line"),head=node("div","line-head"),a=node("span","",l.name),b=node("b","",String(l.count));
+   head.append(a,b);const sub=node("div","line-digits",l.digits.join(" + "));
+   const track=node("div","bar"),fill=node("div");
+   fill.style.width=String(l.count/max*100)+"%";track.appendChild(fill);d.append(head,sub,track);root.appendChild(d);
+ });
+}
+function renderDetails(r){
+ const root=$("details");clear(root);
+ for(let i=1;i<=9;i++){
+ const count=r.counts[i];const d=node("div","nine-card");d.dataset.digit=String(i);
+ d.append(node("strong","",i+" · "+C.NAMES[i]),node("p","",countLabel(count)),
+ node("p","","Тема этой цифры в нумерологической традиции. Число повторений не подтверждает и не исключает личностное качество."));
+ root.appendChild(d);
+ }
+}
+function compute(){
+ $("form-error").textContent="";$("calculate-status").textContent="";
+ try{
+  const r=C.calculate($("date").value,{firstDayRule:$("dayrule").value});
+  result=r;renderNumbers(r);renderMatrix(r);renderLines(r);renderDetails(r);$("results").hidden=false;
+  $("results").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(e){result=null;$("results").hidden=true;$("form-error").textContent=e.message;}
+}
+$("form").addEventListener("submit",e=>{e.preventDefault();compute();});
+$("form").addEventListener("reset",()=>{result=null;$("results").hidden=true;$("form-error").textContent="";$("calculate-status").textContent="";});
+$("example").addEventListener("click",()=>{$("date").value="1992-03-14";$("dayrule").value="significant";compute();});
+async function copy(text){
+ if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true;}
+ const box=node("textarea");box.value=text;box.style.position="fixed";box.style.top="-2000px";document.body.appendChild(box);box.select();
+ const ok=document.execCommand&&document.execCommand("copy");box.remove();if(!ok)throw new Error("Копирование недоступно.");return true;
+}
+$("copy").addEventListener("click",async()=>{
+ if(!result)return;
+ try{await copy(C.formatText(result));$("calculate-status").textContent="Результат скопирован.";}
+ catch(e){$("calculate-status").textContent="Не удалось скопировать. Попробуйте браузер с HTTPS.";}
+});
+$("share").addEventListener("click",async()=>{
+ if(!result)return;const text=C.formatText(result);
+ try{
+ if(navigator.share){await navigator.share({title:"Квадрат Пифагора",text});$("calculate-status").textContent="Открыто системное меню отправки.";return;}
+ const tg=window.Telegram&&window.Telegram.WebApp;
+ if(tg&&tg.openTelegramLink){tg.openTelegramLink("https://t.me/share/url?url="+encodeURIComponent("https://yugatn.github.io/psy-tools/mini-apps/pythagoras/")+"&text="+encodeURIComponent(text));return;}
+ await copy(text);$("calculate-status").textContent="Ссылка на публикацию не создана; текст результата скопирован.";
+ }catch(e){if(e&&e.name==="AbortError")return;$("calculate-status").textContent="Поделиться не удалось. Используйте копирование.";}
+});
+$("print").addEventListener("click",()=>{if(result)window.print();});
+function initTelegram(){
+ if(!/tgWebAppPlatform=|tgWebAppData=|tgWebAppVersion=/.test(location.href))return;
+ const script=document.createElement("script");script.src="https://telegram.org/js/telegram-web-app.js";
+ script.onload=()=>{
+  try{const tg=window.Telegram&&window.Telegram.WebApp;if(tg){tg.ready();tg.expand();}}
+  catch(e){}
+ };
+ script.onerror=()=>{$("form-error").textContent="Telegram SDK недоступен; калькулятор работает автономно.";};
+ document.head.appendChild(script);
+}
+initTelegram();
+})();
+</script>
+</body></html>
