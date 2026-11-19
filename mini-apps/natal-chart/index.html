@@ -87,7 +87,13 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
  <div id="location-fields">
 
    <div class="city-lookup">
-    <h3>Города России — поиск по справочнику</h3>
+    <h3>Города России и Беларуси</h3>
+    <div class="cols">
+      <div><label for="city-country">Страна рождения</label><select id="city-country">
+        <option value="RU">Россия</option><option value="BY">Беларусь</option>
+      </select></div>
+      <div><p class="help" id="city-country-note">Поиск по всем городам выбранной страны. Каталог загружается локально; координаты не отправляются на сервер.</p></div>
+    </div>
     <div class="cols">
      <div>
       <label for="ru-search">Название города</label>
@@ -96,14 +102,14 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
         aria-describedby="ru-state">
      </div>
      <div>
-      <label for="ru-region">Субъект РФ (необязательно)</label>
+      <label for="ru-region">Область или регион (необязательно)</label>
       <select id="ru-region"><option value="">Все регионы</option></select>
      </div>
     </div>
     <div id="ru-results" class="city-results" role="listbox" aria-label="Результаты поиска городов" hidden></div>
     <p id="ru-state" class="city-state" role="status" aria-live="polite"></p>
     <p id="ru-selected" class="city-selected"></p>
-    <p class="help">Выберите город из списка — название и координаты подставятся автоматически. Одноимённые города различаются по региону. Поиск работает без интернета после загрузки приложения. Историческое UTC-смещение не меняется автоматически.</p>
+    <p class="help">При выборе города подставляются только координаты. Одноимённые города различаются по региону и стране. Все <b>115 городов Беларуси</b> включены отдельно от 1 126 российских записей. Историческое UTC-смещение не меняется автоматически.</p>
    </div>
    <div class="cols">
     <div><label for="preset">Другие страны (быстрый выбор координат)</label>
@@ -173,6 +179,8 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 <script src="./chart.js"></script>
 <script src="./cities-ru-data.js"></script>
 <script src="./city-catalog.js"></script>
+<script src="./cities-by-data.js"></script>
+<script src="./city-catalog-by.js"></script>
 <script>
 (function(){
 "use strict";
@@ -188,8 +196,10 @@ const CITY={
  NewYork:{place:"Нью-Йорк",lat:40.7128,lon:-74.006}
 };
 let result=null;
-let selectedRussianCity=null;
-const Catalog=window.RussianCityCatalog;
+let selectedReferenceCity=null;
+const CATALOGS={RU:window.RussianCityCatalog,BY:window.BelarusCityCatalog};
+const currentCatalog=()=>CATALOGS[$("city-country").value]||null;
+const currentCountryName=()=>$("city-country").value==="BY"?"Беларусь":"Россия";
 const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;return x;};
 const svg=(tag,attrs,parent,txt)=>{const x=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs||{}))x.setAttribute(k,String(v));if(txt!==undefined)x.textContent=txt;if(parent)parent.appendChild(x);return x;};
 function status(msg){$("phase").textContent=msg;}
@@ -198,45 +208,45 @@ function closeCityResults(){
  $("ru-results").hidden=true;
  $("ru-search").setAttribute("aria-expanded","false");
 }
-function resetRussianSelection(clearCoordinates){
- selectedRussianCity=null;
+function resetReferenceSelection(clearCoordinates){
+ selectedReferenceCity=null;
  $("ru-selected").textContent="";
  if(clearCoordinates){$("place").value="";$("lat").value="";$("lon").value="";}
 }
-function selectRussianCity(city){
+function selectReferenceCity(city){
  if(!city)return;
- selectedRussianCity=city;
+ selectedReferenceCity=city;
  $("ru-search").value=city.name;
  $("ru-region").value=city.region;
  $("preset").value="";
- $("place").value=city.name+", "+city.region;
+ $("place").value=city.name+", "+city.region+", "+currentCountryName();
  $("lat").value=String(city.latitude);
  $("lon").value=String(city.longitude);
- $("ru-selected").textContent="Выбрано: "+city.name+" · "+city.region+" · "+city.latitude.toFixed(5)+"°, "+city.longitude.toFixed(5)+"°.";
- $("ru-state").textContent="Ориентир по текущему UTC: "+city.utcCurrent+" (НЕ используется для исторического расчёта рождения).";
+ $("ru-selected").textContent="Выбрано: "+city.name+" · "+city.region+" · "+currentCountryName()+" · "+city.latitude.toFixed(5)+"°, "+city.longitude.toFixed(5)+"°.";
+ $("ru-state").textContent="Текущий UTC-ориентир: "+city.utcCurrent+" (не подставляется в поле исторического UTC).";
  closeCityResults();
 }
 function renderCities(){
- const root=$("ru-results");
- root.replaceChildren();
- if(!Catalog){$("ru-state").textContent="Справочник городов не загружен. Координаты можно ввести вручную.";closeCityResults();return;}
+ const root=$("ru-results");root.replaceChildren();
+ const Catalog=currentCatalog();
+ if(!Catalog){$("ru-state").textContent="Справочник выбранной страны не загружен. Координаты можно ввести вручную.";closeCityResults();return;}
  const typed=$("ru-search").value.trim(),region=$("ru-region").value;
  if(typed.length<2&&!region){
-  $("ru-state").textContent="Доступно "+Catalog.total+" городских записей. Введите хотя бы две буквы либо выберите регион.";
+  $("ru-state").textContent=Catalog.total+" городских записей · "+currentCountryName()+". Введите хотя бы две буквы или выберите область.";
   closeCityResults();return;
  }
- const result=Catalog.query(typed,region,24);
- $("ru-state").textContent=result.total===0?"Город не найден. Проверьте написание или введите координаты вручную.":
-  "Найдено "+result.total+"; показано "+result.items.length+". Выберите нужный регион и город.";
- if(!result.items.length){closeCityResults();return;}
- for(const city of result.items){
+ const found=Catalog.query(typed,region,24);
+ $("ru-state").textContent=found.total===0?"Город не найден. Проверьте название, регион или введите координаты вручную.":
+  "Найдено "+found.total+"; показано "+found.items.length+". Выберите город.";
+ if(!found.items.length){closeCityResults();return;}
+ for(const city of found.items){
   const btn=el("button","city-result");btn.type="button";btn.setAttribute("role","option");
-  btn.setAttribute("aria-label",city.name+", "+city.region);
-  const group=el("span"),bold=el("strong","",city.name),sub=el("small","",city.region);
+  btn.setAttribute("aria-label",city.name+", "+city.region+", "+currentCountryName());
+  const group=el("span"),bold=el("strong","",city.name),sub=el("small","",city.region+" · "+currentCountryName());
   group.append(bold,sub);
   const utc=el("span","current-utc",city.utcCurrent||"");
   btn.append(group,utc);
-  btn.addEventListener("click",()=>selectRussianCity(city));
+  btn.addEventListener("click",()=>selectReferenceCity(city));
   btn.addEventListener("keydown",event=>{
    if(event.key==="Escape"){closeCityResults();$("ru-search").focus();}
    else if(event.key==="ArrowDown"){event.preventDefault();btn.nextElementSibling?.focus();}
@@ -246,40 +256,55 @@ function renderCities(){
  }
  root.hidden=false;$("ru-search").setAttribute("aria-expanded","true");
 }
-function initRussianCities(){
- if(!Catalog){$("ru-state").textContent="Справочник недоступен: используйте координаты вручную.";return;}
- for(const region of Catalog.regions){
-  const opt=document.createElement("option");opt.value=region;opt.textContent=region;$("ru-region").appendChild(opt);
+function refreshCountryRegions(){
+ const Catalog=currentCatalog(),select=$("ru-region");select.replaceChildren();
+ const empty=document.createElement("option");empty.value="";empty.textContent="Все области и регионы";select.appendChild(empty);
+ if(Catalog)for(const region of Catalog.regions){
+  const option=document.createElement("option");option.value=region;option.textContent=region;select.appendChild(option);
  }
- $("ru-state").textContent="Справочник: "+Catalog.total+" записей, "+Catalog.regions.length+" регионов. Поиск по названию, включая ё/е.";
+ $("ru-search").placeholder=$("city-country").value==="BY"?"Например, Минск":"Например, Благовещенск";
+ $("ru-state").textContent=Catalog?
+  currentCountryName()+": "+Catalog.total+" городских записей, "+Catalog.regions.length+" регионов. Начните ввод названия.":
+  "Справочник недоступен: координаты можно ввести вручную.";
+ $("city-country-note").textContent=$("city-country").value==="BY"?
+  "Беларусь: 115 городов в 6 областях и Минске. Городские посёлки в основной перечень не включены.":
+  "Россия: 1 126 городских записей по исходному справочнику и дополнениям.";
+ closeCityResults();
+}
+function initCountryCities(){
+ refreshCountryRegions();
+ $("city-country").addEventListener("change",()=>{
+  resetReferenceSelection(true);$("ru-search").value="";refreshCountryRegions();
+  $("preset").value="";
+ });
  $("ru-search").addEventListener("input",()=>{
-   if(selectedRussianCity){resetRussianSelection(true);}
-   renderCities();
+  if(selectedReferenceCity)resetReferenceSelection(true);
+  renderCities();
  });
  $("ru-region").addEventListener("change",()=>{
-   if(selectedRussianCity){resetRussianSelection(true);}
-   renderCities();
+  if(selectedReferenceCity)resetReferenceSelection(true);
+  renderCities();
  });
  $("ru-search").addEventListener("keydown",event=>{
-   if(event.key==="Escape")closeCityResults();
-   else if(event.key==="ArrowDown"&&!$("ru-results").hidden){
-    event.preventDefault();$("ru-results").firstElementChild?.focus();
-   }
+  if(event.key==="Escape")closeCityResults();
+  else if(event.key==="ArrowDown"&&!$("ru-results").hidden){
+   event.preventDefault();$("ru-results").firstElementChild?.focus();
+  }
  });
  $("ru-search").addEventListener("focus",()=>{if($("ru-search").value.trim().length>=2||$("ru-region").value)renderCities();});
  ["lat","lon"].forEach(id=>$(id).addEventListener("input",()=>{
-   if(selectedRussianCity){
-     resetRussianSelection(false);$("ru-search").value="";closeCityResults();
-     $("ru-state").textContent="Координаты изменены вручную. Проверьте название населённого пункта.";
-   }
+  if(selectedReferenceCity){
+   resetReferenceSelection(false);$("ru-search").value="";closeCityResults();
+   $("ru-state").textContent="Координаты отредактированы вручную. Проверьте название населённого пункта.";
+  }
  }));
  $("place").addEventListener("input",()=>{
-  if(selectedRussianCity){resetRussianSelection(false);$("ru-search").value="";closeCityResults();}
+  if(selectedReferenceCity){resetReferenceSelection(false);$("ru-search").value="";closeCityResults();}
  });
 }
 function toggleUnknown(){
  const unknown=$("unknown-time").checked;
- ["birth-time","offset","lat","lon","place","preset","ru-search","ru-region"].forEach(id=>{$(id).disabled=unknown;});
+ ["birth-time","offset","lat","lon","place","preset","ru-search","ru-region","city-country"].forEach(id=>{$(id).disabled=unknown;});
  if(unknown)closeCityResults();
  $("location-fields").style.opacity=unknown?"0.5":"1";
 }
@@ -287,7 +312,7 @@ $("unknown-time").addEventListener("change",toggleUnknown);
 $("preset").addEventListener("change",()=>{
  const c=CITY[$("preset").value];
  if(c){
-  resetRussianSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();
+  resetReferenceSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();
   $("ru-state").textContent="Выбран международный пресет. Проверьте историческое UTC-смещение.";
   $("place").value=c.place;$("lat").value=String(c.lat);$("lon").value=String(c.lon);
  }
@@ -385,7 +410,7 @@ function render(r){wheel(r);renderStats(r);renderPlanets(r);renderAspects(r);$("
 function calculate(){
  $("error").textContent="";status("");
  try{
-   if(!$("unknown-time").checked && $("ru-search").value.trim() && !selectedRussianCity)
+   if(!$("unknown-time").checked && $("ru-search").value.trim() && !selectedReferenceCity)
      throw new Error("Выберите город из выпадающего списка или очистите поиск и введите координаты вручную.");
    if(!A||!E)throw new Error("Астрономическая библиотека не загружена. Проверьте, что файлы JS доступны.");
    result=E.calculate(fields(),A);render(result);
@@ -394,14 +419,14 @@ function calculate(){
 $("form").addEventListener("submit",e=>{e.preventDefault();calculate();});
 $("form").addEventListener("reset",()=>{
  result=null;$("result").hidden=true;$("error").textContent="";
- resetRussianSelection(false);closeCityResults();
+ resetReferenceSelection(false);closeCityResults();
  setTimeout(()=>{
   $("preset").value="";$("ru-search").value="";$("ru-region").value="";
-  $("ru-state").textContent=Catalog?"Справочник: "+Catalog.total+" городских записей. Начните ввод названия.":"Введите координаты вручную.";
+  refreshCountryRegions();
   toggleUnknown();
  },0);
 });
-$("demo").addEventListener("click",()=>{resetRussianSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();$("ru-state").textContent="Выбран пример: Гринвич.";$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
+$("demo").addEventListener("click",()=>{resetReferenceSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();$("ru-state").textContent="Выбран пример: Гринвич.";$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
 async function clipboard(text){
  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return;}
  const box=document.createElement("textarea");box.value=text;box.style.position="fixed";box.style.left="-9999px";document.body.appendChild(box);box.select();
@@ -433,7 +458,7 @@ function telegram(){
  script.onload=()=>{try{const w=window.Telegram?.WebApp;w?.ready();w?.expand();}catch{}};
  document.head.appendChild(script);
 }
-initRussianCities();toggleUnknown();telegram();
+initCountryCities();toggleUnknown();telegram();
 })();
 </script>
 </body></html>
