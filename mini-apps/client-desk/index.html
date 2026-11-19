@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1726">
+<meta name="description" content="CRM: мировые часы, возраст, рабочий день и таймеры звонков клиентам со своими статусами.">
+<title>Центр времени и звонков — CRM Mini App</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#091626);--panel:var(--tg-theme-secondary-bg-color,#12283b);--ink:var(--tg-theme-text-color,#ecf5fd);--muted:var(--tg-theme-hint-color,#b0c3d0);--line:#3a5b71;--accent:var(--tg-theme-button-color,#1e948d);--button-ink:var(--tg-theme-button-text-color,#fff);--amber:#e6bd7c;--mint:#98e9d1;--danger:#f9a5a5;--blue:#9ac8fa}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 18% -7%,#1e4f5d,transparent 60%),var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;min-height:100vh}
+main{max-width:1190px;margin:auto;padding:max(19px,env(safe-area-inset-top)) 15px max(48px,env(safe-area-inset-bottom))}
+a{color:#98e5e1}h1{font-size:clamp(31px,6vw,51px);line-height:1.12;letter-spacing:-.045em;margin:8px 0 10px}h2{font-size:21px;margin:0 0 12px}h3{font-size:17px;margin:4px 0 9px}p{margin:7px 0}
+.eyebrow{font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint)}
+.muted,.help{font-size:13px;color:var(--muted)}.tiny{font-size:12px;color:var(--muted)}header{padding:6px 0 23px}header p{max-width:840px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:18px;margin-bottom:14px;min-width:0}
+.card-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.card-heading h2{margin:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:13px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.grid-auto{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:11px}
+label{display:block;font-size:12px;font-weight:650;margin-bottom:4px}
+input:not([type=checkbox]),select,textarea{width:100%;min-width:0;border:1px solid #4a7386;border-radius:10px;background:#0b1e2e;color:var(--ink);padding:10px;font:inherit;min-height:43px}
+textarea{resize:vertical;min-height:65px}
+input[type=checkbox]{width:19px;height:19px;accent-color:#43beb0}
+input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #a9ece3;outline-offset:2px}
+button{font:inherit;min-height:41px;border:1px solid #4c7984;background:#2b4d5f;color:var(--ink);border-radius:10px;padding:8px 13px;font-weight:650;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--button-ink)}
+button.danger{background:#4b3441;border-color:#91646c}
+button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.actions button{flex:0 0 auto}.check{display:flex;align-items:center;gap:8px}.check label{margin:0;font-weight:450}
+.display{font-size:clamp(30px,6vw,49px);line-height:1.16;letter-spacing:-.04em;font-weight:850;font-variant-numeric:tabular-nums}
+.work-display{font-size:clamp(31px,6vw,47px);letter-spacing:-.03em;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:#c5fae5;margin:12px 0}
+.clock-card{border:1px solid #386f7e;border-radius:14px;background:#0d2c3c;padding:14px}
+.clock-card.home{background:linear-gradient(125deg,#174e59,#103143);border-color:#5bafa4}
+.clock-card .place{font-weight:750;font-size:17px}.clock-card .time{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.clock-card .hint{font-size:12px;color:#accbd5}
+.clock-card .actions{margin-top:8px}
+.metric-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.metric{padding:13px 14px;border-radius:13px;border:1px solid #3a6d80;background:#122f42}
+.metric b{display:block;font-size:clamp(22px,4vw,31px);line-height:1.25;font-variant-numeric:tabular-nums}
+.metric span{font-size:11px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;border:1px solid #557585;border-radius:99px;padding:3px 10px;font-size:12px;white-space:nowrap}
+.pill.gray{color:#cfdae2;border-color:#697b85;background:#344553}
+.pill.amber{color:#ffe2a8;border-color:#99733e;background:#53432c}
+.pill.blue{color:#c9e5ff;border-color:#4a85b5;background:#204966}
+.pill.green{color:#c1efd0;border-color:#528c6d;background:#1c5139}
+.pill.red{color:#fdd6d5;border-color:#a15b65;background:#603541}
+.pill.violet{color:#e1d1ff;border-color:#8269ab;background:#43365f}
+.note{font-size:12px;padding:11px 12px;border-left:3px solid #c3a374;background:#242d3b;border-radius:0 9px 9px 0;color:#ced7e0}
+.status{min-height:20px;font-size:13px;color:var(--mint);margin-top:8px}
+.status.error{color:var(--danger)}.status.warn{color:var(--amber)}
+.timer-list{display:grid;gap:10px}
+.timer-card{padding:14px;background:#0e283a;border:1px solid #48687b;border-radius:14px}
+.timer-card.soon{border-color:#9c884e}.timer-card.overdue{border-color:#be765c;background:#2b2f39}.timer-card.finished{opacity:.74}
+.timer-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.timer-title strong{font-size:18px;overflow-wrap:anywhere}
+.timer-count{font-size:clamp(23px,5vw,37px);font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:-.03em;margin:5px 0}
+.timer-count.overdue{color:#ffc0a2}
+.timer-meta{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:12px}
+.timer-note{font-size:12px;margin-top:6px;color:#b9cedd;overflow-wrap:anywhere}
+.timer-row{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-top:9px}
+.timer-row select{width:auto;min-width:150px;max-width:100%}
+.sect-tag{font-size:12px;color:var(--muted)}.small-controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.status-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.status-record{padding:12px;border:1px solid #3e6074;border-radius:12px;background:#102a3a}
+.status-record .actions button{min-height:36px;font-size:12px}
+.work-progress{height:9px;border-radius:20px;overflow:hidden;background:#2d4d5f;margin-top:13px}
+.work-progress>div{height:100%;width:0;background:linear-gradient(90deg,#238c9b,#a1efcf)}
+details summary{cursor:pointer;font-weight:750;margin-bottom:12px}details[open] summary{margin-bottom:14px}
+#edit-form[hidden],#status-add[hidden],#city-custom[hidden],#client-fold-box[hidden]{display:none!important}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{font-size:12px;min-height:35px}
+.filters button[aria-pressed=true]{border-color:#8cdeb3;background:#1b615b}
+footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--muted);font-size:12px}
+@media(max-width:780px){.metric-row{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-2{grid-template-columns:1fr}}
+@media(max-width:490px){.grid-3,.small-controls{grid-template-columns:1fr}.card{padding:13px}.actions button{flex:1 1 100px}.timer-row select{width:100%}.timer-row{display:grid;grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body><main>
+<nav class="tiny"><a href="../../">PSY-TOOLS</a> / CRM · Центр времени</nav>
+<header><div class="eyebrow">CRM · Время и коммуникации</div><h1>Центр времени и звонков</h1>
+<p>Мировые часы, возраст, рабочий день и независимые таймеры клиентских звонков. Планируйте следующий контакт в часовом поясе клиента и отмечайте результат собственным статусом.</p></header>
+<div class="metric-row">
+ <div class="metric"><b id="count-all">0</b><span>Клиентских таймеров</span></div>
+ <div class="metric"><b id="count-active">0</b><span>В ожидании</span></div>
+ <div class="metric"><b id="count-overdue">0</b><span>Срок наступил</span></div>
+ <div class="metric"><b id="count-finished">0</b><span>Завершены</span></div>
+</div>
+<div class="grid-2">
+<section class="card" aria-labelledby="world-heading">
+ <div class="card-heading"><h2 id="world-heading">Мировые часы</h2><span class="pill">Основной и дополнительные</span></div>
+ <div id="clocks" class="grid-auto"></div>
+ <div class="small-controls" style="margin-top:13px">
+  <div><label for="choose-city">Быстро добавить город</label><select id="choose-city"></select></div>
+  <div><label for="custom-open">Города вне подборки</label><button id="custom-open" type="button" style="width:100%">Добавить свою IANA-зону</button></div>
+ </div>
+ <div id="city-custom" hidden style="margin-top:12px">
+  <div class="small-controls"><div><label for="city-name">Название города</label><input id="city-name" maxlength="100" placeholder="Например, Омск"></div>
+   <div><label for="city-zone">Часовой пояс IANA</label><input id="city-zone" list="zone-options" placeholder="Asia/Omsk" spellcheck="false"></div></div>
+  <div class="actions"><button id="city-add" class="primary" type="button">Добавить город</button><button id="city-cancel" type="button">Отмена</button></div>
+ </div>
+ <datalist id="zone-options"></datalist>
+ <p id="city-message" class="status" role="status" aria-live="polite"></p>
+ <p class="help">Основной город задаёт календарную дату возраста и рабочий день. В справочнике — международная подборка; другие города добавляются вручную по зоне IANA. Время берётся из базы часовых поясов браузера.</p>
+</section>
+<section class="card" aria-labelledby="age-heading">
+ <h2 id="age-heading">Возраст без трудового стажа</h2>
+ <label for="birth-date">Дата рождения</label><input type="date" id="birth-date" min="1900-01-01" max="2100-12-31">
+ <div id="age-years" class="display" style="margin:14px 0 3px">—</div>
+ <div id="age-details" class="muted">Дата рождения не указана.</div>
+ <p class="help">Календарный возраст рассчитывается на текущую дату основного города. Для 29 февраля используется правило переноса годовщины на 28 февраля в невисокосном году.</p>
+ <p id="age-message" class="status" role="status"></p>
+</section>
+</div>
+<section class="card" aria-labelledby="work-heading">
+ <div class="card-heading"><h2 id="work-heading">Обратный отсчёт рабочего дня</h2><span id="work-phase" class="pill">Вне рабочего времени</span></div>
+ <div class="grid-3">
+  <div><label for="work-start">Начало рабочего дня</label><input id="work-start" type="time" value="09:00"></div>
+  <div><label for="work-end">Окончание рабочего дня</label><input id="work-end" type="time" value="18:00"></div>
+  <div><label for="work-mode">До какого момента считать?</label><select id="work-mode"><option value="end">До окончания</option><option value="start">До начала</option></select></div>
+ </div>
+ <div id="work-countdown" class="work-display">—</div>
+ <div id="work-target" class="muted">Выберите часы рабочего дня.</div>
+ <div class="work-progress"><div id="work-progress-fill"></div></div>
+ <p id="work-message" class="status" role="status"></p>
+ <p class="help">Отсчёт до следующего начала или окончания дня в часовом поясе основного города. Если выбранное время сегодня прошло — таймер показывает следующий такой момент. Ночные смены пока не поддерживаются.</p>
+</section>
+<section class="card" aria-labelledby="calls-heading">
+ <div class="card-heading"><h2 id="calls-heading">Таймеры звонков клиентам</h2><button id="new-call" type="button" class="primary">+ Новый звонок</button></div>
+ <p class="help">Срок звонка задаётся по местным часам клиента. Рядом с каждым таймером — текущий статус, который можно изменить после контакта. Таймер не совершает звонок автоматически.</p>
+ <div class="filters" role="group" aria-label="Фильтр звонков">
+  <button type="button" data-filter="active" aria-pressed="true">В работе</button>
+  <button type="button" data-filter="overdue" aria-pressed="false">Срок наступил</button>
+  <button type="button" data-filter="finished" aria-pressed="false">Завершённые</button>
+  <button type="button" data-filter="all" aria-pressed="false">Все</button>
+ </div>
+ <div id="timer-list" class="timer-list" style="margin-top:13px"></div>
+</section>
+<section id="edit-form" class="card" aria-labelledby="form-heading" hidden>
+ <div class="card-heading"><h2 id="form-heading">Новый таймер звонка</h2><button id="form-close" type="button">Закрыть</button></div>
+ <form id="call-form">
+  <div class="grid-2">
+   <div><label for="client-title">Название таймера / клиент</label><input id="client-title" maxlength="120" required placeholder="Например, Перезвонить Анне по договору"></div>
+   <div><label for="client-phone">Телефон клиента (необязательно)</label><input id="client-phone" type="tel" maxlength="32" autocomplete="off" placeholder="+7 ..."></div>
+  </div>
+  <div class="grid-3" style="margin-top:10px">
+   <div><label for="client-preset">Город из подборки</label><select id="client-preset"></select></div>
+   <div><label for="client-city">Название города</label><input id="client-city" maxlength="100" required></div>
+   <div><label for="client-zone">IANA-зона клиента</label><input id="client-zone" list="zone-options" required spellcheck="false" placeholder="Europe/Moscow"></div>
+  </div>
+  <div class="grid-3" style="margin-top:10px">
+   <div><label for="client-date">Дата звонка у клиента</label><input id="client-date" type="date" min="1900-01-01" max="2100-12-31" required></div>
+   <div><label for="client-time">Время звонка у клиента</label><input id="client-time" type="time" required></div>
+   <div><label for="client-status">Статус</label><select id="client-status"></select></div>
+  </div>
+  <div id="client-fold-box" style="margin-top:10px" hidden><label for="client-fold">При переводе часов назад время повторялось: выберите конкретный момент</label><select id="client-fold"></select></div>
+  <div style="margin-top:10px"><label for="client-note">Примечание (необязательно)</label><textarea id="client-note" maxlength="400" placeholder="Причина звонка, этап сделки, следующий шаг"></textarea></div>
+  <p id="call-preview" class="status" role="status" aria-live="polite"></p>
+  <div class="actions"><button id="save-call" type="submit" class="primary">Сохранить таймер</button><button id="form-cancel" type="button">Отмена</button></div>
+ </form>
+</section>
+<section class="card" aria-labelledby="statuses-heading">
+ <details id="status-details"><summary id="statuses-heading">Настроить статусы звонков</summary>
+ <p class="help">Переименовывайте существующие статусы, изменяйте цвет и признак завершения. Можно добавлять собственные. Завершённые звонки остаются в истории, но прекращают напоминать о сроке.</p>
+ <div id="status-list" class="status-list"></div>
+ <div class="actions"><button id="add-status-open" type="button">+ Добавить статус</button></div>
+ <div id="status-add" hidden style="margin-top:12px">
+  <div class="grid-3">
+   <div><label for="status-name">Название нового статуса</label><input id="status-name" maxlength="55" placeholder="Например, Ждём ответа"></div>
+   <div><label for="status-color">Цвет</label><select id="status-color"></select></div>
+   <div class="check"><input id="status-final" type="checkbox"><label for="status-final">Закрывает таймер</label></div>
+  </div>
+  <div class="actions"><button id="status-create" type="button" class="primary">Добавить</button><button id="status-add-cancel" type="button">Отмена</button></div>
+ </div>
+ <p id="status-message" class="status" role="status"></p>
+ </details>
+</section>
+<section class="card" aria-labelledby="privacy-heading">
+ <h2 id="privacy-heading">Сохранение данных и уведомления</h2>
+ <div class="grid-2">
+  <div class="check"><input id="remember" type="checkbox"><label for="remember">Сохранять выбранные города, возраст и таймеры на этом устройстве</label></div>
+  <div class="check"><input id="sound" type="checkbox"><label for="sound">Звуковой сигнал при наступлении срока звонка</label></div>
+ </div>
+ <p class="help">Сохранение по умолчанию отключено. Для работы с ожидающими клиентами через перезагрузки включите его сознательно. Данные сохраняются только в localStorage текущего браузерного профиля, без шифрования и синхронизации между устройствами.</p>
+ <div class="actions">
+  <button id="enable-notifications" type="button">Разрешить уведомления браузера</button>
+  <button id="export-json" type="button">Экспорт JSON</button>
+  <button id="export-csv" type="button">Экспорт звонков CSV</button>
+  <button id="import-json" type="button">Импорт JSON</button>
+  <button id="reset-all" type="button" class="danger">Очистить данные</button>
+ </div>
+ <input id="import-file" type="file" accept=".json,application/json" hidden>
+ <p id="storage-message" class="status" role="status" aria-live="polite"></p>
+ <p class="note">Уведомления срабатывают только пока веб-приложение открыто и платформа разрешает их показ. После полного закрытия браузера или Telegram надёжная доставка напоминаний не гарантируется. Реальных телефонных вызовов и фонового Telegram-бота нет.</p>
+</section>
+<footer>CRM · Центр времени и звонков. Даты рождения, телефоны и имена клиентов — персональные сведения; не вводите их на общем устройстве без защиты. <a href="../world-clock/">Мировые часы</a> · <a href="../age-tenure/">Расчёт стажа</a> · <a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/client-desk">Код CRM</a></footer>
+</main>
+<script>
+/* Copied without logic changes from Yugatn/psy-tools/mini-apps/world-clock/clock-engine.js
+ * Source blob 245e2e739003cfb91339c3e77574a77620cdd41b; local copy keeps private CRM Mini App standalone.
+ */
+/* PSY-TOOLS · Мировые часы — вычислительное ядро v1.0.
+ * Coordinates -> IANA is only a suggested zone. Civil times always use Intl.
+ * No network; local UTC calculations cannot establish time independent of device clock.
+ */
+(function(root,factory){
+ "use strict";
+ const api=factory();
+ if(typeof module==="object"&&module.exports)module.exports=api;
+ if(root)root.WorldClockEngine=api;
+})(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
+ "use strict";
+ const VERSION="1.1.0",MAX_CITIES=12,KEY="psy-tools.world-clock.v1";
+ const PRESETS=Object.freeze([
+  ["Москва","Россия","Europe/Moscow",55.7558,37.6173],
+  ["Санкт-Петербург","Россия","Europe/Moscow",59.9343,30.3351],
+  ["Калининград","Россия","Europe/Kaliningrad",54.7104,20.4522],
+  ["Екатеринбург","Россия","Asia/Yekaterinburg",56.8389,60.6057],
+  ["Новосибирск","Россия","Asia/Novosibirsk",55.0084,82.9357],
+  ["Красноярск","Россия","Asia/Krasnoyarsk",56.0153,92.8932],
+  ["Иркутск","Россия","Asia/Irkutsk",52.2869,104.3050],
+  ["Якутск","Россия","Asia/Yakutsk",62.0355,129.6755],
+  ["Владивосток","Россия","Asia/Vladivostok",43.1155,131.8855],
+  ["Хабаровск","Россия","Asia/Vladivostok",48.4802,135.0719],
+  ["Минск","Беларусь","Europe/Minsk",53.9,27.5667],
+  ["Брест","Беларусь","Europe/Minsk",52.0976,23.6878],
+  ["Лондон","Великобритания","Europe/London",51.5074,-0.1278],
+  ["Париж","Франция","Europe/Paris",48.8566,2.3522],
+  ["Берлин","Германия","Europe/Berlin",52.5200,13.4050],
+  ["Стокгольм","Швеция","Europe/Stockholm",59.3293,18.0686],
+  ["Рим","Италия","Europe/Rome",41.9028,12.4964],
+  ["Мадрид","Испания","Europe/Madrid",40.4168,-3.7038],
+  ["Лиссабон","Португалия","Europe/Lisbon",38.7223,-9.1393],
+  ["Хельсинки","Финляндия","Europe/Helsinki",60.1699,24.9384],
+  ["Стамбул","Турция","Europe/Istanbul",41.0082,28.9784],
+  ["Киев","Украина","Europe/Kyiv",50.4501,30.5234],
+  ["Варшава","Польша","Europe/Warsaw",52.2297,21.0122],
+  ["Тбилиси","Грузия","Asia/Tbilisi",41.7151,44.8271],
+  ["Ереван","Армения","Asia/Yerevan",40.1792,44.4991],
+  ["Баку","Азербайджан","Asia/Baku",40.4093,49.8671],
+  ["Алматы","Казахстан","Asia/Almaty",43.2220,76.8512],
+  ["Астана","Казахстан","Asia/Almaty",51.1694,71.4491],
+  ["Ташкент","Узбекистан","Asia/Tashkent",41.2995,69.2401],
+  ["Дубай","ОАЭ","Asia/Dubai",25.2048,55.2708],
+  ["Дели","Индия","Asia/Kolkata",28.6139,77.2090],
+  ["Мумбаи","Индия","Asia/Kolkata",19.0760,72.8777],
+  ["Бангкок","Таиланд","Asia/Bangkok",13.7563,100.5018],
+  ["Дананг","Вьетнам","Asia/Ho_Chi_Minh",16.0544,108.2022],
+  ["Ханой","Вьетнам","Asia/Ho_Chi_Minh",21.0278,105.8342],
+  ["Хошимин","Вьетнам","Asia/Ho_Chi_Minh",10.8231,106.6297],
+  ["Сингапур","Сингапур","Asia/Singapore",1.3521,103.8198],
+  ["Гонконг","Китай","Asia/Hong_Kong",22.3193,114.1694],
+  ["Пекин","Китай","Asia/Shanghai",39.9042,116.4074],
+  ["Шанхай","Китай","Asia/Shanghai",31.2304,121.4737],
+  ["Сеул","Южная Корея","Asia/Seoul",37.5665,126.9780],
+  ["Токио","Япония","Asia/Tokyo",35.6762,139.6503],
+  ["Сидней","Австралия","Australia/Sydney",-33.8688,151.2093],
+  ["Мельбурн","Австралия","Australia/Melbourne",-37.8136,144.9631],
+  ["Окленд","Новая Зеландия","Pacific/Auckland",-36.8485,174.7633],
+  ["Нью-Йорк","США","America/New_York",40.7128,-74.0060],
+  ["Бостон","США","America/New_York",42.3601,-71.0589],
+  ["Вашингтон","США","America/New_York",38.9072,-77.0369],
+  ["Чикаго","США","America/Chicago",41.8781,-87.6298],
+  ["Денвер","США","America/Denver",39.7392,-104.9903],
+  ["Финикс","США","America/Phoenix",33.4484,-112.0740],
+  ["Лос-Анджелес","США","America/Los_Angeles",34.0522,-118.2437],
+  ["Сан-Франциско","США","America/Los_Angeles",37.7749,-122.4194],
+  ["Торонто","Канада","America/Toronto",43.6532,-79.3832],
+  ["Ванкувер","Канада","America/Vancouver",49.2827,-123.1207],
+  ["Мехико","Мексика","America/Mexico_City",19.4326,-99.1332],
+  ["Сан-Паулу","Бразилия","America/Sao_Paulo",-23.5505,-46.6333],
+  ["Буэнос-Айрес","Аргентина","America/Argentina/Buenos_Aires",-34.6037,-58.3816],
+  ["Кейптаун","ЮАР","Africa/Johannesburg",-33.9249,18.4241],
+  ["Каир","Египет","Africa/Cairo",30.0444,31.2357],
+  ["Найроби","Кения","Africa/Nairobi",-1.2921,36.8219]
+ ]);
+ const norm=s=>String(s||"").toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/\s+/g," ").trim();
+ const presetCities=Object.freeze(PRESETS.map(([name,country,zone,latitude,longitude])=>Object.freeze({
+   id:"w:"+norm(name).replace(/[^a-zа-я0-9]+/g,"-")+":"+zone,
+   name,country,region:"",zone,latitude,longitude,source:"curated"
+ })));
+ function validateZone(zone){
+  if(typeof zone!=="string"||!/^[A-Za-z0-9_+\-/]{2,80}$/.test(zone))
+   throw Error("Укажите действительный часовой пояс IANA.");
+  try{new Intl.DateTimeFormat("en-GB",{timeZone:zone}).format(new Date(0));return zone;}
+  catch(e){throw Error("Неподдерживаемая браузером временная зона: "+zone);}
+ }
+ function getFormat(zone,locale,opts){return new Intl.DateTimeFormat(locale,{timeZone:zone,...opts});}
+ function partsAt(ms,zone){
+  const fields=Object.fromEntries(getFormat(zone,"en-GB",{
+   calendar:"gregory",numberingSystem:"latn",year:"numeric",month:"2-digit",
+   day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"
+  }).formatToParts(new Date(ms)).filter(x=>/^(year|month|day|hour|minute|second)$/.test(x.type))
+   .map(x=>[x.type,Number(x.value)]));
+  return fields;
+ }
+ function offsetSeconds(ms,zone){
+  const t=Math.trunc(ms/1000)*1000;
+  const p=partsAt(t,zone);
+  return Math.round((Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-t)/1000);
+ }
+ function offsetLabel(seconds){
+  const sign=seconds<0?"−":"+",n=Math.abs(seconds);
+  return "UTC"+sign+String(Math.floor(n/3600)).padStart(2,"0")+":"+String(Math.floor(n%3600/60)).padStart(2,"0")+(n%60?":"+String(n%60).padStart(2,"0"):"");
+ }
+ function snapshot(zone,date=new Date(),baseZone=null){
+  validateZone(zone);
+  const ms=date instanceof Date?date.getTime():Number(date);
+  if(!Number.isFinite(ms))throw Error("Неправильный момент времени.");
+  const p=partsAt(ms,zone);
+  const day=getFormat(zone,"ru-RU",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(ms));
+  const clock=getFormat(zone,"ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).format(new Date(ms));
+  const off=offsetSeconds(ms,zone),baseOff=baseZone?offsetSeconds(ms,validateZone(baseZone)):off;
+  return {clock,day,zone,offset:off,offsetLabel:offsetLabel(off),differenceMinutes:(off-baseOff)/60,
+   parts:p,utcISO:new Date(ms).toISOString()};
+ }
+ function differenceLabel(minutes){
+  const sign=minutes<0?"−":minutes>0?"+":"±";
+  const n=Math.abs(minutes);
+  return sign+String(Math.floor(n/60))+":"+String(n%60).padStart(2,"0");
+ }
+ function parseDateTime(date,time){
+  const d=/^(\d{4})-(\d{2})-(\d{2})$/.exec(date||"");
+  const h=/^([01]\d|2[0-3]):([0-5]\d)$/.exec(time||"");
+  if(!d||!h)throw Error("Введите корректную дату и время в основном городе.");
+  const y=+d[1],mo=+d[2],day=+d[3],hour=+h[1],minute=+h[2];
+  if(y<1900||y>2100)throw Error("Поддерживаются даты 1900–2100.");
+  const base=Date.UTC(y,mo-1,day,hour,minute);
+  const v=new Date(base);
+  if(v.getUTCFullYear()!==y||v.getUTCMonth()!==mo-1||v.getUTCDate()!==day)throw Error("Несуществующая календарная дата.");
+  return {base,y,mo,day,hour,minute};
+ }
+ function resolveWallTime(date,time,zone){
+  validateZone(zone);
+  const d=parseDateTime(date,time);
+  const candidates=[],offsets=new Set();
+  for(let h=-36;h<=36;h+=6)offsets.add(offsetSeconds(d.base+h*3600000,zone));
+  for(const offset of offsets){
+   const ms=d.base-offset*1000,p=partsAt(ms,zone);
+   if(p.year===d.y&&p.month===d.mo&&p.day===d.day&&p.hour===d.hour&&p.minute===d.minute&&!candidates.some(x=>x.ms===ms)){
+    candidates.push({ms,iso:new Date(ms).toISOString(),offset,offsetLabel:offsetLabel(offset)});
+   }
+  }
+  candidates.sort((a,b)=>a.ms-b.ms);
+  return {zone,date,time,candidates,status:candidates.length===0?"gap":candidates.length>1?"fold":"unique"};
+ }
+ const RUSSIAN_ZONE_CORRECTIONS=Object.freeze({
+  "Вяземский|Хабаровский край":"Asia/Vladivostok",
+  "Горняк|Алтайский край":"Asia/Barnaul",
+  "Николаевск-на-Амуре|Хабаровский край":"Asia/Vladivostok",
+  "Облучье|Еврейская автономная область":"Asia/Vladivostok",
+  "Светогорск|Ленинградская область":"Europe/Moscow",
+  "Северо-Курильск|Сахалинская область":"Asia/Sakhalin"
+ });
+ function suggestZone(city,country,geoLookup,instant=Date.now()){
+  if(!city||typeof city!=="object")throw Error("Не выбран город.");
+  if(country==="WORLD")return {zone:validateZone(city.zone),confidence:"confirmed",
+    explanation:"Часовая зона указана в проверенной подборке городов."};
+  if(country==="BY")return {zone:"Europe/Minsk",confidence:"confirmed",
+    explanation:"Для городов Беларуси используется IANA Europe/Minsk."};
+  if(country!=="RU")throw Error("Неизвестный справочник страны.");
+  if(typeof geoLookup!=="function")throw Error("Нет локальной географической базы часовых поясов.");
+  const corrected=RUSSIAN_ZONE_CORRECTIONS[city.name+"|"+city.region];
+  const predicted=validateZone(corrected||geoLookup(city.latitude,city.longitude));
+  const actual=Math.round(offsetSeconds(instant,predicted)/60);
+  const m=/^UTC([+-])(\d{1,2})(?::(\d\d))?$/.exec(String(city.utcCurrent||""));
+  let warning="Пояс предложен по координатам, проверьте IANA-зону перед добавлением.";
+  if(corrected)warning="Пояс скорректирован для города: географическая аппроксимация у границ ошибалась.";
+  if(m){
+   const expected=(m[1]==="-"?-1:1)*(+m[2]*60+(+(m[3]||0)));
+   if(expected!==actual)warning="Предупреждение: найденная зона расходится со справочным UTC города ("+
+    city.utcCurrent+" против "+offsetLabel(actual*60)+"). Проверьте зону вручную.";
+  }
+  return {zone:predicted,confidence:corrected?"confirmed":"suggested",explanation:warning};
+ }
+ function normalizeCity(city){
+  if(!city||typeof city!=="object")throw Error("Нет данных города.");
+  const id=String(city.id||"").slice(0,130),name=String(city.name||"").slice(0,100);
+  const country=String(city.country||"").slice(0,100),region=String(city.region||"").slice(0,120);
+  const zone=validateZone(city.zone);
+  if(!id||!name||!country)throw Error("Неполная запись города.");
+  const confidence=city.confidence==="confirmed"?"confirmed":"suggested";
+  return {id,name,country,region,zone,confidence};
+ }
+ function defaultState(){
+  return {schema:"psy-tools-world-clock",version:1,
+   home:normalizeCity({...presetCities.find(x=>x.name==="Москва"),confidence:"confirmed"}),
+   extras:[normalizeCity({...presetCities.find(x=>x.name==="Минск"),confidence:"confirmed"}),
+     normalizeCity({...presetCities.find(x=>x.name==="Лондон"),confidence:"confirmed"}),
+     normalizeCity({...presetCities.find(x=>x.name==="Нью-Йорк"),confidence:"confirmed"})]};
+ }
+ function normalizeState(input){
+  if(!input||input.schema!=="psy-tools-world-clock"||input.version!==1||!Array.isArray(input.extras))
+   throw Error("Неподдерживаемый формат сохранённых часов.");
+  const home=normalizeCity(input.home),extras=[],seen=new Set([home.id]);
+  for(const c of input.extras.slice(0,40)){
+    const item=normalizeCity(c);
+    if(!seen.has(item.id)&&extras.length<MAX_CITIES-1){extras.push(item);seen.add(item.id)}
+  }
+  return {schema:"psy-tools-world-clock",version:1,home,extras};
+ }
+ function addCity(state,city,asHome=false){
+  const current=normalizeState(state),item=normalizeCity(city);
+  const extras=current.extras.filter(c=>c.id!==item.id&&c.id!==current.home.id);
+  if(asHome){
+    if(current.home.id!==item.id){
+      if(current.extras.length>=MAX_CITIES-1&&!current.extras.some(c=>c.id===item.id))
+        throw Error("Достигнут лимит городов. Удалите один дополнительный город перед заменой основного.");
+      extras.unshift(current.home);
+    }
+    return normalizeState({...current,home:item,extras});
+  }
+  if(item.id===current.home.id||current.extras.some(c=>c.id===item.id))return current;
+  if(current.extras.length>=MAX_CITIES-1)throw Error("Можно сохранить не более "+MAX_CITIES+" городов вместе с основным.");
+  return normalizeState({...current,extras:[...current.extras,item]});
+ }
+ function removeCity(state,id){
+  const s=normalizeState(state);
+  if(s.home.id===id)throw Error("Основной город нельзя удалить, пока не выбран другой.");
+  return normalizeState({...s,extras:s.extras.filter(c=>c.id!==id)});
+ }
+ function moveCity(state,id,direction){
+  const s=normalizeState(state),i=s.extras.findIndex(c=>c.id===id),j=i+direction;
+  if(i<0||j<0||j>=s.extras.length)return s;
+  [s.extras[i],s.extras[j]]=[s.extras[j],s.extras[i]];
+  return s;
+ }
+ function commonWorkSlots(state,date,{startHour=9,endHour=18,stepMinutes=30}={}){
+  const s=normalizeState(state);
+  const day=parseDateTime(date,"12:00");
+  if(!Number.isInteger(startHour)||!Number.isInteger(endHour)||
+   startHour<0||endHour>24||startHour>=endHour)throw Error("Рабочее окно: целые часы от 0 до 24, начало раньше конца.");
+  if(![15,30,60].includes(stepMinutes))throw Error("Шаг: 15, 30 или 60 минут.");
+  const all=[s.home,...s.extras],slots=[];
+  for(let minute=startHour*60;minute<endHour*60;minute+=stepMinutes){
+   const label=String(Math.floor(minute/60)).padStart(2,"0")+":"+String(minute%60).padStart(2,"0");
+   const result=resolveWallTime(date,label,s.home.zone);
+   for(const candidate of result.candidates){
+    const local=all.map(city=>{
+     const p=partsAt(candidate.ms,city.zone);
+     const minutes=p.hour*60+p.minute;
+     return {name:city.name,zone:city.zone,date:String(p.year).padStart(4,"0")+"-"+
+      String(p.month).padStart(2,"0")+"-"+String(p.day).padStart(2,"0"),
+      time:String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0"),
+      withinHours:minutes>=startHour*60 && minutes<endHour*60};
+    });
+    if(local.every(x=>x.withinHours))
+     slots.push({utcISO:candidate.iso,homeTime:label,homeOffset:candidate.offsetLabel,
+      local});
+   }
+  }
+  return {date,startHour,endHour,stepMinutes,cityCount:all.length,slots};
+ }
+ function searchPresets(query,limit=40){
+  const q=norm(query);
+  if(!q)return presetCities.slice(0,limit);
+  return presetCities.filter(c=>norm(c.name+" "+c.country).includes(q)).slice(0,limit);
+ }
+ return Object.freeze({VERSION,KEY,MAX_CITIES,presetCities,validateZone,snapshot,offsetSeconds,
+  offsetLabel,differenceLabel,parseDateTime,resolveWallTime,normalizeCity,defaultState,
+  normalizeState,addCity,removeCity,moveCity,searchPresets,suggestZone,commonWorkSlots});
+});
+</script>
+<script>
+/* CRM · Client Time Desk v1.0 — calendar age, world clocks, working-day & client call deadlines.
+ * Deterministic calculations; no API, no background notifications or automated dialing.
+ * Depends on WorldClockEngine v1.1+ (IANA zones + DST wall-clock resolver).
+ */
+(function(root,factory){"use strict";const api=factory();if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.ClientTimeDesk=api;})(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
+"use strict";
+const VERSION="1.0.0",KEY="crm.client-time-desk.v1",MAX_REMINDERS=150,MAX_STATUSES=40;
+const COLORS=Object.freeze(["gray","amber","blue","green","red","violet"]);
+const STATUSES=Object.freeze([
+ {id:"waiting",name:"Ожидает",color:"gray",final:false},
+ {id:"call",name:"Позвонить",color:"amber",final:false},
+ {id:"connected",name:"Связался",color:"blue",final:false},
+ {id:"callback",name:"Перезвонить",color:"violet",final:false},
+ {id:"done",name:"Завершено",color:"green",final:true},
+ {id:"cancelled",name:"Отменено",color:"red",final:true}
+]);
+function fail(msg){throw Error(msg)}
+function asDate(value,label="Дата"){
+ if(typeof value!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(value))fail(label+": формат ГГГГ-ММ-ДД.");
+ const [y,m,d]=value.split("-").map(Number);
+ if(y<1900||y>2100)fail(label+": допустимые годы 1900–2100.");
+ const dt=new Date(Date.UTC(y,m-1,d));
+ if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)fail(label+": такого дня не существует.");
+ return {y,m,d,ms:dt.getTime()};
+}
+function clampMonthDay(y,m,d){return Math.min(d,new Date(Date.UTC(y,m,0)).getUTCDate());}
+function ageAt(birthDate,nowDate){
+ const b=asDate(birthDate,"Дата рождения"),t=asDate(nowDate,"Текущая дата");
+ if(b.ms>t.ms)fail("Дата рождения позже текущей даты.");
+ let months=(t.y-b.y)*12+t.m-b.m;
+ function anchor(n){const all=b.y*12+(b.m-1)+n,y=Math.floor(all/12),m=all%12+1;return Date.UTC(y,m-1,clampMonthDay(y,m,b.d))}
+ if(anchor(months)>t.ms)months--;
+ return {years:Math.floor(months/12),months:months%12,days:Math.round((t.ms-anchor(months))/86400000),
+  fullDays:Math.round((t.ms-b.ms)/86400000),asOf:nowDate,rule:"День рождения 29 февраля в невисокосном году отмечается 28 февраля."};
+}
+function validClock(input){if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(input||"")))fail("Используйте время ЧЧ:ММ.");return input;}
+function clockMinutes(time){const [h,m]=validClock(time).split(":").map(Number);return h*60+m;}
+function validWorkday(work){
+ const start=validClock(work?.start),end=validClock(work?.end),mode=work?.mode;
+ if(clockMinutes(start)>=clockMinutes(end))fail("Начало рабочего дня должно быть раньше конца; ночные смены пока не поддерживаются.");
+ if(!["start","end"].includes(mode))fail("Выберите отсчёт до начала либо до конца.");
+ return {start,end,mode};
+}
+function localISO(now,zone,W){const p=W.snapshot(zone,new Date(now)).parts;return String(p.year).padStart(4,"0")+"-"+String(p.month).padStart(2,"0")+"-"+String(p.day).padStart(2,"0")}
+function localClock(now,zone,W){const p=W.snapshot(zone,new Date(now)).parts;return String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0")}
+function addDaysISO(iso,n){const d=asDate(iso);return new Date(d.ms+n*86400000).toISOString().slice(0,10)}
+function nextWallOccurrence(now,zone,time,W){
+ validClock(time);W.validateZone(zone);
+ const start=localISO(now,zone,W);
+ for(let n=0;n<5;n++){
+  const iso=addDaysISO(start,n),result=W.resolveWallTime(iso,time,zone);
+  if(result.status==="gap")continue; // DST spring gap: next valid calendar occurrence, no fabricated instant
+  const options=result.candidates.filter(c=>c.ms>=now);
+  if(options.length)return {ms:options[0].ms,localDate:iso,localTime:time,zone,fold:result.status==="fold",skippedGapDays:n};
+ }
+ fail("Не удалось найти действительное местное время для рабочего дня.");
+}
+function workdayView(now,work,zone,W){
+ const w=validWorkday(work),p=W.snapshot(zone,new Date(now)).parts;
+ const time=p.hour*60+p.minute,phase=time<clockMinutes(w.start)?"before":time<clockMinutes(w.end)?"during":"after";
+ const target=nextWallOccurrence(now,zone,w[w.mode],W);
+ return {mode:w.mode,phase,target,remainingMs:Math.max(0,target.ms-now),zone,nowLocal:localISO(now,zone,W)+" "+localClock(now,zone,W)};
+}
+function cleanStatus(raw){
+ if(!raw||typeof raw!=="object")fail("Статус не задан.");
+ const id=String(raw.id||"").trim(),name=String(raw.name||"").trim();
+ if(!/^[a-zA-Z0-9_-]{1,70}$/.test(id))fail("Некорректный ID статуса.");
+ if(name.length<1||name.length>55)fail("Название статуса: 1–55 символов.");
+ if(!COLORS.includes(raw.color))fail("Неизвестный цвет статуса.");
+ return {id,name,color:raw.color,final:raw.final===true};
+}
+function cleanReminder(raw,ids,W){
+ if(!raw||typeof raw!=="object")fail("Неверная запись клиента.");
+ const id=String(raw.id||""),title=String(raw.title||"").trim(),city=String(raw.city||"").trim(),note=String(raw.note||"").trim(),phone=String(raw.phone||"").trim(),statusId=String(raw.statusId||"");
+ if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))fail("Некорректный идентификатор таймера.");
+ if(!title||title.length>120)fail("Название таймера: 1–120 символов.");
+ if(!city||city.length>100)fail("Город клиента: 1–100 символов.");
+ if(note.length>400)fail("Комментарий слишком длинный.");
+ if(phone.length>32||!/^[+0-9() .-]*$/.test(phone))fail("Телефон: только цифры, пробелы, +, скобки и дефисы (до 32 символов).");
+ const zone=W.validateZone(raw.zone);
+ if(!ids.has(statusId))fail("Таймер ссылается на неизвестный статус.");
+ const dueAt=Number(raw.dueAt);
+ if(!Number.isSafeInteger(dueAt)||dueAt<Date.UTC(1900,0,1)||dueAt>Date.UTC(2100,11,31,23,59,59))fail("Некорректная дата звонка.");
+ function optStamp(value){if(value===null||value===undefined)return null;const n=Number(value);if(!Number.isSafeInteger(n)||n<0||n>8.64e15)fail("Некорректная временная метка.");return n}
+ return {id,title,city,zone,note,phone,dueAt,statusId,
+  createdAt:optStamp(raw.createdAt),updatedAt:optStamp(raw.updatedAt),
+  completedAt:optStamp(raw.completedAt),notifiedAt:optStamp(raw.notifiedAt)};
+}
+function create(W){
+ if(!W?.defaultState||!W?.resolveWallTime)fail("Недоступно ядро мировых часов.");
+ return {schema:"crm-client-time-desk",version:1,world:W.defaultState(),
+  birthDate:"",work:{start:"09:00",end:"18:00",mode:"end"},
+  statuses:STATUSES.map(x=>({...x})),reminders:[]};
+}
+function normalize(input,W){
+ if(!input||input.schema!=="crm-client-time-desk"||input.version!==1)fail("Неподдерживаемый формат файла.");
+ const world=W.normalizeState(input.world),birthDate=input.birthDate?(asDate(input.birthDate,"Дата рождения"),input.birthDate):"";
+ const work=validWorkday(input.work);
+ if(!Array.isArray(input.statuses)||!input.statuses.length||input.statuses.length>MAX_STATUSES)fail("Нужно от 1 до 40 статусов.");
+ const statuses=input.statuses.map(cleanStatus),ids=new Set();
+ for(const s of statuses){if(ids.has(s.id))fail("Повтор ID статуса.");ids.add(s.id)}
+ if(!Array.isArray(input.reminders)||input.reminders.length>MAX_REMINDERS)fail("Можно добавить не более 150 таймеров.");
+ const reminders=input.reminders.map(r=>cleanReminder(r,ids,W)),rIds=new Set();
+ for(const r of reminders){if(rIds.has(r.id))fail("Повтор ID таймера.");rIds.add(r.id)}
+ return {schema:"crm-client-time-desk",version:1,world,birthDate,work,statuses,reminders};
+}
+function addStatus(state,W,status){
+ const s=normalize(state,W);
+ if(s.statuses.length>=MAX_STATUSES)fail("Достигнут лимит статусов.");
+ const x=cleanStatus(status);
+ if(s.statuses.some(v=>v.id===x.id))fail("Этот ID статуса уже существует.");
+ s.statuses.push(x);return s;
+}
+function updateStatus(state,W,id,change){
+ const s=normalize(state,W),ix=s.statuses.findIndex(x=>x.id===id);
+ if(ix<0)fail("Статус не найден.");
+ const upd=cleanStatus({...s.statuses[ix],...change,id});
+ s.statuses[ix]=upd;
+ if(upd.final)for(const r of s.reminders.filter(x=>x.statusId===id))r.completedAt=r.completedAt??Date.now();
+ else for(const r of s.reminders.filter(x=>x.statusId===id))r.completedAt=null;
+ return s;
+}
+function removeStatus(state,W,id){
+ const s=normalize(state,W);
+ if(s.statuses.some(v=>v.id===id)&&s.reminders.some(v=>v.statusId===id))fail("Статус используется таймерами. Сначала измените их статус.");
+ if(s.statuses.length===1)fail("Нельзя удалить последний статус.");
+ s.statuses=s.statuses.filter(x=>x.id!==id);return s;
+}
+function addReminder(state,W,record){
+ const s=normalize(state,W);
+ if(s.reminders.length>=MAX_REMINDERS)fail("Достигнут предел в 150 таймеров.");
+ const r=cleanReminder(record,new Set(s.statuses.map(x=>x.id)),W);
+ if(s.reminders.some(x=>x.id===r.id))fail("Таймер с таким ID уже существует.");
+ if(s.statuses.find(x=>x.id===r.statusId)?.final)r.completedAt=r.completedAt??Date.now();
+ s.reminders.push(r);return s;
+}
+function editReminder(state,W,id,change){
+ const s=normalize(state,W),ix=s.reminders.findIndex(x=>x.id===id);
+ if(ix<0)fail("Таймер не найден.");
+ const old=s.reminders[ix],updated=cleanReminder({...old,...change,id},new Set(s.statuses.map(x=>x.id)),W);
+ if(updated.dueAt!==old.dueAt){updated.notifiedAt=null;updated.completedAt=null;}
+ if(s.statuses.find(x=>x.id===updated.statusId)?.final)updated.completedAt=updated.completedAt??Date.now();
+ else updated.completedAt=null;
+ s.reminders[ix]=updated;return s;
+}
+function setStatus(state,W,id,statusId,now=Date.now()){
+ const s=normalize(state,W),r=s.reminders.find(x=>x.id===id),status=s.statuses.find(x=>x.id===statusId);
+ if(!r||!status)fail("Не найден таймер или статус.");
+ r.statusId=statusId;r.updatedAt=now;
+ r.completedAt=status.final?now:null;
+ return s;
+}
+function removeReminder(state,W,id){const s=normalize(state,W);s.reminders=s.reminders.filter(x=>x.id!==id);return s;}
+function formatRemaining(ms){
+ const seconds=Math.ceil(Math.max(0,ms)/1000),d=Math.floor(seconds/86400),h=Math.floor(seconds%86400/3600),m=Math.floor(seconds%3600/60),s=seconds%60;
+ return (d?d+" д ":"")+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function view(state,now,W){
+ const s=normalize(state,W);
+ const clocks=[s.world.home,...s.world.extras].map(c=>({...c,local:W.snapshot(c.zone,new Date(now),s.world.home.zone)}));
+ const date=localISO(now,s.world.home.zone,W),age=s.birthDate?ageAt(s.birthDate,date):null;
+ const work=workdayView(now,s.work,s.world.home.zone,W);
+ const statuses=new Map(s.statuses.map(x=>[x.id,x]));
+ const reminders=s.reminders.map(r=>{
+  const status=statuses.get(r.statusId),remainingMs=r.dueAt-now;
+  const stateName=status.final?"finished":remainingMs<=0?"overdue":remainingMs<=15*60000?"soon":"waiting";
+  return {...r,status,stateName,remainingMs,local:W.snapshot(r.zone,new Date(r.dueAt)),
+   homeTime:W.snapshot(s.world.home.zone,new Date(r.dueAt))};
+ }).sort((a,b)=> (a.stateName==="finished")-(b.stateName==="finished") || a.dueAt-b.dueAt);
+ return {world:clocks,age,work,reminders,counts:{
+  total:reminders.length,active:reminders.filter(x=>x.stateName!=="finished").length,
+  overdue:reminders.filter(x=>x.stateName==="overdue").length,
+  finished:reminders.filter(x=>x.stateName==="finished").length
+ }};
+}
+function dueNotifications(state,now,W){
+ const s=normalize(state,W),byStatus=new Map(s.statuses.map(x=>[x.id,x]));
+ const items=s.reminders.filter(r=>r.dueAt<=now&&!byStatus.get(r.statusId).final&&r.notifiedAt===null);
+ return items.map(x=>({id:x.id,title:x.title,city:x.city,dueAt:x.dueAt}));
+}
+function markNotified(state,W,ids,now=Date.now()){
+ const s=normalize(state,W),set=new Set(ids);
+ for(const r of s.reminders)if(set.has(r.id))r.notifiedAt=now;
+ return s;
+}
+function toCsv(state,W){
+ const s=normalize(state,W),status=new Map(s.statuses.map(x=>[x.id,x.name]));
+ const rows=[["Название","Город","Часовой пояс","Телефон","Дата звонка UTC","Статус","Комментарий","Завершено UTC"],
+ ...s.reminders.map(r=>[r.title,r.city,r.zone,r.phone,new Date(r.dueAt).toISOString(),status.get(r.statusId),r.note,r.completedAt===null?"":new Date(r.completedAt).toISOString()])];
+ function cell(x){let str=String(x??"");if(/^[\s]*[=+\-@]/.test(str))str="'"+str;return '"'+str.replace(/"/g,'""')+'"'}
+ return "\ufeff"+rows.map(a=>a.map(cell).join(";")).join("\r\n");
+}
+return Object.freeze({VERSION,KEY,MAX_REMINDERS,MAX_STATUSES,COLORS,STATUSES,asDate,ageAt,validClock,clockMinutes,validWorkday,localISO,localClock,nextWallOccurrence,workdayView,create,normalize,addStatus,updateStatus,removeStatus,addReminder,editReminder,setStatus,removeReminder,formatRemaining,view,dueNotifications,markNotified,toCsv});
+});
+</script>
+<script>
+(function(){"use strict";
+const W=window.WorldClockEngine,M=window.ClientTimeDesk,$=id=>document.getElementById(id);
+const dom=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;};
+const pad=x=>String(x).padStart(2,"0"),relative=(ms)=>M.formatRemaining(ms),fmtDate=x=>x?.replace(/^(.{4})-(..)-(..)$/,(_,y,m,d)=>d+"."+m+"."+y)||"";
+let data=M.create(W),filter="active",editId=null,lastAgeDate="",previousKinds=new Map(),audioCtx=null;
+let currentPreview=null,nowStoreCounter=0;
+const signal=(id,msg,err=false)=>{const e=$(id);e.textContent=msg;e.className="status"+(err?" error":"");};
+const uniqueId=(prefix)=>prefix+"-"+Date.now().toString(36)+"-"+(++nowStoreCounter).toString(36);
+const localMoment=(zone,ms=Date.now())=>W.snapshot(zone,new Date(ms)).parts;
+function safeStore(){
+ try{if($("remember").checked)localStorage.setItem(M.KEY,JSON.stringify(data));
+ else localStorage.removeItem(M.KEY);}
+ catch(e){signal("storage-message","Не удалось сохранить настройки в браузере.",true);}
+}
+try{const raw=localStorage.getItem(M.KEY);if(raw){data=M.normalize(JSON.parse(raw),W);$("remember").checked=true;}}
+catch(e){signal("storage-message","Не удалось прочитать ранее сохранённые данные. Создана новая пустая панель.",true);}
+function generatePresets(select,blankText){
+ select.replaceChildren();
+ if(blankText){const x=dom("option","",blankText);x.value="";select.appendChild(x);}
+ for(const c of W.presetCities){const o=dom("option","",c.name+" · "+c.country);o.value=c.id;select.appendChild(o);}
+}
+function zoneDefaults(){
+ try{const zones=typeof Intl.supportedValuesOf==="function"?Intl.supportedValuesOf("timeZone"):W.presetCities.map(x=>x.zone);
+  for(const zone of [...new Set(zones)]){const o=dom("option");o.value=zone;$("zone-options").appendChild(o);}
+ }catch(e){}
+}
+function refreshClocks(){
+ const root=$("clocks");root.replaceChildren();
+ const cities=[data.world.home,...data.world.extras],now=Date.now();
+ cities.forEach((c,i)=>{
+  const d=dom("div","clock-card"+(i===0?" home":""));
+  d.id="clock-"+i;
+  d.append(dom("div","place",c.name+(i===0?" · основной":"")));
+  d.append(dom("div","clock-text time"));
+  const time=d.lastElementChild;time.textContent=W.snapshot(c.zone,new Date(now)).clock;time.id="city-time-"+i;
+  const hint=dom("div","hint",c.zone);d.append(hint);
+  if(i!==0){
+   const row=dom("div","actions"),make=dom("button","","Основной"),del=dom("button","danger","Убрать");
+   make.type=del.type="button";
+   make.addEventListener("click",()=>{
+    data.world=W.addCity(data.world,c,true);safeStore();renderAll();
+   });
+   del.addEventListener("click",()=>{data.world=W.removeCity(data.world,c.id);safeStore();renderAll();});
+   row.append(make,del);d.append(row);
+  }
+  root.appendChild(d);
+ });
+ const selection=$("choose-city");selection.replaceChildren();
+ const prompt=dom("option","","Добавить из списка…");prompt.value="";selection.appendChild(prompt);
+ for(const city of W.presetCities){
+  if(cities.some(c=>c.id===city.id))continue;
+  const o=dom("option","",city.name+" · "+city.country);o.value=city.id;selection.appendChild(o);
+ }
+ selection.value="";
+}
+function addCustomCity(){
+ try{
+  const name=$("city-name").value.trim(),zone=W.validateZone($("city-zone").value.trim());
+  if(!name||name.length>100)throw Error("Укажите название города до 100 символов.");
+  const id="custom:"+name.toLowerCase()+":"+zone;
+  data.world=W.addCity(data.world,{id,name,country:"Другой город",zone,confidence:"confirmed"});safeStore();
+  $("city-custom").hidden=true;signal("city-message","Город добавлен.");renderAll();
+ }catch(e){signal("city-message",e.message,true);}
+}
+function refreshClocksText(){
+ const now=new Date();
+ [data.world.home,...data.world.extras].forEach((c,i)=>{
+  const e=$("city-time-"+i);
+  if(e)e.textContent=W.snapshot(c.zone,now).clock;
+ });
+}
+function renderAge(){
+ const birth=data.birthDate,home=data.world.home.zone;
+ if(!birth){$("age-years").textContent="—";$("age-details").textContent="Введите дату рождения.";return;}
+ try{
+  const age=M.ageAt(birth,M.localISO(Date.now(),home,W));
+  $("age-years").textContent=age.years+" лет";
+  $("age-details").textContent=age.months+" мес · "+age.days+" дн · "+
+   age.fullDays.toLocaleString("ru-RU")+" полных календарных дней";
+  signal("age-message","");
+ }catch(e){$("age-years").textContent="—";$("age-details").textContent=e.message;signal("age-message",e.message,true);}
+}
+function renderWork(){
+ try{
+  const w=M.workdayView(Date.now(),data.work,data.world.home.zone,W);
+  $("work-countdown").textContent=relative(w.remainingMs);
+  const labels={before:"До начала работы",during:"Рабочий день идёт",after:"Рабочий день закончился"};
+  $("work-phase").textContent=labels[w.phase];
+  $("work-target").textContent=(w.mode==="start"?"Следующее начало":"Следующее окончание")+
+   ": "+fmtDate(w.target.localDate)+" "+w.target.localTime+" · "+data.world.home.name;
+  const elapsed=Math.max(0,Math.min(1,(M.clockMinutes(data.work.end)-M.clockMinutes(data.work.start))>0?
+   ((localMoment(data.world.home.zone).hour*60+localMoment(data.world.home.zone).minute)-M.clockMinutes(data.work.start))/
+   (M.clockMinutes(data.work.end)-M.clockMinutes(data.work.start)):0));
+  $("work-progress-fill").style.width=(elapsed*100).toFixed(2)+"%";
+ }catch(e){$("work-countdown").textContent="—";signal("work-message",e.message,true);}
+}
+function renderCounts(){
+ const now=Date.now(),finished=data.reminders.filter(r=>data.statuses.some(st=>st.id===r.statusId&&st.final)).length;
+ const overdue=data.reminders.filter(r=>r.dueAt<=now&&!data.statuses.some(st=>st.id===r.statusId&&st.final)).length;
+ $("count-all").textContent=String(data.reminders.length);
+ $("count-active").textContent=String(data.reminders.length-finished);
+ $("count-overdue").textContent=String(overdue);
+ $("count-finished").textContent=String(finished);
+}
+function statusOptions(select,selected){
+ select.replaceChildren();
+ for(const s of data.statuses){const o=dom("option","",s.name);o.value=s.id;select.appendChild(o)}
+ if(selected)select.value=selected;
+}
+function statusLabel(s){return dom("span","pill "+s.color,s.name)}
+function reminderClass(r,now){
+ const st=data.statuses.find(s=>s.id===r.statusId);
+ return st?.final?"finished":r.dueAt<=now?"overdue":r.dueAt-now<=15*60000?"soon":"waiting";
+}
+function cardClass(status){return "timer-card "+status;}
+function reminderLine(r,now){
+ const status=data.statuses.find(s=>s.id===r.statusId),kind=reminderClass(r,now);
+ const root=dom("article",cardClass(kind));root.id="call-"+r.id;
+ const head=dom("div","timer-title");
+ const label=dom("strong","",r.title),chip=statusLabel(status);
+ head.append(label,chip);root.appendChild(head);
+ const countdown=dom("div","timer-count"+(kind==="overdue"?" overdue":""));
+ countdown.id="remaining-"+r.id;root.appendChild(countdown);
+ const local=W.snapshot(r.zone,new Date(r.dueAt)),home=W.snapshot(data.world.home.zone,new Date(r.dueAt));
+ const timeInfo=dom("div","timer-meta");
+ timeInfo.append(dom("span","",r.city+" · "+local.day+" · "+local.clock.slice(0,5)),
+   dom("span","","По "+data.world.home.name+": "+home.day+" · "+home.clock.slice(0,5)));
+ root.append(timeInfo);
+ if(r.note)root.append(dom("div","timer-note",r.note));
+ const controls=dom("div","timer-row"),select=dom("select");
+ select.setAttribute("aria-label","Статус таймера "+r.title);
+ statusOptions(select,r.statusId);
+ select.addEventListener("change",()=>{
+  try{data=M.setStatus(data,W,r.id,select.value,Date.now());safeStore();renderReminders();renderCounts();}
+  catch(e){signal("storage-message",e.message,true);}
+ });
+ const buttons=dom("div","actions");
+ const edit=dom("button","","Изменить");edit.type="button";edit.addEventListener("click",()=>openEdit(r.id));
+ const remove=dom("button","danger","Удалить");remove.type="button";
+ remove.addEventListener("click",()=>{if(!window.confirm("Удалить таймер «"+r.title+"»?"))return;
+  data=M.removeReminder(data,W,r.id);safeStore();renderReminders();renderCounts();});
+ buttons.append(edit);
+ if(r.phone){
+  const link=dom("a","", "Позвонить");
+  link.href="tel:"+r.phone.replace(/[^0-9+]/g,"");
+  link.style.display="inline-flex";link.style.alignItems="center";link.style.padding="8px 12px";
+  buttons.append(link);
+ }
+ buttons.append(remove);controls.append(select,buttons);root.appendChild(controls);
+ return root;
+}
+function renderReminders(){
+ const v=M.view(data,Date.now(),W);
+ const root=$("timer-list");root.replaceChildren();
+ let reminders=v.reminders;
+ if(filter==="active")reminders=reminders.filter(x=>x.stateName!=="finished");
+ if(filter==="overdue")reminders=reminders.filter(x=>x.stateName==="overdue");
+ if(filter==="finished")reminders=reminders.filter(x=>x.stateName==="finished");
+ for(const r of reminders)root.appendChild(reminderLine(r,Date.now()));
+ if(!reminders.length)root.append(dom("p","muted",filter==="overdue"?"Просроченных звонков нет.":"В этой категории пока нет таймеров."));
+ previousKinds=new Map(data.reminders.map(r=>[r.id,reminderClass(r,Date.now())]));
+ renderCounts();
+}
+function refreshReminders(){
+ const now=Date.now();let needsRender=false;
+ for(const r of data.reminders){
+  const kind=reminderClass(r,now);
+  if(previousKinds.get(r.id)!==kind){needsRender=true;break;}
+  const count=$("remaining-"+r.id);
+  if(count){const st=data.statuses.find(s=>s.id===r.statusId);
+   count.textContent=st?.final?"Результат зафиксирован":r.dueAt>now?relative(r.dueAt-now):
+    "Срок прошёл: "+relative(now-r.dueAt);
+   count.className="timer-count"+(kind==="overdue"?" overdue":"");
+  }
+ }
+ if(needsRender){renderReminders();refreshReminders();return;}
+ renderCounts();
+}
+function renderStatusPanel(){
+ const box=$("status-list");box.replaceChildren();
+ data.statuses.forEach(s=>{
+  const card=dom("div","status-record"),chip=statusLabel(s);
+  card.append(chip);
+  const input=dom("input");input.value=s.name;input.maxLength=55;input.setAttribute("aria-label","Название статуса "+s.name);
+  const label=dom("label","","Название");card.append(label,input);
+  const sel=dom("select");
+  for(const color of M.COLORS){const opt=dom("option","",({gray:"Серый",amber:"Жёлтый",blue:"Синий",green:"Зелёный",red:"Красный",violet:"Фиолетовый"})[color]);opt.value=color;sel.appendChild(opt);}
+  sel.value=s.color;const colorLabel=dom("label","","Цвет");card.append(colorLabel,sel);
+  const line=dom("div","check");
+  const cb=dom("input");cb.type="checkbox";cb.checked=s.final;cb.id="final-"+s.id;
+  const cLabel=dom("label","","Закрывает звонок");cLabel.htmlFor=cb.id;line.append(cb,cLabel);card.append(line);
+  const actions=dom("div","actions");
+  const save=dom("button","primary","Сохранить"),del=dom("button","danger","Удалить");save.type=del.type="button";
+  save.addEventListener("click",()=>{
+   try{data=M.updateStatus(data,W,s.id,{name:input.value,color:sel.value,final:cb.checked});safeStore();renderStatusPanel();renderReminders();signal("status-message","Статус обновлён.");}
+   catch(e){signal("status-message",e.message,true);}
+  });
+  del.addEventListener("click",()=>{
+   if(!window.confirm("Удалить статус «"+s.name+"»?"))return;
+   try{data=M.removeStatus(data,W,s.id);safeStore();renderStatusPanel();renderReminders();signal("status-message","Статус удалён.");}
+   catch(e){signal("status-message",e.message,true);}
+  });
+  actions.append(save,del);card.append(actions);box.append(card);
+ });
+ statusOptions($("client-status"),$("client-status").value||"waiting");
+}
+function resetForm(){
+ editId=null;$("form-heading").textContent="Новый таймер звонка";$("save-call").textContent="Сохранить таймер";
+ $("call-form").reset();$("client-phone").value="";$("client-note").value="";
+ $("client-status").value=data.statuses.some(s=>s.id==="waiting")?"waiting":data.statuses[0].id;
+ let initial=data.world.home;
+ const p=localMoment(initial.zone,Date.now()+3600000);
+ $("client-city").value=initial.name;$("client-zone").value=initial.zone;
+ $("client-date").value=String(p.year).padStart(4,"0")+"-"+pad(p.month)+"-"+pad(p.day);
+ $("client-time").value=pad(p.hour)+":"+pad(p.minute);
+ $("client-preset").value=initial.id;updateCallPreview();
+}
+function openEdit(id=null){
+ resetForm();
+ if(id){
+  const r=data.reminders.find(x=>x.id===id);if(!r)return;
+  editId=id;$("form-heading").textContent="Изменить таймер звонка";$("save-call").textContent="Сохранить изменения";
+  $("client-title").value=r.title;$("client-phone").value=r.phone;
+  $("client-city").value=r.city;$("client-zone").value=r.zone;
+  $("client-note").value=r.note;$("client-status").value=r.statusId;
+  const p=localMoment(r.zone,r.dueAt);
+  $("client-date").value=String(p.year).padStart(4,"0")+"-"+pad(p.month)+"-"+pad(p.day);
+  $("client-time").value=pad(p.hour)+":"+pad(p.minute);
+  const preset=W.presetCities.find(x=>x.name===r.city&&x.zone===r.zone);
+  $("client-preset").value=preset?.id||"";
+  updateCallPreview();
+  if(currentPreview?.status==="fold"){const idx=currentPreview.candidates.findIndex(x=>x.ms===r.dueAt);if(idx>=0)$("client-fold").value=String(idx);}
+ }
+ $("edit-form").hidden=false;$("edit-form").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function updateCallPreview(){
+ currentPreview=null;$("client-fold-box").hidden=true;
+ const date=$("client-date").value,time=$("client-time").value,zone=$("client-zone").value.trim();
+ if(!date||!time||!zone){signal("call-preview","Укажите дату, время и часовую зону.");return;}
+ try{
+  const r=W.resolveWallTime(date,time,zone);
+  currentPreview=r;
+  if(r.status==="gap"){signal("call-preview","Этого местного времени не было из-за перевода часов. Выберите другое.",true);return;}
+  if(r.status==="fold"){
+   const sel=$("client-fold");sel.replaceChildren();
+   const empty=dom("option","","Выберите первый либо второй момент");empty.value="";sel.appendChild(empty);
+   r.candidates.forEach((c,i)=>{const o=dom("option","",(i===0?"Первый":"Второй")+" · "+c.offsetLabel+" · "+c.iso);o.value=String(i);sel.appendChild(o);});
+   sel.value="";$("client-fold-box").hidden=false;
+   signal("call-preview","Время при переводе часов повторилось — требуется выбрать конкретный вариант.");return;
+  }
+  const target=r.candidates[0],home=W.snapshot(data.world.home.zone,new Date(target.ms));
+  signal("call-preview","В основном городе: "+home.day+" · "+home.clock.slice(0,5)+" · "+home.offsetLabel);
+ }catch(e){signal("call-preview",e.message,true);}
+}
+function saveCall(e){
+ e.preventDefault();
+ try{
+  if(!currentPreview||currentPreview.status==="gap")throw Error("Исправьте дату и часовой пояс клиента.");
+  let chosen=currentPreview.candidates[0];
+  if(currentPreview.status==="fold"){
+   const i=$("client-fold").value;if(i==="")throw Error("Выберите первый или второй момент повторяющегося часа.");
+   chosen=currentPreview.candidates[Number(i)];
+   if(!chosen)throw Error("Некорректный вариант времени.");
+  }
+  const rec={title:$("client-title").value,phone:$("client-phone").value,city:$("client-city").value,
+   zone:$("client-zone").value.trim(),dueAt:chosen.ms,note:$("client-note").value,statusId:$("client-status").value,updatedAt:Date.now()};
+  if(editId)data=M.editReminder(data,W,editId,rec);
+  else data=M.addReminder(data,W,{...rec,id:uniqueId("call"),createdAt:Date.now(),completedAt:null,notifiedAt:null});
+  safeStore();$("edit-form").hidden=true;renderReminders();signal("storage-message","Таймер звонка сохранён.");
+ }catch(err){signal("call-preview",err.message,true);}
+}
+function soundAlert(){
+ if(!$("sound").checked)return;
+ try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
+  audioCtx=audioCtx||new A();if(audioCtx.state==="suspended")audioCtx.resume();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=720;g.gain.value=.065;
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.18);
+ }catch(e){}
+}
+function checkNotifications(){
+ const now=Date.now(),due=M.dueNotifications(data,now,W);
+ if(!due.length||document.visibilityState==="hidden")return;
+ // Combine simultaneous overdue calls: one browser notification, never a barrage.
+ if(window.Notification&&window.Notification.permission==="granted"){
+  try{new window.Notification("Звонки: наступил срок",{
+   body:due.length===1?due[0].title+" · "+due[0].city:
+    due.slice(0,3).map(r=>r.title).join(", ")+(due.length>3?" и ещё "+(due.length-3):""),
+   tag:"crm-client-time-desk"
+  });}catch(e){}
+ }
+ soundAlert();
+ data=M.markNotified(data,W,due.map(x=>x.id),now);
+ safeStore();
+}
+function download(filename,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=dom("a");a.href=url;a.download=filename;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function renderAll(){refreshClocks();lastAgeDate="";renderAge();renderWork();renderStatusPanel();renderReminders();tick();}
+function tick(){
+ refreshClocksText();
+ const local=M.localISO(Date.now(),data.world.home.zone,W);
+ if(local!==lastAgeDate){lastAgeDate=local;renderAge();}
+ renderWork();refreshReminders();checkNotifications();
+}
+function start(){
+ zoneDefaults();generatePresets($("client-preset"),"Своя зона / вручную");
+ const colors={gray:"Серый",amber:"Жёлтый",blue:"Синий",green:"Зелёный",red:"Красный",violet:"Фиолетовый"};
+ for(const c of M.COLORS){const o=dom("option","",colors[c]);o.value=c;$("status-color").appendChild(o);}
+ $("birth-date").value=data.birthDate;
+ $("work-start").value=data.work.start;$("work-end").value=data.work.end;$("work-mode").value=data.work.mode;
+ $("choose-city").addEventListener("change",()=>{
+  const c=W.presetCities.find(c=>c.id===$("choose-city").value);if(!c)return;
+  try{data.world=W.addCity(data.world,c);safeStore();renderAll();signal("city-message","Город добавлен.")}
+  catch(e){signal("city-message",e.message,true);}
+ });
+ $("custom-open").addEventListener("click",()=>{$("city-custom").hidden=false;});
+ $("city-cancel").addEventListener("click",()=>{$("city-custom").hidden=true;});
+ $("city-add").addEventListener("click",addCustomCity);
+ $("birth-date").addEventListener("change",()=>{
+  const value=$("birth-date").value;
+  try{if(value)M.ageAt(value,M.localISO(Date.now(),data.world.home.zone,W));
+   data.birthDate=value;safeStore();renderAge();}
+  catch(e){signal("age-message",e.message,true);}
+ });
+ for(const id of ["work-start","work-end","work-mode"])$(id).addEventListener("change",()=>{
+  try{
+   const settings=M.validWorkday({start:$("work-start").value,end:$("work-end").value,mode:$("work-mode").value});
+   data.work=settings;safeStore();signal("work-message","");renderWork();
+  }catch(e){signal("work-message",e.message,true);}
+ });
+ for(const btn of document.querySelectorAll("[data-filter]"))btn.addEventListener("click",()=>{
+  filter=btn.dataset.filter;
+  for(const b of document.querySelectorAll("[data-filter]"))b.setAttribute("aria-pressed",String(b===btn));
+  renderReminders();
+ });
+ $("new-call").addEventListener("click",()=>openEdit());
+ $("form-close").addEventListener("click",()=>{$("edit-form").hidden=true;});
+ $("form-cancel").addEventListener("click",()=>{$("edit-form").hidden=true;});
+ $("client-preset").addEventListener("change",()=>{
+  const c=W.presetCities.find(x=>x.id===$("client-preset").value);
+  if(c){$("client-city").value=c.name;$("client-zone").value=c.zone;}
+  updateCallPreview();
+ });
+ for(const id of ["client-city","client-zone","client-date","client-time"])
+  $(id).addEventListener("change",updateCallPreview);
+ $("client-fold").addEventListener("change",()=>{
+  if(currentPreview?.status!=="fold")return;
+  const choice=currentPreview.candidates[Number($("client-fold").value)];
+  if(!choice||$("client-fold").value==="")return;
+  const home=W.snapshot(data.world.home.zone,new Date(choice.ms));
+  signal("call-preview","В основном городе: "+home.day+" · "+home.clock.slice(0,5)+" · "+home.offsetLabel);
+ });
+ $("call-form").addEventListener("submit",saveCall);
+ $("add-status-open").addEventListener("click",()=>{$("status-add").hidden=false;});
+ $("status-add-cancel").addEventListener("click",()=>{$("status-add").hidden=true;});
+ $("status-create").addEventListener("click",()=>{
+  try{data=M.addStatus(data,W,{id:uniqueId("status"),name:$("status-name").value,
+   color:$("status-color").value,final:$("status-final").checked});safeStore();
+   $("status-name").value="";$("status-final").checked=false;$("status-add").hidden=true;
+   renderStatusPanel();renderReminders();signal("status-message","Новый статус добавлен.");
+  }catch(e){signal("status-message",e.message,true);}
+ });
+ $("remember").addEventListener("change",()=>{
+  safeStore();signal("storage-message",$("remember").checked?
+   "Данные сохраняются только в текущем браузере.":"Сохранение выключено; локальная копия удалена.");
+ });
+ $("sound").addEventListener("change",()=>{
+  if(!$("sound").checked)return;
+  try{const A=window.AudioContext||window.webkitAudioContext;if(A){audioCtx=audioCtx||new A();if(audioCtx.state==="suspended")audioCtx.resume();}}catch(e){}
+ });
+ $("enable-notifications").addEventListener("click",async()=>{
+  if(!window.Notification){signal("storage-message","Уведомления не поддерживаются браузером.",true);return;}
+  try{const p=await window.Notification.requestPermission();
+   signal("storage-message",p==="granted"?"Разрешение на уведомления предоставлено.":"Браузер не разрешил уведомления.");
+  }catch(e){signal("storage-message","Уведомления не удалось разрешить.",true);}
+ });
+ $("export-json").addEventListener("click",()=>download("crm-client-time-desk.json",JSON.stringify(data,null,2),"application/json;charset=utf-8"));
+ $("export-csv").addEventListener("click",()=>download("crm-client-calls.csv",M.toCsv(data,W),"text/csv;charset=utf-8"));
+ $("import-json").addEventListener("click",()=>$("import-file").click());
+ $("import-file").addEventListener("change",async event=>{
+  const file=event.target.files?.[0];event.target.value="";if(!file)return;
+  if(file.size>500000){signal("storage-message","Слишком большой файл (предел 500 КБ).",true);return;}
+  try{const loaded=M.normalize(JSON.parse(await file.text()),W);
+   if(!window.confirm("Заменить текущие города, таймеры, статусы и возраст?"))return;
+   data=loaded;$("birth-date").value=data.birthDate;$("work-start").value=data.work.start;
+   $("work-end").value=data.work.end;$("work-mode").value=data.work.mode;
+   safeStore();renderAll();signal("storage-message","Настройки успешно импортированы.");
+  }catch(e){signal("storage-message",e.message,true);}
+ });
+ $("reset-all").addEventListener("click",()=>{
+  if(!window.confirm("Очистить все локальные таймеры, статусы, города и возраст?"))return;
+  data=M.create(W);$("remember").checked=false;safeStore();
+  $("birth-date").value="";$("work-start").value=data.work.start;$("work-end").value=data.work.end;$("work-mode").value="end";
+  filter="active";renderAll();signal("storage-message","Данные очищены.");
+ });
+ renderAll();
+ setInterval(()=>{if(document.visibilityState!=="hidden")tick();},1000);
+ document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="hidden")renderAll();});
+ if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
+  const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
+  sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(e){}};
+  document.head.appendChild(sdk);
+ }
+}
+try{start();}catch(e){signal("storage-message","Ошибка запуска: "+e.message,true);}
+})();
+</script>
+</body></html>
