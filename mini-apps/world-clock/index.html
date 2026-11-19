@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1626"><meta name="description" content="Мировые часы PSY-TOOLS: основной город, дополнительные города, точные локальные часы и конвертер времени.">
+<title>Мировые часы — PSY-TOOLS Mini App</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#0a1525);--panel:var(--tg-theme-secondary-bg-color,#112339);--text:var(--tg-theme-text-color,#eef6ff);--muted:var(--tg-theme-hint-color,#a2b7c9);--accent:var(--tg-theme-button-color,#267f96);--acText:var(--tg-theme-button-text-color,#fff);--line:#375169;--cyan:#8adce6;--gold:#f0c88a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 17% -8%,#224c5d,transparent 58%),var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:1050px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 14px max(42px,env(safe-area-inset-bottom))}
+h1{font-size:clamp(30px,6vw,48px);letter-spacing:-.045em;line-height:1.12;margin:8px 0 12px}
+h2{font-size:21px;margin:0 0 12px}h3{font-size:16px;margin:0 0 7px}p{margin:7px 0}a{color:#a1dfeb}
+.muted,.help{color:var(--muted);font-size:13px}.eyebrow{letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--cyan);font-weight:750}
+.tag{display:inline-flex;border:1px solid #4c8497;border-radius:999px;padding:3px 9px;font-size:12px;color:#b3e9f0}
+.hero{padding:8px 0 22px}.hero p{max-width:750px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:15px}
+label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}
+input,select,button{font:inherit}input,select{width:100%;min-height:44px;color:var(--text);background:#0b192a;border:1px solid #4b677c;border-radius:10px;padding:10px}
+button{color:var(--text);background:#254359;border:1px solid #4d7488;border-radius:10px;min-height:42px;padding:9px 13px;font-weight:650;cursor:pointer}
+button:disabled{opacity:.42;cursor:default}button.primary{background:var(--accent);color:var(--acText);border-color:var(--accent)}
+button.danger{border-color:#946167;background:#453039}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #b3e6f0;outline-offset:2px}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions button{flex:0 0 auto}.small{font-size:12px;color:var(--muted)}
+.status{color:#a9d9da;font-size:13px;min-height:18px;margin-top:9px}
+.warn{color:#f0c39b}.ok{color:#b6e2ce}
+.hero-clock{border:1px solid #49829a;border-radius:18px;background:linear-gradient(135deg,#14334a,#0d2938);padding:24px 21px;position:relative;overflow:hidden}
+.hero-clock:before{content:"";position:absolute;inset:auto -60px -100px auto;width:240px;height:240px;border:1px solid #418ba655;border-radius:50%;pointer-events:none}
+.clock-label{color:#a0dfe9;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.clock-place{font-size:clamp(22px,5vw,33px);font-weight:750;margin:3px 0;line-height:1.2}
+.clock-time{font-variant-numeric:tabular-nums;font-size:clamp(43px,10vw,81px);letter-spacing:-.055em;line-height:1.13;font-weight:800;margin:8px 0}
+.clock-day{color:#e0ecf6}.clock-meta{color:#a6c8da;font-size:13px;margin-top:9px}
+.clock-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.city-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.city-card{border:1px solid #3d5970;border-radius:15px;background:#0d2033;padding:14px;min-width:0}
+.city-card .name{font-size:19px;font-weight:700;overflow-wrap:anywhere}
+.city-card .time{font-size:clamp(26px,4vw,40px);letter-spacing:-.025em;font-weight:800;font-variant-numeric:tabular-nums}
+.city-card .sub{font-size:12px;color:var(--muted)}
+.city-card .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.city-card .actions{margin-top:8px;gap:5px}.city-card button{font-size:12px;padding:6px 10px;min-height:35px}
+.delta{font-size:12px;color:#b9d8e0;border-radius:999px;border:1px solid #4a7083;padding:3px 7px;white-space:nowrap}
+.search-items{max-height:310px;overflow-y:auto;display:grid;gap:6px;margin-top:9px}
+.search-items[hidden]{display:none!important}
+.search-option{display:flex;justify-content:space-between;gap:9px;width:100%;text-align:left;padding:10px}
+.search-option strong{display:block}.search-option small{display:block;color:var(--muted);font-size:11px}
+.search-option>span:last-child{font-size:12px;color:#adcfe3}
+.new-city{margin-top:12px;padding:13px;border-radius:13px;border:1px solid #476c85;background:#0b253b}
+.new-city[hidden]{display:none!important}
+.planner[hidden]{display:none!important}
+.mode{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.mode button[aria-pressed=true]{background:#1e6676;border-color:#94d5e4}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiny{font-size:12px;color:var(--muted)}.intro-note{font-size:12px;border-left:3px solid var(--gold);padding:10px 13px;background:#252a38;border-radius:0 9px 9px 0;color:#c3cbda}
+footer{border-top:1px solid var(--line);padding:18px 0;color:var(--muted);font-size:12px}
+@media(max-width:700px){.city-grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.controls,.two{grid-template-columns:1fr}.card{padding:12px;border-radius:14px}.clock-time{font-size:47px}.actions button{flex:1 1 auto}.clock-head{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head>
+<body><main>
+<nav class="small"><a href="../../">PSY-TOOLS</a> / Мировые часы</nav>
+<header class="hero">
+ <div class="eyebrow">Города · время · часовые пояса</div>
+ <h1>Мировые часы</h1>
+ <p>Основной город и до 11 дополнительных. Точное местное время, разница часовых поясов и перевод времени для будущих встреч с учётом исторических переходов часов.</p>
+ <span class="tag">Telegram Mini App · работает в браузере</span>
+</header>
+<section class="card" aria-labelledby="home-title">
+ <h2 id="home-title">Основной город</h2>
+ <div id="home-clock" class="hero-clock" aria-live="off"></div>
+ <p class="help">Основной город определяет разницу времени для остальных и дату планируемой встречи. Вы можете назначить основным любой добавленный город.</p>
+</section>
+<section class="card" aria-labelledby="others-title">
+ <div class="clock-head"><h2 id="others-title">Дополнительные города</h2><span id="limit" class="tag"></span></div>
+ <div id="city-grid" class="city-grid"></div>
+</section>
+<section class="card" aria-labelledby="add-title">
+ <h2 id="add-title">Найти и добавить город</h2>
+ <div class="controls">
+  <div><label for="country">Справочник</label><select id="country">
+   <option value="WORLD">Города мира (подборка)</option><option value="RU">Все города России</option><option value="BY">Города Беларуси</option>
+  </select></div>
+  <div><label for="region">Регион</label><select id="region"><option value="">Все регионы</option></select></div>
+  <div><label for="search">Поиск города</label><input id="search" type="search" placeholder="Начните вводить название…" autocomplete="off"></div>
+ </div>
+ <p id="search-status" class="status" role="status" aria-live="polite"></p>
+ <div id="matches" class="search-items" aria-label="Подходящие города" hidden></div>
+ <div id="candidate" class="new-city" hidden>
+   <h3 id="candidate-name"></h3>
+   <p id="candidate-source" class="help"></p>
+   <label for="zone">Часовой пояс IANA (можно изменить)</label>
+   <input id="zone" list="zone-list" spellcheck="false" autocomplete="off" placeholder="Например, Europe/Moscow">
+   <datalist id="zone-list"></datalist>
+   <p class="help">Для городов России зона определяется по координатам <b>приблизительно</b>. У границ регионов проверьте её перед сохранением. Для Беларуси используется Europe/Minsk, у международных пресетов указана заранее проверенная зона.</p>
+   <div class="actions"><button id="add" type="button" class="primary">Добавить к часам</button><button id="make-home" type="button">Сделать основным</button><button id="cancel" type="button">Отмена</button></div>
+   <p id="candidate-status" class="status" role="status"></p>
+ </div>
+ <p class="help">Справочник России: 1 126 городских записей; Беларуси: 115 городов. Используются существующие локальные данные PSY-TOOLS; поиск не отправляет запросов на сервер.</p>
+</section>
+<section class="card" aria-labelledby="converter-title">
+ <h2 id="converter-title">Калькулятор времени между городами</h2>
+ <div class="mode">
+  <button id="mode-now" type="button" aria-pressed="true">Сейчас · живые часы</button>
+  <button id="mode-plan" type="button" aria-pressed="false">Выбрать дату и время</button>
+ </div>
+ <div id="planner" class="planner" hidden>
+  <p class="help">Введите местные дату и время <b>основного города</b>. Приложение переведёт один и тот же момент на часы всех остальных городов.</p>
+  <div class="two">
+   <div><label for="plan-date">Дата основного города</label><input type="date" id="plan-date" min="1900-01-01" max="2100-12-31"></div>
+   <div><label for="plan-time">Время основного города</label><input type="time" id="plan-time" value="12:00"></div>
+  </div>
+  <div id="plan-choice" hidden>
+   <label for="plan-fold">При переводе часов назад это местное время встречалось дважды</label>
+   <select id="plan-fold"></select>
+  </div>
+  <p id="plan-status" class="status" role="status" aria-live="polite"></p>
+ </div>
+ <p class="intro-note">Часы используют системную точность времени устройства и базу IANA браузера. Если на устройстве неверно установлены дата или время, показания также будут неверными. Разница между городами может меняться в течение года.</p>
+</section>
+<section class="card" aria-labelledby="storage-title">
+ <h2 id="storage-title">Мой набор городов</h2>
+ <p class="help">Основной город и дополнительные города автоматически сохраняются локально в этом браузере без учётной записи. Отдельные профили браузера не синхронизируются.</p>
+ <div class="actions"><button id="export" type="button">Экспорт JSON</button><button id="import" type="button">Импорт JSON</button><button id="reset" type="button" class="danger">Сбросить список</button></div>
+ <input type="file" id="file" accept=".json,application/json" hidden>
+ <p id="storage-status" class="status" role="status" aria-live="polite"></p>
+</section>
+<footer><p>PSY-TOOLS · «Мировые часы». Ни геолокация, ни данные Telegram-профиля не запрашиваются. Город и пояс сохраняются только локально. Источник геоданных России/Беларуси и лицензии указаны в <a href="../natal-chart/README.md">натальной карте</a>. Примерная географическая зона — не гарантия юридической точности на границах.</p>
+<p><a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/world-clock">Исходный код</a> · <a href="../natal-chart/">Натальная карта</a> · <a href="../pythagoras/">Квадрат Пифагора</a></p></footer>
+</main>
+<script src="../natal-chart/cities-ru-data.js"></script>
+<script src="../natal-chart/city-catalog.js"></script>
+<script src="../natal-chart/cities-by-data.js"></script>
+<script src="../natal-chart/city-catalog-by.js"></script>
+<script src="./vendor/tz-lookup.js"></script>
+<script src="./clock-engine.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const E=window.WorldClockEngine,RU=window.RussianCityCatalog,BY=window.BelarusCityCatalog;
+const coordsToZone=typeof tzlookup==="function"?tzlookup:null;
+let state=E.defaultState(),candidate=null,mode="now",planInstant=null,storageOk=true;
+const el=(tag,klass,txt)=>{
+ const n=document.createElement(tag);
+ if(klass)n.className=klass;
+ if(txt!==undefined)n.textContent=txt;
+ return n;
+};
+function notify(id,msg){$(id).textContent=msg;}
+try{const raw=localStorage.getItem(E.KEY);if(raw)state=E.normalizeState(JSON.parse(raw));}
+catch(err){storageOk=false;notify("storage-status","Сохранённые данные недоступны. Текущий список можно экспортировать.");}
+function persist(){
+ try{localStorage.setItem(E.KEY,JSON.stringify(state));storageOk=true;}
+ catch(err){storageOk=false;notify("storage-status","Не удалось сохранить список на устройстве. Экспортируйте JSON.");}
+}
+function selectionOptions(){
+ const area=$("region");area.replaceChildren();
+ const init=el("option","", "Все регионы");init.value="";area.appendChild(init);
+ const cat=$("country").value==="RU"?RU:$("country").value==="BY"?BY:null;
+ for(const region of cat?.regions||[]){
+  const op=el("option","",region);op.value=region;area.appendChild(op);
+ }
+ area.disabled=!cat;
+}
+function findCities(){
+ const q=$("search").value.trim(),country=$("country").value,region=$("region").value;
+ const box=$("matches");box.replaceChildren();
+ const found=country==="WORLD"?E.searchPresets(q,30):
+  (country==="RU"?RU:BY)?.query(q,region,30)?.items||[];
+ if(q.length<2&&!region&&country!=="WORLD"){
+  box.hidden=true;notify("search-status","Введите минимум две буквы либо выберите регион.");return;
+ }
+ if(!found.length){box.hidden=true;notify("search-status","Города не найдены.");return;}
+ const items=found.slice(0,30);
+ for(const c of items){
+  const countryName=country==="WORLD"?c.country:country==="RU"?"Россия":"Беларусь";
+  const btn=el("button","search-option");
+  btn.type="button";
+  const left=el("span");left.append(el("strong","",c.name),el("small","",(c.region?c.region+" · ":"")+countryName));
+  btn.append(left,el("span","",country==="WORLD"?c.zone:"Выбрать"));
+  btn.addEventListener("click",()=>choose(c,country));
+  box.appendChild(btn);
+ }
+ box.hidden=false;
+ notify("search-status",country==="WORLD"?"Показано "+items.length+" городов из международной подборки.":
+  "Показано "+items.length+". Если город не виден, уточните название или регион.");
+}
+function choose(c,group){
+ const suggested=group==="WORLD"?c.zone:group==="BY"?"Europe/Minsk":
+   coordsToZone?coordsToZone(c.latitude,c.longitude):"";
+ candidate={id:group.toLowerCase()+":"+c.id,name:c.name,
+   country:group==="RU"?"Россия":group==="BY"?"Беларусь":c.country,
+   region:c.region||"",zone:suggested,confidence:group==="RU"?"suggested":"confirmed"};
+ $("candidate-name").textContent=c.name+(c.region?" · "+c.region:"")+" · "+candidate.country;
+ $("candidate-source").textContent=group==="RU"?
+  "Временная зона предложена по координатам и может быть неточной — проверьте её, особенно у границ.":
+  group==="BY"?"Единая IANA-зона Беларуси: Europe/Minsk.":"Международный город с заранее заданной зоной.";
+ $("zone").value=suggested;
+ $("candidate-status").textContent="";
+ $("candidate").hidden=false;
+ $("candidate").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function saveChoice(asHome){
+ if(!candidate)return;
+ try{
+  const entry={...candidate,zone:E.validateZone($("zone").value.trim())};
+  if(entry.zone!==candidate.zone)entry.confidence="confirmed";
+  state=E.addCity(state,entry,asHome);
+  persist();candidate=null;$("candidate").hidden=true;render();notify("storage-status","Список обновлён.");
+ }catch(err){notify("candidate-status",err.message)}
+}
+function cityTitle(c){return c.name+(c.region?" · "+c.region:"");}
+function currentInstant(){
+ if(mode==="now")return Date.now();
+ return planInstant;
+}
+function renderClocks(){
+ const moment=currentInstant();
+ if(moment===null)return;
+ const home=E.snapshot(state.home.zone,moment),root=$("home-clock");
+ root.replaceChildren();
+ const top=el("div","clock-head");
+ const left=el("div");left.append(el("div","clock-label","ОСНОВНОЙ ГОРОД"),el("div","clock-place",state.home.name));
+ top.append(left,el("span","tag",mode==="now"?"● Сейчас":"Запланированное время"));root.appendChild(top);
+ root.append(el("div","clock-time",mode==="now"?home.clock:home.clock.slice(0,5)),
+   el("div","clock-day",home.day),el("div","clock-meta",home.offsetLabel+" · "+state.home.zone));
+ const grid=$("city-grid");grid.replaceChildren();
+ for(const c of state.extras){
+  const snap=E.snapshot(c.zone,moment,state.home.zone);
+  const wrap=el("div","city-card");
+  const row=el("div","row");
+  row.append(el("div","name",c.name),el("span","delta",E.differenceLabel(snap.differenceMinutes)+" к основному"));
+  wrap.append(row,el("div","time",mode==="now"?snap.clock:snap.clock.slice(0,5)),
+   el("div","sub",snap.day),el("div","sub",snap.offsetLabel+" · "+c.zone),
+   el("div","small",c.country+(c.region?" · "+c.region:"")));
+  const actions=el("div","actions");
+  for(const [title,action] of [
+    ["Основной",()=>changeMain(c.id)],["↑",()=>reorder(c.id,-1)],["↓",()=>reorder(c.id,1)],
+    ["Удалить",()=>remove(c.id)]]){
+   const b=el("button","",title);b.type="button";b.addEventListener("click",action);actions.appendChild(b);
+  }
+  wrap.appendChild(actions);grid.appendChild(wrap);
+ }
+ $("limit").textContent="Всего "+(state.extras.length+1)+" / "+E.MAX_CITIES;
+ if(!state.extras.length)grid.append(el("p","muted","Дополнительные города пока не выбраны."));
+}
+function render(){renderClocks();if(mode==="plan")calculatePlan();}
+function changeMain(id){
+ const c=state.extras.find(x=>x.id===id);if(!c)return;
+ state=E.addCity(state,c,true);persist();render();
+}
+function remove(id){
+ try{state=E.removeCity(state,id);persist();render();}catch(err){notify("storage-status",err.message);}
+}
+function reorder(id,d){
+ state=E.moveCity(state,id,d);persist();render();
+}
+function initPlanner(){
+ $("mode-now").addEventListener("click",()=>setMode("now"));
+ $("mode-plan").addEventListener("click",()=>setMode("plan"));
+ for(const id of ["plan-date","plan-time"])$(id).addEventListener("change",calculatePlan);
+ $("plan-fold").addEventListener("change",applyFold);
+ setDefaults();
+}
+function setDefaults(){
+ const now=new Date(),parts=E.snapshot(state.home.zone,now).parts;
+ $("plan-date").value=String(parts.year).padStart(4,"0")+"-"+String(parts.month).padStart(2,"0")+"-"+String(parts.day).padStart(2,"0");
+ $("plan-time").value=String(parts.hour).padStart(2,"0")+":"+String(parts.minute).padStart(2,"0");
+}
+function setMode(next){
+ mode=next;
+ $("planner").hidden=next!=="plan";
+ $("mode-now").setAttribute("aria-pressed",String(next==="now"));
+ $("mode-plan").setAttribute("aria-pressed",String(next==="plan"));
+ if(next==="plan")calculatePlan();else{planInstant=null;renderClocks();}
+}
+function calculatePlan(){
+ if(mode!=="plan")return;
+ planInstant=null;
+ const chooser=$("plan-fold");chooser.replaceChildren();$("plan-choice").hidden=true;
+ try{
+  const result=E.resolveWallTime($("plan-date").value,$("plan-time").value,state.home.zone);
+  if(result.status==="gap"){
+   notify("plan-status","Такого местного времени не было при переводе часов. Выберите другое время.");
+   $("home-clock").replaceChildren();$("city-grid").replaceChildren();return;
+  }
+  if(result.status==="fold"){
+   const empty=el("option","","Выберите первый или второй момент");empty.value="";chooser.appendChild(empty);
+   result.candidates.forEach((c,i)=>{const opt=el("option","",(i===0?"Первый":"Второй")+" момент · "+c.offsetLabel+" · "+c.iso);opt.value=String(i);chooser.appendChild(opt);});
+   $("plan-choice").hidden=false;
+   notify("plan-status","Местное время повторялось. Для точного перевода выберите один из двух моментов.");
+   $("home-clock").replaceChildren();$("city-grid").replaceChildren();return;
+  }
+  planInstant=result.candidates[0].ms;
+  notify("plan-status","Выбран момент UTC: "+result.candidates[0].iso);
+  renderClocks();
+ }catch(err){notify("plan-status",err.message);$("home-clock").replaceChildren();$("city-grid").replaceChildren();}
+}
+function applyFold(){
+ const result=E.resolveWallTime($("plan-date").value,$("plan-time").value,state.home.zone);
+ const index=$("plan-fold").value;
+ if(index===""){planInstant=null;notify("plan-status","Укажите вариант времени.");return;}
+ const c=result.candidates[Number(index)];if(!c)return;
+ planInstant=c.ms;notify("plan-status","Выбран UTC: "+c.iso);renderClocks();
+}
+function setupStorage(){
+ $("export").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=el("a");a.href=url;a.download="psy-tools-world-clock.json";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  notify("storage-status","Файл настроек городов сохранён.");
+ });
+ $("import").addEventListener("click",()=>$("file").click());
+ $("file").addEventListener("change",async ev=>{
+  const file=ev.target.files?.[0];ev.target.value="";
+  if(!file)return;
+  if(file.size>100000){notify("storage-status","Файл слишком большой (предел 100 КБ).");return;}
+  try{
+   const next=E.normalizeState(JSON.parse(await file.text()));
+   if(!window.confirm("Заменить текущий набор городов импортируемым?"))return;
+   state=next;persist();render();notify("storage-status","Список импортирован.");
+  }catch(err){notify("storage-status","Импорт отклонён: "+err.message);}
+ });
+ $("reset").addEventListener("click",()=>{
+  if(!window.confirm("Сбросить основной город и дополнительные города к примеру?"))return;
+  state=E.defaultState();persist();setMode("now");render();notify("storage-status","Настройки сброшены.");
+ });
+}
+function start(){
+ selectionOptions();
+ $("country").addEventListener("change",()=>{selectionOptions();$("search").value="";findCities();$("candidate").hidden=true;candidate=null;});
+ $("region").addEventListener("change",findCities);
+ $("search").addEventListener("input",findCities);
+ $("add").addEventListener("click",()=>saveChoice(false));
+ $("make-home").addEventListener("click",()=>saveChoice(true));
+ $("cancel").addEventListener("click",()=>{$("candidate").hidden=true;candidate=null;});
+ const zones=typeof Intl.supportedValuesOf==="function"?Intl.supportedValuesOf("timeZone"):E.presetCities.map(c=>c.zone);
+ for(const zone of [...new Set(zones)]){
+  const option=el("option");option.value=zone;$("zone-list").appendChild(option);
+ }
+ initPlanner();setupStorage();findCities();renderClocks();
+ setInterval(()=>{if(mode==="now")renderClocks();},1000);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderClocks();});
+ if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
+  const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
+  sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(err){}};
+  document.head.appendChild(sdk);
+ }
+}
+try{start()}catch(err){notify("storage-status","Ошибка запуска: "+err.message);}
+})();
+</script></body></html>
