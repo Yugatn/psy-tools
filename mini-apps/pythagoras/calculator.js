@@ -9,7 +9,7 @@
   if (root) root.PythagorasCalculator = api;
 })(typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : null), function () {
   "use strict";
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const LAYOUT = Object.freeze([[1,4,7],[2,5,8],[3,6,9]]);
   const NAMES = Object.freeze({
     1:"Характер", 2:"Энергия", 3:"Интерес", 4:"Здоровье (символ)",
@@ -60,13 +60,30 @@
     const third=first-2*firstDayDigit;
     const fourth=digitSum(third);
     const working=[first,second,third,fourth];
-    const all=dateDigits+working.join("");
-    const counts=Object.fromEntries(Array.from({length:9},(_,i)=>[i+1,0]));
-    for(const c of all) if(c>="1" && c<="9") counts[Number(c)]++;
+    const workingOnly=working.join("");
+    const all=dateDigits+workingOnly;
+    const zeros=()=>Object.fromEntries(Array.from({length:9},(_,i)=>[i+1,0]));
+    const dateCounts=zeros(), workingCounts=zeros(), counts=zeros();
+    for(const c of dateDigits) if(c>="1" && c<="9") dateCounts[Number(c)]++;
+    for(const c of workingOnly) if(c>="1" && c<="9") workingCounts[Number(c)]++;
+    for(let digit=1;digit<=9;digit++)counts[digit]=dateCounts[digit]+workingCounts[digit];
     const lines=LINES.map(l=>({...l,count:l.digits.reduce((s,n)=>s+counts[n],0)}));
-    return {version:VERSION,date,rule,firstDayDigit,working,counts,layout:LAYOUT.map(row=>row.map(n=>({
-      digit:n,count:counts[n],name:NAMES[n],symbols:String(n).repeat(counts[n])
-    }))),lines,sourceDigits:dateDigits,workingDigits:working.join(" "),nonZeroTotal:Object.values(counts).reduce((s,n)=>s+n,0)};
+    return {version:VERSION,date,rule,firstDayDigit,working,counts,dateCounts,workingCounts,
+      excludedZeros:Array.from(all).filter(ch=>ch==="0").length,
+      layout:LAYOUT.map(row=>row.map(n=>({
+       digit:n,count:counts[n],dateCount:dateCounts[n],workingCount:workingCounts[n],
+       name:NAMES[n],symbols:String(n).repeat(counts[n])
+      }))),lines,sourceDigits:dateDigits,workingDigits:working.join(" "),
+      nonZeroTotal:Object.values(counts).reduce((s,n)=>s+n,0)};
+  }
+  function compareRules(raw) {
+    const significant=calculate(raw,{firstDayRule:"significant"});
+    const literal=calculate(raw,{firstDayRule:"literal"});
+    const changes=Array.from({length:9},(_,i)=>i+1).map(digit=>({
+      digit,significant:significant.counts[digit],literal:literal.counts[digit],
+      difference:literal.counts[digit]-significant.counts[digit]
+    }));
+    return {significant,literal,changed:changes.some(x=>x.difference!==0),changes};
   }
   function formatText(result) {
     if(!result||!result.date||!result.counts)throw new TypeError("Нет результата");
@@ -75,10 +92,12 @@
     return [
       "Квадрат Пифагора · "+r.date.display,
       "Рабочие числа: "+r.working.join(" · "),
+      "Правило для дней 01–09: "+(r.rule==="literal"?"буквальная первая цифра дня":"первая значимая цифра дня"),
       ...rows,
+      "Источники цифр: дата "+Object.values(r.dateCounts).join(", ")+"; рабочие числа "+Object.values(r.workingCounts).join(", ")+" (порядок 1–9).",
       "Линии: "+r.lines.map(l=>l.name+" "+l.count).join("; "),
       "Нумерологическая символическая система, не психологическая диагностика."
     ].join("\n");
   }
-  return Object.freeze({VERSION,LAYOUT,NAMES,LINES,digitSum,daysInMonth,parseDate,calculate,formatText});
+  return Object.freeze({VERSION,LAYOUT,NAMES,LINES,digitSum,daysInMonth,parseDate,calculate,compareRules,formatText});
 });
