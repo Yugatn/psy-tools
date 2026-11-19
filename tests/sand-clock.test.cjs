@@ -47,7 +47,7 @@ test("pause stops both timer and falling sand; resume uses remainder",()=>{
  s=E.pause(s,18000);
  assert.equal(s.status,"paused");
  assert.equal(s.remainingMs,22000);
- assert.equal(E.snapshot(s,100000).progress,8000/30000);
+ assert.ok(Math.abs(E.snapshot(s,100000).progress-8000/30000)<1e-12);
  assert.equal(E.snapshot(s,100000).flowing,false);
  s=E.start(s,100000);
  assert.equal(E.snapshot(s,111000).remainingMs,11000);
