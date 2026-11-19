@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a1726">
+<meta name="theme-color" content="#020503">
 <meta name="description" content="CRM: мировые часы, возраст, рабочий день и таймеры звонков клиентам со своими статусами.">
-<title>Центр времени и звонков — CRM Mini App</title>
+<title>CRM MATRIX · Центр времени и звонков</title>
 <style>
 :root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#091626);--panel:var(--tg-theme-secondary-bg-color,#12283b);--ink:var(--tg-theme-text-color,#ecf5fd);--muted:var(--tg-theme-hint-color,#b0c3d0);--line:#3a5b71;--accent:var(--tg-theme-button-color,#1e948d);--button-ink:var(--tg-theme-button-text-color,#fff);--amber:#e6bd7c;--mint:#98e9d1;--danger:#f9a5a5;--blue:#9ac8fa}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -72,17 +72,134 @@ footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--m
 @media(max-width:780px){.metric-row{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-2{grid-template-columns:1fr}}
 @media(max-width:490px){.grid-3,.small-controls{grid-template-columns:1fr}.card{padding:13px}.actions button{flex:1 1 100px}.timer-row select{width:100%}.timer-row{display:grid;grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* CRM MATRIX 1.1: restrained terminal/Matrix presentation without external assets */
+:root{
+  --bg:#020603;--panel:#07130b;--ink:#ddfbe4;--muted:#96b69c;
+  --line:#1e5833;--accent:#16a34a;--button-ink:#031208;
+  --amber:#f4cf78;--mint:#5dff92;--danger:#ff9797;--blue:#a3dbbe;
+  --phosphor:#90ffac;--glow:rgba(69,255,122,.17)
+}
+html{background:#020503}
+body{
+  color:var(--ink);background-color:#020503;
+  background-image:linear-gradient(0deg,rgba(33,107,54,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(33,107,54,.055) 1px,transparent 1px),
+    radial-gradient(ellipse at 52% -15%,rgba(30,94,43,.34),transparent 56%);
+  background-size:28px 28px,28px 28px,auto;
+  overflow-x:hidden
+}
+body::before{
+  content:"010101 101001 011010 001101 110100 010110 101001 011011 001011 100101 010101 001110 101011 110010 010101 011101 100011 010110 011001 111010 010011 101010 001110 110011 011010 101101 010010 010111 100101 011010";
+  position:fixed;inset:-70% 0 0;
+  pointer-events:none;z-index:0;
+  color:rgba(100,255,130,.11);
+  opacity:.4;font:11px/30px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:17px;word-break:break-all;overflow:hidden;
+  transform:translate3d(0,-8%,0);
+  animation:matrix-rain 37s linear infinite
+}
+@keyframes matrix-rain{from{transform:translate3d(0,-8%,0)}to{transform:translate3d(0,25%,0)}}
+main{position:relative;z-index:1}
+::selection{background:#216b37;color:#f2fff1}
+a{color:#83ffaa;text-decoration-color:#42965d}
+h1,h2,h3,.eyebrow,.metric b,.clock-card .time,.work-display,.timer-count,.display{
+ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace
+}
+h1{color:#c3ffcf;text-shadow:0 0 34px rgba(59,232,111,.15)}
+h2{color:#b9f8c6}h3{color:#dbfce0}
+header{border-bottom:1px solid #19562d;margin-bottom:19px;padding-bottom:20px}
+.hero-diagnostics{display:flex;gap:10px 20px;flex-wrap:wrap;margin-top:14px;color:#54d982;
+ font:11px/1.6 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
+.hero-diagnostics span:first-child{font-weight:750;color:#b1ffb4}
+.card{
+ background:linear-gradient(140deg,rgba(8,24,13,.97),rgba(4,14,8,.96));
+ border:1px solid #265c36;border-radius:13px;
+ box-shadow:inset 0 1px 0 rgba(116,255,155,.035),0 10px 34px rgba(0,0,0,.2)
+}
+.card:hover{border-color:#2e7746}
+.world-layout{display:block}
+.world-layout>.card{margin-bottom:14px}
+.clock-card{
+ border:1px solid #276540;border-radius:10px;
+ background:linear-gradient(145deg,#0c2313,#041108);min-width:0
+}
+.clock-card.home{
+ border-color:#55ba74;background:linear-gradient(125deg,#14391e,#06190d);
+ box-shadow:0 0 0 1px rgba(67,210,105,.09),inset 0 0 30px rgba(46,160,68,.04)
+}
+.clock-card .time{font-weight:800;color:#99ffb2;letter-spacing:.015em;text-shadow:0 0 18px rgba(88,255,115,.18)}
+.clock-card .place{color:#dbffe4}
+.clock-card .hint,.timer-meta,.help{color:var(--muted)}
+.metric{background:#061c0d;border-color:#25683e;border-radius:10px}
+.metric b{color:#b2ffc3;text-shadow:0 0 18px rgba(76,227,104,.08)}
+input:not([type=checkbox]),select,textarea{
+ border-color:#2e6641;background:#061409;color:#e1ffea;border-radius:9px;
+ accent-color:#53dc80
+}
+input::placeholder,textarea::placeholder{color:#799b80;opacity:1}
+input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{
+ outline:2px solid #8dffb2;outline-offset:3px
+}
+button{background:#102d19;color:#c3ffd4;border-color:#326b45;border-radius:8px}
+button.primary{background:#1b8745;border-color:#36ba65;color:#f5fff3}
+button.primary:hover{background:#239750}
+button:hover:not(:disabled){filter:brightness(1.16)}
+button.danger{background:#32191c;border-color:#784246;color:#ffc6c6}
+.pill{background:#0b2614;border-color:#2c7543;color:#baffc8}
+.pill.gray{background:#1a241d;color:#c6dcc7;border-color:#66766a}
+.pill.amber{background:#3d2d0e;color:#ffe0a1;border-color:#98702d}
+.pill.blue{background:#0d2630;color:#b6e5ef;border-color:#34737e}
+.pill.green{background:#10301b;color:#bcffd2;border-color:#3f9e59}
+.pill.red{background:#391c1d;color:#ffd0d0;border-color:#9f4f55}
+.pill.violet{background:#251a37;color:#dfcbff;border-color:#7159a3}
+.timer-card{background:#071b0d;border-color:#2a6640;border-radius:11px}
+.timer-card.soon{border-color:#b09047;background:#1a2110}
+.timer-card.overdue{border-color:#be5958;background:#241417}
+.timer-card.finished{opacity:.78}
+.timer-count{color:#c6ffd3}
+.timer-count.overdue{color:#ffa69e}
+.timer-row select{background:#091f10}
+.status-record{background:#08190d;border-color:#275b36;border-radius:10px}
+.note{background:#101b13;border-left-color:#79b878;color:#cbdacf}
+.work-display{color:#8affaa;text-shadow:0 0 26px rgba(53,231,83,.17)}
+.work-progress{background:#163920}
+.work-progress>div{background:linear-gradient(90deg,#1d8d43,#8cffaf)}
+.filters button[aria-pressed=true]{background:#15572c;border-color:#7cff9e;color:#d9ffde}
+.status{color:#89ffad}.status.error{color:#ffabab}
+.search-queue{display:grid;grid-template-columns:minmax(200px,1fr) auto;align-items:end;gap:13px;margin-top:15px}
+.queue-hint{font:11px/1.5 ui-monospace,Consolas,monospace;color:#73b885;display:flex;align-items:center;gap:8px;padding-bottom:12px}
+.matrix-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4fff89;box-shadow:0 0 10px #48f284}
+#call-search{background:#041408;border-color:#30894e}
+#queue-count{min-height:20px;margin:8px 0 0;color:#9ecda8}
+.timer-card .quick-actions{display:flex;flex-wrap:wrap;gap:7px}
+.quick-done{border-color:#48c66d;background:#144d2b}
+.quick-snooze{border-color:#9a873d;background:#343018;color:#ffdf9a}
+.age-footer-card{margin-top:19px;margin-bottom:0;border-color:#214b2e;background:rgba(4,13,6,.9)}
+.age-footer-card details summary{list-style:none;cursor:pointer;position:relative;font:700 20px/1.4 ui-monospace,Consolas,monospace;color:#a2e9b1;margin:0}
+.age-footer-card details summary::-webkit-details-marker{display:none}
+.age-footer-card details summary::before{content:"[+]";color:#6bd891;margin-right:10px}
+.age-footer-card details[open] summary::before{content:"[-]"}
+.age-footer-card .age-hint{font-size:12px;color:#7ea38b;font-weight:400}
+.age-content{border-top:1px solid #275b35;padding-top:16px;margin-top:13px;max-width:650px}
+.age-field{max-width:300px}
+.age-content .display{color:#91ffb2}
+footer{border-top-color:#245934}
+@media(max-width:760px){.search-queue{grid-template-columns:1fr}.queue-hint{padding-bottom:0}}
+@media(max-width:490px){.hero-diagnostics{gap:6px 12px}.age-footer-card .age-hint{display:block;margin-left:42px}.timer-title{flex-wrap:wrap}.timer-row select{min-width:0}}
+@media(prefers-reduced-motion:reduce){body::before{animation:none;transform:none}}
 </style></head><body><main>
 <nav class="tiny"><a href="../../">PSY-TOOLS</a> / CRM · Центр времени</nav>
 <header><div class="eyebrow">CRM · Время и коммуникации</div><h1>Центр времени и звонков</h1>
-<p>Мировые часы, возраст, рабочий день и независимые таймеры клиентских звонков. Планируйте следующий контакт в часовом поясе клиента и отмечайте результат собственным статусом.</p></header>
+<p>Мировые часы, рабочий день и клиентские таймеры. Следите за сроками звонков по часовым поясам клиентов и фиксируйте результат собственным статусом.</p>
+ <div class="hero-diagnostics" aria-hidden="true"><span>● CRM MATRIX</span><span>TIME SYNC / IANA</span><span>CALL QUEUE / LIVE</span></div></header>
 <div class="metric-row">
  <div class="metric"><b id="count-all">0</b><span>Клиентских таймеров</span></div>
  <div class="metric"><b id="count-active">0</b><span>В ожидании</span></div>
  <div class="metric"><b id="count-overdue">0</b><span>Срок наступил</span></div>
  <div class="metric"><b id="count-finished">0</b><span>Завершены</span></div>
 </div>
-<div class="grid-2">
+<div class="world-layout">
 <section class="card" aria-labelledby="world-heading">
  <div class="card-heading"><h2 id="world-heading">Мировые часы</h2><span class="pill">Основной и дополнительные</span></div>
  <div id="clocks" class="grid-auto"></div>
@@ -98,14 +215,6 @@ footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--m
  <datalist id="zone-options"></datalist>
  <p id="city-message" class="status" role="status" aria-live="polite"></p>
  <p class="help">Основной город задаёт календарную дату возраста и рабочий день. В справочнике — международная подборка; другие города добавляются вручную по зоне IANA. Время берётся из базы часовых поясов браузера.</p>
-</section>
-<section class="card" aria-labelledby="age-heading">
- <h2 id="age-heading">Возраст без трудового стажа</h2>
- <label for="birth-date">Дата рождения</label><input type="date" id="birth-date" min="1900-01-01" max="2100-12-31">
- <div id="age-years" class="display" style="margin:14px 0 3px">—</div>
- <div id="age-details" class="muted">Дата рождения не указана.</div>
- <p class="help">Календарный возраст рассчитывается на текущую дату основного города. Для 29 февраля используется правило переноса годовщины на 28 февраля в невисокосном году.</p>
- <p id="age-message" class="status" role="status"></p>
 </section>
 </div>
 <section class="card" aria-labelledby="work-heading">
@@ -130,6 +239,14 @@ footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--m
   <button type="button" data-filter="finished" aria-pressed="false">Завершённые</button>
   <button type="button" data-filter="all" aria-pressed="false">Все</button>
  </div>
+ <div class="search-queue">
+  <div>
+   <label for="call-search">Поиск по клиенту, городу, телефону или примечанию</label>
+   <input id="call-search" type="search" placeholder="Найти нужный звонок…" autocomplete="off" enterkeyhint="search">
+  </div>
+  <div class="queue-hint"><span class="matrix-dot" aria-hidden="true"></span><span>Очередь отсортирована по сроку звонка</span></div>
+ </div>
+ <p id="queue-count" class="help" role="status" aria-live="polite"></p>
  <div id="timer-list" class="timer-list" style="margin-top:13px"></div>
 </section>
 <section id="edit-form" class="card" aria-labelledby="form-heading" hidden>
@@ -189,6 +306,19 @@ footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--m
  <input id="import-file" type="file" accept=".json,application/json" hidden>
  <p id="storage-message" class="status" role="status" aria-live="polite"></p>
  <p class="note">Уведомления срабатывают только пока веб-приложение открыто и платформа разрешает их показ. После полного закрытия браузера или Telegram надёжная доставка напоминаний не гарантируется. Реальных телефонных вызовов и фонового Telegram-бота нет.</p>
+</section>
+<section class="card age-footer-card" aria-labelledby="age-heading">
+ <details id="age-details-panel">
+  <summary id="age-heading">Расчёт возраста <span class="age-hint">— дополнительный инструмент</span></summary>
+  <div class="age-content">
+   <p class="help">Календарный возраст на сегодняшнюю дату основного города. Этот раздел не связан с трудовым стажем или данными клиентов.</p>
+   <div class="age-field"><label for="birth-date">Дата рождения</label><input type="date" id="birth-date" min="1900-01-01" max="2100-12-31"></div>
+   <div id="age-years" class="display" style="margin:14px 0 3px">—</div>
+   <div id="age-details" class="muted">Дата рождения не указана.</div>
+   <p class="help">Для 29 февраля в невисокосном году используется правило переноса годовщины на 28 февраля.</p>
+   <p id="age-message" class="status" role="status"></p>
+  </div>
+ </details>
 </section>
 <footer>CRM · Центр времени и звонков. Даты рождения, телефоны и имена клиентов — персональные сведения; не вводите их на общем устройстве без защиты. <a href="../world-clock/">Мировые часы</a> · <a href="../age-tenure/">Расчёт стажа</a> · <a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/client-desk">Код CRM</a></footer>
 </main>
@@ -659,7 +789,7 @@ return Object.freeze({VERSION,KEY,MAX_REMINDERS,MAX_STATUSES,COLORS,STATUSES,asD
 const W=window.WorldClockEngine,M=window.ClientTimeDesk,$=id=>document.getElementById(id);
 const dom=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;};
 const pad=x=>String(x).padStart(2,"0"),relative=(ms)=>M.formatRemaining(ms),fmtDate=x=>x?.replace(/^(.{4})-(..)-(..)$/,(_,y,m,d)=>d+"."+m+"."+y)||"";
-let data=M.create(W),filter="active",editId=null,lastAgeDate="",previousKinds=new Map(),audioCtx=null;
+let data=M.create(W),filter="active",searchQuery="",editId=null,lastAgeDate="",previousKinds=new Map(),audioCtx=null;
 let currentPreview=null,nowStoreCounter=0,lastAlertCheck=0;
 const signal=(id,msg,err=false)=>{const e=$(id);e.textContent=msg;e.className="status"+(err?" error":"");};
 const uniqueId=(prefix)=>prefix+"-"+Date.now().toString(36)+"-"+(++nowStoreCounter).toString(36);
@@ -777,7 +907,10 @@ function reminderLine(r,now){
  const label=dom("strong","",r.title),chip=statusLabel(status);
  head.append(label,chip);root.appendChild(head);
  const countdown=dom("div","timer-count"+(kind==="overdue"?" overdue":""));
- countdown.id="remaining-"+r.id;root.appendChild(countdown);
+ countdown.id="remaining-"+r.id;countdown.setAttribute("role","timer");countdown.setAttribute("aria-live","off");
+ countdown.textContent=status.final?"Результат зафиксирован":r.dueAt>now?relative(r.dueAt-now):
+  "Срок прошёл: "+relative(now-r.dueAt);
+ root.appendChild(countdown);
  const local=W.snapshot(r.zone,new Date(r.dueAt)),home=W.snapshot(data.world.home.zone,new Date(r.dueAt));
  const timeInfo=dom("div","timer-meta");
  timeInfo.append(dom("span","",r.city+" · "+local.day+" · "+local.clock.slice(0,5)),
@@ -797,6 +930,29 @@ function reminderLine(r,now){
  remove.addEventListener("click",()=>{if(!window.confirm("Удалить таймер «"+r.title+"»?"))return;
   data=M.removeReminder(data,W,r.id);safeStore();renderReminders();renderCounts();});
  buttons.append(edit);
+ if(!status.final){
+  const quick=dom("div","quick-actions");
+  const terminal=data.statuses.find(x=>x.id==="done"&&x.final)||data.statuses.find(x=>x.final);
+  if(terminal){
+   const done=dom("button","quick-done","✓ Выполнено");
+   done.type="button";
+   done.setAttribute("aria-label","Завершить звонок: "+r.title);
+   done.addEventListener("click",()=>{
+    try{data=M.setStatus(data,W,r.id,terminal.id,Date.now());safeStore();renderReminders();}
+    catch(e){signal("storage-message",e.message,true);}
+   });
+   quick.append(done);
+  }
+  const postpone=dom("button","quick-snooze","+15 мин");
+  postpone.type="button";
+  postpone.setAttribute("aria-label","Перенести звонок на 15 минут от текущего времени: "+r.title);
+  postpone.addEventListener("click",()=>{
+   try{data=M.editReminder(data,W,r.id,{dueAt:Date.now()+15*60000,updatedAt:Date.now()});
+    safeStore();renderReminders();signal("storage-message","Звонок «"+r.title+"» перенесён на 15 минут.");}
+   catch(e){signal("storage-message",e.message,true);}
+  });
+  quick.append(postpone);buttons.append(quick);
+ }
  if(r.phone){
   const link=dom("a","", "Позвонить");
   link.href="tel:"+r.phone.replace(/[^0-9+]/g,"");
@@ -813,8 +969,12 @@ function renderReminders(){
  if(filter==="active")reminders=reminders.filter(x=>x.stateName!=="finished");
  if(filter==="overdue")reminders=reminders.filter(x=>x.stateName==="overdue");
  if(filter==="finished")reminders=reminders.filter(x=>x.stateName==="finished");
+ if(searchQuery)reminders=reminders.filter(x=>
+  [x.title,x.city,x.phone,x.note,x.zone,x.status.name].some(v=>String(v||"").toLocaleLowerCase("ru-RU").includes(searchQuery)));
+ $("queue-count").textContent="Показано: "+reminders.length+" из "+data.reminders.length+
+  (searchQuery?" · поиск: «"+$("call-search").value.trim()+"»":"");
  for(const r of reminders)root.appendChild(reminderLine(r,Date.now()));
- if(!reminders.length)root.append(dom("p","muted",filter==="overdue"?"Просроченных звонков нет.":"В этой категории пока нет таймеров."));
+ if(!reminders.length)root.append(dom("p","muted",searchQuery?"По вашему запросу звонков не найдено.":filter==="overdue"?"Просроченных звонков нет.":"В этой категории пока нет таймеров."));
  previousKinds=new Map(data.reminders.map(r=>[r.id,reminderClass(r,Date.now())]));
  renderCounts();
 }
@@ -988,6 +1148,10 @@ function start(){
    const settings=M.validWorkday({start:$("work-start").value,end:$("work-end").value,mode:$("work-mode").value});
    data.work=settings;safeStore();signal("work-message","");renderWork();
   }catch(e){signal("work-message",e.message,true);}
+ });
+ $("call-search").addEventListener("input",()=>{
+  searchQuery=$("call-search").value.trim().toLocaleLowerCase("ru-RU");
+  renderReminders();
  });
  for(const btn of document.querySelectorAll("[data-filter]"))btn.addEventListener("click",()=>{
   filter=btn.dataset.filter;
