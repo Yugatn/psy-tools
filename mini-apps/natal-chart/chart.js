@@ -10,7 +10,7 @@
  if(root)root.NatalChartEngine=api;
 })(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
  "use strict";
- const VERSION="1.0.0";
+ const VERSION="1.1.0";
  const SIGN_NAMES=["Овен","Телец","Близнецы","Рак","Лев","Дева","Весы","Скорпион","Стрелец","Козерог","Водолей","Рыбы"];
  const SIGN_SYMBOLS=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
  const BODIES=Object.freeze([
@@ -60,18 +60,27 @@
  function inputMoment(input){
   if(!input||typeof input!=="object")throw new Error("Нет исходных данных.");
   const date=parseDate(input.date), unknown=Boolean(input.unknownTime);
-  let hour=12,minute=0,offsetMinutes=null,lat=null,lon=null,place="";
+  let hour=12,minute=0,offsetMinutes=null,offsetSeconds=null,lat=null,lon=null,place="",timeZone=null;
   if(!unknown){
     const tm=parseTime(input.time);hour=tm.hour;minute=tm.minute;
-    offsetMinutes=parseOffset(input.utcOffset);
+    if(input.utcOffsetSeconds!==undefined&&input.utcOffsetSeconds!==null){
+      if(!Number.isInteger(input.utcOffsetSeconds)||input.utcOffsetSeconds<(-12*3600)||input.utcOffsetSeconds>14*3600)
+        throw new Error("Неправильное UTC-смещение в секундах.");
+      offsetSeconds=input.utcOffsetSeconds;
+      offsetMinutes=offsetSeconds/60;
+      timeZone=typeof input.timeZone==="string"?input.timeZone.slice(0,60):null;
+    }else{
+      offsetMinutes=parseOffset(input.utcOffset);
+      offsetSeconds=offsetMinutes*60;
+    }
     lat=coord(input.latitude,-89,89,"широту");
     lon=coord(input.longitude,-180,180,"долготу");
     place=typeof input.place==="string"?input.place.trim().slice(0,100):"";
   }
-  const utcMs=Date.UTC(date.year,date.month-1,date.day,hour,minute)-((offsetMinutes||0)*60000);
+  const utcMs=Date.UTC(date.year,date.month-1,date.day,hour,minute)-((offsetSeconds||0)*1000);
   const utc=new Date(utcMs);
   if(!Number.isFinite(utcMs))throw new Error("Не удалось вычислить UTC.");
-  return {date,unknown,hour,minute,offsetMinutes,latitude:lat,longitude:lon,place,utc,utcISO:utc.toISOString()};
+  return {date,unknown,hour,minute,offsetMinutes,offsetSeconds,timeZone,latitude:lat,longitude:lon,place,utc,utcISO:utc.toISOString()};
  }
  function epsilonDegrees(utc){
   // Meeus: mean obliquity; apparent sidereal time introduces <0.01° mismatch.
@@ -139,14 +148,32 @@
     }
   }
   aspects.sort((a,b)=>a.orb-b.orb);
+  // When the birth time is unknown, give a bounded UTC-day Moon range, not an invented precision.
+  let moonRange=null;
+  if(moment.unknown){
+    const start=new Date(Date.UTC(moment.date.year,moment.date.month-1,moment.date.day,0,0));
+    const end=new Date(start.getTime()+86400000-1000);
+    const first=position(bodyPosition(astro,"Moon",start).longitude);
+    const last=position(bodyPosition(astro,"Moon",end).longitude);
+    moonRange={start:first,end:last,changesSign:first.signIndex!==last.signIndex,
+      convention:"00:00–23:59 UTC; not the exact local civil day"};
+  }
   return {version:VERSION,zodiac:"tropical",frame:"geocentric apparent ecliptic of date",
-   houses:angles?"equal":"unknown",moment:moment,points,angles,aspects,
+   houses:angles?"equal":"unknown",moment:moment,points,angles,aspects,moonRange,
    note:moment.unknown?"Время неизвестно: положение планет для 12:00 UTC; ASC и дома не рассчитываются; Луна может измениться за день.":"Точность углов и домов зависит от указанного времени, UTC-смещения и координат. Домовая система — равнодомная."};
+ }
+ function offsetText(seconds){
+  const magnitude=Math.abs(seconds),h=String(Math.floor(magnitude/3600)).padStart(2,"0");
+  const m=String(Math.floor(magnitude%3600/60)).padStart(2,"0");
+  const remain=magnitude%60;
+  return (seconds<0?"-":"+")+h+":"+m+(remain?":"+String(remain).padStart(2,"0"):"");
  }
  function textSummary(r){
   const header=["Натальная карта (астрономические положения, тропический зодиак)",
-    "Дата: "+r.moment.date.iso+(r.moment.unknown?" (время неизвестно, 12:00 UTC)":" "+String(r.moment.hour).padStart(2,"0")+":"+String(r.moment.minute).padStart(2,"0")+" UTC"+(r.moment.offsetMinutes>=0?"+":"−")+Math.floor(Math.abs(r.moment.offsetMinutes)/60).toString().padStart(2,"0")+":"+String(Math.abs(r.moment.offsetMinutes)%60).padStart(2,"0")),
+    "Дата: "+r.moment.date.iso+(r.moment.unknown?" (время неизвестно, 12:00 UTC)":" "+String(r.moment.hour).padStart(2,"0")+":"+String(r.moment.minute).padStart(2,"0")+" UTC"+offsetText(r.moment.offsetSeconds)),
     "UTC: "+r.moment.utcISO];
+  if(r.moment.timeZone)header.push("Зона IANA: "+r.moment.timeZone+" (правила из браузера)");
+  if(r.moonRange)header.push("Луна (неизвестное время, 00–24 UTC): "+r.moonRange.start.sign+" "+formatDegree(r.moonRange.start.degree)+" — "+r.moonRange.end.sign+" "+formatDegree(r.moonRange.end.degree)+(r.moonRange.changesSign?"; знак меняется":""));
   if(r.angles)header.push("ASC: "+r.angles.asc.sign+" "+formatDegree(r.angles.asc.degree)+"; MC: "+r.angles.mc.sign+" "+formatDegree(r.angles.mc.degree));
   for(const p of r.points)header.push(p.ru+": "+p.sign+" "+formatDegree(p.degree)+(p.house?" / дом "+p.house:"")+(p.retrograde?" (R)":""));
   header.push("Астрономия — расчёт положений; астрологические трактовки не имеют научной прогностической валидации.");
