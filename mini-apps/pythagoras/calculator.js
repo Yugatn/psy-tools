@@ -9,7 +9,7 @@
   if (root) root.PythagorasCalculator = api;
 })(typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : null), function () {
   "use strict";
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const LAYOUT = Object.freeze([[1,4,7],[2,5,8],[3,6,9]]);
   const NAMES = Object.freeze({
     1:"Характер", 2:"Энергия", 3:"Интерес", 4:"Здоровье (символ)",
@@ -85,6 +85,21 @@
     }));
     return {significant,literal,changed:changes.some(x=>x.difference!==0),changes};
   }
+  function compareDates(dateA,dateB,options) {
+    const first=calculate(dateA,options),second=calculate(dateB,options);
+    const digits=Array.from({length:9},(_,i)=>{
+      const digit=i+1;
+      return {digit,a:first.counts[digit],b:second.counts[digit],
+        difference:second.counts[digit]-first.counts[digit],
+        dateA:first.dateCounts[digit],dateB:second.dateCounts[digit],
+        workingA:first.workingCounts[digit],workingB:second.workingCounts[digit]};
+    });
+    const lines=LINES.map((line,i)=>({id:line.id,name:line.name,
+      a:first.lines[i].count,b:second.lines[i].count,
+      difference:second.lines[i].count-first.lines[i].count}));
+    return {version:VERSION,first,second,digits,lines,
+      sumAbsoluteDifferences:digits.reduce((s,x)=>s+Math.abs(x.difference),0)};
+  }
   function formatText(result) {
     if(!result||!result.date||!result.counts)throw new TypeError("Нет результата");
     const r=result;
@@ -99,5 +114,5 @@
       "Нумерологическая символическая система, не психологическая диагностика."
     ].join("\n");
   }
-  return Object.freeze({VERSION,LAYOUT,NAMES,LINES,digitSum,daysInMonth,parseDate,calculate,compareRules,formatText});
+  return Object.freeze({VERSION,LAYOUT,NAMES,LINES,digitSum,daysInMonth,parseDate,calculate,compareRules,compareDates,formatText});
 });
