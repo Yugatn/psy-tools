@@ -1,0 +1,44 @@
+name: World Clock Mini App regression
+
+on:
+  push:
+    paths:
+      - "mini-apps/world-clock/**"
+      - "mini-apps/natal-chart/cities-ru-data.js"
+      - "mini-apps/natal-chart/cities-by-data.js"
+      - "mini-apps/natal-chart/city-catalog*.js"
+      - "tests/world-clock.test.cjs"
+      - ".github/workflows/world-clock-mini-app.yml"
+  pull_request:
+    paths:
+      - "mini-apps/world-clock/**"
+      - "mini-apps/natal-chart/cities-ru-data.js"
+      - "mini-apps/natal-chart/cities-by-data.js"
+      - "mini-apps/natal-chart/city-catalog*.js"
+      - "tests/world-clock.test.cjs"
+      - ".github/workflows/world-clock-mini-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax validation
+        run: |
+          node --check mini-apps/world-clock/clock-engine.js
+          node --check mini-apps/world-clock/vendor/tz-lookup.js
+      - name: Timezone and city tests
+        run: node --test tests/world-clock.test.cjs
+      - name: Static page dependencies
+        run: |
+          test -f mini-apps/world-clock/index.html
+          grep -Fq '<script src="./clock-engine.js"></script>' mini-apps/world-clock/index.html
+          grep -Fq '<script src="./vendor/tz-lookup.js"></script>' mini-apps/world-clock/index.html
+          grep -Fq 'city-catalog-by.js' mini-apps/world-clock/index.html
