@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#020503">
+<meta name="theme-color" content="#10141e">
 <meta name="description" content="CRM: мировые часы, возраст, рабочий день и таймеры звонков клиентам со своими статусами.">
-<title>CRM MATRIX · Центр времени и звонков</title>
+<title>Client Desk · Клиенты и звонки</title>
 <style>
 :root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#091626);--panel:var(--tg-theme-secondary-bg-color,#12283b);--ink:var(--tg-theme-text-color,#ecf5fd);--muted:var(--tg-theme-hint-color,#b0c3d0);--line:#3a5b71;--accent:var(--tg-theme-button-color,#1e948d);--button-ink:var(--tg-theme-button-text-color,#fff);--amber:#e6bd7c;--mint:#98e9d1;--danger:#f9a5a5;--blue:#9ac8fa}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -188,11 +188,86 @@ footer{border-top-color:#245934}
 @media(max-width:760px){.search-queue{grid-template-columns:1fr}.queue-hint{padding-bottom:0}}
 @media(max-width:490px){.hero-diagnostics{gap:6px 12px}.age-footer-card .age-hint{display:block;margin-left:42px}.timer-title{flex-wrap:wrap}.timer-row select{min-width:0}}
 @media(prefers-reduced-motion:reduce){body::before{animation:none;transform:none}}
+
+/* Client Desk 2: desktop-first restrained graphite design */
+:root{--bg:#0d111a;--panel:#181e2a;--ink:#f3f5fa;--muted:#abb7c9;--line:#303b4c;--accent:#768df5;--button-ink:#fff;--mint:#97b5ff;--danger:#ffb5be;--amber:#f4c688}
+html{background:#0d111a}body{background:radial-gradient(ellipse at 60% -30%,#232b43 0%,transparent 58%),#0d111a;color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body::before{display:none!important;animation:none!important}
+main{max-width:1560px;padding:28px 34px 64px}
+h1,h2,h3,.eyebrow,.metric b,.clock-card .time,.work-display,.timer-count,.display,.age-footer-card details summary{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-shadow:none}
+h1{color:#fff;font-size:clamp(34px,3vw,46px)}h2{color:#f0f3fb}h3{color:#f0f3fb}
+header{border-color:#303b4c;padding:10px 2px 20px;margin-bottom:22px}
+header p{max-width:1000px}.eyebrow{color:#9aafff}
+.hero-diagnostics{font:600 12px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#a9b7d0;letter-spacing:.03em}
+.hero-diagnostics span:first-child{color:#c9d5ff}
+.card{background:#171d29;border:1px solid #303949;border-radius:18px;box-shadow:0 12px 26px #00000022;padding:23px}
+.card:hover{border-color:#445065}
+.metric-row{gap:14px;margin-bottom:20px}
+.metric{background:#1a2230;border-color:#354153;border-radius:14px;padding:17px 20px}
+.metric b{color:#fff;font-size:32px}
+.metric span{font-size:13px}
+.world-layout>.card{margin-bottom:17px}
+.clock-card,.clock-card.home{background:#202839;border:1px solid #39465c;border-radius:13px;box-shadow:none}
+.clock-card.home{background:#252f49;border-color:#526aa1}
+.clock-card .place{color:#f1f4fc}.clock-card .time{color:#fff;letter-spacing:-.035em;text-shadow:none}
+.clock-card .hint,.timer-meta,.help{color:#aab8ca}
+input:not([type=checkbox]),select,textarea{background:#111824;border:1px solid #465269;color:#f4f6fa;border-radius:10px;min-height:45px}
+input::placeholder,textarea::placeholder{color:#8393a8}
+input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #94a6ff;outline-offset:2px}
+button{background:#273247;border:1px solid #45536e;color:#e9efff;border-radius:10px;min-height:42px}
+button.primary{background:#637ce6;border-color:#8195f4;color:#fff}
+button.primary:hover{background:#748bf3}
+button:hover:not(:disabled){filter:brightness(1.08)}
+button.danger{background:#3a2834;border-color:#795060;color:#ffd2d8}
+.pill{background:#27334a;border-color:#4b5d7d;color:#d8e2ff}
+.pill.gray{background:#303743;border-color:#6b7589;color:#dce2ee}
+.pill.amber{background:#4d3d28;border-color:#a18756;color:#ffe5b5}
+.pill.blue{background:#263d60;border-color:#587ebc;color:#cfe3ff}
+.pill.green{background:#234c3d;border-color:#4a9679;color:#c7f7d9}
+.pill.red{background:#55303b;border-color:#9c5e70;color:#ffced6}
+.pill.violet{background:#3c3158;border-color:#826db2;color:#e7d8ff}
+.timer-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.timer-card,.timer-card.soon,.timer-card.overdue,.timer-card.finished{position:relative;opacity:1;background:#1b2330;border:1px solid #364255;border-left:5px solid var(--client-color,#70809b);border-radius:15px;padding:20px 21px;min-width:0;box-shadow:0 8px 24px #050b141a}
+.timer-card[data-color="slate"]{--client-color:#8c98ab}.timer-card[data-color="blue"]{--client-color:#759dff}.timer-card[data-color="teal"]{--client-color:#59b9ba}.timer-card[data-color="violet"]{--client-color:#ad8fe8}.timer-card[data-color="amber"]{--client-color:#d9aa68}.timer-card[data-color="rose"]{--client-color:#e58ca6}.timer-card[data-color="green"]{--client-color:#73c99d}
+.timer-card.soon{background:#292938}.timer-card.overdue{background:#30252c}.timer-card.finished{background:#1a222c}
+.timer-title strong{font-size:19px;line-height:1.4}
+.timer-count{font-size:clamp(29px,3vw,41px);color:#f8faff;margin:15px 0 10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.timer-count.overdue{color:#ffb5ab}
+.timer-row{border-top:1px solid #374255;padding-top:14px;align-items:flex-end}
+.timer-fields{display:flex;flex-wrap:wrap;gap:8px;flex:1}
+.timer-fields select{min-width:125px;max-width:220px;flex:1}
+.timer-row .actions{margin-top:0}.timer-row button{min-height:38px;font-size:13px}
+.timer-note{font-size:13px;color:#c0cad9}
+.status-record{background:#1d2534;border-color:#39485c;border-radius:12px}
+.note{background:#222a37;border-left-color:#758af0;color:#c5d0de}
+.work-display{color:#e9eeff;text-shadow:none}
+.work-progress{background:#354055}.work-progress>div{background:linear-gradient(90deg,#6482ed,#91b0ff)}
+.filters button[aria-pressed=true]{background:#3b4c79;border-color:#93a9ff;color:#f1f5ff}
+.status{color:#a9bdfd}.status.error{color:#ffb6be}
+.queue-hint{font:12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#a6b5ce}
+.matrix-dot{background:#879eff;box-shadow:none}
+.search-queue{grid-template-columns:minmax(240px,1fr) auto}
+#call-search{background:#111824;border-color:#465269}
+.age-footer-card{background:#161d29;border-color:#344056}
+.age-footer-card details summary{font-size:20px;color:#dce4ff}
+.age-footer-card details summary::before{color:#93a7ee}
+.age-footer-card .age-hint{color:#9cabc4}
+.age-content{border-color:#35435b}.age-content .display{color:#fff}
+footer{border-top-color:#364256}
+.city-search-box{margin-top:16px;padding:15px;background:#1d2635;border:1px solid #37465a;border-radius:12px}
+.city-results{display:grid;gap:5px;max-height:250px;overflow:auto;margin-top:8px}
+.city-results:empty{display:none}
+.city-result{width:100%;display:flex;justify-content:space-between;gap:12px;text-align:left;align-items:center;background:#27344a;border:1px solid #3d4d67}
+.city-result span:last-child{font-size:12px;color:#c4d0e3}
+@media(min-width:1150px){.world-layout{display:block}.grid-auto{grid-template-columns:repeat(4,minmax(0,1fr))}.card-heading h2{font-size:22px}}
+@media(max-width:1050px){main{padding:20px 18px 50px}.timer-list{grid-template-columns:1fr}}
+@media(max-width:600px){main{padding:14px 12px 42px}.card{padding:16px}.timer-count{font-size:31px}.timer-fields{width:100%}.timer-fields select{max-width:none}.city-result{align-items:flex-start;flex-direction:column}.metric{padding:12px}}
+
 </style></head><body><main>
 <nav class="tiny"><a href="../../">PSY-TOOLS</a> / CRM · Центр времени</nav>
 <header><div class="eyebrow">CRM · Время и коммуникации</div><h1>Центр времени и звонков</h1>
 <p>Мировые часы, рабочий день и клиентские таймеры. Следите за сроками звонков по часовым поясам клиентов и фиксируйте результат собственным статусом.</p>
- <div class="hero-diagnostics" aria-hidden="true"><span>● CRM MATRIX</span><span>TIME SYNC / IANA</span><span>CALL QUEUE / LIVE</span></div></header>
+ <div class="hero-diagnostics" aria-hidden="true"><span>CLIENT DESK</span><span>Календарь звонков</span><span>Местное время клиентов</span></div></header>
 <div class="metric-row">
  <div class="metric"><b id="count-all">0</b><span>Клиентских таймеров</span></div>
  <div class="metric"><b id="count-active">0</b><span>В ожидании</span></div>
@@ -203,6 +278,7 @@ footer{border-top-color:#245934}
 <section class="card" aria-labelledby="world-heading">
  <div class="card-heading"><h2 id="world-heading">Мировые часы</h2><span class="pill">Основной и дополнительные</span></div>
  <div id="clocks" class="grid-auto"></div>
+ <div class="city-search-box"><label for="clock-city-search">Найти город России — по названию или региону</label><input id="clock-city-search" type="search" placeholder="Например, Томск или Свердловская область" autocomplete="off"><div id="clock-city-results" class="city-results" aria-label="Найденные города"></div></div>
  <div class="small-controls" style="margin-top:13px">
   <div><label for="choose-city">Быстро добавить город</label><select id="choose-city"></select></div>
   <div><label for="custom-open">Города вне подборки</label><button id="custom-open" type="button" style="width:100%">Добавить свою IANA-зону</button></div>
@@ -214,7 +290,7 @@ footer{border-top-color:#245934}
  </div>
  <datalist id="zone-options"></datalist>
  <p id="city-message" class="status" role="status" aria-live="polite"></p>
- <p class="help">Основной город задаёт календарную дату возраста и рабочий день. В справочнике — международная подборка; другие города добавляются вручную по зоне IANA. Время берётся из базы часовых поясов браузера.</p>
+ <p class="help">Основной город задаёт календарную дату возраста и рабочий день. Доступен поиск по 1 126 городским записям России и международная подборка. Для остальных городов можно указать IANA-зону вручную. Время берётся из базы часовых поясов браузера.</p>
 </section>
 </div>
 <section class="card" aria-labelledby="work-heading">
@@ -256,6 +332,7 @@ footer{border-top-color:#245934}
    <div><label for="client-title">Название таймера / клиент</label><input id="client-title" maxlength="120" required placeholder="Например, Перезвонить Анне по договору"></div>
    <div><label for="client-phone">Телефон клиента (необязательно)</label><input id="client-phone" type="tel" maxlength="32" autocomplete="off" placeholder="+7 ..."></div>
   </div>
+  <div class="city-search-box"><label for="client-city-search">Поиск города России</label><input id="client-city-search" type="search" placeholder="Введите город или регион" autocomplete="off"><div id="client-city-results" class="city-results" aria-label="Результаты поиска городов"></div><p class="help">Выберите город из списка — название и часовой пояс заполнятся автоматически. При необходимости проверьте часовой пояс.</p></div>
   <div class="grid-3" style="margin-top:10px">
    <div><label for="client-preset">Город из подборки</label><select id="client-preset"></select></div>
    <div><label for="client-city">Название города</label><input id="client-city" maxlength="100" required></div>
@@ -266,6 +343,7 @@ footer{border-top-color:#245934}
    <div><label for="client-time">Время звонка у клиента</label><input id="client-time" type="time" required></div>
    <div><label for="client-status">Статус</label><select id="client-status"></select></div>
   </div>
+  <div style="margin-top:10px;max-width:280px"><label for="client-color">Цвет карточки клиента</label><select id="client-color"><option value="slate">Графит</option><option value="blue">Синий</option><option value="teal">Бирюзовый</option><option value="violet">Фиолетовый</option><option value="amber">Янтарный</option><option value="rose">Розовый</option><option value="green">Зелёный</option></select></div>
   <div id="client-fold-box" style="margin-top:10px" hidden><label for="client-fold">При переводе часов назад время повторялось: выберите конкретный момент</label><select id="client-fold"></select></div>
   <div style="margin-top:10px"><label for="client-note">Примечание (необязательно)</label><textarea id="client-note" maxlength="400" placeholder="Причина звонка, этап сделки, следующий шаг"></textarea></div>
   <p id="call-preview" class="status" role="status" aria-live="polite"></p>
@@ -322,6 +400,9 @@ footer{border-top-color:#245934}
 </section>
 <footer>CRM · Центр времени и звонков. Даты рождения, телефоны и имена клиентов — персональные сведения; не вводите их на общем устройстве без защиты. <a href="../world-clock/">Мировые часы</a> · <a href="../age-tenure/">Расчёт стажа</a> · <a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/client-desk">Код CRM</a></footer>
 </main>
+<script src="../natal-chart/cities-ru-data.js"></script>
+<script src="../natal-chart/city-catalog.js"></script>
+<script src="../world-clock/vendor/tz-lookup.js"></script>
 <script>
 /* Copied without logic changes from Yugatn/psy-tools/mini-apps/world-clock/clock-engine.js
  * Source blob 245e2e739003cfb91339c3e77574a77620cdd41b; local copy keeps private CRM Mini App standalone.
@@ -663,6 +744,8 @@ function cleanStatus(raw){
 function cleanReminder(raw,ids,W){
  if(!raw||typeof raw!=="object")fail("Неверная запись клиента.");
  const id=String(raw.id||""),title=String(raw.title||"").trim(),city=String(raw.city||"").trim(),note=String(raw.note||"").trim(),phone=String(raw.phone||"").trim(),statusId=String(raw.statusId||"");
+ const cardColor=String(raw.cardColor||"slate");
+ if(!["slate","blue","teal","violet","amber","rose","green"].includes(cardColor))fail("Неизвестный цвет карточки.");
  if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))fail("Некорректный идентификатор таймера.");
  if(!title||title.length>120)fail("Название таймера: 1–120 символов.");
  if(!city||city.length>100)fail("Город клиента: 1–100 символов.");
@@ -673,7 +756,7 @@ function cleanReminder(raw,ids,W){
  const dueAt=Number(raw.dueAt);
  if(!Number.isSafeInteger(dueAt)||dueAt<Date.UTC(1900,0,1)||dueAt>Date.UTC(2100,11,31,23,59,59))fail("Некорректная дата звонка.");
  function optStamp(value){if(value===null||value===undefined)return null;const n=Number(value);if(!Number.isSafeInteger(n)||n<0||n>8.64e15)fail("Некорректная временная метка.");return n}
- return {id,title,city,zone,note,phone,dueAt,statusId,
+ return {id,title,city,zone,note,phone,dueAt,statusId,cardColor,
   createdAt:optStamp(raw.createdAt),updatedAt:optStamp(raw.updatedAt),
   completedAt:optStamp(raw.completedAt),notifiedAt:optStamp(raw.notifiedAt)};
 }
@@ -903,6 +986,7 @@ function cardClass(status){return "timer-card "+status;}
 function reminderLine(r,now){
  const status=data.statuses.find(s=>s.id===r.statusId),kind=reminderClass(r,now);
  const root=dom("article",cardClass(kind));root.id="call-"+r.id;
+ root.dataset.color=r.cardColor||"slate";
  const head=dom("div","timer-title");
  const label=dom("strong","",r.title),chip=statusLabel(status);
  head.append(label,chip);root.appendChild(head);
@@ -918,6 +1002,13 @@ function reminderLine(r,now){
  root.append(timeInfo);
  if(r.note)root.append(dom("div","timer-note",r.note));
  const controls=dom("div","timer-row"),select=dom("select");
+ const colorControl=dom("select");colorControl.className="card-color-picker";
+ colorControl.setAttribute("aria-label","Цвет карточки "+r.title);
+ for(const [value,name] of Object.entries({slate:"Графит",blue:"Синий",teal:"Бирюзовый",violet:"Фиолетовый",amber:"Янтарный",rose:"Розовый",green:"Зелёный"})){
+  const option=dom("option","",name);option.value=value;colorControl.appendChild(option);
+ }
+ colorControl.value=r.cardColor||"slate";
+ colorControl.addEventListener("change",()=>{try{data=M.editReminder(data,W,r.id,{cardColor:colorControl.value,updatedAt:Date.now()});safeStore();renderReminders();}catch(e){signal("storage-message",e.message,true);}});
  select.setAttribute("aria-label","Статус таймера "+r.title);
  statusOptions(select,r.statusId);
  select.addEventListener("change",()=>{
@@ -959,7 +1050,7 @@ function reminderLine(r,now){
   link.style.display="inline-flex";link.style.alignItems="center";link.style.padding="8px 12px";
   buttons.append(link);
  }
- buttons.append(remove);controls.append(select,buttons);root.appendChild(controls);
+ buttons.append(remove);const fields=dom("div","timer-fields");fields.append(select,colorControl);controls.append(fields,buttons);root.appendChild(controls);
  return root;
 }
 function renderReminders(){
@@ -1023,7 +1114,7 @@ function renderStatusPanel(){
 }
 function resetForm(){
  editId=null;$("form-heading").textContent="Новый таймер звонка";$("save-call").textContent="Сохранить таймер";
- $("call-form").reset();$("client-phone").value="";$("client-note").value="";
+ $("call-form").reset();$("client-phone").value="";$("client-note").value="";$("client-color").value="slate";$("client-city-search").value="";$("client-city-results").replaceChildren();
  $("client-status").value=data.statuses.some(s=>s.id==="waiting")?"waiting":data.statuses[0].id;
  let initial=data.world.home;
  const p=localMoment(initial.zone,Date.now()+3600000);
@@ -1039,7 +1130,7 @@ function openEdit(id=null){
   editId=id;$("form-heading").textContent="Изменить таймер звонка";$("save-call").textContent="Сохранить изменения";
   $("client-title").value=r.title;$("client-phone").value=r.phone;
   $("client-city").value=r.city;$("client-zone").value=r.zone;
-  $("client-note").value=r.note;$("client-status").value=r.statusId;
+  $("client-note").value=r.note;$("client-status").value=r.statusId;$("client-color").value=r.cardColor||"slate";
   const p=localMoment(r.zone,r.dueAt);
   $("client-date").value=String(p.year).padStart(4,"0")+"-"+pad(p.month)+"-"+pad(p.day);
   $("client-time").value=pad(p.hour)+":"+pad(p.minute);
@@ -1080,7 +1171,7 @@ function saveCall(e){
    if(!chosen)throw Error("Некорректный вариант времени.");
   }
   const rec={title:$("client-title").value,phone:$("client-phone").value,city:$("client-city").value,
-   zone:$("client-zone").value.trim(),dueAt:chosen.ms,note:$("client-note").value,statusId:$("client-status").value,updatedAt:Date.now()};
+   zone:$("client-zone").value.trim(),dueAt:chosen.ms,note:$("client-note").value,statusId:$("client-status").value,cardColor:$("client-color").value,updatedAt:Date.now()};
   if(editId)data=M.editReminder(data,W,editId,rec);
   else data=M.addReminder(data,W,{...rec,id:uniqueId("call"),createdAt:Date.now(),completedAt:null,notifiedAt:null});
   safeStore();$("edit-form").hidden=true;renderReminders();signal("storage-message","Таймер звонка сохранён.");
@@ -1123,7 +1214,35 @@ function tick(){
  if(local!==lastAgeDate){lastAgeDate=local;renderAge();}
  renderWork();refreshReminders();checkNotifications();
 }
+
+function cityResultSearch(inputId,resultId,mode){
+ const container=$(resultId),q=$(inputId).value.trim();container.replaceChildren();
+ const catalog=window.RussianCityCatalog;
+ if(!catalog||!window.tzlookup){if(q)container.append(dom("p","help","Справочник городов недоступен. Можно ввести город и IANA-зону вручную."));return;}
+ if(q.length<2)return;
+ const found=catalog.query(q,"",30);
+ if(!found.items.length){container.append(dom("p","help","Город не найден. Можно ввести его вручную."));return;}
+ for(const item of found.items){
+  const b=dom("button","city-result");b.type="button";
+  b.append(dom("strong","",item.name),dom("span","",item.region));
+  b.addEventListener("click",()=>{
+   try{
+    const prediction=W.suggestZone(item,"RU",window.tzlookup);
+    const city={id:"ru:"+item.id,name:item.name,country:"Россия",region:item.region,zone:prediction.zone,confidence:prediction.confidence};
+    if(mode==="clock"){data.world=W.addCity(data.world,city);safeStore();renderAll();signal("city-message",item.name+" добавлен. "+prediction.explanation);}
+    else{$("client-city").value=city.name;$("client-zone").value=city.zone;$("client-preset").value="";updateCallPreview();signal("call-preview",item.name+": "+prediction.explanation);}
+    $(inputId).value="";container.replaceChildren();
+   }catch(e){signal(mode==="clock"?"city-message":"call-preview",e.message,true);}
+  });
+  container.append(b);
+ }
+ if(found.total>30)container.append(dom("p","tiny","Показаны первые 30 из "+found.total+". Уточните название или регион."));
+}
+
 function start(){
+ for(const [search,results,mode] of [["clock-city-search","clock-city-results","clock"],["client-city-search","client-city-results","client"]]){
+  $(search).addEventListener("input",()=>cityResultSearch(search,results,mode));
+ }
  zoneDefaults();generatePresets($("client-preset"),"Своя зона / вручную");
  const colors={gray:"Серый",amber:"Жёлтый",blue:"Синий",green:"Зелёный",red:"Красный",violet:"Фиолетовый"};
  for(const c of M.COLORS){const o=dom("option","",colors[c]);o.value=c;$("status-color").appendChild(o);}
