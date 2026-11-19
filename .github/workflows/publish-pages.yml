@@ -1,0 +1,92 @@
+name: Publish PSY-TOOLS website to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Check and package public site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Verify website and both CRM Mini Apps
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s mini-apps/exercise-timer/index.html
+          test -s mini-apps/age-tenure/index.html
+          test -f .nojekyll
+          python3 - <<'PY'
+          from pathlib import Path
+          home = Path('index.html').read_text(encoding='utf-8')
+          assert 'href="./mini-apps/exercise-timer/"' in home
+          assert 'href="./mini-apps/age-tenure/"' in home
+          for app, marker in [
+              ('exercise-timer', 'CrmExerciseTimer'),
+              ('age-tenure', 'CrmAgeTenure'),
+          ]:
+              html = Path('mini-apps', app, 'index.html').read_text(encoding='utf-8')
+              assert marker in html and '<script>' in html
+              assert '<!doctype html>' in html.lower()
+              assert '<script src="./engine.js">' not in html
+              assert '<script src="./calculator.js">' not in html
+              print(f'PUBLISH_READY {app}: {len(html)} characters')
+          PY
+      - name: Upload static website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+  deploy:
+    name: Publish and check public Mini App URLs
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Check both live entrypoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.deployment.outputs.page_url }}"
+          BASE="${BASE%/}"
+          echo "Checking deployed site: ${BASE}"
+          for app in exercise-timer age-tenure; do
+            URL="${BASE}/mini-apps/${app}/"
+            success=0
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              CODE=$(curl -L -sS --max-time 18 -o /tmp/miniapp-response -w '%{http_code}' "${URL}" || true)
+              if [ "${CODE}" = "200" ] && grep -q 'Crm' /tmp/miniapp-response; then
+                echo "LIVE_OK: ${URL}"
+                success=1
+                break
+              fi
+              echo "Retry ${i} for ${URL}: HTTP ${CODE}"
+              sleep 6
+            done
+            if [ "${success}" -ne 1 ]; then
+              echo "::error::Mini App did not return a valid HTML document: ${URL}"
+              exit 1
+            fi
+          done
