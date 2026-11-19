@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101b2a">
+<title>Натальная карта — PSY-TOOLS Mini App</title>
+<meta name="description" content="Натальная карта с положениями десяти небесных тел, аспектами, ASC и равнодомной системой домов. Расчёт на устройстве.">
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#0c1422);--surface:var(--tg-theme-secondary-bg-color,#152337);--ink:var(--tg-theme-text-color,#eef2f9);--muted:var(--tg-theme-hint-color,#9aacc5);--line:#35465d;--gold:#e3bd7e;--cyan:#83c9df;--btn:var(--tg-theme-button-color,#2a7891);--btn-ink:var(--tg-theme-button-text-color,#fff);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+body{background:radial-gradient(ellipse 110% 38% at 50% -10%,#233a58 0%,var(--bg) 95%);color:var(--ink);margin:0;line-height:1.55}
+main{max-width:1050px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) 15px max(30px,env(safe-area-inset-bottom))}
+h1{font-size:clamp(28px,5vw,45px);line-height:1.13;letter-spacing:-.035em;margin:9px 0}
+h2{font-size:20px;margin:0 0 9px}h3{font-size:15px;margin:0 0 8px}
+p{margin:7px 0}a{color:#9bd7eb}small,.small,.muted{color:var(--muted);font-size:13px}
+.top{padding:4px 0 20px}.eyebrow{text-transform:uppercase;font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700}
+.top p{max-width:820px;color:var(--muted)}.pill{display:inline-block;border:1px solid #70634f;color:#e5cc9c;background:#2b2830;border-radius:999px;padding:4px 10px;font-size:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cols.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+input,select,button{font:inherit}input,select{width:100%;border:1px solid #526a81;color:var(--ink);background:var(--bg);border-radius:10px;padding:11px 12px;min-height:45px}
+input:disabled,select:disabled{opacity:.48}input[type=checkbox]{width:19px;height:19px;min-height:0;accent-color:var(--gold)}
+button{background:#263a50;border:1px solid #4f657a;border-radius:11px;color:var(--ink);padding:10px 15px;font-weight:600;cursor:pointer;min-height:44px}
+button.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #c2e6fa;outline-offset:2px}
+button:hover{border-color:var(--gold)}button:disabled{opacity:.4;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.actions>button{flex:0 1 auto}
+.rowcheck{display:flex;align-items:center;gap:10px;padding:9px 0;color:var(--ink)}
+.rowcheck label{margin:0}.help{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
+.notice{font-size:13px;border-left:3px solid var(--gold);padding:10px 13px;background:#252b35;border-radius:0 9px 9px 0;color:#c6cbda;margin-top:12px}
+.err{min-height:22px;color:#ffc4ae;font-size:13px}#result[hidden]{display:none!important}
+.two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:13px}
+.chart svg{width:100%;height:auto;max-width:540px;display:block;margin:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12px;margin-top:8px}
+.legend span{padding:4px 7px;border:1px solid var(--line);border-radius:9px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{padding:13px;background:#0d1b2e;border:1px solid #3a506a;border-radius:12px}
+.stat span{display:block;font-size:11px;color:var(--muted);letter-spacing:.06em}
+.stat b{font-size:17px;color:#f5ddb6}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{text-align:left;border-bottom:1px solid #34475d;padding:9px 8px;vertical-align:top}
+th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
+.planet{white-space:nowrap;font-weight:650}.planet i{font-size:17px;font-style:normal;vertical-align:middle;color:var(--gold)}
+.dim{font-size:11px;color:var(--muted)}
+.aspect-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.aspect{padding:10px 11px;border:1px solid #3a4d63;border-radius:11px;background:#0d1b2e;font-size:13px}
+.aspect b{color:#e9c88f}
+#phase{min-height:1.5em;font-size:13px;color:#b4e6cc}
+.footer{margin-top:20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:790px){.two{grid-template-columns:1fr}}
+@media(max-width:600px){.cols,.cols.three,.stats,.aspect-list{grid-template-columns:1fr}.card{padding:13px;border-radius:14px}.actions>button{flex:1 1 140px}td,th{padding:8px 5px}main{padding-left:10px;padding-right:10px}}
+@media print{body{background:#fff;color:#111}.card,.stat,.aspect{background:#fff;color:#111;box-shadow:none;border-color:#aaa}.top,.actions,form,.notice,.err,#phase{display:none!important}#result{display:block!important}.stat b{color:#222}td,th{color:#222;border-color:#bbb}svg{color:#111}.footer{color:#333}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<nav class="small"><a href="../../">PSY-TOOLS</a> / Натальная карта</nav>
+<header class="top">
+  <div class="eyebrow">Astronomy Engine · PSY-TOOLS Mini App</div>
+  <h1>Натальная карта</h1>
+  <p>Астрономические положения Солнца, Луны и восьми планет по дате рождения, тропический зодиак, аспекты, Асцендент и равнодомная система домов. Вычисления выполняются на устройстве.</p>
+  <span class="pill">Астрономические расчёты ≠ доказанные прогнозы судьбы</span>
+</header>
+<section class="card" aria-labelledby="input-title">
+ <h2 id="input-title">Данные рождения</h2>
+ <form id="form" novalidate>
+ <div class="cols three">
+  <div><label for="birth-date">Дата</label><input type="date" min="1900-01-01" max="2100-12-31" id="birth-date" required value="2000-01-01"></div>
+  <div><label for="birth-time">Местное время рождения</label><input type="time" id="birth-time" value="12:00" required></div>
+  <div><label for="offset">UTC-смещение в дату рождения</label><input type="text" id="offset" inputmode="text" value="+00:00" placeholder="+03:00" maxlength="6" aria-describedby="offset-help"></div>
+ </div>
+ <p class="help" id="offset-help">Важно: UTC-смещение зависит от исторической даты и летнего времени. Оно <b>не вычисляется по городу автоматически</b>. Для Москвы, например, нельзя использовать одно значение для всех эпох.</p>
+ <div class="rowcheck"><input type="checkbox" id="unknown-time"><label for="unknown-time">Точное время рождения неизвестно</label></div>
+ <div id="location-fields">
+   <div class="cols">
+    <div><label for="preset">Место (быстрый выбор координат)</label>
+      <select id="preset"><option value="">Ввести координаты вручную</option>
+        <option value="Moscow">Москва</option><option value="Stockholm">Стокгольм</option>
+        <option value="London">Лондон</option><option value="Bangkok">Бангкок</option>
+        <option value="DaNang">Дананг</option><option value="NewYork">Нью-Йорк</option>
+      </select><p class="help">Пресет заполняет только географические координаты — не исторический UTC-часовой пояс.</p></div>
+    <div><label for="place">Название населённого пункта (необязательно)</label><input id="place" maxlength="100" placeholder="Например, Москва"></div>
+   </div>
+   <div class="cols">
+    <div><label for="lat">Широта, ° (север +, юг −)</label><input id="lat" type="number" step="any" min="-89" max="89" placeholder="55.7558"></div>
+    <div><label for="lon">Долгота, ° (восток +, запад −)</label><input id="lon" type="number" step="any" min="-180" max="180" placeholder="37.6173"></div>
+   </div>
+ </div>
+ <div class="notice">Если время неизвестно, приложение рассчитает примерные положения планет на <b>12:00 UTC</b> выбранного дня, но <b>не будет вычислять ASC и дома</b>. Положение Луны в течение дня может заметно меняться.</div>
+ <div class="actions"><button type="submit" class="primary">Построить карту</button><button type="button" id="demo">Пример: Гринвич, 2000 г.</button><button type="reset" id="clear">Сбросить</button></div>
+ <p class="err" id="error" role="alert" aria-live="polite"></p>
+ </form>
+</section>
+<div id="result" hidden>
+<div class="two">
+  <section class="card chart">
+   <h2>Круг натальной карты</h2>
+   <svg id="wheel" viewBox="0 0 440 440" role="img" aria-label="Круговой график положений планет по знакам зодиака"></svg>
+   <div class="legend"><span>♈–♓ · тропические знаки</span><span>☉ ☽ · небесные тела</span><span id="house-legend">12 равных домов</span></div>
+  </section>
+  <section class="card">
+    <h2>Основные координаты</h2>
+    <div class="stats" id="stats"></div>
+    <p class="small" id="moment-info"></p>
+    <p class="small" id="accuracy-note"></p>
+  </section>
+</div>
+<section class="card">
+  <h2>Положение небесных тел</h2>
+  <div style="overflow-x:auto">
+   <table><thead><tr><th>Тело</th><th>Знак</th><th>Положение</th><th>Дом</th><th>Движение</th></tr></thead><tbody id="planet-table"></tbody></table>
+  </div>
+</section>
+<section class="card"><h2>Аспекты</h2>
+  <p class="muted">Аспекты — геометрические угловые расстояния между небесными телами. Орбисы: соединение 8°, секстиль 5°, квадрат 6°, тригон 6°, оппозиция 8°. Психологические трактовки не выводятся автоматически.</p>
+  <div class="aspect-list" id="aspects"></div>
+</section>
+<section class="card">
+ <h2>Экспорт и использование</h2>
+ <div class="actions">
+  <button type="button" id="copy">Скопировать таблицу</button>
+  <button type="button" id="share">Поделиться</button>
+  <button type="button" id="svg-export">Сохранить круг SVG</button>
+  <button type="button" id="print">Печать / PDF</button>
+ </div>
+ <p class="help">При экспорте в текст передаются дата и астрономические положения. Запрашивайте согласие, если используете чужие данные рождения.</p>
+ <p id="phase" role="status" aria-live="polite"></p>
+</section>
+</div>
+<section class="card">
+ <h2>Методика и границы точности</h2>
+ <p class="muted">Используется <a href="https://github.com/cosinekitty/astronomy" target="_blank" rel="noopener noreferrer">Astronomy Engine 2.1.19</a> (MIT): геоцентрические долготы по истинной эклиптике даты, тропический зодиак. Положения планет астрономические; ASC и MC рассчитываются по местному звёздному времени и среднему наклону эклиптики. <b>Это приближённые угловые расчёты, не воспроизведение Swiss Ephemeris.</b> Дома равнодомные, начиная с ASC, а MC показан отдельно и не обязан совпадать с куспидом 10-го дома.</p>
+ <p class="muted">Точное местное время и корректное историческое UTC-смещение критичны для ASC и домов. Место рождения вводится координатами. Не учитываются специфические настройки профессиональных астрологических школ: сидерический зодиак, Плацидус, топоцентрическая Луна, астероиды, фиктивные точки или астрологические прогнозы.</p>
+ <p class="muted">Астрология и нумерология могут использоваться как <em>символические системы саморефлексии</em>, но научных оснований диагностировать ими личность, здоровье, совместимость или судьбу нет. Результат не доказывает философские тезисы «Амбивалентного Солипсизма».</p>
+</section>
+<footer class="footer"><p>PSY-TOOLS · автор проекта Югатн. Расчёты полностью на устройстве; нет регистрации, геолокационного разрешения, сохранения даты в localStorage или отправки личных данных на сервер. Код открывается как в Telegram Mini App, так и в обычном браузере.</p>
+<p><a href="https://github.com/Yugatn/psy-tools/tree/main/mini-apps/natal-chart" target="_blank" rel="noopener noreferrer">Исходники и проверка</a> · <a href="../pythagoras/">Квадрат Пифагора</a></p></footer>
+</main>
+<script src="./vendor/astronomy.browser.min.js"></script>
+<script src="./chart.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const E=window.NatalChartEngine, A=window.Astronomy;
+const NS="http://www.w3.org/2000/svg";
+const CITY={
+ Moscow:{place:"Москва",lat:55.7558,lon:37.6173},
+ Stockholm:{place:"Стокгольм",lat:59.3293,lon:18.0686},
+ London:{place:"Лондон",lat:51.5074,lon:-0.1278},
+ Bangkok:{place:"Бангкок",lat:13.7563,lon:100.5018},
+ DaNang:{place:"Дананг",lat:16.0544,lon:108.2022},
+ NewYork:{place:"Нью-Йорк",lat:40.7128,lon:-74.006}
+};
+let result=null;
+const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;return x;};
+const svg=(tag,attrs,parent,txt)=>{const x=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs||{}))x.setAttribute(k,String(v));if(txt!==undefined)x.textContent=txt;if(parent)parent.appendChild(x);return x;};
+function status(msg){$("phase").textContent=msg;}
+function toggleUnknown(){
+ const unknown=$("unknown-time").checked;
+ ["birth-time","offset","lat","lon","place","preset"].forEach(id=>{$(id).disabled=unknown;});
+ $("location-fields").style.opacity=unknown?"0.5":"1";
+}
+$("unknown-time").addEventListener("change",toggleUnknown);
+$("preset").addEventListener("change",()=>{
+ const c=CITY[$("preset").value];
+ if(c){$("place").value=c.place;$("lat").value=String(c.lat);$("lon").value=String(c.lon);}
+});
+function fields(){return {date:$("birth-date").value,time:$("birth-time").value,utcOffset:$("offset").value,latitude:$("lat").value,longitude:$("lon").value,place:$("place").value,unknownTime:$("unknown-time").checked};}
+function clear(x){x.replaceChildren();}
+function linePoint(cx,cy,r,deg){
+ const a=(Math.PI-E.norm(deg)*Math.PI/180);
+ return {x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r};
+}
+function wheel(r){
+ const root=$("wheel");clear(root);
+ const cx=220,cy=220,outer=202,inner=137,base=r.angles?r.angles.asc.longitude:0;
+ svg("circle",{cx,cy,r:outer,fill:"#101d2c",stroke:"#7e9ab7","stroke-width":1.2},root);
+ svg("circle",{cx,cy,r:inner,fill:"#0f1d30",stroke:"#4c667b","stroke-width":1.1},root);
+ // Tropical sign sectors; inner/outer boundary and labels.
+ for(let i=0;i<12;i++){
+  const start=E.norm(i*30-base),p=linePoint(cx,cy,inner,start),q=linePoint(cx,cy,outer,start);
+  svg("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke:"#3e637c","stroke-width":1},root);
+  const mid=linePoint(cx,cy,outer-28,E.norm(i*30+15-base));
+  svg("text",{x:mid.x,y:mid.y+6,fill:i%2?"#e8d0a4":"#98d3e5","text-anchor":"middle","font-size":22},root,E.SIGN_SYMBOLS[i]);
+ }
+ if(r.angles){
+  // Equal-house boundaries depend on ASC; MC is drawn separately.
+  for(let i=0;i<12;i++){
+   const p=linePoint(cx,cy,inner-1,i*30);
+   const q=linePoint(cx,cy,inner-31,i*30);
+   svg("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke:i===0?"#dfbc7c":"#425a71","stroke-width":i===0?2.3:1},root);
+   const labelPoint=linePoint(cx,cy,inner-16,i*30+15);
+   svg("text",{x:labelPoint.x,y:labelPoint.y+3,fill:"#8eaac1","text-anchor":"middle","font-size":10},root,String(i+1));
+  }
+  const mcDiff=E.norm(r.angles.mc.longitude-base),p=linePoint(cx,cy,inner-30,mcDiff),q=linePoint(cx,cy,outer-2,mcDiff);
+  svg("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke:"#f5d28e","stroke-width":2.2,"stroke-dasharray":"5 3"},root);
+  const tx=linePoint(cx,cy,inner-46,mcDiff);
+  svg("text",{x:tx.x,y:tx.y+3,fill:"#f5d28e","text-anchor":"middle","font-size":11,"font-weight":"bold"},root,"MC");
+  svg("text",{x:18,y:cy-5,fill:"#f5d28e","font-size":12,"font-weight":"bold"},root,"ASC");
+ }
+ // Aspects are purely geometric inner chords.
+ for(const a of r.aspects){
+  const p1=r.points.find(p=>p.id===a.from),p2=r.points.find(p=>p.id===a.to);
+  const c1=linePoint(cx,cy,inner-58,p1.longitude-base),c2=linePoint(cx,cy,inner-58,p2.longitude-base);
+  const colors={conjunction:"#d4b88d",sextile:"#82c7bb",square:"#dd8599",trine:"#81b7de",opposition:"#ce9ca8"};
+  svg("line",{x1:c1.x,y1:c1.y,x2:c2.x,y2:c2.y,stroke:colors[a.type]||"#65788c","stroke-opacity":".58","stroke-width":a.orb<=2?2:1},root);
+ }
+ // Separate overlapping planet positions into concentric tracks.
+ const sorted=r.points.map((p,index)=>({p,index})).sort((a,b)=>E.norm(a.p.longitude-base)-E.norm(b.p.longitude-base));
+ const positions=[];
+ for(const entry of sorted){
+  const angle=E.norm(entry.p.longitude-base);
+  let track=0;
+  for(;track<4;track++){
+   const tooClose=positions.some(q=>q.track===track && E.separation(q.angle,angle)<12);
+   if(!tooClose)break;
+  }
+  track=Math.min(3,track);
+  positions.push({angle,track});
+  const o=linePoint(cx,cy,inner-8-track*17,angle);
+  const g=svg("g",{},root);
+  svg("circle",{cx:o.x,cy:o.y,r:12,fill:"#1e3b54",stroke:"#4b758d"},g);
+  svg("text",{x:o.x,y:o.y+5,"text-anchor":"middle","font-size":18,fill:"#e6d5a8"},g,entry.p.symbol);
+  svg("title",{},g,entry.p.ru+": "+entry.p.sign+" "+E.formatDegree(entry.p.degree));
+ }
+ svg("circle",{cx,cy,r:26,fill:"#1a3349",stroke:"#6e91ac","stroke-width":1.2},root);
+ svg("text",{x:cx,y:cy+7,"text-anchor":"middle",fill:"#e6c88b","font-size":24},root,"✧");
+}
+function renderStats(r){
+ const root=$("stats");clear(root);
+ const sun=r.points[0],moon=r.points[1];
+ const items=[["☉ Солнце",sun.sign+" "+E.formatDegree(sun.degree)],["☽ Луна",moon.sign+" "+E.formatDegree(moon.degree)]];
+ if(r.angles){items.push(["ASC",r.angles.asc.sign+" "+E.formatDegree(r.angles.asc.degree)]);items.push(["MC",r.angles.mc.sign+" "+E.formatDegree(r.angles.mc.degree)]);}
+ else{items.push(["Время","Неизвестно"]);items.push(["Дома","Не рассчитываются"]);}
+ for(const [k,v]of items){const div=el("div","stat");div.appendChild(el("span","",k));div.appendChild(el("b","",v));root.appendChild(div);}
+ $("moment-info").textContent="Расчётный момент UTC: "+r.moment.utcISO+(r.moment.place?" · "+r.moment.place:"");
+ $("accuracy-note").textContent=r.note;
+ $("house-legend").textContent=r.angles?"Равнодомные дома · MC отдельно":"Без домов и ASC";
+}
+function renderPlanets(r){
+ const root=$("planet-table");clear(root);
+ for(const p of r.points){
+  const tr=el("tr");
+  const title=el("td","planet"),sym=el("i","",p.symbol);title.append(sym,document.createTextNode(" "+p.ru));
+  [title,el("td","",p.sign+" "+p.signSymbol),el("td","",E.formatDegree(p.degree)),el("td","",p.house?String(p.house):"—"),el("td","",p.retrograde?"R · ретроградное":"Прямое")].forEach(x=>tr.appendChild(x));
+  root.appendChild(tr);
+ }
+}
+function renderAspects(r){
+ const root=$("aspects");clear(root);
+ if(!r.aspects.length){root.appendChild(el("p","muted","Нет аспектов в указанных орбисах."));return;}
+ for(const a of r.aspects){
+  const p=el("div","aspect"),heading=el("b","",a.fromName+" "+a.symbol+" "+a.toName),details=el("div","small",a.name+" · орб "+a.orb.toFixed(2)+"°");
+  p.append(heading,details);root.appendChild(p);
+ }
+}
+function render(r){wheel(r);renderStats(r);renderPlanets(r);renderAspects(r);$("result").hidden=false;$("result").scrollIntoView({behavior:"smooth",block:"start"});}
+function calculate(){
+ $("error").textContent="";status("");
+ try{if(!A||!E)throw new Error("Астрономическая библиотека не загружена. Проверьте, что файлы JS доступны.");
+   result=E.calculate(fields(),A);render(result);
+ }catch(e){result=null;$("result").hidden=true;$("error").textContent="Ошибка расчёта: "+(e&&e.message||String(e));}
+}
+$("form").addEventListener("submit",e=>{e.preventDefault();calculate();});
+$("form").addEventListener("reset",()=>{result=null;$("result").hidden=true;$("error").textContent="";setTimeout(()=>{$("preset").value="";toggleUnknown();},0);});
+$("demo").addEventListener("click",()=>{$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
+async function clipboard(text){
+ if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return;}
+ const box=document.createElement("textarea");box.value=text;box.style.position="fixed";box.style.left="-9999px";document.body.appendChild(box);box.select();
+ const ok=document.execCommand&&document.execCommand("copy");box.remove();if(!ok)throw new Error("Копирование недоступно");
+}
+$("copy").addEventListener("click",async()=>{if(!result)return;try{await clipboard(E.textSummary(result));status("Текст скопирован.");}catch{status("Не удалось скопировать: используйте браузер с HTTPS.");}});
+$("share").addEventListener("click",async()=>{
+ if(!result)return;
+ const t=E.textSummary(result);
+ try{if(navigator.share){await navigator.share({title:"Натальная карта",text:t});return;}await clipboard(t);status("Системная отправка недоступна, текст скопирован.");}
+ catch(e){if(e&&e.name==="AbortError")return;status("Не удалось поделиться.");}
+});
+$("svg-export").addEventListener("click",()=>{
+ if(!result)return;
+ const svgSource=$("wheel").cloneNode(true);
+ svgSource.setAttribute("xmlns",NS);
+ // Export does not contain birth coordinates, only the drawn chart.
+ const serialized=new XMLSerializer().serializeToString(svgSource);
+ const blob=new Blob([serialized],{type:"image/svg+xml;charset=utf-8"});
+ const url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download="natal-chart.svg";document.body.appendChild(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);status("Круг карты сохранён в SVG.");
+});
+$("print").addEventListener("click",()=>{if(result)window.print();});
+function telegram(){
+ const isTelegram=/tgWebApp(Version|Platform|Data)=/.test(location.href);
+ if(!isTelegram)return;
+ const script=document.createElement("script");script.src="https://telegram.org/js/telegram-web-app.js";
+ script.onload=()=>{try{const w=window.Telegram?.WebApp;w?.ready();w?.expand();}catch{}};
+ document.head.appendChild(script);
+}
+toggleUnknown();telegram();
+})();
+</script>
+</body></html>
