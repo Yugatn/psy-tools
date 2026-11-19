@@ -71,3 +71,30 @@ test("formatted export states rule and origin counts",()=>{
  assert.match(txt,/Источники цифр:/);
  assert.match(txt,/не психологическая диагностика/);
 });
+
+test("сравнение двух дат выполняет только разницу чисел 1–9",()=>{
+ const r=C.compareDates("14.03.1992","03.09.2001");
+ assert.equal(r.digits.length,9);
+ assert.equal(r.lines.length,8);
+ assert.deepEqual(r.first.working,[29,11,27,9]);
+ assert.deepEqual(r.second.working,[15,6,9,9]);
+ for(const row of r.digits){
+  assert.equal(row.difference,row.b-row.a);
+  assert.equal(row.a,row.dateA+row.workingA);
+  assert.equal(row.b,row.dateB+row.workingB);
+ }
+ for(const line of r.lines)assert.equal(line.difference,line.b-line.a);
+ assert.equal(r.sumAbsoluteDifferences,r.digits.reduce((a,b)=>a+Math.abs(b.difference),0));
+});
+test("одинаковые даты дают нулевую арифметическую разницу",()=>{
+ const x=C.compareDates("14.03.1992","14.03.1992");
+ assert.equal(x.sumAbsoluteDifferences,0);
+ assert.ok(x.lines.every(r=>r.difference===0));
+});
+test("сравнение корректно наследует выбранное правило ведущего нуля",()=>{
+ const s=C.compareDates("03.09.2001","14.03.1992",{firstDayRule:"significant"});
+ const l=C.compareDates("03.09.2001","14.03.1992",{firstDayRule:"literal"});
+ assert.notDeepEqual(s.first.working,l.first.working);
+ assert.deepEqual(s.second.working,l.second.working);
+ assert.throws(()=>C.compareDates("99.99.2001","14.03.1992"));
+});
