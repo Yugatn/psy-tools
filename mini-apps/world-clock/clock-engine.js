@@ -9,7 +9,7 @@
  if(root)root.WorldClockEngine=api;
 })(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
  "use strict";
- const VERSION="1.0.0",MAX_CITIES=12,KEY="psy-tools.world-clock.v1";
+ const VERSION="1.1.0",MAX_CITIES=12,KEY="psy-tools.world-clock.v1";
  const PRESETS=Object.freeze([
   ["Москва","Россия","Europe/Moscow",55.7558,37.6173],
   ["Санкт-Петербург","Россия","Europe/Moscow",59.9343,30.3351],
@@ -224,6 +224,32 @@
   [s.extras[i],s.extras[j]]=[s.extras[j],s.extras[i]];
   return s;
  }
+ function commonWorkSlots(state,date,{startHour=9,endHour=18,stepMinutes=30}={}){
+  const s=normalizeState(state);
+  const day=parseDateTime(date,"12:00");
+  if(!Number.isInteger(startHour)||!Number.isInteger(endHour)||
+   startHour<0||endHour>24||startHour>=endHour)throw Error("Рабочее окно: целые часы от 0 до 24, начало раньше конца.");
+  if(![15,30,60].includes(stepMinutes))throw Error("Шаг: 15, 30 или 60 минут.");
+  const all=[s.home,...s.extras],slots=[];
+  for(let minute=startHour*60;minute<endHour*60;minute+=stepMinutes){
+   const label=String(Math.floor(minute/60)).padStart(2,"0")+":"+String(minute%60).padStart(2,"0");
+   const result=resolveWallTime(date,label,s.home.zone);
+   for(const candidate of result.candidates){
+    const local=all.map(city=>{
+     const p=partsAt(candidate.ms,city.zone);
+     const minutes=p.hour*60+p.minute;
+     return {name:city.name,zone:city.zone,date:String(p.year).padStart(4,"0")+"-"+
+      String(p.month).padStart(2,"0")+"-"+String(p.day).padStart(2,"0"),
+      time:String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0"),
+      withinHours:minutes>=startHour*60 && minutes<endHour*60};
+    });
+    if(local.every(x=>x.withinHours))
+     slots.push({utcISO:candidate.iso,homeTime:label,homeOffset:candidate.offsetLabel,
+      local});
+   }
+  }
+  return {date,startHour,endHour,stepMinutes,cityCount:all.length,slots};
+ }
  function searchPresets(query,limit=40){
   const q=norm(query);
   if(!q)return presetCities.slice(0,limit);
@@ -231,5 +257,5 @@
  }
  return Object.freeze({VERSION,KEY,MAX_CITIES,presetCities,validateZone,snapshot,offsetSeconds,
   offsetLabel,differenceLabel,parseDateTime,resolveWallTime,normalizeCity,defaultState,
-  normalizeState,addCity,removeCity,moveCity,searchPresets,suggestZone});
+  normalizeState,addCity,removeCity,moveCity,searchPresets,suggestZone,commonWorkSlots});
 });
