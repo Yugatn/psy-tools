@@ -5,11 +5,13 @@ on:
     paths:
       - "mini-apps/natal-chart/**"
       - "tests/natal-chart.test.cjs"
+      - "tests/natal-city-search.test.cjs"
       - ".github/workflows/natal-chart-mini-app.yml"
   pull_request:
     paths:
       - "mini-apps/natal-chart/**"
       - "tests/natal-chart.test.cjs"
+      - "tests/natal-city-search.test.cjs"
       - ".github/workflows/natal-chart-mini-app.yml"
   workflow_dispatch:
 
@@ -28,10 +30,15 @@ jobs:
         run: |
           node --check mini-apps/natal-chart/chart.js
           node --check mini-apps/natal-chart/vendor/astronomy.browser.min.js
+          node --check mini-apps/natal-chart/cities-by-data.js
+          node --check mini-apps/natal-chart/city-catalog-by.js
+          node --check mini-apps/natal-chart/city-catalog.js
       - name: Astronomical and calculation tests
-        run: node --test tests/natal-chart.test.cjs
+        run: node --test tests/natal-chart.test.cjs tests/natal-city-search.test.cjs
       - name: Static app assets
         run: |
           test -f mini-apps/natal-chart/index.html
+          test -f mini-apps/natal-chart/cities-by-data.js
+          grep -Fq 'cities-by-data.js' mini-apps/natal-chart/index.html
           grep -Fq 'vendor/astronomy.browser.min.js' mini-apps/natal-chart/index.html
           grep -Fq '<script src="./chart.js"></script>' mini-apps/natal-chart/index.html
