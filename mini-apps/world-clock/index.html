@@ -50,6 +50,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .planner[hidden]{display:none!important}
 .mode{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
 .mode button[aria-pressed=true]{background:#1e6676;border-color:#94d5e4}
+.meeting-result{display:grid;gap:8px;margin-top:12px}
+.meeting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #48647b;border-radius:12px;background:#102a3b}
+.meeting-row strong{font-size:17px;font-variant-numeric:tabular-nums;color:#d8ebef}
+.meeting-row small{display:block;color:var(--muted);font-size:12px}
+.meeting-row button{flex-shrink:0;font-size:12px;min-height:37px}
+.meeting-result[hidden]{display:none!important}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tiny{font-size:12px;color:var(--muted)}.intro-note{font-size:12px;border-left:3px solid var(--gold);padding:10px 13px;background:#252a38;border-radius:0 9px 9px 0;color:#c3cbda}
 footer{border-top:1px solid var(--line);padding:18px 0;color:var(--muted);font-size:12px}
@@ -116,6 +122,19 @@ footer{border-top:1px solid var(--line);padding:18px 0;color:var(--muted);font-s
   <p id="plan-status" class="status" role="status" aria-live="polite"></p>
  </div>
  <p class="intro-note">Часы используют системную точность времени устройства и базу IANA браузера. Если на устройстве неверно установлены дата или время, показания также будут неверными. Разница между городами может меняться в течение года.</p>
+</section>
+<section class="card" aria-labelledby="meeting-title">
+ <h2 id="meeting-title">Когда удобно созвониться?</h2>
+ <p class="help">Найдите интервалы, когда <b>во всех выбранных городах одновременно</b> действует одно и то же условное рабочее время. По умолчанию 09:00–18:00; индивидуальные графики людей приложение не знает.</p>
+ <div class="controls">
+  <div><label for="meeting-date">Дата в основном городе</label><input type="date" id="meeting-date" min="1900-01-01" max="2100-12-31"></div>
+  <div><label for="meeting-start">Начало рабочего дня</label><select id="meeting-start"><option value="8">08:00</option><option value="9" selected>09:00</option><option value="10">10:00</option><option value="11">11:00</option></select></div>
+  <div><label for="meeting-end">Конец рабочего дня</label><select id="meeting-end"><option value="16">16:00</option><option value="17">17:00</option><option value="18" selected>18:00</option><option value="19">19:00</option><option value="20">20:00</option><option value="21">21:00</option><option value="22">22:00</option></select></div>
+ </div>
+ <div class="actions"><button type="button" class="primary" id="meeting-search">Найти время</button></div>
+ <p id="meeting-status" class="status" role="status" aria-live="polite"></p>
+ <div id="meeting-list" class="meeting-result" hidden></div>
+ <p class="help">Слоты с шагом 30 минут; расчёт учитывает текущие правила IANA для указанной даты. «Показать на часах» переводит выбранный момент во все города.</p>
 </section>
 <section class="card" aria-labelledby="storage-title">
  <h2 id="storage-title">Мой набор городов</h2>
@@ -205,6 +224,8 @@ function saveChoice(asHome){
   const entry={...candidate,zone:E.validateZone($("zone").value.trim())};
   if(entry.zone!==candidate.zone)entry.confidence="confirmed";
   state=E.addCity(state,entry,asHome);
+  if(asHome){setDefaults();$("meeting-date").value=homeLocalDate();}
+  resetMeetingResults();
   persist();candidate=null;$("candidate").hidden=true;render();notify("storage-status","Список обновлён.");
  }catch(err){notify("candidate-status",err.message)}
 }
@@ -243,16 +264,70 @@ function renderClocks(){
  $("limit").textContent="Всего "+(state.extras.length+1)+" / "+E.MAX_CITIES;
  if(!state.extras.length)grid.append(el("p","muted","Дополнительные города пока не выбраны."));
 }
+function homeLocalDate(ms=Date.now()){
+ const p=E.snapshot(state.home.zone,ms).parts;
+ return String(p.year).padStart(4,"0")+"-"+String(p.month).padStart(2,"0")+"-"+String(p.day).padStart(2,"0");
+}
+function resetMeetingResults(){
+ $("meeting-list").replaceChildren();$("meeting-list").hidden=true;
+ $("meeting-status").textContent="Выберите дату и нажмите «Найти время».";
+}
+function selectMeetingSlot(slot){
+ $("plan-date").value=slot.local[0].date;
+ $("plan-time").value=slot.homeTime;
+ setMode("plan");
+ if(!$("plan-choice").hidden){
+  const r=E.resolveWallTime(slot.local[0].date,slot.homeTime,state.home.zone);
+  const i=r.candidates.findIndex(c=>c.iso===slot.utcISO);
+  if(i>=0){$("plan-fold").value=String(i);applyFold();}
+ }
+}
+function findMeetingSlots(){
+ resetMeetingResults();
+ try{
+  const slots=E.commonWorkSlots(state,$("meeting-date").value,{
+   startHour:Number($("meeting-start").value),
+   endHour:Number($("meeting-end").value),
+   stepMinutes:30
+  });
+  if(!slots.slots.length){
+   notify("meeting-status","Общих рабочих получасовых интервалов не найдено. Попробуйте другое окно или меньше городов.");
+   return;
+  }
+  const root=$("meeting-list");
+  for(const slot of slots.slots){
+   const row=el("div","meeting-row");
+   const left=el("div");
+   const label=el("strong","",slot.homeTime+" · "+state.home.name);
+   const examples=slot.local.slice(1,4).map(p=>p.name+": "+p.time).join(" · ");
+   left.append(label,el("small","",examples+(slot.local.length>4?" · и другие":"")));
+   const button=el("button","","На часы");button.type="button";
+   button.setAttribute("aria-label","Показать "+slot.homeTime+" по "+state.home.name+" на часах");
+   button.addEventListener("click",()=>selectMeetingSlot(slot));
+   row.append(left,button);root.appendChild(row);
+  }
+  root.hidden=false;
+  notify("meeting-status","Найдено "+slots.slots.length+" получасовых интервалов. Время указано по основному городу.");
+ }catch(err){notify("meeting-status",err.message);}
+}
 function render(){renderClocks();if(mode==="plan")calculatePlan();}
 function changeMain(id){
  const c=state.extras.find(x=>x.id===id);if(!c)return;
- state=E.addCity(state,c,true);persist();render();
+ const preserved=mode==="plan"?planInstant:null;
+ state=E.addCity(state,c,true);
+ if(preserved!==null){
+  const p=E.snapshot(state.home.zone,preserved).parts;
+  $("plan-date").value=String(p.year).padStart(4,"0")+"-"+String(p.month).padStart(2,"0")+"-"+String(p.day).padStart(2,"0");
+  $("plan-time").value=String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0");
+ }else setDefaults();
+ $("meeting-date").value=homeLocalDate();resetMeetingResults();
+ persist();render();
 }
 function remove(id){
- try{state=E.removeCity(state,id);persist();render();}catch(err){notify("storage-status",err.message);}
+ try{state=E.removeCity(state,id);resetMeetingResults();persist();render();}catch(err){notify("storage-status",err.message);}
 }
 function reorder(id,d){
- state=E.moveCity(state,id,d);persist();render();
+ state=E.moveCity(state,id,d);resetMeetingResults();persist();render();
 }
 function initPlanner(){
  $("mode-now").addEventListener("click",()=>setMode("now"));
@@ -317,12 +392,12 @@ function setupStorage(){
   try{
    const next=E.normalizeState(JSON.parse(await file.text()));
    if(!window.confirm("Заменить текущий набор городов импортируемым?"))return;
-   state=next;persist();render();notify("storage-status","Список импортирован.");
+   state=next;setDefaults();$("meeting-date").value=homeLocalDate();resetMeetingResults();persist();render();notify("storage-status","Список импортирован.");
   }catch(err){notify("storage-status","Импорт отклонён: "+err.message);}
  });
  $("reset").addEventListener("click",()=>{
   if(!window.confirm("Сбросить основной город и дополнительные города к примеру?"))return;
-  state=E.defaultState();persist();setMode("now");render();notify("storage-status","Настройки сброшены.");
+  state=E.defaultState();setDefaults();$("meeting-date").value=homeLocalDate();resetMeetingResults();persist();setMode("now");render();notify("storage-status","Настройки сброшены.");
  });
 }
 function start(){
@@ -338,6 +413,9 @@ function start(){
   const option=el("option");option.value=zone;$("zone-list").appendChild(option);
  }
  initPlanner();setupStorage();findCities();renderClocks();
+ $("meeting-date").value=homeLocalDate();resetMeetingResults();
+ $("meeting-search").addEventListener("click",findMeetingSlots);
+ for(const id of ["meeting-date","meeting-start","meeting-end"])$(id).addEventListener("change",resetMeetingResults);
  setInterval(()=>{if(mode==="now")renderClocks();},1000);
  document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderClocks();});
  if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
