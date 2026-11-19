@@ -62,12 +62,16 @@
   }
   if(status==="completed")remainingMs=0;
   const progress=Math.min(1,Math.max(0,1-remainingMs/s.durationMs));
-  // Upper tapered chamber area grows as h² from the neck.
-  // Bottom chamber area from a flat bottom is 1-(1-h/H)².
+  // In the SVG, chamber widths are 16 at the neck and 176 at each end.
+  // The sand area (and hence illustrated volume) must vary LINEARLY with time.
+  // Top neck-up fill: (16*h + 80*h²) / 96 = remaining volume.
+  // Bottom floor-up fill: (176*h - 80*h²) / 96 = elapsed volume.
+  const r=1-progress;
+  const topSandHeight=(Math.sqrt(256+30720*r)-16)/160;
+  const bottomSandHeight=(176-Math.sqrt(30976-30720*progress))/160;
   return {...s,status,remainingMs,deadlineMs:status==="running"?s.deadlineMs:null,
-   elapsedMs:s.durationMs-remainingMs,progress,remainingFraction:1-progress,
-   topSandHeight:Math.sqrt(1-progress),
-   bottomSandHeight:1-Math.sqrt(1-progress),
+   elapsedMs:s.durationMs-remainingMs,progress,remainingFraction:r,
+   topSandHeight,bottomSandHeight,
    flowing:status==="running"&&remainingMs>0};
  }
  function start(state,now=Date.now()){
