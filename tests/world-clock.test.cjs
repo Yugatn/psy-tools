@@ -169,3 +169,46 @@ test("switching home at capacity never silently removes a saved city",()=>{
  assert.equal(switched.extras.length,11);
  assert.ok(switched.extras.some(x=>x.id===state.home.id));
 });
+
+test("common working-hour overlaps honor all cities' local times",()=>{
+ const state=E.defaultState();
+ const result=E.commonWorkSlots(state,"2026-07-01",{startHour:9,endHour:18,stepMinutes:30});
+ assert.equal(result.cityCount,4);
+ assert.equal(result.slots.length,4);
+ assert.deepEqual(result.slots.map(x=>x.homeTime),["16:00","16:30","17:00","17:30"]);
+ for(const slot of result.slots){
+  assert.equal(slot.local.length,4);
+  assert.ok(slot.local.every(x=>x.withinHours));
+  assert.match(slot.utcISO,/^2026-07-01T/);
+ }
+});
+test("common business hours reflect seasonal DST changes",()=>{
+ const summer=E.commonWorkSlots(E.defaultState(),"2026-07-01");
+ const winter=E.commonWorkSlots(E.defaultState(),"2026-01-15");
+ assert.notDeepEqual(summer.slots.map(x=>x.homeTime),winter.slots.map(x=>x.homeTime));
+});
+test("no simultaneous work hours is reported as empty",()=>{
+ let s=E.defaultState();
+ const tokyo=E.presetCities.find(x=>x.name==="Токио");
+ s=E.addCity(s,tokyo);
+ const r=E.commonWorkSlots(s,"2026-07-01");
+ assert.equal(r.slots.length,0);
+});
+test("working-hours search has validation and accurate solo schedule",()=>{
+ const state=E.defaultState();
+ const solo={...state,extras:[]};
+ const r=E.commonWorkSlots(solo,"2026-07-01",{startHour:9,endHour:18,stepMinutes:30});
+ assert.equal(r.slots.length,18);
+ assert.equal(r.slots[0].homeTime,"09:00");
+ assert.equal(r.slots.at(-1).homeTime,"17:30");
+ assert.throws(()=>E.commonWorkSlots(solo,"2026-07-01",{startHour:22,endHour:9}));
+ assert.throws(()=>E.commonWorkSlots(solo,"2026-02-30"));
+});
+test("meeting finder form exists and can transfer selected slots to planner",()=>{
+ const html=fs.readFileSync(path.join(__dirname,"../mini-apps/world-clock/index.html"),"utf8");
+ for(const id of ["meeting-date","meeting-start","meeting-end","meeting-search","meeting-status","meeting-list"]){
+  assert.ok(html.includes('id="'+id+'"'));
+ }
+ assert.match(html,/E\.commonWorkSlots\(/);
+ assert.match(html,/function selectMeetingSlot\(/);
+});
