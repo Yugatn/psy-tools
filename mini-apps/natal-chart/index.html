@@ -47,6 +47,16 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 .aspect-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .aspect{padding:10px 11px;border:1px solid #3a4d63;border-radius:11px;background:#0d1b2e;font-size:13px}
 .aspect b{color:#e9c88f}
+
+.city-lookup{margin:12px 0 16px;padding:13px;background:#112a40;border:1px solid #416782;border-radius:13px}
+.city-results{display:grid;gap:6px;max-height:300px;overflow-y:auto;overscroll-behavior:contain;margin-top:9px;padding-right:2px}
+.city-results[hidden]{display:none!important}
+.city-result{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#14253b;padding:9px 11px;border:1px solid #43647c}
+.city-result strong{display:block;font-size:14px}
+.city-result small{display:block;font-size:11px;color:#b4c7d7}
+.city-result .current-utc{color:#c9d9e8;font-size:11px;white-space:nowrap;padding-top:1px}
+.city-state{min-height:1.5em;font-size:12px;color:#aecde3;margin:7px 0}
+.city-selected{color:#a5e4c6;font-size:12px}
 #phase{min-height:1.5em;font-size:13px;color:#b4e6cc}
 .footer{margin-top:20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
 @media(max-width:790px){.two{grid-template-columns:1fr}}
@@ -75,8 +85,28 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
  <p class="help" id="offset-help">Важно: UTC-смещение зависит от исторической даты и летнего времени. Оно <b>не вычисляется по городу автоматически</b>. Для Москвы, например, нельзя использовать одно значение для всех эпох.</p>
  <div class="rowcheck"><input type="checkbox" id="unknown-time"><label for="unknown-time">Точное время рождения неизвестно</label></div>
  <div id="location-fields">
+
+   <div class="city-lookup">
+    <h3>Города России — поиск по справочнику</h3>
+    <div class="cols">
+     <div>
+      <label for="ru-search">Название города</label>
+      <input type="search" id="ru-search" placeholder="Например, Благовещенск" autocomplete="off"
+        role="combobox" aria-autocomplete="list" aria-controls="ru-results" aria-expanded="false"
+        aria-describedby="ru-state">
+     </div>
+     <div>
+      <label for="ru-region">Субъект РФ (необязательно)</label>
+      <select id="ru-region"><option value="">Все регионы</option></select>
+     </div>
+    </div>
+    <div id="ru-results" class="city-results" role="listbox" aria-label="Результаты поиска городов" hidden></div>
+    <p id="ru-state" class="city-state" role="status" aria-live="polite"></p>
+    <p id="ru-selected" class="city-selected"></p>
+    <p class="help">Выберите город из списка — название и координаты подставятся автоматически. Одноимённые города различаются по региону. Поиск работает без интернета после загрузки приложения. Историческое UTC-смещение не меняется автоматически.</p>
+   </div>
    <div class="cols">
-    <div><label for="preset">Место (быстрый выбор координат)</label>
+    <div><label for="preset">Другие страны (быстрый выбор координат)</label>
       <select id="preset"><option value="">Ввести координаты вручную</option>
         <option value="Moscow">Москва</option><option value="Stockholm">Стокгольм</option>
         <option value="London">Лондон</option><option value="Bangkok">Бангкок</option>
@@ -141,6 +171,8 @@ th{color:#a9c8df;font-weight:650}tr:last-child td{border-bottom:0}
 </main>
 <script src="./vendor/astronomy.browser.min.js"></script>
 <script src="./chart.js"></script>
+<script src="./cities-ru-data.js"></script>
+<script src="./city-catalog.js"></script>
 <script>
 (function(){
 "use strict";
@@ -156,18 +188,109 @@ const CITY={
  NewYork:{place:"Нью-Йорк",lat:40.7128,lon:-74.006}
 };
 let result=null;
+let selectedRussianCity=null;
+const Catalog=window.RussianCityCatalog;
 const el=(tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;return x;};
 const svg=(tag,attrs,parent,txt)=>{const x=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs||{}))x.setAttribute(k,String(v));if(txt!==undefined)x.textContent=txt;if(parent)parent.appendChild(x);return x;};
 function status(msg){$("phase").textContent=msg;}
+
+function closeCityResults(){
+ $("ru-results").hidden=true;
+ $("ru-search").setAttribute("aria-expanded","false");
+}
+function resetRussianSelection(clearCoordinates){
+ selectedRussianCity=null;
+ $("ru-selected").textContent="";
+ if(clearCoordinates){$("place").value="";$("lat").value="";$("lon").value="";}
+}
+function selectRussianCity(city){
+ if(!city)return;
+ selectedRussianCity=city;
+ $("ru-search").value=city.name;
+ $("ru-region").value=city.region;
+ $("preset").value="";
+ $("place").value=city.name+", "+city.region;
+ $("lat").value=String(city.latitude);
+ $("lon").value=String(city.longitude);
+ $("ru-selected").textContent="Выбрано: "+city.name+" · "+city.region+" · "+city.latitude.toFixed(5)+"°, "+city.longitude.toFixed(5)+"°.";
+ $("ru-state").textContent="Ориентир по текущему UTC: "+city.utcCurrent+" (НЕ используется для исторического расчёта рождения).";
+ closeCityResults();
+}
+function renderCities(){
+ const root=$("ru-results");
+ root.replaceChildren();
+ if(!Catalog){$("ru-state").textContent="Справочник городов не загружен. Координаты можно ввести вручную.";closeCityResults();return;}
+ const typed=$("ru-search").value.trim(),region=$("ru-region").value;
+ if(typed.length<2&&!region){
+  $("ru-state").textContent="Доступно "+Catalog.total+" городских записей. Введите хотя бы две буквы либо выберите регион.";
+  closeCityResults();return;
+ }
+ const result=Catalog.query(typed,region,24);
+ $("ru-state").textContent=result.total===0?"Город не найден. Проверьте написание или введите координаты вручную.":
+  "Найдено "+result.total+"; показано "+result.items.length+". Выберите нужный регион и город.";
+ if(!result.items.length){closeCityResults();return;}
+ for(const city of result.items){
+  const btn=el("button","city-result");btn.type="button";btn.setAttribute("role","option");
+  btn.setAttribute("aria-label",city.name+", "+city.region);
+  const group=el("span"),bold=el("strong","",city.name),sub=el("small","",city.region);
+  group.append(bold,sub);
+  const utc=el("span","current-utc",city.utcCurrent||"");
+  btn.append(group,utc);
+  btn.addEventListener("click",()=>selectRussianCity(city));
+  btn.addEventListener("keydown",event=>{
+   if(event.key==="Escape"){closeCityResults();$("ru-search").focus();}
+   else if(event.key==="ArrowDown"){event.preventDefault();btn.nextElementSibling?.focus();}
+   else if(event.key==="ArrowUp"){event.preventDefault();(btn.previousElementSibling||$("ru-search")).focus();}
+  });
+  root.appendChild(btn);
+ }
+ root.hidden=false;$("ru-search").setAttribute("aria-expanded","true");
+}
+function initRussianCities(){
+ if(!Catalog){$("ru-state").textContent="Справочник недоступен: используйте координаты вручную.";return;}
+ for(const region of Catalog.regions){
+  const opt=document.createElement("option");opt.value=region;opt.textContent=region;$("ru-region").appendChild(opt);
+ }
+ $("ru-state").textContent="Справочник: "+Catalog.total+" записей, "+Catalog.regions.length+" регионов. Поиск по названию, включая ё/е.";
+ $("ru-search").addEventListener("input",()=>{
+   if(selectedRussianCity){resetRussianSelection(true);}
+   renderCities();
+ });
+ $("ru-region").addEventListener("change",()=>{
+   if(selectedRussianCity){resetRussianSelection(true);}
+   renderCities();
+ });
+ $("ru-search").addEventListener("keydown",event=>{
+   if(event.key==="Escape")closeCityResults();
+   else if(event.key==="ArrowDown"&&!$("ru-results").hidden){
+    event.preventDefault();$("ru-results").firstElementChild?.focus();
+   }
+ });
+ $("ru-search").addEventListener("focus",()=>{if($("ru-search").value.trim().length>=2||$("ru-region").value)renderCities();});
+ ["lat","lon"].forEach(id=>$(id).addEventListener("input",()=>{
+   if(selectedRussianCity){
+     resetRussianSelection(false);$("ru-search").value="";closeCityResults();
+     $("ru-state").textContent="Координаты изменены вручную. Проверьте название населённого пункта.";
+   }
+ }));
+ $("place").addEventListener("input",()=>{
+  if(selectedRussianCity){resetRussianSelection(false);$("ru-search").value="";closeCityResults();}
+ });
+}
 function toggleUnknown(){
  const unknown=$("unknown-time").checked;
- ["birth-time","offset","lat","lon","place","preset"].forEach(id=>{$(id).disabled=unknown;});
+ ["birth-time","offset","lat","lon","place","preset","ru-search","ru-region"].forEach(id=>{$(id).disabled=unknown;});
+ if(unknown)closeCityResults();
  $("location-fields").style.opacity=unknown?"0.5":"1";
 }
 $("unknown-time").addEventListener("change",toggleUnknown);
 $("preset").addEventListener("change",()=>{
  const c=CITY[$("preset").value];
- if(c){$("place").value=c.place;$("lat").value=String(c.lat);$("lon").value=String(c.lon);}
+ if(c){
+  resetRussianSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();
+  $("ru-state").textContent="Выбран международный пресет. Проверьте историческое UTC-смещение.";
+  $("place").value=c.place;$("lat").value=String(c.lat);$("lon").value=String(c.lon);
+ }
 });
 function fields(){return {date:$("birth-date").value,time:$("birth-time").value,utcOffset:$("offset").value,latitude:$("lat").value,longitude:$("lon").value,place:$("place").value,unknownTime:$("unknown-time").checked};}
 function clear(x){x.replaceChildren();}
@@ -261,13 +384,24 @@ function renderAspects(r){
 function render(r){wheel(r);renderStats(r);renderPlanets(r);renderAspects(r);$("result").hidden=false;$("result").scrollIntoView({behavior:"smooth",block:"start"});}
 function calculate(){
  $("error").textContent="";status("");
- try{if(!A||!E)throw new Error("Астрономическая библиотека не загружена. Проверьте, что файлы JS доступны.");
+ try{
+   if(!$("unknown-time").checked && $("ru-search").value.trim() && !selectedRussianCity)
+     throw new Error("Выберите город из выпадающего списка или очистите поиск и введите координаты вручную.");
+   if(!A||!E)throw new Error("Астрономическая библиотека не загружена. Проверьте, что файлы JS доступны.");
    result=E.calculate(fields(),A);render(result);
  }catch(e){result=null;$("result").hidden=true;$("error").textContent="Ошибка расчёта: "+(e&&e.message||String(e));}
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();calculate();});
-$("form").addEventListener("reset",()=>{result=null;$("result").hidden=true;$("error").textContent="";setTimeout(()=>{$("preset").value="";toggleUnknown();},0);});
-$("demo").addEventListener("click",()=>{$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
+$("form").addEventListener("reset",()=>{
+ result=null;$("result").hidden=true;$("error").textContent="";
+ resetRussianSelection(false);closeCityResults();
+ setTimeout(()=>{
+  $("preset").value="";$("ru-search").value="";$("ru-region").value="";
+  $("ru-state").textContent=Catalog?"Справочник: "+Catalog.total+" городских записей. Начните ввод названия.":"Введите координаты вручную.";
+  toggleUnknown();
+ },0);
+});
+$("demo").addEventListener("click",()=>{resetRussianSelection(false);$("ru-search").value="";$("ru-region").value="";closeCityResults();$("ru-state").textContent="Выбран пример: Гринвич.";$("birth-date").value="2000-01-01";$("birth-time").value="12:00";$("offset").value="+00:00";$("unknown-time").checked=false;$("preset").value="London";$("place").value="Гринвич";$("lat").value="51.4779";$("lon").value="0";toggleUnknown();calculate();});
 async function clipboard(text){
  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return;}
  const box=document.createElement("textarea");box.value=text;box.style.position="fixed";box.style.left="-9999px";document.body.appendChild(box);box.select();
@@ -299,7 +433,7 @@ function telegram(){
  script.onload=()=>{try{const w=window.Telegram?.WebApp;w?.ready();w?.expand();}catch{}};
  document.head.appendChild(script);
 }
-toggleUnknown();telegram();
+initRussianCities();toggleUnknown();telegram();
 })();
 </script>
 </body></html>
