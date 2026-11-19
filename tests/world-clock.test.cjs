@@ -150,3 +150,22 @@ test("Belarus and curated places use known zones, not coordinate guesses",()=>{
  const tokyo=E.presetCities.find(x=>x.name==="Токио");
  assert.equal(E.suggestZone(tokyo,"WORLD",geo).zone,"Asia/Tokyo");
 });
+
+test("switching home at capacity never silently removes a saved city",()=>{
+ let state=E.defaultState();
+ for(const city of E.presetCities){
+   if(state.home.id===city.id||state.extras.some(x=>x.id===city.id))continue;
+   state=E.addCity(state,city);
+   if(state.extras.length===E.MAX_CITIES-1)break;
+ }
+ assert.equal(state.extras.length,11);
+ const originalIds=new Set([state.home.id,...state.extras.map(x=>x.id)]);
+ const other=E.presetCities.find(x=>!originalIds.has(x.id));
+ assert.ok(other);
+ assert.throws(()=>E.addCity(state,other,true));
+ assert.deepEqual(new Set([state.home.id,...state.extras.map(x=>x.id)]),originalIds);
+ const selected=state.extras[0];
+ const switched=E.addCity(state,selected,true);
+ assert.equal(switched.extras.length,11);
+ assert.ok(switched.extras.some(x=>x.id===state.home.id));
+});
