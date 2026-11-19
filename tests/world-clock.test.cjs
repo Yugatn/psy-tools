@@ -121,3 +121,32 @@ test("web app includes country filters, city chooser, two time modes and storage
  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
  assert.equal(ids.length,new Set(ids).size);
 });
+
+test("geographic timezone corrections for six Russian boundary cities",()=>{
+ const fixes={
+  "Вяземский":"Asia/Vladivostok",
+  "Горняк":"Asia/Barnaul",
+  "Николаевск-на-Амуре":"Asia/Vladivostok",
+  "Облучье":"Asia/Vladivostok",
+  "Светогорск":"Europe/Moscow",
+  "Северо-Курильск":"Asia/Sakhalin"
+ };
+ for(const [name,expected] of Object.entries(fixes)){
+  const c=RU.query(name).items.find(x=>x.name===name);
+  assert.ok(c,"Missing "+name);
+  const suggested=E.suggestZone(c,"RU",geo,new Date("2026-11-19T12:00:00Z").getTime());
+  assert.equal(suggested.zone,expected,"Wrong for "+name);
+  assert.equal(suggested.confidence,"confirmed");
+ }
+});
+test("Russian boundary lookup rejects mismatched UTC hint visibly",()=>{
+ const c={name:"Тест",region:"Тестовая область",latitude:0,longitude:0,utcCurrent:"UTC+03:00"};
+ const result=E.suggestZone(c,"RU",()=>"Asia/Tokyo");
+ assert.match(result.explanation,/расходится/);
+});
+test("Belarus and curated places use known zones, not coordinate guesses",()=>{
+ const by=BY.query("Гомель").items.find(x=>x.name==="Гомель");
+ assert.equal(E.suggestZone(by,"BY",geo).zone,"Europe/Minsk");
+ const tokyo=E.presetCities.find(x=>x.name==="Токио");
+ assert.equal(E.suggestZone(tokyo,"WORLD",geo).zone,"Asia/Tokyo");
+});
