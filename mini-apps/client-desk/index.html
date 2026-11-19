@@ -180,6 +180,7 @@ footer{padding:16px 0;border-top:1px solid #2c5163;margin-top:20px;color:var(--m
  <p class="help">Сохранение по умолчанию отключено. Для работы с ожидающими клиентами через перезагрузки включите его сознательно. Данные сохраняются только в localStorage текущего браузерного профиля, без шифрования и синхронизации между устройствами.</p>
  <div class="actions">
   <button id="enable-notifications" type="button">Разрешить уведомления браузера</button>
+  <button id="migrate-previous" type="button">Перенести возраст и города из прежних приложений</button>
   <button id="export-json" type="button">Экспорт JSON</button>
   <button id="export-csv" type="button">Экспорт звонков CSV</button>
   <button id="import-json" type="button">Импорт JSON</button>
@@ -659,7 +660,7 @@ const W=window.WorldClockEngine,M=window.ClientTimeDesk,$=id=>document.getElemen
 const dom=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;};
 const pad=x=>String(x).padStart(2,"0"),relative=(ms)=>M.formatRemaining(ms),fmtDate=x=>x?.replace(/^(.{4})-(..)-(..)$/,(_,y,m,d)=>d+"."+m+"."+y)||"";
 let data=M.create(W),filter="active",editId=null,lastAgeDate="",previousKinds=new Map(),audioCtx=null;
-let currentPreview=null,nowStoreCounter=0;
+let currentPreview=null,nowStoreCounter=0,lastAlertCheck=0;
 const signal=(id,msg,err=false)=>{const e=$(id);e.textContent=msg;e.className="status"+(err?" error":"");};
 const uniqueId=(prefix)=>prefix+"-"+Date.now().toString(36)+"-"+(++nowStoreCounter).toString(36);
 const localMoment=(zone,ms=Date.now())=>W.snapshot(zone,new Date(ms)).parts;
@@ -934,8 +935,11 @@ function soundAlert(){
  }catch(e){}
 }
 function checkNotifications(){
- const now=Date.now(),due=M.dueNotifications(data,now,W);
- if(!due.length||document.visibilityState==="hidden")return;
+ const now=Date.now();
+ if(document.visibilityState==="hidden"||now-lastAlertCheck<5000)return;
+ lastAlertCheck=now;
+ const due=M.dueNotifications(data,now,W);
+ if(!due.length)return;
  // Combine simultaneous overdue calls: one browser notification, never a barrage.
  if(window.Notification&&window.Notification.permission==="granted"){
   try{new window.Notification("Звонки: наступил срок",{
@@ -1030,6 +1034,25 @@ function start(){
   try{const p=await window.Notification.requestPermission();
    signal("storage-message",p==="granted"?"Разрешение на уведомления предоставлено.":"Браузер не разрешил уведомления.");
   }catch(e){signal("storage-message","Уведомления не удалось разрешить.",true);}
+ });
+ $("migrate-previous").addEventListener("click",()=>{
+  if(!window.confirm("Прочитать локальные настройки прошлых приложений на этом устройстве? Будут перенесены только города и дата рождения, без трудового стажа."))return;
+  try{
+   let migrated=0;
+   const rawWorld=localStorage.getItem(W.KEY);
+   if(rawWorld){data.world=W.normalizeState(JSON.parse(rawWorld));migrated++;}
+   const rawAge=localStorage.getItem("crm.age-tenure.v1");
+   if(rawAge){
+    const prior=JSON.parse(rawAge);
+    if(prior.birthDate){
+     M.ageAt(prior.birthDate,M.localISO(Date.now(),data.world.home.zone,W));
+     data.birthDate=prior.birthDate;migrated++;
+    }
+   }
+   if(!migrated){signal("storage-message","Данных прежних приложений в этом браузере не найдено.");return;}
+   $("birth-date").value=data.birthDate;safeStore();renderAll();
+   signal("storage-message","Перенесено источников: "+migrated+". Трудовой стаж и прежняя история не копировались.");
+  }catch(e){signal("storage-message","Перенос не выполнен: "+e.message,true);}
  });
  $("export-json").addEventListener("click",()=>download("crm-client-time-desk.json",JSON.stringify(data,null,2),"application/json;charset=utf-8"));
  $("export-csv").addEventListener("click",()=>download("crm-client-calls.csv",M.toCsv(data,W),"text/csv;charset=utf-8"));
