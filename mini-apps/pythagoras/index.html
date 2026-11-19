@@ -58,6 +58,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .nine-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
 .nine-card{border:1px solid #405d73;border-radius:12px;padding:11px;background:var(--bg)}
 .nine-card strong{font-size:15px}.nine-card p{font-size:12px;color:var(--muted);margin:3px 0 0}.nine-card.selected{border-color:#8bd9f0;background:#174159}
+.source-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+.source-table th,.source-table td{text-align:center;padding:7px;border-bottom:1px solid #3b546c}
+.source-table th:first-child,.source-table td:first-child{text-align:left}
+.source-table th{color:#a4d8ec}.source-table td{font-variant-numeric:tabular-nums}
+.compare-note{margin-top:12px;padding:12px;border:1px solid #597282;border-radius:10px;background:#102c40;color:var(--muted);font-size:13px}
+.source-total{font-weight:750;color:#a5e2f1}
 .disclaimer{background:rgba(200,153,69,.08);border:1px solid #806740;border-radius:14px;padding:13px 14px;font-size:12px;color:var(--muted)}
 .disclaimer b{color:var(--text)}
 footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
@@ -107,6 +113,15 @@ footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
   <div class="matrix" id="matrix" role="group" aria-label="Девять клеток психоматрицы"></div>
   <div class="meta" id="matrix-meta"></div>
 </section>
+<section class="card" aria-labelledby="sources-title">
+ <h2 id="sources-title">Откуда взялись цифры?</h2>
+ <p class="muted">Прозрачная проверка: отдельно подсчитываются цифры даты рождения и четырёх рабочих чисел. Нули не заполняют ячейки психоматрицы.</p>
+ <div style="overflow-x:auto">
+  <table class="source-table" id="sources" aria-label="Источники повторений каждой цифры"></table>
+ </div>
+ <p id="zero-note" class="tip"></p>
+ <div id="rule-comparison" class="compare-note"></div>
+</section>
 <section class="card" aria-labelledby="lines-title">
   <h2 id="lines-title">Линии психоматрицы</h2>
   <p class="muted">Подсчёт повторений цифр в строках, столбцах и диагоналях. Названия традиционные; это не измерение способностей.</p>
@@ -119,6 +134,7 @@ footer{color:var(--muted);font-size:12px;padding:6px 2px 30px}
   <div class="actions">
     <button id="copy" type="button">Скопировать результат</button>
     <button id="share" type="button" class="primary">Поделиться</button>
+    <button id="svg-export" type="button">Сохранить SVG</button>
     <button id="print" type="button">Печать / PDF</button>
   </div>
   <p class="tip">При копировании или отправке передаётся результат вместе с указанной датой рождения. Делитесь только с согласия человека, чьи данные используются.</p>
@@ -192,11 +208,53 @@ function renderDetails(r){
  root.appendChild(d);
  }
 }
+function renderSources(r){
+ const tbl=$("sources");clear(tbl);
+ const header=node("tr");
+ ["Цифра","Из даты","Из рабочих","Всего"].forEach(t=>header.appendChild(node("th","",t)));
+ const thead=node("thead");thead.appendChild(header);tbl.appendChild(thead);
+ const body=node("tbody");
+ for(let i=1;i<=9;i++){
+  const tr=node("tr");
+  [String(i),String(r.dateCounts[i]),String(r.workingCounts[i]),String(r.counts[i])].forEach((t,j)=>tr.appendChild(node("td",j===3?"source-total":"",t)));
+  body.appendChild(tr);
+ }
+ tbl.appendChild(body);
+ $("zero-note").textContent="Не учитываются нули: "+r.excludedZeros+". Исходные цифры даты: "+r.sourceDigits+"; рабочие числа: "+r.workingDigits+".";
+ const comparison=C.compareRules(r.date.iso);
+ const alt=r.rule==="significant"?comparison.literal:comparison.significant;
+ const diffs=comparison.changes.filter(x=>x.difference!==0).map(x=>"цифра "+x.digit+": "+r.counts[x.digit]+" → "+alt.counts[x.digit]);
+ $("rule-comparison").textContent=comparison.changed
+  ? "При другом правиле дня 01–09 рабочие числа: "+alt.working.join(" · ")+". Меняются подсчёты: "+diffs.join("; ")+". Это разница условностей расчёта, а не свойств человека."
+  : "Для этой даты два правила первой цифры дня дают одинаковый результат.";
+}
+function exportMatrixSVG(r){
+ const xmlns="http://www.w3.org/2000/svg";
+ const svg=document.createElementNS(xmlns,"svg");svg.setAttribute("xmlns",xmlns);svg.setAttribute("viewBox","0 0 620 680");svg.setAttribute("width","620");svg.setAttribute("height","680");
+ const element=(name,attrs,txt)=>{const n=document.createElementNS(xmlns,name);Object.entries(attrs||{}).forEach(([k,v])=>n.setAttribute(k,String(v)));if(txt!==undefined)n.textContent=txt;svg.appendChild(n);return n;};
+ element("rect",{width:620,height:680,fill:"#0d1b2b",rx:20});
+ element("text",{x:310,y:51,"text-anchor":"middle",fill:"#eef5fd","font-size":29,"font-family":"Arial,sans-serif","font-weight":"bold"},"Квадрат Пифагора");
+ element("text",{x:310,y:86,"text-anchor":"middle",fill:"#a8cfe2","font-size":19,"font-family":"Arial,sans-serif"},r.date.display);
+ element("text",{x:310,y:119,"text-anchor":"middle",fill:"#a8cfe2","font-size":17,"font-family":"Arial,sans-serif"},r.working.join(" · "));
+ const gap=13,size=173,left=37,top=159;
+ r.layout.flat().forEach((x,i)=>{
+  const row=Math.floor(i/3),col=i%3,x0=left+col*(size+gap),y0=top+row*(size+gap);
+  element("rect",{x:x0,y:y0,width:size,height:size,rx:15,fill:"#17334a",stroke:"#648fa8","stroke-width":2});
+  element("text",{x:x0+size/2,y:y0+34,"text-anchor":"middle",fill:"#8bdef3","font-size":19,"font-family":"Arial,sans-serif"},"Цифра "+x.digit);
+  const txt=x.symbols||"—";
+  element("text",{x:x0+size/2,y:y0+95,"text-anchor":"middle",fill:"#ffffff","font-size":Math.max(15,34-Math.max(0,txt.length-5)*3),"font-family":"Arial,sans-serif","font-weight":"bold"},txt);
+  element("text",{x:x0+size/2,y:y0+132,"text-anchor":"middle",fill:"#b2c5d7","font-size":13,"font-family":"Arial,sans-serif"},C.NAMES[x.digit]);
+  element("text",{x:x0+size/2,y:y0+155,"text-anchor":"middle",fill:"#b2c5d7","font-size":12,"font-family":"Arial,sans-serif"},x.count+" повторений");
+ });
+ element("text",{x:310,y:651,"text-anchor":"middle",fill:"#a8cfe2","font-size":12,"font-family":"Arial,sans-serif"},"Нумерологическая традиция · не психодиагностика");
+ const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="pythagoras-"+r.date.iso+".svg";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function compute(){
  $("form-error").textContent="";$("calculate-status").textContent="";
  try{
   const r=C.calculate($("date").value,{firstDayRule:$("dayrule").value});
-  result=r;renderNumbers(r);renderMatrix(r);renderLines(r);renderDetails(r);$("results").hidden=false;
+  result=r;renderNumbers(r);renderMatrix(r);renderSources(r);renderLines(r);renderDetails(r);$("results").hidden=false;
   $("results").scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){result=null;$("results").hidden=true;$("form-error").textContent=e.message;}
 }
@@ -222,6 +280,7 @@ $("share").addEventListener("click",async()=>{
  await copy(text);$("calculate-status").textContent="Ссылка на публикацию не создана; текст результата скопирован.";
  }catch(e){if(e&&e.name==="AbortError")return;$("calculate-status").textContent="Поделиться не удалось. Используйте копирование.";}
 });
+$("svg-export").addEventListener("click",()=>{if(result){exportMatrixSVG(result);$("calculate-status").textContent="Файл SVG сохранён.";}});
 $("print").addEventListener("click",()=>{if(result)window.print();});
 function initTelegram(){
  if(!/tgWebAppPlatform=|tgWebAppData=|tgWebAppVersion=/.test(location.href))return;
