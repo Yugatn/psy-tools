@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1525">
+<meta name="description" content="CRM: точный возраст, календарный трудовой стаж без двойного учёта периодов и стаж в процентах от прожитых дней.">
+<title>Калькулятор возраста и стажа — автономная версия CRM</title>
+<style>
+:root{color-scheme:dark;--bg:var(--tg-theme-bg-color,#0c1726);--panel:var(--tg-theme-secondary-bg-color,#15263a);--text:var(--tg-theme-text-color,#f0f5fa);--muted:var(--tg-theme-hint-color,#a6bbcc);--accent:var(--tg-theme-button-color,#338ba0);--accent-text:var(--tg-theme-button-text-color,#fff);--line:#3e5871;--green:#8ee0c7;--gold:#f0c38c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 16% -12%,#205567,transparent 65%),var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:1080px;margin:auto;padding:max(20px,env(safe-area-inset-top)) 16px max(45px,env(safe-area-inset-bottom))}
+a{color:#9bdde4}h1{font-size:clamp(30px,6vw,48px);line-height:1.15;letter-spacing:-.04em;margin:9px 0}h2{font-size:20px;margin:0 0 13px}
+h3{font-size:16px;margin:3px 0 12px}
+p{margin:9px 0}.muted,.help{font-size:13px;color:var(--muted)}.tiny{font-size:12px;color:var(--muted)}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.17em;color:var(--green);font-weight:750}
+header{padding:5px 0 20px}header p{max-width:760px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.08fr .92fr;gap:15px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:19px;margin-bottom:15px}
+label{display:block;font-size:13px;font-weight:650;margin-bottom:6px}
+input,button,select{font:inherit}
+input:not([type=checkbox]){color:var(--text);background:#0c1b2c;border:1px solid #547087;border-radius:10px;padding:10px 11px;width:100%;min-height:45px}
+button{color:var(--text);background:#29495c;border:1px solid #527b8d;border-radius:11px;padding:10px 13px;min-height:43px;cursor:pointer;font-weight:650}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+button.danger{background:#483039;border-color:#915661}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid #abefed;outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0}
+.actions button{flex:0 1 auto}
+.date-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.period-card{padding:13px;border-radius:13px;background:#10243a;border:1px solid #43647b;margin-top:10px}
+.period-fields{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:9px;align-items:end}
+.check{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)}
+.check label{margin:0;font-weight:400}
+.check input{width:18px;height:18px;accent-color:#6dc8bb}
+.result{display:grid;gap:10px}
+.metric{border:1px solid #3f6a79;border-radius:14px;padding:14px;background:#0d2839}
+.metric .title{font-size:12px;color:#b5cfdd;letter-spacing:.04em}
+.metric .number{font-size:clamp(27px,4vw,38px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.25}
+.metric .description{font-size:12px;color:var(--muted)}
+.metric.percentage{background:linear-gradient(130deg,#184b4d,#14364b);border-color:#64ab9b}
+.metric.percentage .number{color:#aaf1d0;font-size:clamp(40px,7vw,54px)}
+.track{height:14px;border-radius:99px;background:#31465b;overflow:hidden;margin-top:12px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#3cb0ae,#b2e6c4);border-radius:99px}
+.status{min-height:22px;font-size:13px;color:var(--green);margin-top:10px}
+.status.error{color:#ffb5a6}.note{border-left:3px solid var(--gold);padding:11px 13px;color:#c9d5e2;background:#272d3a;border-radius:0 10px 10px 0;font-size:12px}
+.summary-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.summary-table td,.summary-table th{border-bottom:1px solid #385367;text-align:left;padding:9px 5px}
+.summary-table th{color:#b9d4dc;font-weight:650}
+footer{margin-top:16px;padding:16px 0;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media(max-width:840px){.layout{grid-template-columns:1fr}}
+@media(max-width:550px){.date-grid,.period-fields{grid-template-columns:1fr}.card{padding:14px}.actions button{flex:1 1 120px}}
+@media print{body{background:#fff;color:#111}header,.card{background:#fff;color:#111;border-color:#aaa}.actions,.check,footer{display:none!important}.muted,.tiny,.help{color:#555}.metric{background:#fff;color:#111}}
+</style></head>
+<body><main>
+<nav class="tiny"><a href="../../">CRM</a> / Возраст и стаж</nav>
+<header><div class="eyebrow">CRM · персональные расчёты</div>
+<h1>Калькулятор возраста и стажа</h1>
+<p>Точный календарный возраст и трудовой стаж по нескольким периодам. Стаж можно выразить в процентах от числа прожитых календарных дней. Пересекающиеся рабочие периоды учитываются только один раз.</p></header>
+<div class="layout">
+ <div>
+  <section class="card" aria-labelledby="base-title">
+    <h2 id="base-title">1. Возраст</h2>
+    <div class="date-grid">
+     <div><label for="birth">Дата рождения</label><input type="date" id="birth" min="1900-01-01" max="2100-12-31" required></div>
+     <div><label for="asof">Рассчитать на дату</label><input type="date" id="asof" min="1900-01-01" max="2100-12-31" required></div>
+    </div>
+    <p class="help">Возраст определяется в годах, месяцах и днях. Для доли стажа и возрастного периода учитываются календарные дни, включая дату рождения и выбранную дату.</p>
+  </section>
+  <section class="card" aria-labelledby="periods-title">
+    <div class="row"><h2 id="periods-title">2. Периоды трудовой деятельности</h2></div>
+    <p class="help">Введите начало и последний день каждого периода или отметьте «Продолжается». Перерывы не входят в стаж; пересекающиеся интервалы не суммируются дважды.</p>
+    <div id="periods" aria-label="Периоды трудовой деятельности"></div>
+    <div class="actions"><button type="button" id="add-period">+ Добавить период</button><button type="button" id="clear-periods">Очистить периоды</button></div>
+    <p class="tiny">Можно добавить до 100 периодов. Название работы необязательно.</p>
+  </section>
+  <section class="card" aria-labelledby="calculate-title">
+   <h2 id="calculate-title">3. Выполнить расчёт</h2>
+   <button id="calculate" class="primary" type="button" style="width:100%">Рассчитать возраст и стаж</button>
+   <p id="status" class="status" role="status" aria-live="polite">Укажите дату рождения. Периоды работы необязательны.</p>
+  </section>
+ </div>
+ <div>
+  <section id="results" class="card" aria-labelledby="result-title" hidden>
+   <h2 id="result-title">Результат</h2>
+   <div class="result">
+    <div class="metric"><div class="title">Календарный возраст</div><div id="age" class="number">—</div><div id="life-days" class="description"></div></div>
+    <div class="metric"><div class="title">Трудовой стаж без пересечений</div><div id="tenure" class="number">—</div><div id="tenure-years" class="description"></div></div>
+    <div class="metric percentage">
+      <div class="title">Доля стажа от возраста</div>
+      <div id="percentage" class="number">—</div>
+      <div class="track" id="percent-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Процент календарных дней жизни, приходящихся на стаж"><div id="percent-fill" class="fill"></div></div>
+      <div id="formula" class="description"></div>
+    </div>
+    <p id="overlap-warning" class="help"></p>
+    <h3>История профессионального пути</h3>
+    <div class="metric">
+      <div class="title">Первая дата трудовой деятельности</div>
+      <div class="number" id="first-work" style="font-size:22px">—</div>
+      <div class="description" id="first-work-age"></div>
+    </div>
+    <div class="metric">
+      <div class="title">Доля календарных дней работы с первого трудоустройства</div>
+      <div class="number" id="career-percent" style="font-size:27px">—</div>
+      <div class="description" id="career-span"></div>
+    </div>
+    <p id="career-gaps-note" class="help"></p>
+    <table class="summary-table"><thead><tr><th scope="col">Перерыв с</th><th scope="col">По</th><th scope="col">Дней</th></tr></thead><tbody id="career-gaps"></tbody></table>
+    <details style="margin:14px 0">
+      <summary style="cursor:pointer;font-weight:650">Стаж по календарным годам</summary>
+      <table class="summary-table"><thead><tr><th scope="col">Год</th><th scope="col">Дней работы</th></tr></thead><tbody id="career-years"></tbody></table>
+    </details>
+    <h3>Объединённые интервалы</h3>
+    <table class="summary-table"><thead><tr><th scope="col">С</th><th scope="col">По</th><th scope="col">Дней</th></tr></thead><tbody id="merged"></tbody></table>
+   </div>
+   <p class="note">Метод считает календарные даты, а не юридический страховой, специальный или льготный стаж. Он не устанавливает право на пенсию, выплаты или трудовые гарантии.</p>
+   <div class="actions"><button id="csv" type="button">Экспорт CSV (Excel)</button><button id="copy" type="button">Копировать</button><button id="print" type="button">Печать / PDF</button></div>
+  </section>
+  <section class="card" aria-labelledby="privacy-title">
+   <h2 id="privacy-title">Данные и конфиденциальность</h2>
+   <div class="check"><input type="checkbox" id="remember"><label for="remember">Сохранять введённые даты в этом браузере</label></div>
+   <p class="help">По умолчанию сохранение выключено. Когда включено, данные хранятся в localStorage текущего браузерного профиля и доступны другим людям, использующим тот же профиль. На сервер CRM они не отправляются.</p>
+   <div class="actions"><button id="export" type="button">Сохранить JSON</button><button id="import" type="button">Загрузить JSON</button><button id="forget" class="danger" type="button">Очистить данные</button></div>
+   <input id="file" type="file" accept=".json,application/json" hidden>
+   <p id="storage-status" class="status" role="status"></p>
+  </section>
+  <section class="card"><h2>Как считается процент?</h2>
+   <p class="help">Сначала объединяются все календарные дни работы, чтобы одновременная занятость в двух местах не дала двойной стаж. Затем число уникальных рабочих дней делится на количество календарных дней от рождения до даты расчёта включительно.</p>
+   <div class="note"><strong>Пример:</strong> при 2 000 днях трудового стажа и 10 000 календарных днях жизни доля составляет <strong>20%</strong>. Это доля продолжительности жизни, а не эффективность сотрудника и не показатель его профессиональных способностей.</div>
+  </section>
+ </div>
+</div>
+<footer><p>CRM · Мини-приложение. Даты вычисляются локально, без внешнего API. Нет авторизации и общего хранилища сотрудников; мини-апп не заменяет защищённую кадровую систему.</p><p><a href="https://yugatn.github.io/psy-tools/mini-apps/age-tenure/">Исходный код и тесты</a></p></footer>
+</main>
+<!-- Автономный HTML: JS встроен. Не требует загрузки engine.js с сервера. -->
+<script>
+/* CRM · Калькулятор возраста и стажа v1.1
+ * All dates are calendar dates, treated in UTC to avoid timezone/DST distortions.
+ * Employment periods include both start and last-worked date.
+ * The reference date is included in lifetime and active work-day counts.
+ */
+(function(root,factory){
+ "use strict";
+ const api=factory();
+ if(typeof module==="object"&&module.exports)module.exports=api;
+ if(root)root.CrmAgeTenure=api;
+})(typeof window!=="undefined"?window:(typeof globalThis!=="undefined"?globalThis:null),function(){
+ "use strict";
+ const VERSION="1.1.0", KEY="crm.age-tenure.v1", MS_DAY=86400000;
+ const MIN_YEAR=1900,MAX_YEAR=2100,MAX_PERIODS=100;
+ function parseDate(text,field="Дата"){
+  if(typeof text!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(text))
+   throw Error(field+": укажите дату в формате ГГГГ-ММ-ДД.");
+  const [y,m,d]=text.split("-").map(Number);
+  if(y<MIN_YEAR||y>MAX_YEAR)throw Error(field+": поддерживаются годы с 1900 по 2100.");
+  const ms=Date.UTC(y,m-1,d),dt=new Date(ms);
+  if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)
+   throw Error(field+": такой календарной даты не существует.");
+  return {iso:text,year:y,month:m,day:d,dayIndex:ms/MS_DAY};
+ }
+ function isoUTC(dayIndex){return new Date(dayIndex*MS_DAY).toISOString().slice(0,10);}
+ function daysInMonth(year,month){return new Date(Date.UTC(year,month,0)).getUTCDate();}
+ function addMonthsClipped(birth,totalMonths){
+  const m=birth.year*12+(birth.month-1)+totalMonths;
+  const y=Math.floor(m/12),mo=m%12+1,day=Math.min(birth.day,daysInMonth(y,mo));
+  return Date.UTC(y,mo-1,day)/MS_DAY;
+ }
+ function calendarAge(birth,target){
+  const b=parseDate(birth,"Дата рождения"),t=parseDate(target,"Дата расчёта");
+  if(t.dayIndex<b.dayIndex)throw Error("Дата расчёта не может быть раньше рождения.");
+  let months=(t.year-b.year)*12+(t.month-b.month);
+  if(addMonthsClipped(b,months)>t.dayIndex)months--;
+  const base=addMonthsClipped(b,months);
+  const days=t.dayIndex-base;
+  return {years:Math.floor(months/12),months:months%12,days,
+   elapsedDays:t.dayIndex-b.dayIndex,
+   inclusiveLifeDays:t.dayIndex-b.dayIndex+1,
+   leapBirthdayRule:"29 февраля в невисокосном году округляется к 28 февраля"};
+ }
+ function normalizePeriod(input,index){
+  if(!input||typeof input!=="object")throw Error("Период №"+(index+1)+": укажите даты.");
+  const id=typeof input.id==="string"&&/^[a-zA-Z0-9_-]{1,80}$/.test(input.id)?
+   input.id:"period-"+(index+1);
+  const title=typeof input.title==="string"?input.title.trim().slice(0,120):"";
+  const start=parseDate(input.start,"Начало периода №"+(index+1));
+  const ongoing=input.ongoing===true;
+  const end=ongoing?null:parseDate(input.end,"Конец периода №"+(index+1));
+  if(end&&end.dayIndex<start.dayIndex)throw Error("Период №"+(index+1)+": конец раньше начала.");
+  return {id,title,start:start.iso,end:end?.iso??null,ongoing};
+ }
+ function mergeIntervals(intervals){
+  const sorted=intervals.map(x=>({startDay:x.startDay,endExclusive:x.endExclusive}))
+   .sort((a,b)=>a.startDay-b.startDay||a.endExclusive-b.endExclusive);
+  const out=[];
+  for(const x of sorted){
+   const last=out[out.length-1];
+   if(last&&x.startDay<=last.endExclusive)last.endExclusive=Math.max(last.endExclusive,x.endExclusive);
+   else out.push({...x});
+  }
+  return out.map(x=>({start:isoUTC(x.startDay),end:isoUTC(x.endExclusive-1),
+   days:x.endExclusive-x.startDay}));
+ }
+ function careerAnalysis(merged,birthDate,asOf){
+  if(!merged.length)return {
+   firstWorkDate:null,firstWorkAge:null,careerSpanDays:0,daysOutsideWork:0,
+   proportionOfCareer:0,gaps:[],longestGapDays:0,years:[]
+  };
+  const first=merged[0].start,ref=parseDate(asOf),start=parseDate(first);
+  const workDays=merged.reduce((sum,x)=>sum+x.days,0);
+  const gaps=[];
+  for(let i=1;i<merged.length;i++){
+   const prev=parseDate(merged[i-1].end).dayIndex;
+   const next=parseDate(merged[i].start).dayIndex;
+   if(next-prev>1)gaps.push({start:isoUTC(prev+1),end:isoUTC(next-1),days:next-prev-1});
+  }
+  const careerSpanDays=ref.dayIndex-start.dayIndex+1;
+  const byYear=new Map();
+  for(const interval of merged){
+   let cursor=parseDate(interval.start).dayIndex;
+   const end=parseDate(interval.end).dayIndex;
+   while(cursor<=end){
+    const date=new Date(cursor*MS_DAY),year=date.getUTCFullYear();
+    const lastDay=Date.UTC(year,11,31)/MS_DAY;
+    const stop=Math.min(end,lastDay);
+    byYear.set(year,(byYear.get(year)||0)+(stop-cursor+1));
+    cursor=stop+1;
+   }
+  }
+  const years=[...byYear].sort((a,b)=>a[0]-b[0]).map(([year,days])=>({year,days}));
+  return {firstWorkDate:first,firstWorkAge:calendarAge(birthDate,first),
+   careerSpanDays,daysOutsideWork:careerSpanDays-workDays,
+   proportionOfCareer:workDays/careerSpanDays*100,
+   gaps,longestGapDays:Math.max(0,...gaps.map(x=>x.days)),years};
+ }
+ function calculate({birthDate,asOf,periods=[]}={}){
+  const birth=parseDate(birthDate,"Дата рождения"),ref=parseDate(asOf,"Дата расчёта");
+  if(ref.dayIndex<birth.dayIndex)throw Error("Дата расчёта раньше даты рождения.");
+  if(!Array.isArray(periods)||periods.length>MAX_PERIODS)
+   throw Error("Допускается не более "+MAX_PERIODS+" периодов работы.");
+  const age=calendarAge(birthDate,asOf),processed=[],intervals=[],ids=new Set();
+  let summedDays=0;
+  for(let i=0;i<periods.length;i++){
+   const p=normalizePeriod(periods[i],i);
+   if(ids.has(p.id))throw Error("Повторяется идентификатор периода: "+p.id);
+   ids.add(p.id);
+   const start=parseDate(p.start);
+   const end=parseDate(p.ongoing?asOf:p.end);
+   if(start.dayIndex<birth.dayIndex)throw Error("Период №"+(i+1)+": работа начинается до даты рождения.");
+   if(start.dayIndex>ref.dayIndex)throw Error("Период №"+(i+1)+": начало работы позже даты расчёта.");
+   if(end.dayIndex>ref.dayIndex)throw Error("Период №"+(i+1)+": конец позже даты расчёта.");
+   const inclusiveDays=end.dayIndex-start.dayIndex+1;
+   summedDays+=inclusiveDays;
+   intervals.push({startDay:start.dayIndex,endExclusive:end.dayIndex+1});
+   processed.push({...p,effectiveEnd:end.iso,inclusiveDays});
+  }
+  const merged=mergeIntervals(intervals);
+  const uniqueDays=merged.reduce((sum,x)=>sum+x.days,0);
+  const overlapDays=summedDays-uniqueDays;
+  const career=careerAnalysis(merged,birthDate,asOf);
+  const percentage=uniqueDays/age.inclusiveLifeDays*100;
+  if(percentage>100+1e-9)throw Error("Внутренняя ошибка: стаж превышает продолжительность жизни.");
+  return {version:VERSION,birthDate:birth.iso,asOf:ref.iso,age,
+   work:{periods:processed,merged,uniqueDays,summedDays,overlapDays,
+    proportionOfLife:Math.min(100,percentage),
+    approximateYears:uniqueDays/365.2425,
+    approximateMonths:uniqueDays/(365.2425/12),
+    periodCount:processed.length,career}};
+ }
+ function stateOrDefault(input){
+  if(!input||typeof input!=="object"||input.schema!=="crm-age-tenure"||input.version!==1)
+   throw Error("Неподдерживаемый формат сохранённых данных.");
+  if(!Array.isArray(input.periods)||input.periods.length>MAX_PERIODS)
+   throw Error("Слишком много периодов.");
+  const periods=input.periods.map(normalizePeriod),ids=new Set();
+  for(const p of periods){if(ids.has(p.id))throw Error("Повтор ID: "+p.id);ids.add(p.id);}
+  const birthDate=input.birthDate===""?"":parseDate(input.birthDate).iso;
+  const asOf=input.asOf===""?"":parseDate(input.asOf).iso;
+  return {schema:"crm-age-tenure",version:1,birthDate,asOf,periods};
+ }
+ function emptyState(asOf){
+  return {schema:"crm-age-tenure",version:1,birthDate:"",asOf:parseDate(asOf).iso,periods:[]};
+ }
+ function plural(n,one,few,many){
+  const last100=n%100,last10=n%10;
+  return last100>=11&&last100<=14?many:last10===1?one:last10>=2&&last10<=4?few:many;
+ }
+ function textReport(result){
+  const a=result.age,w=result.work;
+  return ["CRM — возраст и трудовой стаж",
+   "Дата рождения: "+result.birthDate,
+   "Дата расчёта: "+result.asOf+" (включительно)",
+   "Возраст: "+a.years+" "+plural(a.years,"год","года","лет")+" "+
+    a.months+" "+plural(a.months,"месяц","месяца","месяцев")+" "+
+    a.days+" "+plural(a.days,"день","дня","дней"),
+   "Календарных дней жизни (с включением даты рождения и расчёта): "+a.inclusiveLifeDays,
+   "Стаж без пересечений: "+w.uniqueDays+" календарных дней",
+   "Стаж приблизительно: "+w.approximateYears.toFixed(2)+" года (365,2425 дней/год)",
+   "Доля стажа от возраста: "+w.proportionOfLife.toFixed(2)+"%",
+   "Двойной счёт исключён: "+w.overlapDays+" дней",
+   "Первый день работы: "+(w.career.firstWorkDate||"не указан"),
+   "Перерывы между периодами: "+w.career.gaps.length+", дней: "+
+     w.career.gaps.reduce((n,x)=>n+x.days,0),
+   "Доля стажа за период с первой работы: "+w.career.proportionOfCareer.toFixed(2)+"%",
+   "Календарных дней без работы после первого трудоустройства (до даты расчёта): "+
+     w.career.daysOutsideWork,
+   "Метод: объединение рабочих периодов включительно; доля = стаж/дни жизни*100.",
+   "Это календарная оценка, а не юридический расчёт страхового или льготного стажа."].join("\n");
+ }
+ function csvEscape(value){
+  let s=String(value??"");
+  if(/^[\s]*[=+\-@]/.test(s))s="'"+s;
+  return '"'+s.replace(/"/g,'""')+'"';
+ }
+ function csvReport(result){
+  const rows=[["Тип","Наименование","Начало","Окончание включительно","Дней"],
+   ...result.work.periods.map(p=>["Период",p.title||p.id,p.start,p.effectiveEnd,p.inclusiveDays]),
+   ...result.work.merged.map((p,i)=>["Объединённый период "+(i+1),"Без двойного учёта",p.start,p.end,p.days]),
+   ["Итого","Возраст (дней, включительно)",result.birthDate,result.asOf,result.age.inclusiveLifeDays],
+   ["Итого","Стаж (дней)","","",result.work.uniqueDays],
+   ["Итого","Стаж / возраст (%)","","",result.work.proportionOfLife.toFixed(2)],
+   ["Итого","Стаж / период от первого трудоустройства (%)","","",result.work.career.proportionOfCareer.toFixed(2)],
+   ["Итого","Дней без работы после первого трудоустройства","","",result.work.career.daysOutsideWork],
+   ...result.work.career.gaps.map((g,i)=>["Перерыв "+(i+1),"Без зарегистрированной работы",g.start,g.end,g.days]),
+   ...result.work.career.years.map(y=>["Год","Календарный "+y.year+" год",String(y.year),"",y.days])];
+  return "\ufeff"+rows.map(row=>row.map(csvEscape).join(";")).join("\r\n");
+ }
+ return Object.freeze({VERSION,KEY,MIN_YEAR,MAX_YEAR,MAX_PERIODS,parseDate,
+  calendarAge,normalizePeriod,mergeIntervals,careerAnalysis,calculate,stateOrDefault,
+  emptyState,textReport,csvReport});
+});
+</script>
+<script>
+(function(){
+ "use strict";
+ const C=window.CrmAgeTenure,$=id=>document.getElementById(id);
+ const el=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n;};
+ const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+ const label=(forId,text)=>{const l=el("label","",text);l.htmlFor=forId;return l;};
+ const input=(id,type,value)=>{const x=el("input");x.id=id;x.type=type;x.value=value||"";return x;};
+ let state=C.emptyState(today()),lastResult=null,sequence=0;
+ try{const raw=localStorage.getItem(C.KEY);
+  if(raw){state=C.stateOrDefault(JSON.parse(raw));$("remember").checked=true;}
+ }catch(e){$("storage-status").textContent="Ранее сохранённые данные повреждены или недоступны; загружена пустая форма.";}
+ function notify(id,msg,error=false){$(id).textContent=msg;$(id).classList.toggle("error",error);}
+ function localSave(){
+  try{
+   if(!$("remember").checked){localStorage.removeItem(C.KEY);return;}
+   let clean;
+   try{clean=C.stateOrDefault(state);}
+   catch(e){
+    localStorage.removeItem(C.KEY);
+    notify("storage-status","Черновик содержит незаполненные даты. Старая локальная копия очищена; сохранение возобновится после исправления.",true);
+    return;
+   }
+   localStorage.setItem(C.KEY,JSON.stringify(clean));
+  }catch(e){notify("storage-status","Не удалось записать данные в браузер. Экспорт JSON остаётся доступен.",true);}
+ }
+ function dirty(){
+  lastResult=null;$("results").hidden=true;
+  notify("status","Данные изменены. Нажмите «Рассчитать возраст и стаж».");
+  localSave();
+ }
+ function nextId(){
+  let id;
+  do{id="p-"+Date.now().toString(36)+"-"+(sequence++).toString(36);}while(state.periods.some(p=>p.id===id));
+  return id;
+ }
+ function makeField(fieldId,caption,element){
+  const wrap=el("div");wrap.appendChild(label(fieldId,caption));wrap.appendChild(element);return wrap;
+ }
+ function renderPeriods(){
+  const root=$("periods");root.replaceChildren();
+  for(const p of state.periods){
+   const article=el("section","period-card");
+   const row=el("div","row");
+   const heading=el("h3","","Период "+(state.periods.indexOf(p)+1));
+   const del=el("button","danger","Удалить");del.type="button";del.setAttribute("aria-label","Удалить период "+(state.periods.indexOf(p)+1));
+   del.addEventListener("click",()=>{state.periods=state.periods.filter(x=>x.id!==p.id);renderPeriods();dirty();});
+   row.append(heading,del);article.appendChild(row);
+   const fields=el("div","period-fields");
+   const name=input("name-"+p.id,"text",p.title);name.maxLength=120;name.placeholder="Должность / место работы";
+   name.addEventListener("input",()=>{p.title=name.value.slice(0,120);dirty();});
+   const start=input("start-"+p.id,"date",p.start);start.min="1900-01-01";start.max="2100-12-31";
+   start.addEventListener("change",()=>{p.start=start.value;dirty();});
+   const end=input("end-"+p.id,"date",p.end);end.min="1900-01-01";end.max="2100-12-31";end.disabled=p.ongoing;
+   end.addEventListener("change",()=>{p.end=end.value;dirty();});
+   fields.append(makeField(name.id,"Место / должность",name),makeField(start.id,"Дата начала",start),
+    makeField(end.id,"Последний день",end));
+   article.appendChild(fields);
+   const ongoingWrap=el("div","check"),cb=input("ongoing-"+p.id,"checkbox");cb.checked=p.ongoing;
+   cb.addEventListener("change",()=>{
+    p.ongoing=cb.checked;
+    if(!p.ongoing&&!p.end){p.end=state.asOf;end.value=p.end;}
+    end.disabled=p.ongoing;dirty();
+   });
+   ongoingWrap.append(cb,label(cb.id,"Работа продолжается до даты расчёта"));article.appendChild(ongoingWrap);
+   root.appendChild(article);
+  }
+  if(!state.periods.length)root.appendChild(el("p","muted","Периодов пока нет: можно рассчитать только возраст."));
+ }
+ function syncFields(){
+  $("birth").value=state.birthDate;
+  $("asof").value=state.asOf;
+  renderPeriods();
+ }
+ function updateRoot(){
+  state.birthDate=$("birth").value;
+  state.asOf=$("asof").value;
+  dirty();
+ }
+ $("birth").addEventListener("change",updateRoot);
+ $("asof").addEventListener("change",updateRoot);
+ $("add-period").addEventListener("click",()=>{
+  if(state.periods.length>=C.MAX_PERIODS){notify("status","Не более 100 периодов.",true);return;}
+  state.periods.push({id:nextId(),title:"",start:"",end:state.asOf,ongoing:false});
+  renderPeriods();dirty();
+ });
+ $("clear-periods").addEventListener("click",()=>{
+  if(!state.periods.length)return;
+  if(!window.confirm("Удалить все введённые периоды работы?"))return;
+  state.periods=[];renderPeriods();dirty();
+ });
+ function formatNumber(n){return n.toLocaleString("ru-RU");}
+ function plural(n,one,few,many){
+  const last100=n%100,last10=n%10;
+  return last100>=11&&last100<=14?many:last10===1?one:last10>=2&&last10<=4?few:many;
+ }
+ function showResult(r){
+  const age=r.age,work=r.work;
+  $("age").textContent=age.years+" "+plural(age.years,"год","года","лет")+" · "+
+   age.months+" "+plural(age.months,"месяц","месяца","месяцев")+" · "+
+   age.days+" "+plural(age.days,"день","дня","дней");
+  $("life-days").textContent=formatNumber(age.inclusiveLifeDays)+" календарных дней жизни, включая выбранную дату";
+  $("tenure").textContent=formatNumber(work.uniqueDays)+" дн";
+  $("tenure-years").textContent="Приблизительно "+work.approximateYears.toLocaleString("ru-RU",{maximumFractionDigits:2,minimumFractionDigits:2})+" года по шкале 365,2425 дня/год";
+  const pct=work.proportionOfLife.toLocaleString("ru-RU",{minimumFractionDigits:2,maximumFractionDigits:2});
+  $("percentage").textContent=pct+"%";
+  $("percent-fill").style.width=work.proportionOfLife.toFixed(5)+"%";
+  $("percent-track").setAttribute("aria-valuenow",work.proportionOfLife.toFixed(2));
+  $("formula").textContent=formatNumber(work.uniqueDays)+" / "+formatNumber(age.inclusiveLifeDays)+" × 100 = "+pct+"%";
+  $("overlap-warning").textContent=work.overlapDays?
+   "Исключено двойное начисление: "+formatNumber(work.overlapDays)+" календарных дней пересечений.":
+   work.periodCount?"Пересечения рабочих периодов отсутствуют.":"Периоды работы не указаны — стаж равен нулю.";
+  const career=work.career;
+  $("first-work").textContent=career.firstWorkDate||"Не указан";
+  $("first-work-age").textContent=career.firstWorkAge?
+    "Возраст при первом трудоустройстве: "+career.firstWorkAge.years+" "+plural(career.firstWorkAge.years,"год","года","лет")+
+    " "+career.firstWorkAge.months+" "+plural(career.firstWorkAge.months,"месяц","месяца","месяцев"):
+    "Периоды работы не указаны.";
+  $("career-percent").textContent=career.proportionOfCareer.toLocaleString("ru-RU",{minimumFractionDigits:2,maximumFractionDigits:2})+"%";
+  $("career-span").textContent=career.firstWorkDate?
+    formatNumber(work.uniqueDays)+" рабочих дней из "+formatNumber(career.careerSpanDays)+
+    " дней с первого трудоустройства до даты расчёта; вне периодов "+formatNumber(career.daysOutsideWork)+" дней.":
+    "Нет периода для расчёта доли после первого трудоустройства.";
+  $("career-gaps-note").textContent=career.gaps.length?
+    "Перерывов между периодами: "+career.gaps.length+
+    ". Самый длинный: "+formatNumber(career.longestGapDays)+" дней.":
+    "Зарегистрированных разрывов между периодами нет.";
+  const gapBody=$("career-gaps");gapBody.replaceChildren();
+  for(const gap of career.gaps){const row=el("tr");
+    [gap.start,gap.end,formatNumber(gap.days)].forEach(v=>row.appendChild(el("td","",v)));
+    gapBody.appendChild(row);
+  }
+  if(!career.gaps.length){const row=el("tr"),cell=el("td","","Нет разрывов");cell.colSpan=3;row.appendChild(cell);gapBody.appendChild(row);}
+  const yearBody=$("career-years");yearBody.replaceChildren();
+  for(const y of career.years){const row=el("tr");
+    [String(y.year),formatNumber(y.days)].forEach(v=>row.appendChild(el("td","",v)));
+    yearBody.appendChild(row);}
+  if(!career.years.length){const row=el("tr"),cell=el("td","","Нет периодов");cell.colSpan=2;row.appendChild(cell);yearBody.appendChild(row);}
+  const tbody=$("merged");tbody.replaceChildren();
+  for(const item of work.merged){
+   const row=el("tr");
+   for(const value of [item.start,item.end,formatNumber(item.days)])row.appendChild(el("td","",value));
+   tbody.appendChild(row);
+  }
+  if(!work.merged.length){const row=el("tr"),cell=el("td","","Нет периодов");cell.colSpan=3;row.appendChild(cell);tbody.appendChild(row);}
+  $("results").hidden=false;
+  const future=r.asOf>today();
+  notify("status",future?"Расчёт выполнен. Выбрана будущая дата: результат является прогнозом.":"Расчёт выполнен.");
+ }
+ $("calculate").addEventListener("click",()=>{
+  state.birthDate=$("birth").value;state.asOf=$("asof").value;
+  try{const r=C.calculate(state);lastResult=r;showResult(r);localSave();}
+  catch(err){lastResult=null;$("results").hidden=true;notify("status",err.message,true);}
+ });
+ $("remember").addEventListener("change",()=>{
+  localSave();notify("storage-status",$("remember").checked?
+  "Сохранение включено только для этого браузерного профиля.":"Сохранение выключено; сохранённая копия удалена.");
+ });
+ function download(filename,text,mime){
+  const blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=el("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }
+ $("csv").addEventListener("click",()=>{
+  if(!lastResult)return;
+  download("crm-age-tenure.csv",C.csvReport(lastResult),"text/csv;charset=utf-8");
+ });
+ $("copy").addEventListener("click",async()=>{
+  if(!lastResult)return;
+  try{await navigator.clipboard.writeText(C.textReport(lastResult));notify("status","Расчёт скопирован.");}
+  catch(e){notify("status","Копирование недоступно в этом браузере. Используйте экспорт CSV.",true);}
+ });
+ $("print").addEventListener("click",()=>{if(lastResult)window.print();});
+ $("export").addEventListener("click",()=>{
+  try{const payload=C.stateOrDefault(state);
+    download("crm-age-tenure.json",JSON.stringify(payload,null,2),"application/json;charset=utf-8");
+    notify("storage-status","JSON с введёнными датами сохранён. Берегите файл как персональные данные.");
+  }catch(e){notify("storage-status","Экспорт невозможен: "+e.message,true);}
+ });
+ $("import").addEventListener("click",()=>$("file").click());
+ $("file").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];e.target.value="";if(!file)return;
+  if(file.size>100000){notify("storage-status","JSON превышает предел 100 КБ.",true);return;}
+  try{
+   const imported=C.stateOrDefault(JSON.parse(await file.text()));
+   if(!window.confirm("Заменить текущие даты и периоды данными из JSON?"))return;
+   state=imported;lastResult=null;$("results").hidden=true;
+   syncFields();localSave();notify("storage-status","Данные загружены. Нажмите «Рассчитать».");
+  }catch(err){notify("storage-status","Импорт отклонён: "+err.message,true);}
+ });
+ $("forget").addEventListener("click",()=>{
+  if(!window.confirm("Очистить данные формы и сохранённую копию в браузере?"))return;
+  state=C.emptyState(today());$("remember").checked=false;
+  try{localStorage.removeItem(C.KEY);}catch(e){}
+  lastResult=null;$("results").hidden=true;syncFields();
+  notify("status","Укажите дату рождения.");notify("storage-status","Данные формы и локальная копия очищены.");
+ });
+ syncFields();
+ if(/tgWebApp(Version|Platform|Data)=/.test(location.href)){
+  const sdk=document.createElement("script");sdk.src="https://telegram.org/js/telegram-web-app.js";
+  sdk.onload=()=>{try{window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();}catch(e){}};
+  document.head.appendChild(sdk);
+ }
+})();
+</script>
+</body></html>
