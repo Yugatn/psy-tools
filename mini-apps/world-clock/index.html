@@ -307,7 +307,7 @@ function findMeetingSlots(){
    row.append(left,button);root.appendChild(row);
   }
   root.hidden=false;
-  notify("meeting-status","Найдено "+slots.slots.length+" получасовых интервалов. Время указано по основному городу.");
+  notify("meeting-status","Подходящих получасовых интервалов: "+slots.slots.length+". Время указано по основному городу.");
  }catch(err){notify("meeting-status",err.message);}
 }
 function render(){renderClocks();if(mode==="plan")calculatePlan();}
