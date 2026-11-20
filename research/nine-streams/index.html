@@ -26,7 +26,18 @@ button.primary{background:#156c7c;border-color:#68b5c5}button.warn{background:#4
 kbd{background:#25364c;border-radius:4px;padding:0 4px}
 #cube{max-width:100%;height:auto;display:block;margin:auto;overflow:visible}
 .cube-edge{stroke:#597d98;stroke-opacity:.35;stroke-width:1.1}.cube-node{cursor:pointer;stroke:#0b1724;stroke-width:2;transition:r .15s}.cube-node:focus{outline:none;stroke:#fff;stroke-width:3}.cube-node:hover{stroke:#fff;stroke-width:3}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#b2c5d5}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#b2c5d5}
+.cells-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:7px;margin-top:12px;max-height:335px;overflow:auto}
+.cell-choice{font-size:12px;text-align:left;line-height:1.4;min-height:54px;padding:8px 10px;background:#102339}
+.cell-choice[data-active="true"]{border-color:#85e8e2;background:#165162}
+.cell-choice .cell-status{display:block;font-size:11px;color:#aac4d4;margin-top:3px}
+.cell-summary{font-size:13px;color:#a9d9d3;margin:9px 0 0}
+.cell-directory{margin-top:12px;border-top:1px solid #30435a;padding-top:11px}
+.cell-directory summary{cursor:pointer;font-weight:700;color:#acd9e7;padding:8px 0}
+.cell-directory summary:focus-visible{outline:3px solid #f6ce84;outline-offset:3px}
+.cell-filter{display:flex;align-items:center;gap:9px;font-size:13px;color:#cfdfeb;cursor:pointer;margin-top:8px}
+.cell-filter input{width:18px;height:18px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 #wheel{width:100%;max-width:430px;height:auto;display:block;margin:auto}
 .streams{display:grid;gap:10px}.stream{border:1px solid #35485e;border-radius:13px;padding:11px;background:#0c1929}
 .stream-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.stream-head strong{font-size:14px}.stream-head select{width:175px;max-width:50%;padding:6px;font-size:13px}
@@ -68,6 +79,11 @@ footer{border-top:1px solid #26384d;padding-top:16px;margin-top:20px;color:var(-
   <svg id="cube" viewBox="0 0 400 340" role="group" aria-label="Кубическая сетка из 27 выбираемых координат"></svg>
   <div class="legend"><span><i class="dot" style="background:#6dd5e9"></i>Выбрана</span><span><i class="dot" style="background:#f6c275"></i>Есть запись</span><span><i class="dot" style="background:#6c8498"></i>Нет записи</span></div>
   <p class="small" id="cube-description"></p>
+  <p class="cell-summary" id="cell-summary" aria-live="polite">Заполнено 0 из 27 координат</p>
+  <details class="cell-directory"><summary>Список координат · доступная альтернатива кубу</summary>
+    <label class="cell-filter"><input id="only-recorded" type="checkbox"> Показывать только ячейки с записями</label>
+    <div id="cell-list" class="cells-list" aria-label="Координаты исследовательской матрицы"></div>
+  </details>
   <div class="actions"><button id="clear-cell" class="warn">Очистить выбранную ячейку</button></div>
 </section>
 
@@ -118,7 +134,7 @@ const $=id=>document.getElementById(id);
 const select={organism:$("organism"),environment:$("environment"),slice:$("slice")};
 const selected={organism:"human",environment:"regular",slice:"s1"};
 let state=M.emptyState();
-let storageAvailable=true;
+let storageAvailable=true,stale=false;
 try{const raw=localStorage.getItem(M.STORAGE_KEY);if(raw)state=M.parse(raw);}
 catch(e){storageAvailable=false;$("status").textContent="Хранилище недоступно или данные повреждены. Экспорт и редактирование в текущей вкладке возможны."; }
 function svg(tag,attrs,parent){
@@ -129,16 +145,23 @@ function svg(tag,attrs,parent){
 }
 function label(parent,str){const t=document.createElement("span");t.textContent=str;parent.appendChild(t);return t;}
 function setStatus(s){$("status").textContent=s;}
+function allowWrite(){
+  if(!stale)return true;
+  setStatus("Записи изменились в другой вкладке. Перезагрузите страницу, прежде чем продолжить, чтобы не перезаписать новые данные.");
+  return false
+}
 function persist(){
-  try{localStorage.setItem(M.STORAGE_KEY,JSON.stringify(state));storageAvailable=true;setStatus("Локально сохранено.");}
-  catch(e){storageAvailable=false;setStatus("Не удалось записать в браузер. Экспортируйте текущие данные, чтобы их не потерять.");}
+  if(!allowWrite())return false;
+  try{localStorage.setItem(M.STORAGE_KEY,JSON.stringify(state));storageAvailable=true;setStatus("Локально сохранено.");return true}
+  catch(e){storageAvailable=false;setStatus("Не удалось записать в браузер. Экспортируйте текущие данные, чтобы их не потерять.");return false}
 }
 function currentKey(){return M.key(selected.organism,selected.environment,selected.slice);}
 function cell(){return M.getCell(state,selected.organism,selected.environment,selected.slice);}
 function update(mutator){
+  if(!allowWrite()){renderStreams();return false}
   const c=cell();mutator(c);
   state=M.putCell(state,selected.organism,selected.environment,selected.slice,c);
-  persist();renderCube();renderWheel();renderMeta();
+  const saved=persist();renderCube();renderWheel();renderMeta();return saved
 }
 function fillSelect(control,key){
   M.AXES[key].forEach(option=>{const op=document.createElement("option");op.value=option.id;op.textContent=option.label;control.appendChild(op);});
@@ -231,20 +254,49 @@ function renderStreams(){
     "Режим документирования: оценка человеческого субъективного комфорта заблокирована. Фиксируй только наблюдаемые функции, источник и неопределённость. Нельзя выводить субъективный опыт животного из названия вида.";
   $("note").value=c.note;$("evidence").value=c.evidence;
 }
-function renderCube(){cube();}
+function renderCellList(){
+  const entries=state.entries||{},ids=Object.keys(entries),root=$("cell-list");
+  const only=$("only-recorded").checked;root.replaceChildren();
+  $("cell-summary").textContent="Записано "+ids.length+" из 27 координат. "+(ids.length?"Сохранено только в браузере.":"Начните с выбора координаты.");
+  for(const o of M.AXES.organism)for(const e of M.AXES.environment)for(const t of M.AXES.slice){
+    const k=M.key(o.id,e.id,t.id),recorded=Object.prototype.hasOwnProperty.call(entries,k);
+    if(only&&!recorded)continue;
+    const current=o.id===selected.organism&&e.id===selected.environment&&t.id===selected.slice;
+    const button=document.createElement("button");button.type="button";button.className="cell-choice";
+    button.dataset.active=String(current);button.setAttribute("aria-current",current?"true":"false");
+    const label=document.createElement("span");label.textContent=o.label+" / "+e.label+" / "+t.label;
+    const status=document.createElement("span");status.className="cell-status";
+    status.textContent=recorded?"Есть локальное наблюдение":"Запись отсутствует";
+    button.append(label,status);
+    button.addEventListener("click",()=>{
+      selected.organism=o.id;selected.environment=e.id;selected.slice=t.id;
+      Object.keys(select).forEach(name=>{select[name].value=selected[name]});render()
+    });
+    root.append(button)
+  }
+  if(!root.children.length){
+    const none=document.createElement("p");none.className="small";
+    none.textContent="Пока нет ячеек с записями. Снимите фильтр, чтобы увидеть все 27 координат.";root.append(none)
+  }
+}
+function renderCube(){cube();renderCellList()}
 function renderWheel(){wheel();}
 function render(){renderCube();renderWheel();renderStreams();renderMeta();}
 Object.keys(select).forEach(k=>fillSelect(select[k],k));
+$("only-recorded").addEventListener("change",renderCellList);
 $("note").addEventListener("change",()=>update(c=>{c.note=$("note").value;}));
 $("evidence").addEventListener("change",()=>update(c=>{c.evidence=$("evidence").value;}));
 $("clear-cell").addEventListener("click",()=>{
+ if(!allowWrite())return;
  if(!Object.prototype.hasOwnProperty.call(state.entries,currentKey()))return setStatus("Выбранная ячейка и так пуста.");
  if(!window.confirm("Очистить текущую ячейку? Остальные записи останутся без изменений."))return;
  delete state.entries[currentKey()];persist();render();
 });
 $("delete-all").addEventListener("click",()=>{
+ if(!allowWrite())return;
  if(!window.confirm("Удалить ВСЕ записи Матрицы девяти потоков на этом устройстве? Это необратимо без резервной копии."))return;
- state=M.emptyState();try{localStorage.removeItem(M.STORAGE_KEY);}catch(e){}render();setStatus("Все записи модуля удалены.");
+ try{localStorage.removeItem(M.STORAGE_KEY)}catch(e){return setStatus("Не удалось удалить данные из хранилища. Они не изменены.")}
+ state=M.emptyState();render();setStatus("Все записи модуля удалены.");
 });
 $("export").addEventListener("click",()=>{
  const str=JSON.stringify(state,null,2);const blob=new Blob([str],{type:"application/json;charset=utf-8"});
@@ -259,9 +311,17 @@ $("file").addEventListener("change",async event=>{
  if(file.size>2000000){setStatus("Файл слишком большой (предел 2 МБ).");return;}
  try{
    const candidate=M.parse(await file.text());
+   if(!allowWrite())return;
    if(!window.confirm("Заменить все текущие записи данными импортируемого файла? Перед этим можно сделать экспорт."))return;
-   state=candidate;persist();render();setStatus("Импорт выполнен. Координаты и диапазоны проверены.");
+   const previous=state;state=candidate;
+   if(!persist()){state=previous;render();return}
+   render();setStatus("Импорт выполнен. Координаты и диапазоны проверены.");
  }catch(e){setStatus("Импорт отклонён: "+e.message);}
+});
+window.addEventListener("storage",event=>{
+  if(event.key!==M.STORAGE_KEY)return;
+  stale=true;
+  setStatus("Данные изменились в другой вкладке. Сохранение заблокировано: перезагрузите страницу перед продолжением.")
 });
 render();
 })();
