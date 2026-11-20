@@ -24,7 +24,6 @@
       ["Колесо привычек и зависимостей", "/psy-tools/wheel/dependencies/"],
       ["Колесо добродетелей", "/psy-tools/wheel/virtues/"],
       ["Гибкие навыки детей", "/psy-tools/wheel/soft-skills/"],
-      ["Матрица девяти потоков", "/psy-tools/wheel/nine-streams/"],
       ["Страхи", "/psy-tools/wheel/fear/"],
       ["Сексуальность", "/psy-tools/wheel/sexuality/"],
       ["Деструктивность", "/psy-tools/wheel/destructiveness/"]
