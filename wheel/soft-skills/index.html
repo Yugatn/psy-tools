@@ -99,6 +99,38 @@ function cleanPlans(raw,ids){
     const value=cleanPlan(raw[id]);if(value)out[id]=value
   }return out
 }
+// Авторские возрастные адаптации упражнений: не официальные задания Ukids и не нормативы развития.
+const AGE_PRACTICES={
+"11-12":{
+presentation:"Подготовьте короткий рассказ о своей идее: главное сообщение, один аргумент и один вопрос слушателю.",
+relationships:"В безопасной игровой ситуации попробуйте две фразы о собственных границах и уважении чужого отказа.",
+team:"Организуйте небольшое общее дело на 10–15 минут: распределите роли, согласуйте срок и обсудите вклад каждого.",
+goals:"Выберите небольшую личную цель на семь дней и отметьте два проверяемых шага без соревнования с другими.",
+organization:"Создайте список трёх дел, оцените реальное время и обсудите, что стоит перенести без самокритики.",
+empathy:"Прочитайте историю и назовите два возможных чувства героя; отделяйте предположение от того, что он сказал сам.",
+esteem:"Запишите по одному примеру усилия, результата и того, чему удалось научиться из трудной попытки.",
+flexibility:"При изменении планов придумайте три безопасных варианта и выберите один совместно.",
+conflicts:"Разыграйте спокойный спор: пауза, Я-сообщение, уточнение желания другого и два возможных компромисса.",
+critical:"Найдите утверждение в рекламе или ролике и проверьте его происхождение по независимому источнику.",
+determination:"Составьте карту интересов «нравится — хочу попробовать — не моё пока», не оценивая чужие предпочтения.",
+resilience:"Составьте карту доступной поддержки: что помогает восстановиться, к кому можно обратиться и когда сделать паузу."
+},
+"12-16":{
+communication:"Обсудите одну неоднозначную тему: перескажите позицию собеседника без искажений и задайте уточняющий вопрос.",
+relationships:"Смоделируйте разговор о личных границах: сообщите о потребности, выслушайте ответ, согласуйте взаимное уважение.",
+team:"Спланируйте совместный мини-проект: роли, сроки, способ обратной связи и правила решения разногласий.",
+goals:"Выберите реалистичную цель на неделю, придумайте первый шаг и критерий, по которому заметите продвижение.",
+independence:"Самостоятельно спланируйте безопасную личную задачу: ресурсы, два риска, резервный план и доступную помощь.",
+empathy:"Спросите близкого, хочет ли он, чтобы его выслушали или помогли; не приписывайте ему чувства без уточнения.",
+esteem:"Вспомните трудную задачу и разделите результат, вложенные усилия и ценность себя как человека.",
+flexibility:"Для реальной ситуации составьте основной план и два альтернативных, обсудив преимущества каждого.",
+conflicts:"Разберите разногласие без обвинений: факты, чувства, интересы обеих сторон и приемлемый следующий шаг.",
+critical:"Выберите вирусное утверждение, найдите первоисточник, независимую проверку и возможный контрпример.",
+determination:"Назовите три интереса, отделите собственный выбор от ожиданий окружения и выберите безопасный эксперимент.",
+resilience:"Разработайте план восстановления после нагрузки: отдых, поддержка, один посильный шаг и признаки, когда нужна помощь."
+}
+};
+function suggestedPractice(id){return AGE_PRACTICES[age]?.[id]||SKILLS[id][3]}
 const COLORS=["#6cd8c6","#8bbdf4","#bb9df4","#f1b477","#f08f9e","#9cd69f","#ead48a","#96dbef","#d1a7d9","#8dd0ac","#f0a585","#b0baf4"];
 const $=id=>document.getElementById(id);
 let age="6",observer="together",focus=0,activeProfile="default",stale=false,data={version:1,profiles:[{id:"default",label:"Профиль 1"}],records:{}};
@@ -179,7 +211,7 @@ const change=shared.length?shared.reduce((sum,id)=>sum+getValue(id)-previous.val
 $("delta").textContent=change===null?"—":(change>0?"+":"")+change.toFixed(1);
 $("deltaHint").textContent=change===null?"нет сравнимых оценок":"к снимку · "+shared.length+" нав.";
 svg.setAttribute("aria-label","Колесо гибких навыков. Оценено "+count+" из "+n+" направлений; среднее "+(avg===null?"не определено":avg.toFixed(1)+" из 10"))}
-function selectFocus(i){focus=i;const ids=GROUPS[age].ids;if(!ids[i])return;const s=SKILLS[ids[i]];$("focusTitle").textContent=(i+1)+". "+s[0];$("focusDescription").textContent=s[1];$("focusExample").textContent="Пример: "+s[2];$("focusPractice").textContent="Попробуйте: "+s[3];$("focusQuestion").textContent="Вопрос для разговора: «"+s[4]+"»";for(const el of $("legend").children)el.classList.toggle("active",Number(el.dataset.index)===i);for(const el of $("skills").children)el.classList.toggle("current",Number(el.dataset.index)===i);renderPractice()}
+function selectFocus(i){focus=i;const ids=GROUPS[age].ids;if(!ids[i])return;const s=SKILLS[ids[i]];$("focusTitle").textContent=(i+1)+". "+s[0];$("focusDescription").textContent=s[1];$("focusExample").textContent="Пример: "+s[2];$("focusPractice").textContent="Попробуйте: "+suggestedPractice(ids[i]);$("focusQuestion").textContent="Вопрос для разговора: «"+s[4]+"»";for(const el of $("legend").children)el.classList.toggle("active",Number(el.dataset.index)===i);for(const el of $("skills").children)el.classList.toggle("current",Number(el.dataset.index)===i);renderPractice()}
 function buildCards(){const ids=GROUPS[age].ids,legend=$("legend"),skills=$("skills");legend.replaceChildren();skills.replaceChildren();ids.forEach((id,i)=>{const s=SKILLS[id],value=getValue(id),color=COLORS[i%COLORS.length];const lb=document.createElement("button");lb.type="button";lb.dataset.index=i;const dot=document.createElement("span");dot.className="dot";dot.style.background=color;const label=document.createElement("span");label.textContent=(i+1)+". "+s[0];lb.append(dot,label);lb.addEventListener("click",()=>{selectFocus(i);skills.children[i].scrollIntoView({behavior:"smooth",block:"center"})});legend.append(lb);
 const card=document.createElement("article");card.className="skill";card.dataset.index=i;
 const head=document.createElement("div");head.className="skill-title";const h=document.createElement("h3");const num=document.createElement("span");num.className="num";num.textContent=String(i+1).padStart(2,"0");h.append(num,document.createTextNode(s[0]));const score=document.createElement("span");score.className="value";score.textContent=value===null?"—":value+"/10";head.append(h,score);card.append(head);
@@ -242,7 +274,7 @@ $("practiceStatus").addEventListener("change",e=>{
 $("useSuggestedPractice").addEventListener("click",()=>{
   if(!guardFresh())return;const id=GROUPS[age].ids[focus],current=practiceFor(id);
   if(current.task&&!confirm("Заменить текущее упражнение предложенным?"))return;
-  updatePractice("task",SKILLS[id][3]);renderPractice();buildCards();selectFocus(focus)
+  updatePractice("task",suggestedPractice(id));renderPractice();buildCards();selectFocus(focus)
 });
 $("resetPractice").addEventListener("click",()=>{
   if(!guardFresh())return;const id=GROUPS[age].ids[focus],existing=practiceFor(id);
