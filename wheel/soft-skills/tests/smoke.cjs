@@ -100,6 +100,13 @@ function createApp(initialData){
   ok(remembered.get("average").textContent==="3.0","reloaded active profile shows its own records");
   get("age").value="12-16";await get("age").emit("change");
   ok(get("skills").children.length===12,"adolescent wheel has twelve skills");
+  get("observer").value="child";await get("observer").emit("change");
+  ok(get("ratedCount").textContent==="0/12","child observer ratings separated");
+  const restoredContext=createApp(json());
+  ok(restoredContext.get("age").value==="12-16","last age program persists after reload");
+  ok(restoredContext.get("observer").value==="child","last observer role persists after reload");
+  ok(restoredContext.get("profile").value==="p2","age and observer context bound to selected profile");
+  get("observer").value="together";await get("observer").emit("change");
   get("profile").value="default";await get("profile").emit("change");
   get("age").value="6";await get("age").emit("change");
   ok(get("average").textContent==="7.0","switching restores default profile");
@@ -108,12 +115,18 @@ function createApp(initialData){
   const reopened=createApp(stored);
   ok(reopened.get("average").textContent==="7.0","data survives simulated reload");
   ok(reopened.get("practiceReflection").value==="Назвали три эмоции","practice survives simulated reload");
+  const onlyPractice=createApp();
+  await onlyPractice.get("useSuggestedPractice").emit("click");
+  await onlyPractice.get("saveSnapshot").emit("click");
+  ok(onlyPractice.json().records["6|together"].history.length===1,"practice-only progress snapshot is permitted");
+  ok(Object.keys(onlyPractice.json().records["6|together"].history[0].values).length===0,"practice-only snapshot keeps scores unrated");
 
   const legacy={version:1,records:{"6|together":{values:{emotions:5},notes:"Старый формат",history:[{date:"2026-11-11T00:00:00.000Z",values:{emotions:4}}]}}};
   const migration=createApp(legacy);
   ok(migration.get("average").textContent==="5.0","v1 data migrates without loss");
   ok(migration.get("notes").value==="Старый формат","v1 note preserved");
   ok(migration.get("practiceTask").value==="","legacy JSON works without per-skill plans");
+  ok(migration.get("age").value==="6"&&migration.get("observer").value==="together","old backups default to age six and combined observer");
   await migration.get("clearCurrent").emit("click");
   ok(migration.get("ratedCount").textContent==="0/4","current context can be cleared");
 
@@ -128,6 +141,7 @@ function createApp(initialData){
   ok(app.json().profiles.length===2,"import restores all profiles");
   ok(app.json().records["p2::6|together"].values.emotions===3,"import restores separate child records");
   ok(app.json().records["6|together"].plans.emotions.status==="in-progress","JSON import restores per-skill plan");
+  ok(app.json().context.age==="6"&&app.json().context.observer==="together","JSON import restores selected context");
   const inactive=createApp(stored);
   inactive.windowEvents.storage({key:"psyToolsSoftSkillsV1"});
   const staleBackup=JSON.stringify(inactive.json());
@@ -135,6 +149,8 @@ function createApp(initialData){
   await inactive.get("practiceTask").emit("input");
   ok(JSON.stringify(inactive.json())===staleBackup,"other-tab changes block practice writes");
   ok(inactive.get("status").textContent.includes("Перезагрузите"),"cross-tab conflict shown to user");
+  const oldAge=inactive.get("age").value;inactive.get("age").value="12-16";await inactive.get("age").emit("change");
+  ok(inactive.get("age").value===oldAge,"stale tab cannot switch persisted program");
   const beforeInvalid=JSON.stringify(app.json());
   input.files=[{size:20,text:async()=>"{ not valid JSON"}];
   await input.emit("change");
