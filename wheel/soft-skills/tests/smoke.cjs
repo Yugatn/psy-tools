@@ -98,8 +98,13 @@ function createApp(initialData){
   const remembered=createApp(json());
   ok(remembered.get("profile").value==="p2","non-default active profile survives reload");
   ok(remembered.get("average").textContent==="3.0","reloaded active profile shows its own records");
+  get("age").value="11-12";await get("age").emit("change");
+  ok(get("focusPractice").textContent.includes("аргумент"),"11–12 program shows age-adapted exercise");
+  await get("useSuggestedPractice").emit("click");
+  ok(json().records["p2::11-12|together"].plans.presentation.task.includes("аргумент"),"11–12 recommended exercise saved to correct program");
   get("age").value="12-16";await get("age").emit("change");
   ok(get("skills").children.length===12,"adolescent wheel has twelve skills");
+  ok(get("focusPractice").textContent.includes("неоднозначную тему"),"12–16 program uses teen-appropriate scenario");
   get("observer").value="child";await get("observer").emit("change");
   ok(get("ratedCount").textContent==="0/12","child observer ratings separated");
   const restoredContext=createApp(json());
