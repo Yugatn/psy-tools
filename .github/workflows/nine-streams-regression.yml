@@ -8,6 +8,7 @@ on:
       - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
       - "tests/nine-streams-relocation.test.cjs"
+      - "tests/nine-streams-ui.test.cjs"
       - "wheel/hub.html"
       - "wheel/wheel-nav.js"
       - "wheel/qa.html"
@@ -20,6 +21,7 @@ on:
       - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
       - "tests/nine-streams-relocation.test.cjs"
+      - "tests/nine-streams-ui.test.cjs"
       - "wheel/hub.html"
       - "wheel/wheel-nav.js"
       - "wheel/qa.html"
@@ -44,6 +46,8 @@ jobs:
         run: node --test tests/nine-streams.test.cjs
       - name: Verify research relocation and preserved legacy links
         run: node --test tests/nine-streams-relocation.test.cjs
+      - name: Test research matrix interface and cross-tab safety
+        run: node tests/nine-streams-ui.test.cjs
       - name: Verify entry page exists
         run: |
           test -f research/index.html
