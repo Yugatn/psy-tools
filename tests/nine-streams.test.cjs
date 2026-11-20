@@ -1,6 +1,6 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const M=require("../wheel/nine-streams/model.js");
+const M=require("../research/nine-streams/model.js");
 test("девять потоков совпадают с каноническим порядком",()=>{
  assert.equal(M.STREAMS.length,9);
  assert.deepEqual(M.STREAMS.map(s=>s.name),["Зрение","Слух","Обоняние","Вкус","Осязание","Проприоцепция","Равновесие","Интероцепция","Социальная сопричастность"]);
