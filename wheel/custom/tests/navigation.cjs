@@ -8,7 +8,7 @@ const pages=[
 "wheel/relationships/index.html","wheel/social/index.html","wheel/development/index.html",
 "wheel/rest/index.html","wheel/creativity/index.html","wheel/self_awareness/index.html",
 "wheel/fear/index.html","wheel/sexuality/index.html","wheel/destructiveness/index.html",
-"wheel/soft-skills/index.html","wheel/nine-streams/index.html","wheel/custom/index.html",
+"wheel/soft-skills/index.html","wheel/custom/index.html",
 "wheel/virtues/index.html","wheel/virtues/detail.html","wheel/dependencies/index.html"
 ];
 const nav=fs.readFileSync(path.join(root,"wheel/wheel-nav.js"),"utf8");
@@ -22,6 +22,8 @@ for(const page of pages){
 }
 for(const route of [
 "/psy-tools/wheel/hub.html","/psy-tools/wheel/","/psy-tools/wheel/custom/",
-"/psy-tools/wheel/soft-skills/","/psy-tools/wheel/nine-streams/","/psy-tools/wheel/virtues/","/psy-tools/wheel/dependencies/"
+"/psy-tools/wheel/soft-skills/","/psy-tools/wheel/virtues/","/psy-tools/wheel/dependencies/"
 ])assert.ok(nav.includes(route),"Navigation missing "+route);
-console.log("PASS: navigation installed on "+pages.length+" wheels/pages; license and JS verified");
+assert.ok(!nav.includes("/psy-tools/wheel/nine-streams/"),"Legacy nine-streams must not appear in wheel navigation");
+assert.ok(!nav.includes("/psy-tools/research/nine-streams/"),"Research-only matrix must not appear as a wheel");
+console.log("PASS: navigation installed on "+pages.length+" wheels/pages; research matrix excluded; license and JS verified");
