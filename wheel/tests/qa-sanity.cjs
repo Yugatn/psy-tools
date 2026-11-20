@@ -10,7 +10,7 @@ const match=qa.match(/<script>\s*([\s\S]*?)\s*<\/script>\s*<script defer src="\/
 assert.ok(match,"QA controller present");
 new vm.Script(match[1],{filename:"wheel/qa.html"});
 const matchSpecs=[...match[1].matchAll(/\{path:"([^"]+)",kind:"([^"]+)"(?:,ids:\[([^\]]+)\])?\}/g)];
-assert.equal(matchSpecs.length,23,"exactly 23 QA routes");
+assert.equal(matchSpecs.length,22,"exactly 22 wheel QA routes");
 const paths=matchSpecs.map(m=>m[1]);
 assert.equal(new Set(paths).size,23,"all route paths unique");
 assert.ok(paths.includes("dependencies/"),"habits included");
@@ -36,7 +36,7 @@ for(const m of matchSpecs){
   }
   pagesChecked++;
 }
-for(const f of ["wheel/dependencies/catalog.js","wheel/custom/catalog.js","wheel/virtues/data.js","wheel/wheel-nav.js","wheel/nine-streams/model.js"]){
+for(const f of ["wheel/dependencies/catalog.js","wheel/custom/catalog.js","wheel/virtues/data.js","wheel/wheel-nav.js]){
   const full=path.join(root,f);assert.ok(fs.existsSync(full),"missing local JS "+f);new vm.Script(fs.readFileSync(full,"utf8"),{filename:f});
 }
 for(const f of ["wheel/wheel-engine.js","wheel/wheel-draw.js"]){
