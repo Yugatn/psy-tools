@@ -7,6 +7,11 @@ on:
       - "research/index.html"
       - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
+      - "tests/nine-streams-relocation.test.cjs"
+      - "wheel/hub.html"
+      - "wheel/wheel-nav.js"
+      - "wheel/qa.html"
+      - "index.html"
       - ".github/workflows/nine-streams-regression.yml"
   pull_request:
     paths:
@@ -14,6 +19,11 @@ on:
       - "research/index.html"
       - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
+      - "tests/nine-streams-relocation.test.cjs"
+      - "wheel/hub.html"
+      - "wheel/wheel-nav.js"
+      - "wheel/qa.html"
+      - "index.html"
       - ".github/workflows/nine-streams-regression.yml"
   workflow_dispatch:
 
@@ -32,6 +42,8 @@ jobs:
         run: node --check research/nine-streams/model.js
       - name: Run data model regression tests
         run: node --test tests/nine-streams.test.cjs
+      - name: Verify research relocation and preserved legacy links
+        run: node --test tests/nine-streams-relocation.test.cjs
       - name: Verify entry page exists
         run: |
           test -f research/index.html
