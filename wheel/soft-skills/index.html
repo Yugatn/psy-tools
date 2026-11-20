@@ -101,7 +101,8 @@ function cleanPlans(raw,ids){
 }
 const COLORS=["#6cd8c6","#8bbdf4","#bb9df4","#f1b477","#f08f9e","#9cd69f","#ead48a","#96dbef","#d1a7d9","#8dd0ac","#f0a585","#b0baf4"];
 const $=id=>document.getElementById(id);
-let age="6",observer="together",focus=0,activeProfile="default",data={version:1,profiles:[{id:"default",label:"Профиль 1"}],records:{}};
+let age="6",observer="together",focus=0,activeProfile="default",stale=false,data={version:1,profiles:[{id:"default",label:"Профиль 1"}],records:{}};
+function guardFresh(){if(!stale)return true;showStatus("Данные изменились в другой вкладке. Перезагрузите эту страницу, чтобы избежать перезаписи новых результатов.");return false}
 const key=()=>(activeProfile==="default"?"":activeProfile+"::")+age+"|"+observer;
 const normalValues=(values,ids)=>{const o={};if(values&&typeof values==="object"&&!Array.isArray(values)){ids.forEach(id=>{const v=values[id];if(Number.isInteger(v)&&v>=0&&v<=10)o[id]=v})}return o};
 function safeRecord(rec,group){
@@ -124,7 +125,7 @@ data.profiles=sanitizeProfiles(raw.profiles);
 for(const profile of data.profiles){for(const a of Object.keys(GROUPS)){for(const b of ["together","parent","child"]){const k=(profile.id==="default"?"":profile.id+"::")+a+"|"+b;if(raw.records[k])data.records[k]=safeRecord(raw.records[k],GROUPS[a])}}}
 if(typeof raw.activeProfile==="string"&&data.profiles.some(p=>p.id===raw.activeProfile))activeProfile=raw.activeProfile;
 }catch(_){showStatus("Не удалось восстановить данные. Рекомендуем экспорт и проверку хранилища браузера.")}}
-function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({...data,activeProfile}));return true}catch(_){showStatus("Не удалось сохранить данные в этом браузере. Экспортируйте JSON.");return false}}
+function persist(){if(!guardFresh())return false;try{localStorage.setItem(STORAGE,JSON.stringify({...data,activeProfile}));return true}catch(_){showStatus("Не удалось сохранить данные в этом браузере. Экспортируйте JSON.");return false}}
 function record(){const k=key();if(!data.records[k])data.records[k]=safeRecord(null,GROUPS[age]);return data.records[k]}
 function practiceFor(id){return record().plans[id]||{task:"",status:"not-started",reflection:""}}
 function updatePracticeSummary(){
@@ -180,8 +181,8 @@ const card=document.createElement("article");card.className="skill";card.dataset
 const head=document.createElement("div");head.className="skill-title";const h=document.createElement("h3");const num=document.createElement("span");num.className="num";num.textContent=String(i+1).padStart(2,"0");h.append(num,document.createTextNode(s[0]));const score=document.createElement("span");score.className="value";score.textContent=value===null?"—":value+"/10";head.append(h,score);card.append(head);
 const about=document.createElement("p");about.textContent=s[1];card.append(about);
 const prompt=document.createElement("div");prompt.className="rating-label";prompt.textContent="Насколько навык проявлялся в последние 2–4 недели?";card.append(prompt);
-const ratings=document.createElement("div");ratings.className="ratings";ratings.setAttribute("role","group");ratings.setAttribute("aria-label","Оценка: "+s[0]);for(let v=0;v<=10;v++){const b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-label",s[0]+": "+v+" из 10");b.setAttribute("aria-pressed",String(value===v));b.addEventListener("click",()=>{record().values[id]=v;const saved=persist();refresh();selectFocus(i);const btn=$("skills").children[i].querySelectorAll(".ratings button")[v];if(btn)btn.focus({preventScroll:true});if(!saved)showStatus("Оценка изменена, но не записана на диск. Экспортируйте JSON.")});ratings.appendChild(b)}card.append(ratings);
-const row=document.createElement("div");row.className="skill-buttons";const clear=document.createElement("button");clear.className="clear";clear.textContent="Убрать оценку";clear.addEventListener("click",()=>{delete record().values[id];const saved=persist();refresh();selectFocus(i);const btn=$("skills").children[i].querySelector(".clear");if(btn)btn.focus({preventScroll:true});if(!saved)showStatus("Оценка не сохранена в браузере.")});row.append(clear);const mark=document.createElement("span");mark.className="hint";mark.textContent=value===null?"Не оценено":"Есть наблюдение";row.append(mark);card.append(row);
+const ratings=document.createElement("div");ratings.className="ratings";ratings.setAttribute("role","group");ratings.setAttribute("aria-label","Оценка: "+s[0]);for(let v=0;v<=10;v++){const b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-label",s[0]+": "+v+" из 10");b.setAttribute("aria-pressed",String(value===v));b.addEventListener("click",()=>{if(!guardFresh())return;record().values[id]=v;const saved=persist();refresh();selectFocus(i);const btn=$("skills").children[i].querySelectorAll(".ratings button")[v];if(btn)btn.focus({preventScroll:true});if(!saved)showStatus("Оценка изменена, но не записана на диск. Экспортируйте JSON.")});ratings.appendChild(b)}card.append(ratings);
+const row=document.createElement("div");row.className="skill-buttons";const clear=document.createElement("button");clear.className="clear";clear.textContent="Убрать оценку";clear.addEventListener("click",()=>{if(!guardFresh())return;delete record().values[id];const saved=persist();refresh();selectFocus(i);const btn=$("skills").children[i].querySelector(".clear");if(btn)btn.focus({preventScroll:true});if(!saved)showStatus("Оценка не сохранена в браузере.")});row.append(clear);const mark=document.createElement("span");mark.className="hint";mark.textContent=value===null?"Не оценено":"Есть наблюдение";row.append(mark);card.append(row);
 const plan=record().plans[id];
 const practiceNote=document.createElement("p");practiceNote.className="practice-note";
 practiceNote.textContent=plan&&plan.task?"Практика · "+PLAN_STATUSES[plan.status]+": "+plan.task:"Практика ещё не выбрана";
@@ -190,31 +191,55 @@ const openPlan=document.createElement("button");openPlan.type="button";openPlan.
 openPlan.addEventListener("click",()=>{selectFocus(i);$("focusTitle").scrollIntoView({behavior:"smooth",block:"start"})});
 card.append(openPlan);skills.append(card)})}
 function renderHistory(){const list=$("history");list.replaceChildren();const h=record().history;if(!h.length){const li=document.createElement("li");li.textContent="Снимков пока нет. Сохраните первый после заполнения оценок.";list.append(li);return}
-h.slice().reverse().forEach((entry,reverseIndex)=>{const li=document.createElement("li");const d=document.createElement("div"),ts=document.createElement("time");let label="Дата неизвестна";try{label=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(entry.date))}catch(_){}ts.textContent=label;const vals=Object.values(entry.values),avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):"—";d.append(ts,document.createTextNode(" · "+vals.length+" навыков · среднее "+avg+(entry.notes?" · с заметкой":"")));const b=document.createElement("button");b.textContent="Посмотреть";b.setAttribute("aria-label","Показать снимок от "+label);b.addEventListener("click",()=>{if(!confirm("Загрузить оценки и заметку из снимка? Текущие значения будут заменены. История останется."))return;record().values={...entry.values};if(typeof entry.notes==="string")record().notes=entry.notes;record().plans=cleanPlans(entry.plans,GROUPS[age].ids);const saved=persist();switchContext();if(saved)showStatus("Оценки и заметка из истории загружены.")});li.append(d,b);list.append(li)})}
+h.slice().reverse().forEach((entry,reverseIndex)=>{const li=document.createElement("li");const d=document.createElement("div"),ts=document.createElement("time");let label="Дата неизвестна";try{label=new Intl.DateTimeFormat("ru-RU",{dateStyle:"medium",timeStyle:"short"}).format(new Date(entry.date))}catch(_){}ts.textContent=label;const vals=Object.values(entry.values),avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):"—";d.append(ts,document.createTextNode(" · "+vals.length+" навыков · среднее "+avg+(entry.notes?" · с заметкой":"")));const b=document.createElement("button");b.textContent="Посмотреть";b.setAttribute("aria-label","Показать снимок от "+label);b.addEventListener("click",()=>{if(!guardFresh())return;if(!confirm("Восстановить оценки, практики и заметку из снимка? Текущие значения будут заменены. История останется."))return;record().values={...entry.values};if(typeof entry.notes==="string")record().notes=entry.notes;record().plans=cleanPlans(entry.plans,GROUPS[age].ids);const saved=persist();switchContext();if(saved)showStatus("Оценки и заметка из истории загружены.")});li.append(d,b);list.append(li)})}
 function refresh(){buildCards();drawWheel();selectFocus(Math.min(focus,GROUPS[age].ids.length-1));renderHistory()}
 function switchContext(){focus=0;renderProfiles();$("ageNote").textContent=GROUPS[age].note;$("notes").value=record().notes;refresh()}
 $("age").addEventListener("change",e=>{age=e.target.value;switchContext();showStatus("")});$("observer").addEventListener("change",e=>{observer=e.target.value;switchContext();showStatus("")});
-$("notes").addEventListener("input",e=>{record().notes=e.target.value.slice(0,600);persist()});
-$("saveSnapshot").addEventListener("click",()=>{const r=record();if(!Object.keys(r.values).length&&!Object.keys(r.plans).length){showStatus("Сначала оцените навык или выберите практику.");return}r.history.push({date:new Date().toISOString(),values:{...r.values},notes:r.notes,plans:cleanPlans(r.plans,GROUPS[age].ids)});r.history=r.history.slice(-40);const saved=persist();drawWheel();renderHistory();if(saved)showStatus("Снимок и заметка сохранены только в этом браузере.")});
+$("notes").addEventListener("input",e=>{if(!guardFresh())return;record().notes=e.target.value.slice(0,600);persist()});
+$("saveSnapshot").addEventListener("click",()=>{if(!guardFresh())return;const r=record();if(!Object.keys(r.values).length&&!Object.keys(r.plans).length){showStatus("Сначала оцените навык или выберите практику.");return}r.history.push({date:new Date().toISOString(),values:{...r.values},notes:r.notes,plans:cleanPlans(r.plans,GROUPS[age].ids)});r.history=r.history.slice(-40);const saved=persist();drawWheel();renderHistory();if(saved)showStatus("Снимок и заметка сохранены только в этом браузере.")});
 $("exportData").addEventListener("click",()=>{const payload=JSON.stringify({version:1,exportedAt:new Date().toISOString(),profiles:data.profiles,activeProfile,records:data.records},null,2);const blob=new Blob([payload],{type:"application/json;charset=utf-8"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="psy-tools-soft-skills-"+new Date().toISOString().slice(0,10)+".json";document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);showStatus("Подготовлен файл JSON. Храните его в безопасном месте.")});
 $("importData").addEventListener("click",()=>$("importFile").click());
 $("importFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];e.target.value="";if(!file)return;if(file.size>250000){showStatus("Файл слишком большой (максимум 250 КБ).");return}
 try{const raw=JSON.parse(await file.text());if(raw.version!==1||!raw.records||typeof raw.records!=="object"||Array.isArray(raw.records))throw Error("Формат не поддерживается");
 const fresh={version:1,profiles:sanitizeProfiles(raw.profiles),records:{}};for(const profile of fresh.profiles)for(const a of Object.keys(GROUPS))for(const b of ["together","parent","child"]){const k=(profile.id==="default"?"":profile.id+"::")+a+"|"+b;if(raw.records[k])fresh.records[k]=safeRecord(raw.records[k],GROUPS[a])}
 const count=Object.keys(fresh.records).length;if(!confirm("Импортировать "+fresh.profiles.length+" профил(ей) и "+count+" набор(ов) оценок? Все текущие записи будут заменены. Сначала экспортируйте резервную копию."))return;
-const old=data,oldProfile=activeProfile;data=fresh;activeProfile=fresh.profiles.some(p=>p.id===raw.activeProfile)?raw.activeProfile:"default";
+if(!guardFresh())return;const old=data,oldProfile=activeProfile;data=fresh;activeProfile=fresh.profiles.some(p=>p.id===raw.activeProfile)?raw.activeProfile:"default";
 if(!persist()){data=old;activeProfile=oldProfile;switchContext();return}switchContext();showStatus("Импортировано: "+count+" наборов оценок. Данные только в этом браузере.")}catch(_){showStatus("Не удалось импортировать: неверный или повреждённый JSON.")}});
 
 $("printWheel").addEventListener("click",()=>window.print());
-$("clearCurrent").addEventListener("click",()=>{if(!confirm("Удалить текущие оценки, историю и заметку для выбранной программы и роли?"))return;delete data.records[key()];persist();switchContext();showStatus("Текущая программа очищена.")});
-$("clearAll").addEventListener("click",()=>{if(!confirm("Безвозвратно удалить ВСЕ локальные записи детского колеса?"))return;data={version:1,profiles:[{id:"default",label:"Профиль 1"}],records:{}};activeProfile="default";try{localStorage.removeItem(STORAGE)}catch(_){showStatus("Не удалось удалить данные из браузера.");return}switchContext();showStatus("Все данные детского колеса удалены из браузера.")});
+$("clearCurrent").addEventListener("click",()=>{if(!guardFresh())return;if(!confirm("Удалить текущие оценки, практики, историю и заметку для выбранной программы и роли?"))return;delete data.records[key()];persist();switchContext();showStatus("Текущая программа очищена.")});
+$("clearAll").addEventListener("click",()=>{if(!guardFresh())return;if(!confirm("Безвозвратно удалить ВСЕ локальные записи детского колеса?"))return;
+try{localStorage.removeItem(STORAGE)}catch(_){showStatus("Не удалось удалить данные из браузера.");return}
+data={version:1,profiles:[{id:"default",label:"Профиль 1"}],records:{}};activeProfile="default";
+switchContext();showStatus("Все данные детского колеса удалены из браузера.")});
 
 function renderProfiles(){const selector=$("profile");selector.replaceChildren();for(const p of data.profiles){const opt=document.createElement("option");opt.value=p.id;opt.textContent=p.label;selector.appendChild(opt)}selector.value=activeProfile;$("deleteProfile").disabled=activeProfile==="default"}
-$("profile").addEventListener("change",e=>{activeProfile=e.target.value;switchContext();if(persist())showStatus("")});
-$("addProfile").addEventListener("click",()=>{if(data.profiles.length>=8){showStatus("Для одного браузера доступно до восьми локальных профилей.");return}let n=2;while(data.profiles.some(p=>p.id==="p"+n))n++;const id="p"+n;data.profiles.push({id,label:"Профиль "+n});activeProfile=id;const saved=persist();switchContext();if(saved)showStatus("Создан локальный профиль "+n+". Он не защищён паролем.")});
-$("renameProfile").addEventListener("click",()=>{const profile=data.profiles.find(p=>p.id===activeProfile);const next=prompt("Условное название (без ФИО и личных данных):",profile.label);if(next===null)return;profile.label=cleanProfileName(next,profile.label);const saved=persist();switchContext();if(saved)showStatus("Название профиля изменено.")});
-$("deleteProfile").addEventListener("click",()=>{if(activeProfile==="default")return;const id=activeProfile,profile=data.profiles.find(p=>p.id===id);if(!confirm("Безвозвратно удалить профиль «"+profile.label+"» и ВСЕ его записи?"))return;for(const k of Object.keys(data.records))if(k.startsWith(id+"::"))delete data.records[k];data.profiles=data.profiles.filter(p=>p.id!==id);activeProfile="default";const saved=persist();switchContext();if(saved)showStatus("Профиль и связанные с ним записи удалены.")});
+$("profile").addEventListener("change",e=>{if(!guardFresh()){e.target.value=activeProfile;return}activeProfile=e.target.value;switchContext();if(persist())showStatus("")});
+$("addProfile").addEventListener("click",()=>{if(!guardFresh())return;if(data.profiles.length>=8){showStatus("Для одного браузера доступно до восьми локальных профилей.");return}let n=2;while(data.profiles.some(p=>p.id==="p"+n))n++;const id="p"+n;data.profiles.push({id,label:"Профиль "+n});activeProfile=id;const saved=persist();switchContext();if(saved)showStatus("Создан локальный профиль "+n+". Он не защищён паролем.")});
+$("renameProfile").addEventListener("click",()=>{if(!guardFresh())return;const profile=data.profiles.find(p=>p.id===activeProfile);const next=prompt("Условное название (без ФИО и личных данных):",profile.label);if(next===null)return;profile.label=cleanProfileName(next,profile.label);const saved=persist();switchContext();if(saved)showStatus("Название профиля изменено.")});
+$("deleteProfile").addEventListener("click",()=>{if(!guardFresh())return;if(activeProfile==="default")return;const id=activeProfile,profile=data.profiles.find(p=>p.id===id);if(!confirm("Безвозвратно удалить профиль «"+profile.label+"» и ВСЕ его записи?"))return;for(const k of Object.keys(data.records))if(k.startsWith(id+"::"))delete data.records[k];data.profiles=data.profiles.filter(p=>p.id!==id);activeProfile="default";const saved=persist();switchContext();if(saved)showStatus("Профиль и связанные с ним записи удалены.")});
 
+$("practiceTask").addEventListener("input",e=>updatePractice("task",e.target.value));
+$("practiceReflection").addEventListener("input",e=>updatePractice("reflection",e.target.value));
+$("practiceStatus").addEventListener("change",e=>{
+  if(!guardFresh())return;
+  const id=GROUPS[age].ids[focus];if(!practiceFor(id).task){
+    showStatus("Сначала выберите или напишите упражнение.");e.target.value="not-started";return
+  }
+  if(!Object.hasOwn(PLAN_STATUSES,e.target.value))return;
+  updatePractice("status",e.target.value);buildCards();selectFocus(focus)
+});
+$("useSuggestedPractice").addEventListener("click",()=>{
+  if(!guardFresh())return;const id=GROUPS[age].ids[focus],current=practiceFor(id);
+  if(current.task&&!confirm("Заменить текущее упражнение предложенным?"))return;
+  updatePractice("task",SKILLS[id][3]);renderPractice();buildCards();selectFocus(focus)
+});
+$("resetPractice").addEventListener("click",()=>{
+  if(!guardFresh())return;const id=GROUPS[age].ids[focus],existing=practiceFor(id);
+  if((existing.task||existing.reflection)&&!confirm("Удалить практику и её наблюдение для выбранного навыка? Снимки истории сохранятся."))return;
+  delete record().plans[id];if(persist()){updatePracticeSummary();buildCards();selectFocus(focus);showStatus("Текущая практика удалена. Исторические снимки сохранены.")}
+});
+window.addEventListener("storage",e=>{if(e.key!==STORAGE)return;stale=true;showStatus("Данные обновлены в другой вкладке. Перезагрузите страницу перед дальнейшим редактированием.")});
 restore();switchContext();
 })();
 </script>
