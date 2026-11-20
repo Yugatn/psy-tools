@@ -3,12 +3,16 @@ name: Nine streams matrix regression
 on:
   push:
     paths:
-      - "wheel/nine-streams/**"
+      - "research/nine-streams/**"
+      - "research/index.html"
+      - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
       - ".github/workflows/nine-streams-regression.yml"
   pull_request:
     paths:
-      - "wheel/nine-streams/**"
+      - "research/nine-streams/**"
+      - "research/index.html"
+      - "wheel/nine-streams/index.html"
       - "tests/nine-streams.test.cjs"
       - ".github/workflows/nine-streams-regression.yml"
   workflow_dispatch:
@@ -25,11 +29,13 @@ jobs:
         with:
           node-version: "22"
       - name: Verify JavaScript syntax
-        run: node --check wheel/nine-streams/model.js
+        run: node --check research/nine-streams/model.js
       - name: Run data model regression tests
         run: node --test tests/nine-streams.test.cjs
       - name: Verify entry page exists
         run: |
-          test -f wheel/nine-streams/index.html
-          grep -Fq '<script src="./model.js"></script>' wheel/nine-streams/index.html
-          grep -Fq 'Колесо девяти потоков' wheel/nine-streams/index.html
+          test -f research/index.html
+          test -f research/nine-streams/index.html
+          grep -Fq '<script src="./model.js"></script>' research/nine-streams/index.html
+          grep -Fq 'Колесо девяти потоков' research/nine-streams/index.html
+          grep -Fq '/psy-tools/research/nine-streams/' wheel/nine-streams/index.html
