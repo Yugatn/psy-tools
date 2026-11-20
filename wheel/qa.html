@@ -58,7 +58,6 @@ if(page.kind==="classic")return page.path==="detail/"?["../wheel-engine.js"]:pag
 if(page.path==="custom/")return["./catalog.js"];
 if(page.path==="virtues/"||page.path==="virtues/detail.html")return["./data.js"];
 if(page.path==="dependencies/")return["./catalog.js"];
-if(page.path==="nine-streams/")return["./model.js"];
 return[];
 }
 async function getText(url){
