@@ -16,7 +16,7 @@ if(!script)throw Error("Could not find inline app script");
 function check(test,msg){if(!test)throw Error("FAIL: "+msg)}
 function createApp(initialData){
   const store=new Map(initialData?[[ "psyToolsSoftSkillsV1",JSON.stringify(initialData) ]]:[]);
-  const elements=new Map();
+  const elements=new Map(),windowEvents={};
   let document;
   class Element{
     constructor(tag){this.tag=tag;this.nodes=[];this.listeners={};this.attributes={};this.dataset={};this.style={};this.className="";this.textContent="";this.value="";this.disabled=false;this.classList={toggle:(name,enabled)=>{this.classes ||= new Set();if(enabled)this.classes.add(name);else this.classes.delete(name)}}}
@@ -48,10 +48,10 @@ function createApp(initialData){
   };
   const get=id=>document.getElementById(id);
   new Function("document","localStorage","window","confirm","prompt",script)(
-    document,storage,{print(){}},()=>true,()=> "Анонимный профиль"
+    document,storage,{print(){},addEventListener(name,callback){windowEvents[name]=callback}},()=>true,()=> "Анонимный профиль"
   );
   const json=()=>JSON.parse(store.get("psyToolsSoftSkillsV1")||"null");
-  return {get,store,json,document};
+  return {get,store,json,document,windowEvents};
 }
 
 (async()=>{
@@ -65,20 +65,33 @@ function createApp(initialData){
   ok(json().records["6|together"].values.emotions===7,"score saved in legacy-compatible record");
   ok(get("average").textContent==="7.0","average updated");
   ok(app.document.activeElement===get("skills").children[0].querySelectorAll(".ratings button")[7],"keyboard focus preserved");
+  await get("useSuggestedPractice").emit("click");
+  ok(json().records["6|together"].plans.emotions.task.length>10,"suggested exercise becomes editable practice");
+  get("practiceStatus").value="in-progress";await get("practiceStatus").emit("change");
+  ok(json().records["6|together"].plans.emotions.status==="in-progress","practice stage saved independently");
+  get("practiceReflection").value="Назвали три эмоции";await get("practiceReflection").emit("input");
+  ok(json().records["6|together"].plans.emotions.reflection==="Назвали три эмоции","practice observation saved");
+  ok(get("practiceSummary").textContent.includes("1 в процессе"),"practice progress summary");
   get("notes").value="Наблюдение без личных данных";
   await get("notes").emit("input");
   await get("saveSnapshot").emit("click");
   ok(json().records["6|together"].history[0].notes==="Наблюдение без личных данных","snapshot saves notes");
+  ok(json().records["6|together"].history[0].plans.emotions.status==="in-progress","snapshot captures per-skill practice");
 
   await get("skills").children[0].querySelectorAll(".ratings button")[9].emit("click");
   ok(get("delta").textContent==="+2.0","delta compares shared skills");
+  get("practiceStatus").value="tried";await get("practiceStatus").emit("change");
+  ok(get("practiceSummary").textContent.includes("1 попробовано"),"tried status is displayed");
   await get("history").children[0].children[1].emit("click");
   ok(get("average").textContent==="7.0","history restore loads previous values");
   ok(get("notes").value==="Наблюдение без личных данных","history restore loads previous notes");
+  ok(get("practiceStatus").value==="in-progress","history restores practice stage");
+  ok(get("practiceReflection").value==="Назвали три эмоции","history restores practice reflection");
 
   await get("addProfile").emit("click");
   ok(json().profiles.length===2,"second anonymous profile created");
   ok(get("ratedCount").textContent==="0/4","new profile starts empty");
+  ok(get("practiceTask").value==="","new child profile does not see other child's practice");
   await get("skills").children[0].querySelectorAll(".ratings button")[3].emit("click");
   ok(json().records["p2::6|together"].values.emotions===3,"new profile has independent values");
   ok(json().records["6|together"].values.emotions===7,"default profile unchanged");
@@ -90,14 +103,17 @@ function createApp(initialData){
   get("profile").value="default";await get("profile").emit("change");
   get("age").value="6";await get("age").emit("change");
   ok(get("average").textContent==="7.0","switching restores default profile");
+  ok(get("practiceStatus").value==="in-progress","switching restores child's practice");
   const stored=json();
   const reopened=createApp(stored);
   ok(reopened.get("average").textContent==="7.0","data survives simulated reload");
+  ok(reopened.get("practiceReflection").value==="Назвали три эмоции","practice survives simulated reload");
 
   const legacy={version:1,records:{"6|together":{values:{emotions:5},notes:"Старый формат",history:[{date:"2026-11-11T00:00:00.000Z",values:{emotions:4}}]}}};
   const migration=createApp(legacy);
   ok(migration.get("average").textContent==="5.0","v1 data migrates without loss");
   ok(migration.get("notes").value==="Старый формат","v1 note preserved");
+  ok(migration.get("practiceTask").value==="","legacy JSON works without per-skill plans");
   await migration.get("clearCurrent").emit("click");
   ok(migration.get("ratedCount").textContent==="0/4","current context can be cleared");
 
@@ -111,6 +127,14 @@ function createApp(initialData){
   await input.emit("change");
   ok(app.json().profiles.length===2,"import restores all profiles");
   ok(app.json().records["p2::6|together"].values.emotions===3,"import restores separate child records");
+  ok(app.json().records["6|together"].plans.emotions.status==="in-progress","JSON import restores per-skill plan");
+  const inactive=createApp(stored);
+  inactive.windowEvents.storage({key:"psyToolsSoftSkillsV1"});
+  const staleBackup=JSON.stringify(inactive.json());
+  inactive.get("practiceTask").value="Не должно перезаписать запись";
+  await inactive.get("practiceTask").emit("input");
+  ok(JSON.stringify(inactive.json())===staleBackup,"other-tab changes block practice writes");
+  ok(inactive.get("status").textContent.includes("Перезагрузите"),"cross-tab conflict shown to user");
   const beforeInvalid=JSON.stringify(app.json());
   input.files=[{size:20,text:async()=>"{ not valid JSON"}];
   await input.emit("change");
